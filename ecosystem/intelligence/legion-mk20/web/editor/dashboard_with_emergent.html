@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>LEGION EV21 — Complete Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0e27;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            color: #e2e8f0;
+            padding: 16px;
+        }
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0f1535, #1a1f4e);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .logo h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #a78bfa, #ec489a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .logo p { font-size: 0.7rem; color: #7e8aa2; }
+        .stats {
+            display: flex;
+            gap: 24px;
+        }
+        .stat { text-align: center; }
+        .stat-label { font-size: 0.7rem; color: #7e8aa2; }
+        .stat-value { font-weight: bold; font-size: 1.2rem; }
+        /* Two-column layout */
+        .two-columns {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .left-column {
+            flex: 2;
+            min-width: 280px;
+        }
+        .right-column {
+            flex: 3;
+            min-width: 400px;
+        }
+        /* Cards */
+        .card {
+            background: #0f122e;
+            border-radius: 16px;
+            border: 1px solid #1a1f4e;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .card-header {
+            background: #1a1f4e;
+            padding: 12px 16px;
+            border-bottom: 1px solid #2a2f6e;
+            font-weight: bold;
+        }
+        .card-body {
+            padding: 16px;
+        }
+        /* Chat area */
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .message {
+            display: flex;
+            gap: 8px;
+        }
+        .message.user { justify-content: flex-end; }
+        .message-bubble {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            background: #1a1f4e;
+        }
+        .message.user .message-bubble { background: #4f46e5; }
+        .chat-input {
+            display: flex;
+            gap: 8px;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            background: #1a1f4e;
+            border: 1px solid #2a2f6e;
+            border-radius: 12px;
+            color: white;
+        }
+        .chat-input button {
+            padding: 10px 16px;
+            background: #4f46e5;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+        }
+        /* Emergent canvas */
+        .emergent-container {
+            height: 400px;
+            position: relative;
+            background: #050816;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .emergent-overlay {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(0,0,0,0.7);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            pointer-events: none;
+        }
+        /* Agent grid */
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 8px;
+        }
+        .agent-tag {
+            background: #1a1f4e;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 0.7rem;
+            text-align: center;
+        }
+        .status-online { color: #22c55e; }
+        .entropy-meter {
+            background: #1a1f4e;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .entropy-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
+            transition: width 0.3s;
+            width: 0%;
+        }
+        @media (max-width: 768px) {
+            body { padding: 8px; }
+            .two-columns { flex-direction: column; }
+            .right-column { min-width: auto; }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <div class="header">
+        <div class="logo">
+            <h1>⚡ LEGION EV21</h1>
+            <p>COMPLETE DASHBOARD | CASCADE VISUALIZATION</p>
+        </div>
+        <div class="stats">
+            <div class="stat"><div class="stat-label">AGENTS</div><div class="stat-value" id="agentCount">30</div></div>
+            <div class="stat"><div class="stat-label">ENTROPY</div><div class="stat-value" id="entropyVal">0.00</div></div>
+            <div class="stat"><div class="stat-label">MODE</div><div class="stat-value" id="paperMode">PAPER</div></div>
+        </div>
+    </div>
+
+    <div class="two-columns">
+        <!-- LEFT COLUMN: Chat + Agents -->
+        <div class="left-column">
+            <!-- Chat Card -->
+            <div class="card">
+                <div class="card-header">🤖 Legion Assistant (Gemini AI)</div>
+                <div class="card-body">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message assistant"><div class="message-bubble">Hello! I'm Legion. Ask me about system status, agents, prices, or the cascade.</div></div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Ask me anything..." onkeypress="if(event.key==='Enter') sendMessage()">
+                        <button onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agents Card -->
+            <div class="card">
+                <div class="card-header">🤖 Active Agents (30)</div>
+                <div class="card-body">
+                    <div class="agent-grid" id="agentGrid">
+                        <div class="agent-tag"><span class="status-online">●</span> ForgeLord</div>
+                        <div class="agent-tag"><span class="status-online">●</span> Reaper</div>
+                        <div class="agent-tag"><span class="status-online">●</span> Chameleon</div>
+                        <div class="agent-tag"><span class="status-online">●</span> DQN</div>
+                        <div class="agent-tag"><span class="status-online">●</span> LSTM</div>
+                        <div class="agent-tag"><span class="status-online">●</span> CascadeEngine</div>
+                        <div class="agent-tag"><span class="status-online">●</span> StrategyGen</div>
+                        <div class="agent-tag"><span class="status-online">●</span> +23 more</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Emergent Monitor -->
+        <div class="right-column">
+            <div class="card">
+                <div class="card-header">🌀 EMERGENT CASCADE MONITOR</div>
+                <div class="card-body" style="padding: 0;">
+                    <div class="emergent-container" id="emergentContainer">
+                        <canvas id="emergentCanvas"></canvas>
+                        <div class="emergent-overlay">
+                            <span id="cascadePhaseLabel">DORMANT</span> | 
+                            <span id="energyLabel">Energy: 0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- LEGION API Integration ---
+    const API_BASE = 'http://localhost:3011';
+    
+    // Market data for particles
+    let assets = [];
+    let particles = [];
+    let canvas = null;
+    let ctx = null;
+    let width = 600, height = 400;
+    let entropy = 0.1;
+    let cascadePhase = 'DORMANT';
+    
+    // Asset symbols
+    const symbols = [
+        { name: 'BTC', full: 'BTC/USD', basePrice: 52800 },
+        { name: 'ETH', full: 'ETH/USD', basePrice: 3150 },
+        { name: 'SOL', full: 'SOL/USD', basePrice: 88.5 },
+        { name: 'XRP', full: 'XRP/USD', basePrice: 1.42 },
+        { name: 'LINK', full: 'LINK/USD', basePrice: 9.23 }
+    ];
+    
+    async function fetchSystemStatus() {
+        try {
+            const res = await fetch(`${API_BASE}/api/status`);
+            const data = await res.json();
+            document.getElementById('agentCount').innerText = data.agents || 30;
+            document.getElementById('entropyVal').innerText = (data.entropy || 0.1).toFixed(2);
+            document.getElementById('paperMode').innerText = data.paper_mode === 'RUNNING' ? 'PAPER' : 'LIVE';
+            entropy = data.entropy || 0.1;
+            
+            if (entropy > 0.7) cascadePhase = 'CASCADE_2';
+            else if (entropy > 0.4) cascadePhase = 'CASCADE_1';
+            else if (entropy > 0.2) cascadePhase = 'IGNITION';
+            else cascadePhase = 'DORMANT';
+            
+            document.getElementById('cascadePhaseLabel').innerHTML = cascadePhase;
+            document.getElementById('energyLabel').innerHTML = `Energy: ${(entropy * 100).toFixed(1)}%`;
+            
+        } catch(e) { console.warn('API error:', e); }
+    }
+    
+    async function fetchPrices() {
+        try {
+            const res = await fetch(`${API_BASE}/api/arbitrage/prices`);
+            const data = await res.json();
+            const prices = data.prices || {};
+            
+            for (let i = 0; i < symbols.length; i++) {
+                const s = symbols[i];
+                const price = prices[s.full] || s.basePrice;
+                const change = (price - s.basePrice) / s.basePrice * 100;
+                assets[i] = {
+                    ...s,
+                    price: price,
+                    change: change,
+                    volume: Math.random() * 1000000
+                };
+            }
+        } catch(e) {
+            // Fallback simulated data
+            for (let i = 0; i < symbols.length; i++) {
+                const s = symbols[i];
+                const price = s.basePrice * (0.95 + Math.random() * 0.1);
+                assets[i] = {
+                    ...s,
+                    price: price,
+                    change: (price - s.basePrice) / s.basePrice * 100,
+                    volume: Math.random() * 1000000
+                };
+            }
+        }
+    }
+    
+    // --- Particle System ---
+    function initParticles() {
+        const container = document.getElementById('emergentContainer');
+        const rect = container.getBoundingClientRect();
+        width = rect.width;
+        height = rect.height;
+        canvas.width = width;
+        canvas.height = height;
+        
+        particles = [];
+        for (let i = 0; i < assets.length; i++) {
+            const a = assets[i];
+            particles.push({
+                x: width/2 + (Math.random() - 0.5) * 150,
+                y: height/2 + (Math.random() - 0.5) * 150,
+                vx: (Math.random() - 0.5) * 1,
+                vy: (Math.random() - 0.5) * 1,
+                mass: 0.3 + (a.volume / 1000000),
+                trail: [],
+                asset: a
+            });
+        }
+    }
+    
+    function updateParticles() {
+        if (!particles.length) return;
+        const centerX = width / 2;
+        const centerY = height / 2;
+        
+        for (let p of particles) {
+            p.trail.push({ x: p.x, y: p.y });
+            if (p.trail.length > 15) p.trail.shift();
+            
+            const dx = centerX - p.x;
+            const dy = centerY - p.y;
+            const dist = Math.hypot(dx, dy);
+            const force = 0.002 * (dist / 200);
+            const cascadeForce = entropy * 2;
+            
+            p.vx += dx * force + (Math.random() - 0.5) * 0.3 * cascadeForce;
+            p.vy += dy * force + (Math.random() - 0.5) * 0.3 * cascadeForce;
+            p.vx *= 0.97;
+            p.vy *= 0.97;
+            p.x += p.vx;
+            p.y += p.vy;
+            p.x = Math.min(Math.max(p.x, 40), width - 40);
+            p.y = Math.min(Math.max(p.y, 40), height - 40);
+        }
+    }
+    
+    function drawTrails() {
+        for (let p of particles) {
+            if (p.trail.length > 1) {
+                ctx.beginPath();
+                ctx.strokeStyle = `rgba(79, 70, 229, 0.2)`;
+                ctx.lineWidth = 1;
+                ctx.moveTo(p.trail[0].x, p.trail[0].y);
+                for (let i = 1; i < p.trail.length; i++) {
+                    ctx.lineTo(p.trail[i].x, p.trail[i].y);
+                }
+                ctx.stroke();
+            }
+        }
+    }
+    
+    function drawParticles() {
+        ctx.clearRect(0, 0, width, height);
+        
+        // Draw connections
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dist = Math.hypot(particles[i].x - particles[j].x, particles[i].y - particles[j].y);
+                if (dist < 100) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(79, 70, 229, ${0.1 * (1 - dist/100)})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.stroke();
+                }
+            }
+        }
+        
+        drawTrails();
+        
+        for (let p of particles) {
+            const size = 12 + p.mass * 6;
+            const isPositive = p.asset.change >= 0;
+            const color = isPositive ? '#22c55e' : '#ef4444';
+            
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+            ctx.fillStyle = color + 'cc';
+            ctx.fill();
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = color;
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${Math.max(10, size - 4)}px monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(p.asset.name, p.x, p.y);
+            ctx.shadowBlur = 0;
+        }
+    }
+    
+    function animateEmergent() {
+        if (!ctx) return;
+        updateParticles();
+        drawParticles();
+        requestAnimationFrame(animateEmergent);
+    }
+    
+    function setupCanvas() {
+        canvas = document.getElementById('emergentCanvas');
+        ctx = canvas.getContext('2d');
+        
+        const resizeObserver = new ResizeObserver(() => {
+            const rect = document.getElementById('emergentContainer').getBoundingClientRect();
+            width = rect.width;
+            height = rect.height;
+            canvas.width = width;
+            canvas.height = height;
+            initParticles();
+        });
+        resizeObserver.observe(document.getElementById('emergentContainer'));
+        
+        const rect = document.getElementById('emergentContainer').getBoundingClientRect();
+        width = rect.width;
+        height = rect.height;
+        canvas.width = width;
+        canvas.height = height;
+        
+        initParticles();
+        animateEmergent();
+    }
+    
+    // --- Chat Function ---
+    async function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const msg = input.value.trim();
+        if (!msg) return;
+        
+        const messagesDiv = document.getElementById('chatMessages');
+        messagesDiv.innerHTML += `<div class="message user"><div class="message-bubble">${escapeHtml(msg)}</div></div>`;
+        input.value = '';
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        
+        try {
+            const res = await fetch(`${API_BASE}/api/intelligence/chat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: msg })
+            });
+            const data = await res.json();
+            messagesDiv.innerHTML += `<div class="message assistant"><div class="message-bubble">${escapeHtml(data.response)}</div></div>`;
+        } catch(e) {
+            messagesDiv.innerHTML += `<div class="message assistant"><div class="message-bubble">⚠️ Error: ${e.message}</div></div>`;
+        }
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    // --- Refresh data periodically ---
+    async function refreshData() {
+        await fetchSystemStatus();
+        await fetchPrices();
+        initParticles();
+    }
+    
+    // Initial load
+    fetchSystemStatus();
+    fetchPrices().then(() => setupCanvas());
+    
+    // Refresh every 10 seconds
+    setInterval(refreshData, 10000);
+</script>
+</body>
+</html>

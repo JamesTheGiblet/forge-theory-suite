@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpatialPod - Upper Heyford, Bicester Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            font-size: 3em;
+            background: linear-gradient(45deg, #00f5ff, #ff00ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #aaa;
+            font-size: 1.2em;
+        }
+
+        .location-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #00f5ff, #00ff88);
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel h2 {
+            color: #00f5ff;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        #canvas-container {
+            position: relative;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid rgba(0, 245, 255, 0.3);
+            box-shadow: 0 0 40px rgba(0, 245, 255, 0.2);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 700px;
+            cursor: crosshair;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .control-group {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .control-group label {
+            display: block;
+            color: #00ff88;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: linear-gradient(45deg, #00f5ff, #00ff88);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: linear-gradient(45deg, #00f5ff, #00ff88);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
+        }
+
+        .value-display {
+            color: #aaa;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        button {
+            background: linear-gradient(45deg, #00f5ff, #00ff88);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: #000;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 245, 255, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00f5ff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: #aaa;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .pods-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .pod-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pod-item:hover {
+            background: rgba(0, 245, 255, 0.1);
+            border-color: rgba(0, 245, 255, 0.3);
+            transform: translateX(5px);
+        }
+
+        .pod-item.selected {
+            background: rgba(0, 245, 255, 0.2);
+            border-color: rgba(0, 245, 255, 0.5);
+        }
+
+        .pod-name {
+            color: #00ff88;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pod-type {
+            font-size: 1.2em;
+        }
+
+        .pod-info {
+            color: #aaa;
+            font-size: 0.85em;
+        }
+
+        .energy-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .energy-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00);
+            transition: width 0.3s ease;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #aaa;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(45deg, #00f5ff, #00ff88);
+            color: #000;
+            border-color: transparent;
+        }
+
+        .legend {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+            font-size: 0.85em;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .info-box {
+            background: rgba(0, 245, 255, 0.1);
+            border: 1px solid rgba(0, 245, 255, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .info-box h3 {
+            color: #00f5ff;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #aaa;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .location-presets {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .preset-btn {
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            text-align: left;
+            font-size: 0.9em;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .preset-btn:hover {
+            background: rgba(0, 245, 255, 0.1);
+            border-color: rgba(0, 245, 255, 0.3);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #00f5ff, #00ff88);
+            border-radius: 4px;
+        }
+
+        @media (max-width: 1400px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌐 SpatialPod Forge System</h1>
+            <p class="subtitle">Living Spatial Experiences Through Emergent Particle Systems</p>
+            <div class="location-badge">📍 Upper Heyford, Bicester, Oxfordshire</div>
+        </header>
+
+        <div class="main-grid">
+            <!-- Left Panel: Controls -->
+            <div class="panel">
+                <h2>⚙️ Forge Controls</h2>
+                
+                <div class="mode-selector">
+                    <button class="mode-btn active" onclick="setMode('create')">Create</button>
+                    <button class="mode-btn" onclick="setMode('edit')">Edit</button>
+                    <button class="mode-btn" onclick="setMode('view')">View</button>
+                </div>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Influence Radius</label>
+                        <input type="range" id="influenceRadius" min="20" max="150" value="60" oninput="updateControl(this)">
+                        <div class="value-display" id="influenceRadius-value">60px</div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Boundary Threshold</label>
+                        <input type="range" id="boundaryThreshold" min="0.1" max="0.9" step="0.05" value="0.3" oninput="updateControl(this)">
+                        <div class="value-display" id="boundaryThreshold-value">0.30</div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Animation Speed</label>
+                        <input type="range" id="animationSpeed" min="0.1" max="2" step="0.1" value="1" oninput="updateControl(this)">
+                        <div class="value-display" id="animationSpeed-value">1.0x</div>
+                    </div>
+
+                    <div class="button-grid">
+                        <button onclick="toggleAnimation()">⏯️ Animate</button>
+                        <button onclick="toggleField()">🌊 Field View</button>
+                    </div>
+
+                    <button onclick="resetView()">🔄 Reset View</button>
+                    <button onclick="loadAllPods()">🏘️ Load All Locations</button>
+                </div>
+
+                <div class="info-box">
+                    <h3>Upper Heyford Demo</h3>
+                    <p>Click preset locations below or click the map to create custom pods. Watch how boundaries emerge naturally around real community spaces!</p>
+                </div>
+
+                <div class="control-group">
+                    <label>Quick Add Locations</label>
+                    <div class="location-presets" id="locationPresets"></div>
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #4CAF50;"></div>
+                        <span>Parks</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #2196F3;"></div>
+                        <span>Schools</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #FF9800;"></div>
+                        <span>Play Areas</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #9C27B0;"></div>
+                        <span>Community</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #F44336;"></div>
+                        <span>Shopping</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #00BCD4;"></div>
+                        <span>Recreation</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Panel: Canvas -->
+            <div class="panel">
+                <div id="canvas-container">
+                    <canvas id="forgeCanvas"></canvas>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalPods">0</div>
+                        <div class="stat-label">Active Pods</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalParticles">0</div>
+                        <div class="stat-label">Total Particles</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalEnergy">0</div>
+                        <div class="stat-label">System Energy</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="connections">0</div>
+                        <div class="stat-label">Connections</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Pods List -->
+            <div class="panel">
+                <h2>📦 Community Pods</h2>
+                <div class="pods-list" id="podsList">
+                    <p style="color: #aaa; text-align: center; padding: 20px;">
+                        Click "Load All Locations" to see Upper Heyford come to life!
+                    </p>
+                </div>
+
+                <div id="selectedPodDetails" style="display: none; margin-top: 20px;">
+                    <h3 style="color: #00ff88; margin-bottom: 10px;">Pod Details</h3>
+                    <div id="podDetailsContent"></div>
+                    <button onclick="deletePod()" style="background: linear-gradient(45deg, #ff0066, #ff6600);">🗑️ Delete Pod</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== UPPER HEYFORD LOCATION DATA ====================
+        
+        const UPPER_HEYFORD_LOCATIONS = [
+            // Parks & Green Spaces
+            {
+                name: "Brice Road Park",
+                type: "park",
+                emoji: "🌳",
+                color: "#4CAF50",
+                position: { x: 300, y: 200 },
+                particles: 8,
+                radius: 70,
+                content: [
+                    { type: "info", data: "Beautiful green space with walking paths" },
+                    { type: "facilities", data: "Open green area, benches, dog-friendly" }
+                ]
+            },
+            {
+                name: "Larsen Road Green",
+                type: "park",
+                emoji: "🌳",
+                color: "#4CAF50",
+                position: { x: 600, y: 180 },
+                particles: 6,
+                radius: 50,
+                content: [
+                    { type: "info", data: "Community green space" },
+                    { type: "facilities", data: "Grass area, neighborhood gathering spot" }
+                ]
+            },
+            {
+                name: "Village Green",
+                type: "park",
+                emoji: "🌳",
+                color: "#4CAF50",
+                position: { x: 450, y: 450 },
+                particles: 10,
+                radius: 80,
+                content: [
+                    { type: "info", data: "Central community green space" },
+                    { type: "facilities", data: "Large open area, events, community gatherings" }
+                ]
+            },
+
+            // Schools & Education
+            {
+                name: "RAF Croughton Primary School",
+                type: "school",
+                emoji: "🏫",
+                color: "#2196F3",
+                position: { x: 250, y: 400 },
+                particles: 10,
+                radius: 60,
+                content: [
+                    { type: "info", data: "Primary education" },
+                    { type: "facilities", data: "Classrooms, playground, sports field" },
+                    { type: "hours", data: "Mon-Fri 8:30-15:30" }
+                ]
+            },
+            {
+                name: "Heyford Park School",
+                type: "school",
+                emoji: "🏫",
+                color: "#2196F3",
+                position: { x: 700, y: 350 },
+                particles: 12,
+                radius: 70,
+                content: [
+                    { type: "info", data: "Primary school serving Heyford Park" },
+                    { type: "facilities", data: "Modern facilities, outdoor learning spaces" },
+                    { type: "hours", data: "Mon-Fri 8:45-15:15" }
+                ]
+            },
+
+            // Play Areas & Recreation
+            {
+                name: "Chilgrove Drive Playground",
+                type: "playground",
+                emoji: "🎠",
+                color: "#FF9800",
+                position: { x: 500, y: 250 },
+                particles: 6,
+                radius: 45,
+                content: [
+                    { type: "info", data: "Modern children's play area" },
+                    { type: "facilities", data: "Swings, slides, climbing frames" },
+                    { type: "age", data: "Suitable for ages 2-12" }
+                ]
+            },
+            {
+                name: "Letchmere Farm Lane Play Area",
+                type: "playground",
+                emoji: "🎠",
+                color: "#FF9800",
+                position: { x: 350, y: 550 },
+                particles: 7,
+                radius: 50,
+                content: [
+                    { type: "info", data: "Neighborhood playground" },
+                    { type: "facilities", data: "Play equipment, safety surface" },
+                    { type: "age", data: "Multi-age equipment" }
+                ]
+            },
+            {
+                name: "Camp Road Recreation Ground",
+                type: "recreation",
+                emoji: "⚽",
+                color: "#00BCD4",
+                position: { x: 800, y: 200 },
+                particles: 12,
+                radius: 90,
+                content: [
+                    { type: "info", data: "Sports and recreation facility" },
+                    { type: "facilities", data: "Football pitch, multi-use games area" },
+                    { type: "activities", data: "Youth sports, community events" }
+                ]
+            },
+
+            // Community Facilities
+            {
+                name: "Heyford Park Community Centre",
+                type: "community",
+                emoji: "🏛️",
+                color: "#9C27B0",
+                position: { x: 650, y: 500 },
+                particles: 8,
+                radius: 55,
+                content: [
+                    { type: "info", data: "Hub for community activities" },
+                    { type: "facilities", data: "Meeting rooms, events space, café" },
+                    { type: "activities", data: "Classes, clubs, social events" }
+                ]
+            },
+            {
+                name: "Upper Heyford Village Hall",
+                type: "community",
+                emoji: "🏛️",
+                color: "#9C27B0",
+                position: { x: 400, y: 320 },
+                particles: 7,
+                radius: 50,
+                content: [
+                    { type: "info", data: "Traditional village hall" },
+                    { type: "facilities", data: "Main hall, kitchen, parking" },
+                    { type: "activities", data: "Local meetings, events, functions" }
+                ]
+            },
+
+            // Shopping & Services
+            {
+                name: "Heyford Park Free School",
+                type: "school",
+                emoji: "🏫",
+                color: "#2196F3",
+                position: { x: 550, y: 400 },
+                particles: 10,
+                radius: 65,
+                content: [
+                    { type: "info", data: "Free school education" },
+                    { type: "facilities", data: "Modern campus, specialist rooms" }
+                ]
+            },
+            {
+                name: "Local Shops Area",
+                type: "shopping",
+                emoji: "🛒",
+                color: "#F44336",
+                position: { x: 680, y: 420 },
+                particles: 6,
+                radius: 40,
+                content: [
+                    { type: "info", data: "Local convenience stores" },
+                    { type: "facilities", data: "Mini supermarket, services" }
+                ]
+            },
+
+            // Walking Routes & Trails
+            {
+                name: "Heritage Trail",
+                type: "recreation",
+                emoji: "🚶",
+                color: "#00BCD4",
+                position: { x: 200, y: 300 },
+                particles: 8,
+                radius: 60,
+                content: [
+                    { type: "info", data: "Historic walking route" },
+                    { type: "facilities", data: "RAF heritage, information boards" },
+                    { type: "length", data: "Approximately 2km circular route" }
+                ]
+            },
+            {
+                name: "Woodland Walk",
+                type: "park",
+                emoji: "🌲",
+                color: "#4CAF50",
+                position: { x: 150, y: 500 },
+                particles: 9,
+                radius: 75,
+                content: [
+                    { type: "info", data: "Natural woodland area" },
+                    { type: "facilities", data: "Nature trail, bird watching" },
+                    { type: "wildlife", data: "Local fauna and flora" }
+                ]
+            }
+        ];
+
+        // ==================== CORE FORGE SYSTEM ====================
+        
+        class Vector2D {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+            }
+
+            add(v) {
+                return new Vector2D(this.x + v.x, this.y + v.y);
+            }
+
+            subtract(v) {
+                return new Vector2D(this.x - v.x, this.y - v.y);
+            }
+
+            multiply(scalar) {
+                return new Vector2D(this.x * scalar, this.y * scalar);
+            }
+
+            length() {
+                return Math.sqrt(this.x * this.x + this.y * this.y);
+            }
+
+            normalize() {
+                const len = this.length();
+                return len > 0 ? new Vector2D(this.x / len, this.y / len) : new Vector2D(0, 0);
+            }
+
+            distanceTo(v) {
+                return this.subtract(v).length();
+            }
+        }
+
+        class SpatialParticle {
+            constructor(position, type = 'anchor') {
+                this.id = this.generateId();
+                this.position = position;
+                this.velocity = new Vector2D(0, 0);
+                this.type = type;
+                this.mass = 1.0;
+                this.charge = 0.5;
+                this.energy = 1.0;
+                this.radius = type === 'anchor' ? 6 : 5;
+                this.isDragging = false;
+            }
+
+            generateId() {
+                return 'particle_' + Math.random().toString(36).substr(2, 9);
+            }
+
+            applyForce(force) {
+                const acceleration = force.multiply(1 / this.mass);
+                this.velocity = this.velocity.add(acceleration);
+            }
+
+            update(damping = 0.95) {
+                if (!this.isDragging) {
+                    this.position = this.position.add(this.velocity);
+                    this.velocity = this.velocity.multiply(damping);
+                }
+                this.energy *= 0.9995;
+            }
+
+            draw(ctx, color, showEnergy = true) {
+                // Particle glow
+                const gradient = ctx.createRadialGradient(
+                    this.position.x, this.position.y, 0,
+                    this.position.x, this.position.y, this.radius * 3
+                );
+                gradient.addColorStop(0, color + 'ff');
+                gradient.addColorStop(0.5, color + '80');
+                gradient.addColorStop(1, color + '00');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(this.position.x, this.position.y, this.radius * 3, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Particle core
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        class ForgePod {
+            constructor(centerPosition, locationData) {
+                this.id = this.generateId();
+                this.name = locationData.name;
+                this.type = locationData.type;
+                this.emoji = locationData.emoji;
+                this.color = locationData.color;
+                this.content = locationData.content || [];
+                this.anchorParticles = [];
+                this.boundaryPoints = [];
+                this.energy = 100;
+                this.createdAt = Date.now();
+                this.influenceRadius = locationData.radius || 60;
+                this.boundaryThreshold = 0.3;
+                this.visible = true;
+                this.selected = false;
+                
+                this.createInitialParticles(centerPosition, locationData.particles || 8);
+            }
+
+            generateId() {
+                return 'pod_' + Math.random().toString(36).substr(2, 9);
+            }
+
+            createInitialParticles(center, count) {
+                const radius = this.influenceRadius * 0.6;
+                
+                for (let i = 0; i < count; i++) {
+                    const angle = (Math.PI * 2 * i) / count;
+                    const r = radius * (0.8 + Math.random() * 0.4);
+                    const x = center.x + Math.cos(angle) * r;
+                    const y = center.y + Math.sin(angle) * r;
+                    const particle = new SpatialParticle(new Vector2D(x, y), 'anchor');
+                    particle.charge = 0.6;
+                    this.anchorParticles.push(particle);
+                }
+            }
+
+            getCenter() {
+                if (this.anchorParticles.length === 0) {
+                    return new Vector2D(0, 0);
+                }
+                
+                let sumX = 0, sumY = 0;
+                for (const particle of this.anchorParticles) {
+                    sumX += particle.position.x;
+                    sumY += particle.position.y;
+                }
+                
+                return new Vector2D(
+                    sumX / this.anchorParticles.length,
+                    sumY / this.anchorParticles.length
+                );
+            }
+
+            calculateInfluenceField(testPoint) {
+                let totalInfluence = 0;
+                
+                for (const particle of this.anchorParticles) {
+                    const distance = particle.position.distanceTo(testPoint);
+                    if (distance < this.influenceRadius) {
+                        const influence = particle.charge * particle.energy * 
+                            Math.pow(1 - distance / this.influenceRadius, 2);
+                        totalInfluence += influence;
+                    }
+                }
+                
+                return totalInfluence;
+            }
+
+            calculateBoundary(resolution = 32) {
+                const center = this.getCenter();
+                const maxRadius = this.influenceRadius * 1.2;
+                const points = [];
+                
+                for (let i = 0; i < resolution; i++) {
+                    const angle = (Math.PI * 2 * i) / resolution;
+                    
+                    let found = false;
+                    for (let r = 10; r < maxRadius; r += 3) {
+                        const testPoint = new Vector2D(
+                            center.x + Math.cos(angle) * r,
+                            center.y + Math.sin(angle) * r
+                        );
+                        
+                        const influence = this.calculateInfluenceField(testPoint);
+                        
+                        if (influence >= this.boundaryThreshold) {
+                            found = true;
+                        } else if (found) {
+                            points.push(testPoint);
+                            break;
+                        }
+                    }
+                    
+                    if (!found) {
+                        points.push(new Vector2D(
+                            center.x + Math.cos(angle) * maxRadius,
+                            center.y + Math.sin(angle) * maxRadius
+                        ));
+                    }
+                }
+                
+                this.boundaryPoints = points;
+            }
+
+            applyParticleForces() {
+                for (let i = 0; i < this.anchorParticles.length; i++) {
+                    for (let j = i + 1; j < this.anchorParticles.length; j++) {
+                        const p1 = this.anchorParticles[i];
+                        const p2 = this.anchorParticles[j];
+                        
+                        const direction = p2.position.subtract(p1.position);
+                        const distance = direction.length();
+                        
+                        if (distance > 0 && distance < 80) {
+                            const force = direction.normalize().multiply(
+                                (p1.charge * p2.charge) / (distance * distance) * 0.3
+                            );
+                            
+                            p1.applyForce(force.multiply(-1));
+                            p2.applyForce(force);
+                        }
+                    }
+                }
+            }
+
+            update() {
+                this.applyParticleForces();
+                
+                for (const particle of this.anchorParticles) {
+                    particle.update(0.92);
+                }
+                
+                this.calculateBoundary();
+            }
+
+            drawInfluenceField(ctx, opacity = 0.2) {
+                const resolution = 15;
+                const center = this.getCenter();
+                const maxRadius = this.influenceRadius * 1.2;
+                
+                for (let x = center.x - maxRadius; x < center.x + maxRadius; x += resolution) {
+                    for (let y = center.y - maxRadius; y < center.y + maxRadius; y += resolution) {
+                        const testPoint = new Vector2D(x, y);
+                        const influence = this.calculateInfluenceField(testPoint);
+                        
+                        if (influence > 0) {
+                            const alpha = Math.min(influence * opacity, 1);
+                            ctx.fillStyle = this.color + Math.floor(alpha * 255).toString(16).padStart(2, '0');
+                            ctx.fillRect(x, y, resolution, resolution);
+                        }
+                    }
+                }
+            }
+
+            drawBoundary(ctx) {
+                if (this.boundaryPoints.length < 3) return;
+                
+                ctx.strokeStyle = this.selected ? '#00ff88' : this.color;
+                ctx.lineWidth = this.selected ? 3 : 2;
+                ctx.shadowBlur = 12;
+                ctx.shadowColor = this.selected ? '#00ff88' : this.color;
+                
+                ctx.beginPath();
+                ctx.moveTo(this.boundaryPoints[0].x, this.boundaryPoints[0].y);
+                
+                for (let i = 1; i < this.boundaryPoints.length; i++) {
+                    ctx.lineTo(this.boundaryPoints[i].x, this.boundaryPoints[i].y);
+                }
+                ctx.closePath();
+                ctx.stroke();
+                
+                ctx.shadowBlur = 0;
+                
+                // Fill
+                const center = this.getCenter();
+                const gradient = ctx.createRadialGradient(
+                    center.x, center.y, 0,
+                    center.x, center.y, this.influenceRadius
+                );
+                
+                const colorWithAlpha = this.color + '20';
+                gradient.addColorStop(0, colorWithAlpha);
+                gradient.addColorStop(1, this.color + '00');
+                
+                ctx.fillStyle = gradient;
+                ctx.fill();
+            }
+
+            draw(ctx, showField = false) {
+                if (!this.visible) return;
+                
+                if (showField) {
+                    this.drawInfluenceField(ctx);
+                }
+                
+                this.drawBoundary(ctx);
+                
+                for (const particle of this.anchorParticles) {
+                    particle.draw(ctx, this.color);
+                }
+                
+                // Draw label
+                const center = this.getCenter();
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 14px "Segoe UI"';
+                ctx.textAlign = 'center';
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = '#000';
+                ctx.fillText(this.emoji + ' ' + this.name, center.x, center.y - this.influenceRadius - 15);
+                ctx.shadowBlur = 0;
+            }
+
+            containsPoint(point) {
+                const center = this.getCenter();
+                return center.distanceTo(point) < this.influenceRadius;
+            }
+        }
+
+        // ==================== FORGE ENGINE ====================
+
+        class ForgeEngine {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.pods = [];
+                this.selectedPod = null;
+                this.mode = 'view';
+                this.isAnimating = true;
+                this.showField = false;
+                this.draggedParticle = null;
+                this.animationSpeed = 1.0;
+                
+                this.setupCanvas();
+                this.setupEventListeners();
+                this.animate();
+            }
+
+            setupCanvas() {
+                this.canvas.width = this.canvas.offsetWidth;
+                this.canvas.height = 700;
+            }
+
+            setupEventListeners() {
+                this.canvas.addEventListener('click', (e) => this.handleClick(e));
+                this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+                this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                this.canvas.addEventListener('mouseup', (e) => this.handleMouseUp(e));
+                
+                window.addEventListener('resize', () => this.setupCanvas());
+            }
+
+            getMousePos(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                return new Vector2D(
+                    e.clientX - rect.left,
+                    e.clientY - rect.top
+                );
+            }
+
+            handleClick(e) {
+                const pos = this.getMousePos(e);
+                
+                if (this.mode === 'view' || this.mode === 'create') {
+                    this.selectPodAt(pos);
+                }
+            }
+
+            handleMouseDown(e) {
+                if (this.mode !== 'edit') return;
+                
+                const pos = this.getMousePos(e);
+                
+                for (const pod of this.pods) {
+                    for (const particle of pod.anchorParticles) {
+                        if (particle.position.distanceTo(pos) < particle.radius * 2) {
+                            this.draggedParticle = particle;
+                            particle.isDragging = true;
+                            return;
+                        }
+                    }
+                }
+            }
+
+            handleMouseMove(e) {
+                if (!this.draggedParticle) return;
+                
+                const pos = this.getMousePos(e);
+                this.draggedParticle.position = pos;
+            }
+
+            handleMouseUp(e) {
+                if (this.draggedParticle) {
+                    this.draggedParticle.isDragging = false;
+                    this.draggedParticle = null;
+                }
+            }
+
+            createPodFromLocation(locationData) {
+                const position = new Vector2D(locationData.position.x, locationData.position.y);
+                const pod = new ForgePod(position, locationData);
+                this.pods.push(pod);
+                this.updateUI();
+                return pod;
+            }
+
+            selectPodAt(position) {
+                for (const pod of this.pods) {
+                    if (pod.containsPoint(position)) {
+                        this.selectPod(pod);
+                        return;
+                    }
+                }
+                this.selectPod(null);
+            }
+
+            selectPod(pod) {
+                if (this.selectedPod) {
+                    this.selectedPod.selected = false;
+                }
+                this.selectedPod = pod;
+                if (pod) {
+                    pod.selected = true;
+                }
+                this.updateUI();
+            }
+
+            deletePod(pod) {
+                const index = this.pods.indexOf(pod);
+                if (index > -1) {
+                    this.pods.splice(index, 1);
+                    if (this.selectedPod === pod) {
+                        this.selectedPod = null;
+                    }
+                    this.updateUI();
+                }
+            }
+
+            update() {
+                for (const pod of this.pods) {
+                    pod.influenceRadius = parseFloat(document.getElementById('influenceRadius').value);
+                    pod.boundaryThreshold = parseFloat(document.getElementById('boundaryThreshold').value);
+                    
+                    if (this.isAnimating) {
+                        pod.update();
+                    }
+                }
+            }
+
+            draw() {
+                this.ctx.fillStyle = '#000';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                for (const pod of this.pods) {
+                    pod.draw(this.ctx, this.showField);
+                }
+                
+                this.drawPodConnections();
+            }
+
+            drawPodConnections() {
+                let connectionCount = 0;
+                for (let i = 0; i < this.pods.length; i++) {
+                    for (let j = i + 1; j < this.pods.length; j++) {
+                        const pod1 = this.pods[i];
+                        const pod2 = this.pods[j];
+                        const center1 = pod1.getCenter();
+                        const center2 = pod2.getCenter();
+                        const distance = center1.distanceTo(center2);
+                        
+                        if (distance < 250) {
+                            connectionCount++;
+                            const opacity = 1 - (distance / 250);
+                            this.ctx.strokeStyle = `rgba(0, 255, 136, ${opacity * 0.3})`;
+                            this.ctx.lineWidth = 1;
+                            this.ctx.setLineDash([5, 5]);
+                            
+                            this.ctx.beginPath();
+                            this.ctx.moveTo(center1.x, center1.y);
+                            this.ctx.lineTo(center2.x, center2.y);
+                            this.ctx.stroke();
+                            
+                            this.ctx.setLineDash([]);
+                        }
+                    }
+                }
+                
+                document.getElementById('connections').textContent = connectionCount;
+            }
+
+            animate() {
+                this.update();
+                this.draw();
+                this.updateStats();
+                requestAnimationFrame(() => this.animate());
+            }
+
+            updateStats() {
+                const totalParticles = this.pods.reduce((sum, pod) => 
+                    sum + pod.anchorParticles.length, 0);
+                const totalEnergy = Math.round(this.pods.reduce((sum, pod) => sum + pod.energy, 0));
+                
+                document.getElementById('totalPods').textContent = this.pods.length;
+                document.getElementById('totalParticles').textContent = totalParticles;
+                document.getElementById('totalEnergy').textContent = totalEnergy;
+            }
+
+            updateUI() {
+                this.updatePodsList();
+                this.updateSelectedPodDetails();
+            }
+
+            updatePodsList() {
+                const podsList = document.getElementById('podsList');
+                
+                if (this.pods.length === 0) {
+                    podsList.innerHTML = '<p style="color: #aaa; text-align: center; padding: 20px;">Click "Load All Locations" to see Upper Heyford!</p>';
+                    return;
+                }
+                
+                podsList.innerHTML = '';
+                
+                const groupedPods = {};
+                for (const pod of this.pods) {
+                    if (!groupedPods[pod.type]) {
+                        groupedPods[pod.type] = [];
+                    }
+                    groupedPods[pod.type].push(pod);
+                }
+                
+                for (const type in groupedPods) {
+                    const typeHeader = document.createElement('div');
+                    typeHeader.style.cssText = 'color: #00f5ff; font-weight: 600; margin: 15px 0 8px 0; text-transform: capitalize;';
+                    typeHeader.textContent = type + 's';
+                    podsList.appendChild(typeHeader);
+                    
+                    for (const pod of groupedPods[type]) {
+                        const podItem = document.createElement('div');
+                        podItem.className = 'pod-item' + (pod === this.selectedPod ? ' selected' : '');
+                        podItem.onclick = () => this.selectPod(pod);
+                        
+                        podItem.innerHTML = `
+                            <div class="pod-name">
+                                <span class="pod-type">${pod.emoji}</span>
+                                <span>${pod.name}</span>
+                            </div>
+                            <div class="pod-info">
+                                ${pod.anchorParticles.length} particles • ${pod.type}
+                            </div>
+                            <div class="energy-bar">
+                                <div class="energy-fill" style="width: ${pod.energy}%"></div>
+                            </div>
+                        `;
+                        
+                        podsList.appendChild(podItem);
+                    }
+                }
+            }
+
+            updateSelectedPodDetails() {
+                const detailsDiv = document.getElementById('selectedPodDetails');
+                const contentDiv = document.getElementById('podDetailsContent');
+                
+                if (!this.selectedPod) {
+                    detailsDiv.style.display = 'none';
+                    return;
+                }
+                
+                detailsDiv.style.display = 'block';
+                
+                let html = `
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="font-size: 1.5em; margin-bottom: 10px;">${this.selectedPod.emoji} ${this.selectedPod.name}</div>
+                        <div style="color: #aaa; margin-bottom: 5px;">Type: ${this.selectedPod.type}</div>
+                        <div style="color: #aaa;">Particles: ${this.selectedPod.anchorParticles.length}</div>
+                    </div>
+                `;
+                
+                if (this.selectedPod.content && this.selectedPod.content.length > 0) {
+                    html += '<div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;">';
+                    html += '<div style="color: #00ff88; font-weight: 600; margin-bottom: 10px;">Information</div>';
+                    
+                    for (const item of this.selectedPod.content) {
+                        html += `<div style="color: #aaa; font-size: 0.9em; margin-bottom: 8px; line-height: 1.4;">
+                            <strong style="color: #00f5ff;">${item.type}:</strong> ${item.data}
+                        </div>`;
+                    }
+                    
+                    html += '</div>';
+                }
+                
+                contentDiv.innerHTML = html;
+            }
+        }
+
+        // ==================== UI FUNCTIONS ====================
+
+        let engine;
+
+        function init() {
+            const canvas = document.getElementById('forgeCanvas');
+            engine = new ForgeEngine(canvas);
+            
+            // Create location preset buttons
+            createLocationPresets();
+        }
+
+        function createLocationPresets() {
+            const presetsDiv = document.getElementById('locationPresets');
+            presetsDiv.innerHTML = '';
+            
+            const types = {
+                park: [],
+                school: [],
+                playground: [],
+                recreation: [],
+                community: [],
+                shopping: []
+            };
+            
+            UPPER_HEYFORD_LOCATIONS.forEach(loc => {
+                if (types[loc.type]) {
+                    types[loc.type].push(loc);
+                }
+            });
+            
+            for (const type in types) {
+                if (types[type].length > 0) {
+                    types[type].forEach(loc => {
+                        const btn = document.createElement('button');
+                        btn.className = 'preset-btn';
+                        btn.textContent = `${loc.emoji} ${loc.name}`;
+                        btn.onclick = () => {
+                            const existingPod = engine.pods.find(p => p.name === loc.name);
+                            if (!existingPod) {
+                                const pod = engine.createPodFromLocation(loc);
+                                engine.selectPod(pod);
+                            } else {
+                                engine.selectPod(existingPod);
+                            }
+                        };
+                        presetsDiv.appendChild(btn);
+                    });
+                }
+            }
+        }
+
+        function loadAllPods() {
+            engine.pods = [];
+            UPPER_HEYFORD_LOCATIONS.forEach(loc => {
+                engine.createPodFromLocation(loc);
+            });
+            engine.updateUI();
+        }
+
+        function setMode(mode) {
+            engine.mode = mode;
+            
+            const buttons = document.querySelectorAll('.mode-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function updateControl(input) {
+            const value = input.value;
+            const display = document.getElementById(input.id + '-value');
+            
+            if (input.id === 'influenceRadius') {
+                display.textContent = `${value}px`;
+            } else if (input.id === 'animationSpeed') {
+                display.textContent = `${value}x`;
+                engine.animationSpeed = parseFloat(value);
+            } else {
+                display.textContent = parseFloat(value).toFixed(2);
+            }
+        }
+
+        function toggleAnimation() {
+            engine.isAnimating = !engine.isAnimating;
+            event.target.textContent = engine.isAnimating ? '⏯️ Animate' : '▶️ Play';
+        }
+
+        function toggleField() {
+            engine.showField = !engine.showField;
+            event.target.textContent = engine.showField ? '🌊 Hide Field' : '🌊 Field View';
+        }
+
+        function resetView() {
+            engine.pods = [];
+            engine.selectedPod = null;
+            engine.updateUI();
+        }
+
+        function deletePod() {
+            if (engine.selectedPod && confirm('Delete this pod?')) {
+                engine.deletePod(engine.selectedPod);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            init();
+        });
+    </script>
+</body>
+</html>

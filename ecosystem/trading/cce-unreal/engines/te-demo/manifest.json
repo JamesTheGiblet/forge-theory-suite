@@ -1,0 +1,12 @@
+{
+  "id": "te-demo",
+  "name": "T.E Demo",
+  "type": "TACTICAL",
+  "ecosystem": "T.E",
+  "cycle": "1H",
+  "capitalKey": "usdc",
+  "author": "CCE Unreal",
+  "version": "1.0.0",
+  "description": "Demo tactical engine - mean reversion and grid trading strategy",
+  "dryRun": true
+}

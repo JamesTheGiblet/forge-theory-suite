@@ -1,0 +1,16 @@
+{
+  "id":          "se-pulse",
+  "name":        "S.E Pulse",
+  "version":     "1.0.0",
+  "type":        "STRATEGIC",
+  "ecosystem":   "S.E",
+  "cycle":       "4H",
+  "capitalKey":  "pulse",
+  "author":      "James Gilbert — Giblets Creations",
+  "description": "Short-term BTC mean reversion. Buys intraday dips of 2.5%+, exits on recovery or 24H timeout. Trades in any market condition.",
+  "requires": {
+    "exchange": false,
+    "notifier": true,
+    "config":   true
+  }
+}

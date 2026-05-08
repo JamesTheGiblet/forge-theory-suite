@@ -1,0 +1,41 @@
+The speed of light in a vacuum is exactly 299,792,458 metres per second
+Light takes approximately 8 minutes and 20 seconds to travel from the Sun to Earth
+The visible spectrum of light ranges from approximately 380nm to 700nm wavelength
+A photon has zero rest mass but carries momentum and energy
+Light behaves as both a wave and a particle depending on how it is observed
+Total internal reflection occurs when light hits a boundary at an angle greater than the critical angle
+
+The human brain contains approximately 86 billion neurons
+Neurons communicate via electrochemical signals called action potentials
+The brain consumes roughly 20% of the body's total energy despite being only 2% of its mass
+Sleep is essential for memory consolidation and synaptic pruning
+The hippocampus plays a central role in forming new long-term memories
+Neuroplasticity allows the brain to rewire itself in response to experience
+
+Water is the only natural substance found in all three states at Earth's surface temperatures
+A water molecule consists of two hydrogen atoms bonded to one oxygen atom
+Water has an unusually high specific heat capacity of 4182 J/kg·K
+Ice is less dense than liquid water which is why it floats
+Water is a universal solvent due to its polar molecular structure
+The surface tension of water allows insects like water striders to walk on it
+
+The Milky Way galaxy contains between 100 and 400 billion stars
+It takes the Solar System approximately 225 million years to orbit the galactic centre
+The nearest star to Earth beyond the Sun is Proxima Centauri at 4.24 light-years away
+Black holes are regions where gravity is so strong that not even light can escape
+A neutron star is so dense that a teaspoon of its material would weigh around a billion tonnes
+The observable universe is estimated to be 93 billion light-years in diameter
+
+DNA is a double helix structure composed of four nucleotide bases: adenine, thymine, cytosine and guanine
+The human genome contains approximately 3.2 billion base pairs
+Only about 1.5% of the human genome codes for proteins
+DNA replication occurs at a rate of roughly 1000 base pairs per second in humans
+Mutations in the BRCA1 and BRCA2 genes significantly increase the risk of breast and ovarian cancer
+CRISPR-Cas9 allows precise editing of DNA sequences using a guide RNA and a cutting enzyme
+
+The first programmable electronic computer, ENIAC, was completed in 1945
+Moore's Law observed that transistor counts on chips roughly double every two years
+The Internet originated from ARPANET, a US Defense Department project launched in 1969
+A qubit can exist in a superposition of 0 and 1 simultaneously unlike a classical bit
+The first commercial smartphone with a touchscreen was the Apple iPhone released in 2007
+Quantum entanglement allows two particles to be correlated regardless of the distance between them

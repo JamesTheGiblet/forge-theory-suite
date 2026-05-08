@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧬 ImperfectaForge - Perfection from Imperfection</title>
+    
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #9c27b0;
+            text-align: center;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px rgba(156, 39, 176, 0.5);
+        }
+
+        .subtitle {
+            color: #aaa;
+            text-align: center;
+            margin-top: 0;
+            font-size: 0.9rem;
+        }
+
+        p {
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        /* Simulation Display */
+        .simulation-display {
+            width: 100%;
+            background-color: #000;
+            border: 2px solid #444;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .display-label {
+            font-size: 0.8rem;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .display-string {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            line-height: 1.5;
+            word-wrap: break-word;
+            min-height: 50px;
+        }
+        
+        #target-string {
+            color: #4caf50;
+        }
+        
+        #best-string {
+            color: #f0f0f0;
+        }
+        
+        /* Highlight correct characters */
+        #best-string .correct {
+            color: #4caf50;
+            text-shadow: 0 0 5px rgba(76, 175, 80, 0.7);
+        }
+        
+        #best-string .incorrect {
+            color: #666;
+        }
+
+        /* Controls */
+        .controls {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        input[type="text"] {
+            font-size: 1rem;
+            padding: 10px;
+            width: 100%;
+            max-width: 400px;
+            background-color: #333;
+            border: 1px solid #555;
+            border-radius: 8px;
+            color: #fff;
+        }
+
+        button {
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 12px 24px;
+            background-color: #9c27b0;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        button:hover, button:focus {
+            background-color: #7b1fa2;
+            outline: 2px solid #ba68c8;
+            transform: translateY(-2px);
+        }
+        
+        /* Button variations */
+        button.secondary {
+            background-color: #1e90ff;
+        }
+        button.secondary:hover {
+            background-color: #0d7ae6;
+        }
+        
+        button.success {
+            background-color: #4caf50;
+        }
+        button.success:hover {
+            background-color: #3d8b40;
+        }
+        
+        button.warning {
+            background-color: #ff9800;
+        }
+        button.warning:hover {
+            background-color: #e68900;
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            width: 100%;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            margin: 10px;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #aaa;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #9c27b0;
+        }
+        
+        /* Customization Panel */
+        .customization {
+            width: 100%;
+            background-color: #252525;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .customization h3 {
+            margin-top: 0;
+            color: #9c27b0;
+            text-align: center;
+        }
+        
+        .customization-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .customization-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .customization-item label {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+        
+        .customization-item input, .customization-item select {
+            padding: 8px;
+            background-color: #333;
+            border: 1px solid #555;
+            border-radius: 4px;
+            color: #fff;
+        }
+        
+        .customization-item input[type="range"] {
+            padding: 0;
+        }
+        
+        /* Fitness Graph */
+        .fitness-graph {
+            width: 100%;
+            height: 150px;
+            background-color: #000;
+            border-radius: 8px;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .fitness-graph canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .fitness-graph-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+        
+        /* Control Buttons Row */
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .control-buttons button {
+            flex: 1;
+        }
+
+        @media (max-width: 600px) {
+            main {
+                padding: 10px;
+            }
+            .display-string {
+                font-size: 1rem;
+            }
+            .customization-grid {
+                grid-template-columns: 1fr;
+            }
+            .control-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>🧬 ImperfectaForge</h1>
+        <p class="subtitle">Perfection from Imperfection</p>
+        <p>
+            This simulation demonstrates a genetic algorithm. A "perfect" target phrase is
+            evolved from a "parent" of pure random nonsense.
+            <br>
+            Each generation, children are created with **random mutations (Imperfection)**.
+            Only the *fittest* child—the one closest to the target—is kept as the new parent **(Perfection)**.
+        </p>
+
+        <div class="simulation-display">
+            <div class="display-label">Target (Perfection)</div>
+            <div class="display-string" id="target-string"></div>
+            
+            <hr style="border-color: #333; margin: 20px 0;">
+            
+            <div class="display-label">Best Evolved String (from Imperfection)</div>
+            <div class="display-string" id="best-string"></div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-label">Generation</div>
+                <div class="stat-value" id="generation-value">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Fitness (Max)</div>
+                <div class="stat-value" id="fitness-value">0 / 0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Mutation Rate</div>
+                <div class="stat-value" id="mutation-rate-value">1%</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Speed</div>
+                <div class="stat-value" id="speed-value">0 gen/s</div>
+            </div>
+        </div>
+        
+        <div class="fitness-graph">
+            <div class="fitness-graph-label">Fitness Progress</div>
+            <canvas id="fitness-canvas"></canvas>
+        </div>
+
+        <div class="customization">
+            <h3>Customization</h3>
+            <div class="customization-grid">
+                <div class="customization-item">
+                    <label for="population-input">Population Size</label>
+                    <input type="number" id="population-input" min="10" max="1000" value="100">
+                </div>
+                <div class="customization-item">
+                    <label for="mutation-input">Mutation Rate (%)</label>
+                    <input type="range" id="mutation-input" min="0.1" max="10" step="0.1" value="1">
+                    <span id="mutation-display">1%</span>
+                </div>
+                <div class="customization-item">
+                    <label for="char-set-input">Character Set</label>
+                    <select id="char-set-input">
+                        <option value="alphanumeric">Alphanumeric + Basic Punctuation</option>
+                        <option value="letters">Letters Only</option>
+                        <option value="numbers">Numbers Only</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+                <div class="customization-item">
+                    <label for="custom-char-input">Custom Characters</label>
+                    <input type="text" id="custom-char-input" placeholder="Enter custom characters">
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <label for="target-input" style="display:none;">Target Phrase</label>
+            <input type="text" id="target-input" value="Out of simplicity, complexity is born." placeholder="Enter target phrase" title="Target phrase to evolve towards">
+            
+            <div class="control-buttons">
+                <button id="start-button">Start Evolution</button>
+                <button id="pause-button" class="warning" disabled>Pause</button>
+                <button id="step-button" class="secondary" disabled>Step</button>
+            </div>
+            
+            <button id="export-button" class="success">Export Result</button>
+        </div>
+        
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- 1. CONSTANTS & STATE ---
+            
+            // DOM Elements
+            const targetInput = document.getElementById('target-input');
+            const startButton = document.getElementById('start-button');
+            const pauseButton = document.getElementById('pause-button');
+            const stepButton = document.getElementById('step-button');
+            const exportButton = document.getElementById('export-button');
+            const targetStringEl = document.getElementById('target-string');
+            const bestStringEl = document.getElementById('best-string');
+            const generationValueEl = document.getElementById('generation-value');
+            const fitnessValueEl = document.getElementById('fitness-value');
+            const mutationRateValueEl = document.getElementById('mutation-rate-value');
+            const speedValueEl = document.getElementById('speed-value');
+            
+            // Customization elements
+            const populationInput = document.getElementById('population-input');
+            const mutationInput = document.getElementById('mutation-input');
+            const mutationDisplay = document.getElementById('mutation-display');
+            const charSetInput = document.getElementById('char-set-input');
+            const customCharInput = document.getElementById('custom-char-input');
+            
+            // Fitness graph
+            const fitnessCanvas = document.getElementById('fitness-canvas');
+            const fitnessCtx = fitnessCanvas.getContext('2d');
+            
+            // Character sets
+            const CHAR_SETS = {
+                alphanumeric: " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?0123456789",
+                letters: " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                numbers: "0123456789",
+                custom: ""
+            };
+
+            // State
+            let targetPhrase = "";
+            let targetFitness = 0;
+            let bestParent = "";
+            let bestFitness = 0;
+            let generation = 0;
+            let animationFrameId;
+            let isRunning = false;
+            let isPaused = false;
+            let lastTimestamp = 0;
+            let generationsPerSecond = 0;
+            let frameCount = 0;
+            let fitnessHistory = [];
+            const MAX_HISTORY = 200;
+
+            // --- 2. CORE LOGIC ---
+
+            /**
+             * Initializes or resets the simulation
+             */
+            function init() {
+                // Stop any existing loop
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                }
+
+                // Get new target
+                targetPhrase = targetInput.value;
+                if (targetPhrase.length === 0) {
+                    alert("Please enter a target phrase.");
+                    return;
+                }
+                
+                targetFitness = targetPhrase.length;
+                
+                // Reset state
+                generation = 0;
+                bestParent = generateRandomString(targetFitness);
+                bestFitness = calculateFitness(bestParent);
+                fitnessHistory = [];
+                
+                // Update UI
+                targetStringEl.textContent = targetPhrase;
+                updateMutationDisplay();
+                updateUI();
+                drawFitnessGraph();
+
+                // Reset buttons
+                startButton.textContent = "Start Evolution";
+                pauseButton.disabled = true;
+                stepButton.disabled = true;
+                isRunning = false;
+                isPaused = false;
+            }
+            
+            /**
+             * Starts the evolution process
+             */
+            function startEvolution() {
+                if (isRunning && !isPaused) return;
+                
+                isRunning = true;
+                isPaused = false;
+                startButton.textContent = "Restart Evolution";
+                pauseButton.disabled = false;
+                stepButton.disabled = false;
+                pauseButton.textContent = "Pause";
+                
+                lastTimestamp = performance.now();
+                frameCount = 0;
+                evolve();
+            }
+            
+            /**
+             * Pauses or resumes the evolution
+             */
+            function togglePause() {
+                isPaused = !isPaused;
+                pauseButton.textContent = isPaused ? "Resume" : "Pause";
+                
+                if (!isPaused) {
+                    lastTimestamp = performance.now();
+                    frameCount = 0;
+                    evolve();
+                }
+            }
+            
+            /**
+             * Advances the simulation by one generation
+             */
+            function stepEvolution() {
+                if (!isRunning) return;
+                
+                isPaused = true;
+                pauseButton.textContent = "Resume";
+                performOneGeneration();
+                updateUI();
+                drawFitnessGraph();
+            }
+            
+            /**
+             * The main evolution loop, runs once per frame
+             */
+            function evolve(timestamp) {
+                if (!isRunning || isPaused) return;
+                
+                // Calculate generations per second
+                frameCount++;
+                if (timestamp - lastTimestamp >= 1000) {
+                    generationsPerSecond = Math.round((frameCount * 1000) / (timestamp - lastTimestamp));
+                    lastTimestamp = timestamp;
+                    frameCount = 0;
+                }
+                
+                // Perform one generation of evolution
+                performOneGeneration();
+                
+                // Update UI
+                updateUI();
+                drawFitnessGraph();
+                
+                // Continue if not finished
+                if (bestFitness < targetFitness) {
+                    animationFrameId = requestAnimationFrame(evolve);
+                } else {
+                    isRunning = false;
+                    pauseButton.disabled = true;
+                    stepButton.disabled = true;
+                    startButton.textContent = "Perfection Reached! (Restart)";
+                }
+            }
+            
+            /**
+             * Performs one generation of evolution
+             */
+            function performOneGeneration() {
+                const populationSize = parseInt(populationInput.value) || 100;
+                let fittestChild = bestParent;
+                let fittestChildFitness = bestFitness;
+
+                // 1. Create a new population of children
+                for (let i = 0; i < populationSize; i++) {
+                    const child = mutate(bestParent);
+                    const childFitness = calculateFitness(child);
+
+                    // 2. Select the fittest child from this generation
+                    if (childFitness > fittestChildFitness) {
+                        fittestChild = child;
+                        fittestChildFitness = childFitness;
+                    }
+                }
+                
+                // 3. Evolve: The fittest child becomes the new parent
+                if (fittestChildFitness > bestFitness) {
+                    bestParent = fittestChild;
+                    bestFitness = fittestChildFitness;
+                }
+
+                // 4. Update generation and history
+                generation++;
+                fitnessHistory.push(bestFitness);
+                if (fitnessHistory.length > MAX_HISTORY) {
+                    fitnessHistory.shift();
+                }
+            }
+
+            /**
+             * Calculates fitness: how many characters match the target
+             * @param {string} str - The string to test
+             * @returns {number} - The fitness score
+             */
+            function calculateFitness(str) {
+                let score = 0;
+                for (let i = 0; i < str.length; i++) {
+                    if (str[i] === targetPhrase[i]) {
+                        score++;
+                    }
+                }
+                return score;
+            }
+
+            /**
+             * Creates a new string by mutating the parent
+             * @param {string} parent - The parent string
+             * @returns {string} - The mutated child string
+             */
+            function mutate(parent) {
+                const mutationRate = parseFloat(mutationInput.value) / 100;
+                let child = "";
+                for (let i = 0; i < parent.length; i++) {
+                    // Imperfection: Randomly decide to mutate this character
+                    if (Math.random() < mutationRate) {
+                        // Mutate to a new random char from the set
+                        child += getCharacterSet()[Math.floor(Math.random() * getCharacterSet().length)];
+                    } else {
+                        // Keep the parent's "gene"
+                        child += parent[i];
+                    }
+                }
+                return child;
+            }
+
+            /**
+             * Gets the current character set based on user selection
+             * @returns {string} - The character set to use
+             */
+            function getCharacterSet() {
+                const selectedSet = charSetInput.value;
+                if (selectedSet === 'custom') {
+                    return customCharInput.value || CHAR_SETS.alphanumeric;
+                }
+                return CHAR_SETS[selectedSet];
+            }
+
+            /**
+             * Generates a completely random string
+             * @param {number} length - Length of the string
+             * @returns {string} - A random string
+             */
+            function generateRandomString(length) {
+                const charSet = getCharacterSet();
+                let str = "";
+                for (let i = 0; i < length; i++) {
+                    str += charSet[Math.floor(Math.random() * charSet.length)];
+                }
+                return str;
+            }
+            
+            /**
+             * Export function
+             */
+            function exportData() {
+                // Format the data
+                const data = `
+🧬 ImperfectaForge - Evolution Export
+-------------------------------------
+Date: ${new Date().toUTCString()}
+
+Target (Perfection):
+${targetPhrase}
+
+Evolved (from Imperfection):
+${bestParent}
+
+Stats:
+Generation: ${generation}
+Fitness: ${bestFitness} / ${targetFitness}
+Mutation Rate: ${mutationInput.value}%
+Population Size: ${populationInput.value}
+Character Set: ${charSetInput.value}
+Speed: ${generationsPerSecond} gen/s
+
+Fitness History (last ${fitnessHistory.length} generations):
+${fitnessHistory.join(', ')}
+                `;
+                
+                // Create a blob
+                const blob = new Blob([data], { type: 'text/plain;charset=utf-8' });
+                
+                // Create a temporary link
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'imperfectaforge_export.txt';
+                
+                // Trigger the download
+                document.body.appendChild(a);
+                a.click();
+                
+                // Clean up
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+            
+            /**
+             * Draws the fitness progress graph
+             */
+            function drawFitnessGraph() {
+                const width = fitnessCanvas.width = fitnessCanvas.clientWidth;
+                const height = fitnessCanvas.height = fitnessCanvas.clientHeight;
+                
+                // Clear canvas
+                fitnessCtx.clearRect(0, 0, width, height);
+                
+                if (fitnessHistory.length < 2) return;
+                
+                // Draw grid
+                fitnessCtx.strokeStyle = '#333';
+                fitnessCtx.lineWidth = 1;
+                fitnessCtx.beginPath();
+                for (let i = 0; i <= 10; i++) {
+                    const y = height - (i * height / 10);
+                    fitnessCtx.moveTo(0, y);
+                    fitnessCtx.lineTo(width, y);
+                }
+                fitnessCtx.stroke();
+                
+                // Draw fitness line
+                fitnessCtx.strokeStyle = '#9c27b0';
+                fitnessCtx.lineWidth = 2;
+                fitnessCtx.beginPath();
+                
+                const maxFitness = Math.max(...fitnessHistory, targetFitness);
+                const xStep = width / (fitnessHistory.length - 1);
+                
+                fitnessHistory.forEach((fitness, index) => {
+                    const x = index * xStep;
+                    const y = height - (fitness / maxFitness) * height;
+                    
+                    if (index === 0) {
+                        fitnessCtx.moveTo(x, y);
+                    } else {
+                        fitnessCtx.lineTo(x, y);
+                    }
+                });
+                
+                fitnessCtx.stroke();
+                
+                // Draw target line
+                fitnessCtx.strokeStyle = '#4caf50';
+                fitnessCtx.lineWidth = 1;
+                fitnessCtx.setLineDash([5, 5]);
+                fitnessCtx.beginPath();
+                const targetY = height - (targetFitness / maxFitness) * height;
+                fitnessCtx.moveTo(0, targetY);
+                fitnessCtx.lineTo(width, targetY);
+                fitnessCtx.stroke();
+                fitnessCtx.setLineDash([]);
+            }
+
+            // --- 3. UI & EVENT LISTENERS ---
+
+            /**
+             * Updates the DOM with the current simulation state.
+             */
+            function updateUI() {
+                // Update stats
+                generationValueEl.textContent = generation;
+                fitnessValueEl.textContent = `${bestFitness} / ${targetFitness}`;
+                mutationRateValueEl.textContent = `${mutationInput.value}%`;
+                speedValueEl.textContent = `${generationsPerSecond} gen/s`;
+
+                // Update the "Best String" display with highlighting
+                let html = "";
+                for (let i = 0; i < bestParent.length; i++) {
+                    if (bestParent[i] === targetPhrase[i]) {
+                        html += `<span class="correct">${bestParent[i]}</span>`;
+                    } else {
+                        html += `<span class="incorrect">${bestParent[i]}</span>`;
+                    }
+                }
+                bestStringEl.innerHTML = html;
+            }
+            
+            /**
+             * Updates the mutation rate display
+             */
+            function updateMutationDisplay() {
+                mutationDisplay.textContent = `${mutationInput.value}%`;
+            }
+
+            // --- 4. INITIALIZATION ---
+            
+            // Set up event listeners
+            startButton.addEventListener('click', startEvolution);
+            pauseButton.addEventListener('click', togglePause);
+            stepButton.addEventListener('click', stepEvolution);
+            exportButton.addEventListener('click', exportData);
+            
+            // Customization event listeners
+            mutationInput.addEventListener('input', updateMutationDisplay);
+            charSetInput.addEventListener('change', function() {
+                customCharInput.disabled = this.value !== 'custom';
+            });
+            
+            // Initialize the character set dropdown
+            customCharInput.disabled = charSetInput.value !== 'custom';
+            
+            // Handle window resize for the graph
+            window.addEventListener('resize', drawFitnessGraph);
+            
+            // Run on load
+            init();
+
+        });
+    </script>
+</body>
+</html>

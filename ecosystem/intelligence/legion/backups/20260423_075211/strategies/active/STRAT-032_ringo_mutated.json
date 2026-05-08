@@ -1,0 +1,90 @@
+{
+  "scp_id": "STRAT-032",
+  "name": "RINGO",
+  "object_class": "Keter",
+  "asset": "BTC/USD",
+  "timeframe": "1h",
+  "active_regimes": [
+    "any"
+  ],
+  "containment_procedures": {
+    "max_drawdown_pct": 3,
+    "daily_loss_limit_pct": 1,
+    "active_hours_utc": [],
+    "on_breach": "move_to_contained",
+    "human_review_required": false,
+    "keter_votes_required": 0
+  },
+  "conditions": {
+    "entry": {
+      "all": [
+        {
+          "indicator": "rsi",
+          "period": 14,
+          "operator": "<",
+          "value": 30
+        },
+        {
+          "indicator": "volume",
+          "operator": ">",
+          "multiplier": 1.4,
+          "lookback": 20
+        }
+      ],
+      "any": []
+    },
+    "exit": {
+      "any": [
+        {
+          "indicator": "rsi",
+          "operator": ">",
+          "value": 64
+        },
+        {
+          "indicator": "trailing_stop",
+          "percent": 1.5
+        },
+        {
+          "indicator": "time_in_trade",
+          "max_hours": 48
+        }
+      ]
+    }
+  },
+  "risk": {
+    "position_size": "0.01",
+    "max_spread_percent": 0.1,
+    "leverage": 1
+  },
+  "backtest": {
+    "win_rate": 0.16666666666666666,
+    "sharpe": 6.263691999885265,
+    "max_drawdown": -1.0046315867431956,
+    "candles_tested": 6,
+    "fee_adjusted": true,
+    "last_validated": "2026-04-21"
+  },
+  "lineage": {
+    "parent": "STRAT-024",
+    "mutated_by": "Mutator_29479",
+    "generation": 9,
+    "mutation_date": "2026-04-21"
+  },
+  "addendum_log": [
+    {
+      "date": "2026-04-21T02:48:28.153Z",
+      "type": "VALIDATION",
+      "result": "Classified as Keter (Sharpe: -11.82, WR: 14.3%)"
+    },
+    {
+      "date": "2026-04-21T08:01:43.955Z",
+      "type": "VALIDATION",
+      "result": "Classified as Keter (Sharpe: 8.53, WR: 33.3%)"
+    },
+    {
+      "date": "2026-04-21T08:48:23.391Z",
+      "type": "VALIDATION",
+      "result": "Classified as Keter (Sharpe: 6.26, WR: 16.7%)"
+    }
+  ]
+}

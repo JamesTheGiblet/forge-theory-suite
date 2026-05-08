@@ -1,0 +1,21 @@
+{
+  "capital": 250,
+  "egyptFund": 0,
+  "totalProfit": 0,
+  "cyclesCompleted": 0,
+  "currentState": "WATCHING",
+  "entryPrice": null,
+  "entryDate": null,
+  "entryFG": null,
+  "lastUpdate": "2026-04-17T10:57:33.377Z",
+  "xrpPrice": 1.43815,
+  "fearGreed": 21,
+  "btcDominance": 55,
+  "high30d": 1.44612,
+  "dropFromHigh30d": -0.5511299200619612,
+  "rsi": 75.08428493746597,
+  "volumeSpike": 1,
+  "dataPoints": 25,
+  "nextCheck": "2026-04-17T16:57:33.376Z",
+  "dryRun": true
+}

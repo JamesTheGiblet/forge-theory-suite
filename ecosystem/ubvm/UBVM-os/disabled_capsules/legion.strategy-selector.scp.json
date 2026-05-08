@@ -1,0 +1,56 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "legion/strategy-selector",
+  "object_class": "Thaumiel",
+  "intent": "On validation.complete event, select the highest fitness strategy and write it as the current best for live deployment.",
+  "containment": {
+    "read_only": false,
+    "audit_log": true,
+    "kill_switch": true
+  },
+  "provenance": {
+    "author": "James / Giblets Creations",
+    "agent": "Claude Sonnet 4.6",
+    "created_at": "2026-05-05T12:00:00Z",
+    "version": "1.0.0",
+    "context": "Phase 1 trading OS \u2014 strategy selection capsule. Thaumiel because it governs which strategy runs live.",
+    "capture_mode": "conversation",
+    "lineage": []
+  },
+  "behaviours": [
+    {
+      "trigger": "on_event",
+      "event": "validation.complete",
+      "actions": [
+        {
+          "primitive": "log",
+          "params": {
+            "message": "StrategySelector: selecting best strategy by fitness score..."
+          }
+        },
+        {
+          "primitive": "select_best_strategy",
+          "params": {
+            "min_fitness": 0.0,
+            "min_trades": 0
+          }
+        },
+        {
+          "primitive": "emit_event",
+          "params": {
+            "event": "strategy.selected",
+            "payload": {
+              "source": "legion/strategy-selector"
+            }
+          }
+        },
+        {
+          "primitive": "log",
+          "params": {
+            "message": "StrategySelector: current_best.json written, strategy.selected emitted."
+          }
+        }
+      ]
+    }
+  ]
+}

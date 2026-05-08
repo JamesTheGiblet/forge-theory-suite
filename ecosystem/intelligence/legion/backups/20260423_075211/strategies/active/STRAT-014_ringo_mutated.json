@@ -1,0 +1,72 @@
+{
+  "scp_id": "STRAT-014",
+  "name": "RINGO",
+  "object_class": "Safe",
+  "asset": "BTC/USD",
+  "timeframe": "1h",
+  "active_regimes": ["any"],
+  "containment_procedures": {
+    "max_drawdown_pct": 4,
+    "daily_loss_limit_pct": 1,
+    "active_hours_utc": [],
+    "on_breach": "move_to_contained",
+    "human_review_required": false,
+    "keter_votes_required": 0
+  },
+  "conditions": {
+    "entry": {
+      "all": [
+        {
+          "indicator": "rsi",
+          "period": 14,
+          "operator": "<",
+          "value": 30
+        },
+        {
+          "indicator": "volume",
+          "operator": ">",
+          "multiplier": 1.4,
+          "lookback": 20
+        }
+      ],
+      "any": []
+    },
+    "exit": {
+      "any": [
+        {
+          "indicator": "rsi",
+          "operator": ">",
+          "value": 65
+        },
+        {
+          "indicator": "trailing_stop",
+          "percent": 1.5
+        },
+        {
+          "indicator": "time_in_trade",
+          "max_hours": 48
+        }
+      ]
+    }
+  },
+  "risk": {
+    "position_size": "0.01",
+    "max_spread_percent": 0.1,
+    "leverage": 1
+  },
+  "backtest": {
+    "win_rate": 0.613,
+    "sharpe": 1.8,
+    "max_drawdown": -0.041,
+    "candles_tested": 723,
+    "fee_adjusted": true,
+    "last_validated": "2026-04-20"
+  },
+  "lineage": {
+    "parent": "STRAT-013",
+    "mutated_by": "Mutator_21953",
+    "generation": 6,
+    "mutation_date": "2026-04-20"
+  },
+  "addendum_log": []
+}

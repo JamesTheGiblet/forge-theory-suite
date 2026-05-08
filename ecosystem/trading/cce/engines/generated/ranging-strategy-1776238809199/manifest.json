@@ -1,0 +1,14 @@
+{
+  "id": "ranging-strategy-1776238809199",
+  "name": "Ranging Accumulation Strategy",
+  "version": "1.0.0",
+  "type": "generated",
+  "timeframe": "1D",
+  "symbol": "BTC/USD",
+  "exchange": "kraken",
+  "capital": 1000,
+  "status": "dry_run",
+  "entry": "Price within range, place limit orders",
+  "exit": "+2% target / -0.8% stop / 7 day timeout",
+  "created": "2026-04-15T07:40:09.200Z"
+}

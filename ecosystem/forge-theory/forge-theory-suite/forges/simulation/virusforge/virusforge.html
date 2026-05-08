@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VirusForge - Evolutionary Pandemic Simulator</title>
+    <style>
+        :root {
+            --neon-green: #00ff88;
+            --neon-red: #ff0066;
+            --neon-blue: #00ccff;
+            --neon-purple: #aa00ff;
+            --dark-bg: #0a0a1a;
+            --panel-bg: rgba(20, 20, 40, 0.9);
+            --text: #e0f0ff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html { font-size: 16px; }
+        
+        body {
+            background: var(--dark-bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            padding: 0.5rem;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 1rem 0;
+            margin-bottom: 1rem;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .tagline {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+        
+        .tab {
+            padding: 0.75rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+        
+        .tab.active {
+            background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));
+            color: black;
+        }
+        
+        .evolution-mode-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .mode-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            color: var(--text);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        .mode-btn.active {
+            background: var(--neon-blue);
+            color: black;
+            font-weight: bold;
+            opacity: 1;
+            border-color: transparent;
+        }
+
+        .virus-panel {
+            background: var(--panel-bg);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+        
+        .virus-stats {
+            display: grid;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 0.5rem;
+        }
+        
+        .stat-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            margin: 0 1rem;
+            overflow: hidden;
+        }
+        
+        .stat-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .stat-slider {
+            flex: 1;
+            margin: 0 1rem;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+        
+        button {
+            padding: 1rem;
+            border: none;
+            border-radius: 0.75rem;
+            background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        button:active {
+            transform: scale(0.95);
+        }
+        
+        .pressure-controls {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .pressure-btn {
+            background: rgba(255,255,255,0.1);
+            color: var(--text);
+            border: 1px solid rgba(255,255,255,0.2);
+            opacity: 0.6;
+        }
+        
+        .global-response {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 0.5rem;
+            min-height: 60px;
+            text-align: center;
+        }
+
+        .pressure-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            margin: 0.25rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            background: var(--neon-red);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        
+        .metric-card {
+            background: rgba(0,0,0,0.3);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+        
+        .metric-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .outbreak-curve {
+            height: 120px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .strain-library {
+            display: grid;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .strain-item {
+            padding: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 0.5rem;
+            border-left: 3px solid var(--neon-green);
+        }
+        
+        .load-strain-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            background: var(--neon-purple);
+            color: white;
+            white-space: nowrap;
+        }
+
+        .world-map-container {
+            position: relative;
+            width: 700px;
+            height: 340px;
+            margin: 0 auto;
+            background: #101018;
+            border-radius: 12px;
+            box-shadow: 0 0 24px var(--neon-red);
+            overflow: hidden; /* Ensures canvas doesn't spill out */
+        }
+
+        @media (min-width: 768px) {
+            .controls {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .pressure-controls {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .metrics {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .contagion-visualizer {
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🦠 VirusForge</h1>
+            <div class="tagline">Evolve your pandemic - Watch natural selection in action</div>
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="evolve">Evolve</div>
+            <div class="tab" data-tab="library">Strain Library</div>
+            <div class="tab" data-tab="analysis">Analysis</div>
+        </div>
+
+        <div id="evolve" class="tab-content active">
+            <div class="virus-panel">
+                <div class="evolution-mode-toggle">
+                    <button class="mode-btn" id="manualModeBtn">Manual Control</button>
+                    <button class="mode-btn active" id="autoModeBtn">Automatic Evolution</button>
+                </div>
+                <div class="virus-stats">
+                    <div class="stat">
+                        <span>🦠 Transmission</span>
+                        <div class="stat-bar" id="transmissionDisplay">
+                            <div class="stat-fill" id="transmissionBar" style="width: 30%; background: var(--neon-green);"></div>
+                        </div>
+                        <input type="range" min="0.05" max="0.95" step="0.01" class="stat-slider" id="transmissionSlider" style="display:none;">
+                        <span id="transmissionValue">0.3</span>
+                    </div>
+                    
+                    <div class="stat">
+                        <span>💀 Severity</span>
+                        <div class="stat-bar" id="severityDisplay">
+                            <div class="stat-fill" id="severityBar" style="width: 10%; background: var(--neon-red);"></div>
+                        </div>
+                        <input type="range" min="0.05" max="0.95" step="0.01" class="stat-slider" id="severitySlider" style="display:none;">
+                        <span id="severityValue">0.1</span>
+                    </div>
+                    
+                    <div class="stat">
+                        <span>⏳ Incubation</span>
+                        <div class="stat-bar" id="incubationDisplay">
+                            <div class="stat-fill" id="incubationBar" style="width: 50%; background: var(--neon-blue);"></div>
+                        </div>
+                        <input type="range" min="0.05" max="0.95" step="0.01" class="stat-slider" id="incubationSlider" style="display:none;">
+                        <span id="incubationValue">0.5</span>
+                    </div>
+                    
+                    <div class="stat">
+                        <span>🛡️ Evasion</span>
+                        <div class="stat-bar" id="evasionDisplay">
+                            <div class="stat-fill" id="evasionBar" style="width: 20%; background: var(--neon-purple);"></div>
+                        </div>
+                        <input type="range" min="0.05" max="0.95" step="0.01" class="stat-slider" id="evasionSlider" style="display:none;">
+                        <span id="evasionValue">0.2</span>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="startBtn">▶️ Start Evolution</button>
+                    <button id="pauseBtn">⏸️ Pause</button>
+                    <button id="mutateBtn">⚡ Force Mutation</button>
+                    <button id="saveBtn">💾 Save Strain</button>
+                </div>
+
+                <div class="global-response">
+                    <div class="metric-label" style="margin-bottom: 0.5rem;">Global Response</div>
+                    <div id="activePressures">
+                        <!-- Active AI responses will appear here -->
+                    </div>
+                </div>
+                <div class="metrics">
+                    <div class="metric-card">
+                        <div class="metric-value" id="fitnessValue">0.45</div>
+                        <div class="metric-label">Fitness</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="generationValue">0</div>
+                        <div class="metric-label">Generation</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="deadValue">0</div>
+                        <div class="metric-label">Dead</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="worldPopulationValue">7.8B</div>
+                        <div class="metric-label">World Pop</div>
+                    </div>
+                </div>
+
+                <div class="game-status" id="gameStatus" style="text-align:center; margin-top:1rem; font-size: 1.2rem; font-weight: bold; display: none;">
+                    <div id="gameStatusText"></div>
+                    <div>
+                        <button id="restartBtn" style="padding: 0.5rem 1rem; font-size: 0.9rem; margin-top: 0.5rem; display:none;">Restart Game</button>
+                    </div>
+                </div>
+
+                <div class="outbreak-curve" id="outbreakCurve">
+                    <canvas id="outbreakCurveCanvas" width="700" height="120" style="width:100%;height:120px;background:rgba(0,0,0,0.3);border-radius:0.5rem;"></canvas>
+                </div>
+
+                <!-- NEW: Contagion Visualization & Tracking -->
+                <div class="contagion-visualizer">
+                    <h3 style="text-align:center;color:var(--neon-green);margin-bottom:0.5rem;">Contagion Visualizer</h3>
+                    <div style="display:flex;justify-content:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;">
+                        <button id="contagionStart" style="background:var(--neon-green);color:#222;">Start Contagion</button>
+                        <button id="contagionReset" style="background:var(--neon-blue);color:#222;">Reset</button>
+                        <button id="contagionTreat" style="background:var(--neon-purple);color:#fff;">Apply Treatment</button>
+                    </div>
+                    <div style="display:flex;justify-content:center;gap:2rem;margin-bottom:1rem;">
+                        <div>Healthy: <span id="contagionHealthy">0</span></div>
+                        <div>Infected: <span id="contagionInfected">0</span></div>
+                        <div>Treated: <span id="contagionTreated">0</span></div>
+                    </div>
+                    <canvas id="contagionCanvas" width="700" height="320" style="background:#181818;border-radius:12px;box-shadow:0 0 24px var(--neon-green);display:block;margin:0 auto;"></canvas>
+                </div>
+
+                <!-- NEW: World Map Virus Spread Visualization -->
+                <div style="margin:2rem 0;">
+                    <h3 style="text-align:center;color:var(--neon-red);margin-bottom:0.5rem;">Global Spread</h3>
+                    <div class="world-map-container">
+                        <img src="Simple_world_map.svg" alt="World Map" style="width: 100%; height: 100%; object-fit: contain; filter: brightness(0.8) contrast(1.2) drop-shadow(0 0 5px #00ccff);">
+                        <canvas id="worldMapCanvas" width="700" height="340" style="position: absolute; top: 0; left: 0;"></canvas>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+        <div id="library" class="tab-content">
+            <div class="virus-panel">
+                <h3>Saved Strains</h3>
+                <div class="strain-library" id="strainLibrary"></div>
+            </div>
+        </div>
+
+        <div id="analysis" class="tab-content">
+            <div class="virus-panel">
+                <h3>Evolution Analysis</h3>
+                <div class="metrics">
+                    <div class="metric-card">
+                        <div class="metric-value" id="totalMutations">0</div>
+                        <div class="metric-label">Total Mutations</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="adaptationRate">0%</div>
+                        <div class="metric-label">Adaptation Rate</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="selectionStrength">0.0</div>
+                        <div class="metric-label">Selection Strength</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="diversityIndex">0.0</div>
+                        <div class="metric-label">Diversity</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // VirusForge Core Engine
+        class VirusForge {
+            constructor() {
+                this.viruses = [];
+                this.currentVirus = null;
+                this.generation = 0;
+                this.isEvolving = false;
+                this.evolutionMode = 'auto'; // 'auto' or 'manual'
+                this.pressures = new Set();
+                this.outbreakData = [];
+                this.savedStrains = [];
+
+                // Game state
+                this.worldPopulation = 7.8e9;
+                this.healthy = this.worldPopulation - 1;
+                this.infected = 1;
+                this.dead = 0;
+                this.recovered = 0;
+                this.gameOver = false;
+
+                // AI Opponent
+                this.ai = new AIController(this);
+
+                // Analysis metrics
+                this.totalMutations = 0;
+                this.fitnessHistory = [];
+                this.adaptationRate = 0;
+                this.selectionStrength = 0;
+                this.manualUpdateInterval = null;
+                
+                this.loadStrainEventListeners();
+                this.init();
+            }
+            
+            init() {
+                // Create initial virus
+                this.currentVirus = this.createRandomVirus();
+                this.viruses = [this.currentVirus];
+                this.updateDisplay();
+                this.updateStrainLibrary();
+                this.setupEventListeners();
+            }
+
+            resetSimulationState() {
+                this.generation = 0;
+                this.worldPopulation = 7.8e9;
+                this.healthy = this.worldPopulation - 1;
+                this.infected = 1;
+                this.dead = 0;
+                this.recovered = 0;
+                this.gameOver = false;
+                this.pressures.clear();
+                this.outbreakData = [];
+                this.totalMutations = 0;
+                this.fitnessHistory = [];
+
+                // Hide game over screen
+                const statusDiv = document.getElementById('gameStatus');
+                statusDiv.style.display = 'none';
+
+                // Reset AI
+                this.ai = new AIController(this);
+            }
+            
+            createRandomVirus() {
+                return {
+                    id: Date.now(),
+                    transmission: 0.3 + Math.random() * 0.2,
+                    severity: 0.1 + Math.random() * 0.2,
+                    incubation: 0.4 + Math.random() * 0.3,
+                    evasion: 0.1 + Math.random() * 0.3,
+                    fitness: 0,
+                    age: 0,
+                    name: `Strain-${Math.floor(Math.random() * 1000)}`
+                };
+            }
+            
+            evolve() {
+                if (!this.isEvolving || this.evolutionMode !== 'auto') return;
+                if (this.gameOver) {
+                    this.isEvolving = false;
+                    this.updateDisplay();
+                    return;
+                }
+
+                this.ai.update();
+                
+                this.generation++;
+                
+                // Mutate current virus
+                this.currentVirus = this.mutateVirus(this.currentVirus);
+                
+                // Calculate fitness based on environmental pressures
+                this.currentVirus.fitness = this.calculateFitness(this.currentVirus);
+                
+                // Update population based on fitness
+                this.updateWorldPopulation();
+                
+                // Record outbreak data
+                this.recordOutbreakData();
+                
+                this.updateDisplay();
+                
+                // Continue evolution
+                setTimeout(() => this.evolve(), 500);
+            }
+            
+            mutateVirus(virus) {
+                const mutationRate = 0.1;
+                const newVirus = {...virus};
+                
+                let mutated = false;
+                // Mutate each trait with trade-offs
+                if (Math.random() < mutationRate) {
+                    newVirus.transmission = this.mutateTrait(virus.transmission);
+                    mutated = true;
+                    // Trade-off: higher transmission often increases severity
+                    if (Math.random() < 0.3) {
+                        newVirus.severity = this.mutateTrait(virus.severity);
+                    }
+                }
+                
+                if (Math.random() < mutationRate) {
+                    mutated = true;
+                    newVirus.incubation = this.mutateTrait(virus.incubation);
+                }
+                
+                if (Math.random() < mutationRate) {
+                    newVirus.evasion = this.mutateTrait(virus.evasion);
+                    mutated = true;
+                    // Trade-off: better evasion might reduce transmission
+                    if (Math.random() < 0.4) {
+                        newVirus.transmission *= 0.95;
+                    }
+                }
+                
+                newVirus.age++;
+                if (mutated) this.totalMutations++;
+                return newVirus;
+            }
+            
+            mutateTrait(value) {
+                const change = (Math.random() - 0.5) * 0.2;
+                return Math.max(0.05, Math.min(0.95, value + change));
+            }
+            
+            calculateFitness(virus) {
+                let fitness = virus.transmission * 0.4; // Transmission is most important
+                
+                // Severity penalty - too lethal reduces spread
+                fitness += (1 - virus.severity) * 0.2;
+                
+                // Incubation bonus - longer incubation helps avoid detection
+                fitness += virus.incubation * 0.2;
+                
+                // Environmental pressures
+                if (this.pressures.has('lockdown')) {
+                    fitness += virus.incubation * 0.3; // Longer incubation favored
+                    fitness -= virus.transmission * 0.2; // High transmission penalized
+                }
+                
+                if (this.pressures.has('vaccine')) {
+                    fitness += virus.evasion * 0.4; // Immune evasion crucial
+                }
+                
+                if (this.pressures.has('treatment')) {
+                    fitness += virus.evasion * 0.3; // Drug resistance important
+                }
+                
+                if (this.pressures.has('season')) {
+                    // Seasonal fluctuations
+                    fitness *= 0.8 + Math.random() * 0.4;
+                }
+                
+                return Math.max(0, Math.min(1, fitness));
+            }
+            
+            updateWorldPopulation() {
+                if (this.infected <= 0) {
+                    this.endGame(false); // Virus eradicated
+                    return;
+                }
+
+                const r0 = this.calculateR0();
+                const infectionRate = (r0 / 10) * (this.infected / this.worldPopulation);
+                const newInfections = Math.min(this.healthy, this.infected * infectionRate * (1 - this.currentVirus.evasion * 0.5));
+
+                const deathRate = (this.currentVirus.severity * this.currentVirus.severity) / 20;
+                const newDeaths = this.infected * deathRate;
+
+                const recoveryRate = (1 - this.currentVirus.severity) / 15;
+                const newRecoveries = this.infected * recoveryRate;
+
+                this.healthy = Math.max(0, this.healthy - newInfections);
+                this.infected += (newInfections - newDeaths - newRecoveries);
+                this.dead += newDeaths;
+                this.recovered += newRecoveries;
+
+                this.worldPopulation = this.healthy + this.infected + this.recovered;
+
+                if (this.healthy <= 0 && this.infected <= 0) {
+                    this.endGame(true); // Humanity wiped out
+                }
+            }
+            
+            manualUpdateLoop() {
+                if (this.gameOver) return;
+                this.updateWorldPopulation();
+                this.updateDisplay();
+            }
+
+            updateAnalysisMetrics() {
+                this.fitnessHistory.push(this.currentVirus.fitness);
+                if (this.fitnessHistory.length > 20) this.fitnessHistory.shift();
+                this.adaptationRate = this.fitnessHistory.length > 1 ? (this.fitnessHistory[this.fitnessHistory.length - 1] - this.fitnessHistory[0]) * 100 : 0;
+                this.selectionStrength = this.fitnessHistory.length > 1 ? this.currentVirus.fitness - (this.fitnessHistory.reduce((a, b) => a + b, 0) / this.fitnessHistory.length) : 0;
+            }
+
+            recordOutbreakData() {
+                this.outbreakData.push({
+                    generation: this.generation,
+                    population: this.infected,
+                    transmission: this.currentVirus.transmission,
+                    severity: this.currentVirus.severity,
+                    r0: this.calculateR0()
+                });
+                
+                this.updateAnalysisMetrics();
+
+                // Keep only last 50 data points
+                if (this.outbreakData.length > 50) {
+                    this.outbreakData.shift();
+                }
+            }
+            
+            calculateR0() {
+                // Basic R0 calculation based on virus traits
+                return this.currentVirus.transmission * 3 * 
+                       (1 + this.currentVirus.incubation * 0.5) *
+                       (1 - this.currentVirus.severity * 0.3) *
+                       (1 + this.currentVirus.evasion * 0.2);
+            }
+            
+            applyPressure(pressureType) {
+                this.pressures.add(pressureType);
+                setTimeout(() => { // Pressure wears off
+                    this.pressures.delete(pressureType);
+                }, 5000);
+            }
+            
+            saveCurrentStrain() {
+                const savedStrain = {
+                    ...this.currentVirus,
+                    savedAt: new Date().toLocaleTimeString(),
+                    generation: this.generation
+                };
+                this.savedStrains.push(savedStrain);
+                this.updateStrainLibrary();
+            }
+
+            loadStrain(strainId) {
+                const strainToLoad = this.savedStrains.find(s => s.id === strainId);
+                if (!strainToLoad) return;
+
+                // Reset the world state
+                this.resetSimulationState();
+
+                // Set the current virus to a copy of the loaded one
+                this.currentVirus = { ...strainToLoad };
+                // Reset age and give it a new ID for this new run
+                this.currentVirus.age = 0;
+                this.currentVirus.id = Date.now();
+                this.currentVirus.fitness = this.calculateFitness(this.currentVirus);
+                
+                this.updateDisplay();
+                alert(`Loaded strain: ${strainToLoad.name}. The world has been reset. You can now continue its evolution.`);
+                document.querySelector('.tab[data-tab="evolve"]').click(); // Switch to Evolve tab
+            }
+
+            endGame(playerWon) {
+                this.gameOver = true;
+                this.isEvolving = false;
+                const statusDiv = document.getElementById('gameStatus');
+                const statusText = document.getElementById('gameStatusText');
+                const restartBtn = document.getElementById('restartBtn');
+                statusDiv.style.display = 'block';
+                restartBtn.style.display = 'inline-block';
+
+                if (playerWon) {
+                    statusText.textContent = "Humanity has been eradicated. Victory!";
+                    statusText.style.color = 'var(--neon-red)';
+                } else {
+                    statusText.textContent = "Your virus has been eradicated. Humanity survives.";
+                    statusText.style.color = 'var(--neon-green)';
+                }
+            }
+            
+            updateDisplay() {
+                // Update virus stats
+                document.getElementById('transmissionValue').textContent = 
+                    this.currentVirus.transmission.toFixed(2);
+                document.getElementById('transmissionBar').style.width = 
+                    (this.currentVirus.transmission * 100) + '%';
+                
+                document.getElementById('severityValue').textContent = 
+                    this.currentVirus.severity.toFixed(2);
+                document.getElementById('severityBar').style.width = 
+                    (this.currentVirus.severity * 100) + '%';
+                
+                document.getElementById('incubationValue').textContent = 
+                    this.currentVirus.incubation.toFixed(2);
+                document.getElementById('incubationBar').style.width = 
+                    (this.currentVirus.incubation * 100) + '%';
+                
+                document.getElementById('evasionValue').textContent = 
+                    this.currentVirus.evasion.toFixed(2);
+                document.getElementById('evasionBar').style.width = 
+                    (this.currentVirus.evasion * 100) + '%';
+                
+                // Update slider positions if in manual mode
+                if (this.evolutionMode === 'manual') {
+                    document.getElementById('transmissionSlider').value = this.currentVirus.transmission;
+                    document.getElementById('severitySlider').value = this.currentVirus.severity;
+                    document.getElementById('incubationSlider').value = this.currentVirus.incubation;
+                    document.getElementById('evasionSlider').value = this.currentVirus.evasion;
+                }
+
+                // Update metrics
+                document.getElementById('fitnessValue').textContent = 
+                    this.currentVirus.fitness.toFixed(2);
+                document.getElementById('generationValue').textContent = this.generation;
+                document.getElementById('deadValue').textContent = this.formatPopulation(this.dead);
+                document.getElementById('worldPopulationValue').textContent = this.formatPopulation(this.worldPopulation);
+
+
+                // Update analysis metrics
+                const diversity = this.viruses.length > 1 ? (new Set(this.viruses.map(v => v.name)).size / this.viruses.length) : 0;
+                document.getElementById('totalMutations').textContent = this.totalMutations;
+                document.getElementById('adaptationRate').textContent = `${this.adaptationRate.toFixed(1)}%`;
+                document.getElementById('selectionStrength').textContent = this.selectionStrength.toFixed(2);
+                document.getElementById('diversityIndex').textContent = diversity.toFixed(2);
+
+                // Draw outbreak curve
+                this.drawOutbreakCurve();
+
+                // Update pressure button visuals
+                const pressuresContainer = document.getElementById('activePressures');
+                pressuresContainer.innerHTML = '';
+                if (this.pressures.size === 0) {
+                    pressuresContainer.innerHTML = `<span style="opacity:0.5;">No active responses.</span>`;
+                } else {
+                    this.pressures.forEach(p => {
+                        pressuresContainer.innerHTML += `<span class="pressure-tag">${p.charAt(0).toUpperCase() + p.slice(1)}</span>`;
+                    });
+                }
+            }
+            
+            formatPopulation(pop) {
+                if (pop < 1000) return Math.floor(pop);
+                if (pop < 1000000) return (pop / 1000).toFixed(1) + 'K';
+                return (pop / 1000000).toFixed(1) + 'M';
+            }
+            
+            drawOutbreakCurve() {
+                const canvas = document.getElementById('outbreakCurveCanvas');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                const width = canvas.width;
+                const height = canvas.height;
+
+                // Clear
+                ctx.clearRect(0, 0, width, height);
+
+                if (this.outbreakData.length < 2) return;
+
+                // Draw infected curve
+                ctx.beginPath();
+                ctx.strokeStyle = 'var(--neon-red)';
+                ctx.lineWidth = 1.5;
+
+                const maxPop = Math.max(...this.outbreakData.map(d => d.population));
+
+                this.outbreakData.forEach((point, index) => {
+                    const x = (index / (this.outbreakData.length - 1)) * width;
+                    const y = height - (point.population / maxPop) * height * 0.8;
+
+                    if (index === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+
+                ctx.stroke();
+
+                // Draw R0 curve
+                ctx.beginPath();
+                ctx.strokeStyle = 'var(--neon-blue)';
+                ctx.lineWidth = 1;
+                const maxR0 = Math.max(2, ...this.outbreakData.map(d => d.r0));
+
+                this.outbreakData.forEach((point, index) => {
+                    const x = (index / (this.outbreakData.length - 1)) * width;
+                    const y = height - (point.r0 / maxR0) * height * 0.8;
+
+                    if (index === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                ctx.stroke();
+
+            }
+            
+            updateStrainLibrary() {
+                const library = document.getElementById('strainLibrary');
+                if (this.savedStrains.length === 0) {
+                    library.innerHTML = `<div style="text-align:center;opacity:0.6;padding:1rem;">No strains saved yet.</div>`;
+                } else {
+                    library.innerHTML = this.savedStrains.map(strain => `
+                        <div class="strain-item">
+                            <div>
+                                <strong>${strain.name}</strong> (Gen: ${strain.generation})
+                                <div style="font-size:0.8rem; opacity:0.8;">
+                                    T:${strain.transmission.toFixed(2)} | S:${strain.severity.toFixed(2)} | I:${strain.incubation.toFixed(2)} | E:${strain.evasion.toFixed(2)}
+                                </div>
+                                <small>Saved: ${strain.savedAt}</small>
+                            </div>
+                            <button class="load-strain-btn" data-strain-id="${strain.id}">Load</button>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            loadStrainEventListeners() {
+                // Use event delegation on the library container
+                document.getElementById('strainLibrary').addEventListener('click', (e) => {
+                    if (e.target && e.target.classList.contains('load-strain-btn')) {
+                        const strainId = parseInt(e.target.dataset.strainId, 10);
+                        this.loadStrain(strainId);
+                    }
+                });
+            }
+            
+            setupEventListeners() {
+                document.getElementById('startBtn').addEventListener('click', () => {
+                    if (this.gameOver) return;
+                    this.isEvolving = true;
+                    this.evolve();
+                });
+                
+                document.getElementById('pauseBtn').addEventListener('click', () => {
+                    this.isEvolving = false;
+                });
+                
+                document.getElementById('mutateBtn').addEventListener('click', () => {
+                    if (!this.isEvolving) return;
+                    this.currentVirus = this.mutateVirus(this.currentVirus);
+                    this.updateDisplay();
+                });
+                
+                document.getElementById('saveBtn').addEventListener('click', () => {
+                    this.saveCurrentStrain();
+                });
+                
+                // Tab switching
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                        tab.classList.add('active');
+                        document.getElementById(tab.dataset.tab).classList.add('active');
+                    });
+                });
+
+                document.getElementById('restartBtn').addEventListener('click', () => {
+                    window.location.reload();
+                });
+
+                // Evolution mode switching
+                document.getElementById('manualModeBtn').addEventListener('click', () => this.setEvolutionMode('manual'));
+                document.getElementById('autoModeBtn').addEventListener('click', () => this.setEvolutionMode('auto'));
+
+                // Manual control sliders
+                const sliders = ['transmission', 'severity', 'incubation', 'evasion'];
+                sliders.forEach(trait => {
+                    document.getElementById(`${trait}Slider`).addEventListener('input', (e) => {
+                        if (this.evolutionMode === 'manual') {
+                            this.currentVirus[trait] = parseFloat(e.target.value);
+                            this.currentVirus.fitness = this.calculateFitness(this.currentVirus);
+                            this.updateDisplay();
+                        }
+                    });
+                });
+            }
+
+            setEvolutionMode(mode) {
+                if (this.evolutionMode === mode) return;
+                this.evolutionMode = mode;
+
+                const isManual = mode === 'manual';
+                this.isEvolving = !isManual;
+
+                // Toggle buttons
+                document.getElementById('manualModeBtn').classList.toggle('active', isManual);
+                document.getElementById('autoModeBtn').classList.toggle('active', !isManual);
+
+                // Toggle controls
+                document.getElementById('startBtn').disabled = isManual;
+                document.getElementById('pauseBtn').disabled = isManual;
+                document.getElementById('mutateBtn').disabled = isManual;
+
+                // Toggle stat displays and sliders
+                const traits = ['transmission', 'severity', 'incubation', 'evasion'];
+                traits.forEach(trait => {
+                    document.getElementById(`${trait}Display`).style.display = isManual ? 'none' : 'flex';
+                    document.getElementById(`${trait}Slider`).style.display = isManual ? 'block' : 'none';
+                });
+
+                if (isManual) {
+                    // Stop auto-evolution and start manual update loop
+                    if (this.manualUpdateInterval) clearInterval(this.manualUpdateInterval);
+                    this.manualUpdateInterval = setInterval(() => this.manualUpdateLoop(), 500);
+                    this.updateDisplay(); // To set initial slider values
+                } else {
+                    // Stop manual loop and potentially restart auto-evolution
+                    if (this.manualUpdateInterval) clearInterval(this.manualUpdateInterval);
+                    this.manualUpdateInterval = null;
+                    this.evolve(); // Resume auto-evolution if it was running
+                }
+            }
+        }
+
+        class AIController {
+            constructor(game) {
+                this.game = game;
+                this.researchProgress = 0;
+                this.lastActionTime = 0;
+            }
+
+            update() {
+                const virus = this.game.currentVirus;
+                const threatLevel = (virus.transmission + virus.severity * 2 + virus.evasion) / 4;
+
+                // AI reacts faster as threat increases
+                const reactionTime = Math.max(5000, 15000 - threatLevel * 10000);
+
+                if (Date.now() - this.lastActionTime > reactionTime) {
+                    this.takeAction(threatLevel, this.game.dead);
+                    this.lastActionTime = Date.now();
+                }
+            }
+
+            takeAction(threatLevel, deadCount) {
+                // Randomly trigger seasonal changes
+                if (Math.random() < 0.05) this.game.applyPressure('season');
+
+                if (threatLevel > 0.6 && Math.random() > 0.5) {
+                    this.game.applyPressure('lockdown');
+                } else if (threatLevel > 0.4) {
+                    const action = Math.random() > 0.5 ? 'vaccine' : 'treatment';
+                    this.game.applyPressure(action);
+                }
+            }
+
+        }
+
+        // Initialize the simulator when page loads
+        let virusForge;
+        document.addEventListener('DOMContentLoaded', () => {
+            virusForge = new VirusForge();
+        });
+
+        // --- Contagion Visualizer (Game Mode) ---
+        const CONTAGION_PEOPLE = 60;
+        const CONTAGION_RADIUS = 18;
+        const PERSON_RADIUS = 9;
+        const SPEED = 1.1;
+        let contagionPeople = [];
+        let contagionRunning = false;
+
+        function contagionColor(state) {
+            switch(state) {
+                case 'healthy': return '#00ff88'; // Healthy: Neon Green
+                case 'infected': return '#ffee00'; // Infected: Yellow
+                case 'severe': return '#ff0066'; // Severe: Neon Red
+                case 'recovering': return '#00ccff'; // Recovering/Immune: Neon Blue
+                case 'dead': return '#444'; // Dead: Dark Gray
+                default: return '#fff';
+            }
+        }
+
+        function getContagionChance() { return virusForge ? virusForge.currentVirus.transmission * 0.3 : 0.1; }
+        function getSeverityChance() { return virusForge ? virusForge.currentVirus.severity * 0.01 : 0.005; }
+        function getDeathChance() { return virusForge ? virusForge.currentVirus.severity * 0.005 : 0.001; }
+        function getRecoveryChance() { return virusForge ? (1 - virusForge.currentVirus.severity) * 0.004 : 0.002; }
+
+        function createContagionPerson() {
+            return {
+                x: Math.random() * 680 + 10,
+                y: Math.random() * 300 + 10,
+                vx: (Math.random() - 0.5) * SPEED,
+                vy: (Math.random() - 0.5) * SPEED,
+                state: 'healthy',
+                infectedTime: 0,
+                isMoving: true
+            };
+        }
+
+        function initContagionPeople() {
+            contagionPeople = [];
+            for (let i = 0; i < CONTAGION_PEOPLE; i++) {
+                contagionPeople.push(createContagionPerson());
+            }
+            // Infect a random person
+            contagionPeople[Math.floor(Math.random() * CONTAGION_PEOPLE)].state = 'infected';
+        }
+
+        function updateContagionStats() {
+            let healthy = 0, infected = 0, dead = 0;
+            for (const p of contagionPeople) {
+                if (p.state === 'healthy') healthy++;
+                else if (p.state === 'infected' || p.state === 'severe') infected++;
+                else if (p.state === 'dead') dead++;
+            }
+            document.getElementById('contagionHealthy').textContent = healthy;
+            document.getElementById('contagionInfected').textContent = infected;
+            document.getElementById('contagionTreated').textContent = dead; // Re-using element for 'dead' count
+        }
+
+        function drawContagion() {
+            const ctx = document.getElementById('contagionCanvas').getContext('2d');
+            ctx.clearRect(0, 0, 700, 320);
+            for (const p of contagionPeople) {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, PERSON_RADIUS, 0, 2 * Math.PI);
+                ctx.fillStyle = contagionColor(p.state);
+        ctx.shadowColor = (p.state === 'infected' || p.state === 'severe') ? contagionColor(p.state) : '#222';
+        ctx.shadowBlur = (p.state === 'infected' || p.state === 'severe') ? 14 : 3;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        function stepContagion() {
+            // Move people
+            for (const p of contagionPeople) {
+        if (!p.isMoving) continue;
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < 10 || p.x > 690) p.vx *= -1;
+                if (p.y < 10 || p.y > 310) p.vy *= -1;
+            }
+
+    // State changes
+            for (let i = 0; i < contagionPeople.length; i++) {
+                const a = contagionPeople[i];
+        
+        if (a.state === 'infected' || a.state === 'severe') {
+            a.infectedTime++;
+            // Spread to others
+            for (let j = 0; j < contagionPeople.length; j++) {
+                if (i === j) continue;
+                const b = contagionPeople[j];
+                if (b.state === 'healthy') {
+                    const dx = a.x - b.x, dy = a.y - b.y;
+                    if (Math.sqrt(dx*dx + dy*dy) < CONTAGION_RADIUS) {
+                        if (Math.random() < getContagionChance()) {
+                            b.state = 'infected';
+                        }
+                            }
+                        }
+                    }
+
+            // Progression to severe
+            if (a.state === 'infected' && Math.random() < getSeverityChance()) a.state = 'severe';
+
+            // Progression to death from severe
+            if (a.state === 'severe' && Math.random() < getDeathChance()) {
+                a.state = 'dead';
+                a.isMoving = false;
+            }
+
+            // Progression to recovery
+            if (Math.random() < getRecoveryChance()) a.state = 'recovering';
+        }
+    }
+
+            updateContagionStats();
+            drawContagion();
+            if (contagionRunning) requestAnimationFrame(stepContagion);
+        }
+
+        function startContagion() {
+            if (!contagionRunning) {
+                contagionRunning = true;
+                initContagionPeople();
+                updateContagionStats();
+                drawContagion();
+                requestAnimationFrame(stepContagion);
+            }
+        }
+
+        function resetContagion() {
+            contagionRunning = false;
+            initContagionPeople();
+            updateContagionStats();
+            drawContagion();
+        }
+
+function applyContagionTreatment() { /* Now handled by AI */ }
+
+        // Setup contagion controls
+        document.addEventListener('DOMContentLoaded', () => {
+            initContagionPeople();
+            updateContagionStats();
+            drawContagion();
+            document.getElementById('contagionStart').onclick = startContagion;
+            document.getElementById('contagionReset').onclick = resetContagion;
+            document.getElementById('contagionTreat').style.display = 'none'; // Hide this button
+        });
+
+        // --- Pixelated World Map Virus Spread ---
+        const pixelMap = [
+            // Bounding boxes for continents on the SVG (approximate)
+            {x: 80, y: 60, w: 180, h: 100, continent: 'North America'},
+            {x: 150, y: 170, w: 100, h: 130, continent: 'South America'},
+            {x: 330, y: 70, w: 80, h: 70, continent: 'Europe'},
+            {x: 310, y: 140, w: 120, h: 120, continent: 'Africa'},
+            {x: 400, y: 50, w: 250, h: 150, continent: 'Asia'},
+            {x: 550, y: 220, w: 100, h: 60, continent: 'Australia'}
+        ];
+
+        let continents = [
+            { name: 'North America', spread: 0.01 },
+            { name: 'South America', spread: 0.01 },
+            { name: 'Europe', spread: 0.01 },
+            { name: 'Africa', spread: 0.01 },
+            { name: 'Asia', spread: 0.01 },
+            { name: 'Australia', spread: 0.01 }
+        ];
+        let lastSpreadValues = continents.map(c => c.spread);
+
+        function drawWorldMapSpread() {
+            const canvas = document.getElementById('worldMapCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            // Clear only the overlay canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function drawNewInfectionDots() {
+            const canvas = document.getElementById('worldMapCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            // Set up glowing effect for infection dots
+            ctx.shadowColor = 'rgba(255, 40, 40, 0.8)';
+            ctx.shadowBlur = 7;
+
+            // Draw virus spread as red dots within the bounding boxes
+            pixelMap.forEach((region, index) => {
+                const cont = continents[index];
+                const lastSpread = lastSpreadValues[index];
+                if (!cont) return;
+
+                // Calculate only the NEW pixels to draw
+                const currentPixels = region.w * region.h * cont.spread * 0.1;
+                const lastPixels = region.w * region.h * lastSpread * 0.1;
+                const newPixels = Math.floor(currentPixels - lastPixels);
+
+                for (let i = 0; i < newPixels; i++) {
+                    const px = region.x + Math.floor(Math.random() * region.w);
+                    const py = region.y + Math.floor(Math.random() * region.h);
+                    ctx.beginPath();
+                    ctx.arc(px, py, 1.5, 0, 2 * Math.PI); // Draw small circles
+                    ctx.fillStyle = `rgba(255, 60, 60, ${0.6 + cont.spread * 0.4})`;
+                    ctx.fill();
+                }
+            });
+            ctx.shadowBlur = 0; // Reset shadow blur
+        }
+
+        function stepWorldMapSpread() {
+            // Animate spread (example: increase spread randomly)
+            if (!virusForge || !virusForge.isEvolving) {
+                // Only update spread if game is running
+                requestAnimationFrame(stepWorldMapSpread);
+                return;
+            }
+
+            continents.forEach((cont, index) => {
+                // Link spread to virus transmission
+                const spreadIncrease = virusForge.currentVirus.transmission * 0.001 * (Math.random() + 0.5);
+                cont.spread = Math.min(1, cont.spread + spreadIncrease);
+            });
+
+            drawNewInfectionDots();
+            lastSpreadValues = continents.map(c => c.spread); // Update the last known spread values
+
+            requestAnimationFrame(stepWorldMapSpread);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initial clear and setup
+            drawWorldMapSpread();
+            requestAnimationFrame(stepWorldMapSpread);
+        });
+
+        // Add this to the resetSimulationState function to clear the map on reset/load
+        VirusForge.prototype.resetSimulationState = function() {
+            // ... existing reset code ...
+            continents.forEach(c => c.spread = 0.01);
+            lastSpreadValues = continents.map(c => c.spread);
+            drawWorldMapSpread(); // This will clear the canvas
+        };
+    </script>
+</body>
+</html>

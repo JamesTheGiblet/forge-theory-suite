@@ -1,0 +1,52 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.giblets.axiom"
+4    android:versionCode="1"
+5    android:versionName="2.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="26"
+9        android:targetSdkVersion="34" />
+10
+11    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+11-->/data/data/com.termux/files/home/Axiom/app/src/main/AndroidManifest.xml:3:5-71
+11-->/data/data/com.termux/files/home/Axiom/app/src/main/AndroidManifest.xml:3:22-68
+12    <uses-permission
+12-->/data/data/com.termux/files/home/Axiom/app/src/main/AndroidManifest.xml:4:5-5:38
+13        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+13-->/data/data/com.termux/files/home/Axiom/app/src/main/AndroidManifest.xml:4:22-78
+14        android:maxSdkVersion="28" />
+14-->/data/data/com.termux/files/home/Axiom/app/src/main/AndroidManifest.xml:5:9-35
+15
+16    <application
+16-->/data/data/com.termux/files/home/Axiom/app/src/main/AndroidManifest.xml:6:5-19:19
+17        android:allowBackup="false"
+17-->/data/data/com.termux/files/home/Axiom/app/src/main/AndroidManifest.xml:7:9-36
+18        android:debuggable="true"
+19        android:extractNativeLibs="false"
+20        android:label="PhantomScope"
+20-->/data/data/com.termux/files/home/Axiom/app/src/main/AndroidManifest.xml:8:9-37
+21        android:theme="@android:style/Theme.NoTitleBar" >
+21-->/data/data/com.termux/files/home/Axiom/app/src/main/AndroidManifest.xml:9:9-56
+22        <activity
+22-->/data/data/com.termux/files/home/Axiom/app/src/main/AndroidManifest.xml:10:9-18:20
+23            android:name="com.giblets.axiom.MainActivity"
+23-->/data/data/com.termux/files/home/Axiom/app/src/main/AndroidManifest.xml:11:13-41
+24            android:exported="true"
+24-->/data/data/com.termux/files/home/Axiom/app/src/main/AndroidManifest.xml:12:13-36
+25            android:screenOrientation="portrait" >
+25-->/data/data/com.termux/files/home/Axiom/app/src/main/AndroidManifest.xml:13:13-49
+26            <intent-filter>
+26-->/data/data/com.termux/files/home/Axiom/app/src/main/AndroidManifest.xml:14:13-17:29
+27                <action android:name="android.intent.action.MAIN" />
+27-->/data/data/com.termux/files/home/Axiom/app/src/main/AndroidManifest.xml:15:17-69
+27-->/data/data/com.termux/files/home/Axiom/app/src/main/AndroidManifest.xml:15:25-66
+28
+29                <category android:name="android.intent.category.LAUNCHER" />
+29-->/data/data/com.termux/files/home/Axiom/app/src/main/AndroidManifest.xml:16:17-77
+29-->/data/data/com.termux/files/home/Axiom/app/src/main/AndroidManifest.xml:16:27-74
+30            </intent-filter>
+31        </activity>
+32    </application>
+33
+34</manifest>

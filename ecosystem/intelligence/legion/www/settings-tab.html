@@ -1,0 +1,39 @@
+<div class="card">
+  <div class="card-header">🎨 Display Settings</div>
+  <div class="card-body">
+    <div class="settings-group">
+      <div class="settings-label">🌓 Theme Mode</div>
+      <button class="btn btn-secondary" onclick="toggleTheme()" style="width:100%">Switch to <span id="themeToggleText2">Light</span> Mode</button>
+      <div class="settings-hint" style="font-size:11px;color:var(--text-secondary);margin-top:8px">Choose between dark and light theme for the dashboard</div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-label">🔄 Auto-Refresh Interval</div>
+      <select id="refreshInterval" class="settings-input" onchange="setRefreshInterval()">
+        <option value="10">10 seconds</option>
+        <option value="30" selected>30 seconds</option>
+        <option value="60">1 minute</option>
+        <option value="300">5 minutes</option>
+      </select>
+      <div class="settings-hint" style="font-size:11px;color:var(--text-secondary);margin-top:8px">How often the dashboard updates automatically</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">📊 Display Preferences</div>
+  <div class="card-body">
+    <div class="settings-group">
+      <div class="settings-label">ℹ️ Show Info Modals</div>
+      <label style="display:flex;align-items:center;gap:12px;margin-top:8px">
+        <input type="checkbox" id="showModals" checked onchange="toggleModals()"> Enable info popups on stat cards
+      </label>
+      <div class="settings-hint" style="font-size:11px;color:var(--text-secondary);margin-top:8px">When disabled, clicking stats won't show explanations</div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-label">🎨 Show Win Rate Colors</div>
+      <label style="display:flex;align-items:center;gap:12px;margin-top:8px">
+        <input type="checkbox" id="showColors" checked onchange="toggleColors()"> Color-code strategy win rates
+      </label>
+    </div>
+  </div>
+</div>

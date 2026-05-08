@@ -1,0 +1,16 @@
+{
+  "name": "adaptive-allocator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "allocator.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "sql.js": "^1.14.1"
+  }
+}

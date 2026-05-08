@@ -1,0 +1,69 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "buddai/forge-scp",
+  "object_class": "Thaumiel",
+  "intent": "Draft a new SCP capsule based on James's request, save it to a staging folder, and notify him for review.",
+  "containment": {
+    "read_only": false,
+    "audit_log": true,
+    "kill_switch": false
+  },
+  "interpretation": {
+    "this_is": "The SCP architectural capability for BuddAI. It allows drafting of UBVM JSON capsules.",
+    "template": "Requires scp_version, scp_id, object_class, intent, containment, and behaviours (trigger, actions with primitives)."
+  },
+  "behaviours": [
+    {
+      "trigger": "on_event",
+      "event": "buddai.request.build_scp",
+      "actions": [
+        {
+          "primitive": "render_template",
+          "params": {
+            "template": "James has requested a new SCP capsule. Request details: ${request}\n\nYou must draft it using the UBVM standard. Include scp_version ('0.1'), scp_id, object_class, intent, containment, and behaviours. Output ONLY the raw JSON text. Do not use markdown blocks.",
+            "variables": {
+              "request": "$context.event.payload.request"
+            }
+          }
+        },
+        {
+          "primitive": "llm_reason",
+          "params": {
+            "prompt": "$results.0.output",
+            "system_instruction": "You are BuddAI Architect. You write flawless UBVM SCP JSON. You output raw code only. No conversational text."
+          }
+        },
+        {
+          "primitive": "write_file",
+          "params": {
+            "path": "results/draft_capsule.json",
+            "content": "$results.1.thought"
+          }
+        },
+        {
+          "primitive": "render_template",
+          "params": {
+            "template": "I have successfully drafted a new SCP capsule for '${request}'. It is saved in 'results/draft_capsule.json' and awaits your review before deployment.",
+            "variables": {
+              "request": "$context.event.payload.request"
+            }
+          }
+        },
+        {
+          "primitive": "form_memory",
+          "params": {
+            "thought": "$results.3.output",
+            "tags": ["conversation", "buddai", "architect", "scp"]
+          }
+        },
+        {
+          "primitive": "map_to_cube",
+          "params": {
+            "dimensions": ["buddai", "architect", "scp", "draft"],
+            "core_memory_path": "results/draft_capsule.json"
+          }
+        }
+      ]
+    }
+  ]
+}

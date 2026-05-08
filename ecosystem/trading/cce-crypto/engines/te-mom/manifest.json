@@ -1,0 +1,16 @@
+{
+  "id":          "te-mom",
+  "name":        "T.E Momentum",
+  "version":     "1.0.0",
+  "type":        "TACTICAL",
+  "ecosystem":   "T.E",
+  "cycle":       "2H",
+  "capitalKey":  "mom",
+  "author":      "James Gilbert — Giblets Creations",
+  "description": "EMA crossover momentum engine. Trades BTC/ETH/SOL on Kraken using fast/slow EMA signals with RSI confirmation.",
+  "requires": {
+    "exchange": true,
+    "notifier": true,
+    "config":   true
+  }
+}

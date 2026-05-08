@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+python-multipart
+psutil
+aiofiles
+websockets
+qrcode
+pillow
+anthropic

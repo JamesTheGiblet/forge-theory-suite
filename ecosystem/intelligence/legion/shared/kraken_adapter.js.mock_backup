@@ -1,0 +1,66 @@
+const https = require('https');
+
+async function getCandles(asset = 'BTC/USD', limit = 100) {
+  const pair = 'XXBTZUSD';
+  return new Promise((resolve) => {
+    const url = `https://api.kraken.com/0/public/OHLC?pair=${pair}&interval=60`;
+    https.get(url, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(data);
+          const candlesData = json.result[pair];
+          if (candlesData && Array.isArray(candlesData)) {
+            const candles = candlesData.map(c => ({
+              timestamp: c[0],
+              open: parseFloat(c[1]),
+              high: parseFloat(c[2]),
+              low: parseFloat(c[3]),
+              close: parseFloat(c[4]),
+              volume: parseFloat(c[6])
+            }));
+            resolve(candles.slice(-limit));
+          } else {
+            resolve([]);
+          }
+        } catch(e) {
+          resolve([]);
+        }
+      });
+    }).on('error', () => resolve([]));
+  });
+}
+
+async function getCurrentPrice(pair = 'XXBTZUSD') {
+  return new Promise((resolve) => {
+    const url = `https://api.kraken.com/0/public/Ticker?pair=${pair}`;
+    https.get(url, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(data);
+          const price = parseFloat(json.result[pair].c[0]);
+          resolve(price);
+        } catch(e) {
+          resolve(null);
+        }
+      });
+    }).on('error', () => resolve(null));
+  });
+}
+
+async function getBalance(asset = 'BTC') {
+  // For now, return mock balances
+  // In production, this would call Kraken API with authentication
+  const mockBalances = {
+    BTC: 0.0018,
+    USD: 522,
+    ETH: 0,
+    SOL: 0
+  };
+  return mockBalances[asset] || 0;
+}
+
+module.exports = { getCandles, getCurrentPrice, getBalance };

@@ -1,0 +1,11 @@
+[user]
+	name = JamesTheGiblet
+	email = Gilbertjam@live.com
+[safe]
+	directory = /storage/emulated/0/Download/UBVM_phase0
+[credential "https://github.com"]
+	helper = 
+	helper = !/data/data/com.termux/files/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/data/data/com.termux/files/usr/bin/gh auth git-credential

@@ -1,0 +1,160 @@
+{
+  "scp_id": "LEGION-CORE-001",
+  "object_class": "Thaumiel",
+  "title": "LEGION Framework — SCP-Driven Agent System",
+  "version": "MK3.0",
+  "date": "2026-04-23",
+  
+  "agents": [
+    {
+      "scp_id": "AGENT-FORGE-001",
+      "name": "Forge Lord",
+      "object_class": "Thaumiel",
+      "containment_procedures": {
+        "max_concurrent_mutators": 3,
+        "heartbeat_interval_ms": 30000,
+        "strategy_dir": "./strategies/active"
+      },
+      "evolution": {
+        "mutates": ["strategies", "agents"],
+        "mutation_rate": 0.3,
+        "entropy_threshold": 0.7
+      }
+    },
+    {
+      "scp_id": "AGENT-REAPER-002",
+      "name": "Reaper",
+      "object_class": "Euclid",
+      "containment_procedures": {
+        "check_interval_ms": 15000,
+        "cpu_threshold_percent": 70,
+        "memory_threshold_mb": 500,
+        "kill_on_violation": true
+      },
+      "evolution": {
+        "learns_from_kills": true,
+        "adapts_thresholds": true
+      }
+    },
+    {
+      "scp_id": "AGENT-LIBRARIAN-003",
+      "name": "Librarian",
+      "object_class": "Safe",
+      "containment_procedures": {
+        "storage_path": "./data/librarian",
+        "index_refresh_interval": 3600000,
+        "max_records": 10000
+      },
+      "evolution": {
+        "indexes_new_strategies": true,
+        "detects_duplicates": true
+      }
+    },
+    {
+      "scp_id": "AGENT-CHAMELEON-004",
+      "name": "Chameleon LM",
+      "object_class": "Euclid",
+      "containment_procedures": {
+        "learning_rate": 0.3,
+        "memory_retention_days": 30,
+        "response_timeout_ms": 5000
+      },
+      "evolution": {
+        "adapts_to_user": true,
+        "improves_over_time": true
+      }
+    },
+    {
+      "scp_id": "AGENT-AUDITOR-005",
+      "name": "Auditor",
+      "object_class": "Safe",
+      "containment_procedures": {
+        "validation_timeout_ms": 10000,
+        "max_attempts": 3,
+        "test_dir": "./tests"
+      },
+      "evolution": {
+        "learns_from_failures": true
+      }
+    },
+    {
+      "scp_id": "AGENT-DIPLOMAT-006",
+      "name": "Diplomat",
+      "object_class": "Safe",
+      "containment_procedures": {
+        "channels": ["telegram", "sms", "email"],
+        "rate_limit_ms": 1000,
+        "max_retries": 3
+      },
+      "evolution": {
+        "optimizes_delivery": true
+      }
+    }
+  ],
+  
+  "behaviors": [
+    {
+      "scp_id": "BEHAVIOR-LEARNING-001",
+      "name": "Adaptive Learning",
+      "trigger": "user_interaction",
+      "action": "update_model",
+      "containment": "monitor_drift"
+    },
+    {
+      "scp_id": "BEHAVIOR-MUTATION-002",
+      "name": "Strategy Evolution",
+      "trigger": "time_interval",
+      "action": "mutate_strategies",
+      "containment": "entropy_check"
+    },
+    {
+      "scp_id": "BEHAVIOR-BREACH-003",
+      "name": "Breach Response",
+      "trigger": "entropy_threshold_exceeded",
+      "action": "activate_containment",
+      "containment": "emergency_protocols"
+    }
+  ],
+  
+  "rules": [
+    {
+      "scp_id": "RULE-001",
+      "name": "No Agent Left Behind",
+      "condition": "agent_crash",
+      "action": "auto_restart",
+      "max_attempts": 3
+    },
+    {
+      "scp_id": "RULE-002",
+      "name": "Entropy Containment",
+      "condition": "entropy > 0.7",
+      "action": "reset_entropy",
+      "notification": true
+    },
+    {
+      "scp_id": "RULE-003",
+      "name": "Memory Limit",
+      "condition": "memory > 500mb",
+      "action": "reaper_intervention",
+      "severity": "high"
+    }
+  ],
+  
+  "evolution": {
+    "enabled": true,
+    "mutation_rate": 0.2,
+    "fitness_function": "success_rate",
+    "generation_limit": 100,
+    "containment": {
+      "max_entropy": 0.7,
+      "rollback_on_breach": true
+    }
+  },
+  
+  "containment": {
+    "global_entropy": 0,
+    "threshold": 0.7,
+    "apollyon_events": [],
+    "mtf_teams": ["reaper", "auditor"]
+  }
+}

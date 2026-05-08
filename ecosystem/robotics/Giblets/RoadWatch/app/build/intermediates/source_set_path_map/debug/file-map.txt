@@ -1,0 +1,8 @@
+com.giblets.roadwatch.app-pngs-0 /data/data/com.termux/files/home/Giblets/RoadWatch/app/build/generated/res/pngs/debug
+com.giblets.roadwatch.app-resValues-1 /data/data/com.termux/files/home/Giblets/RoadWatch/app/build/generated/res/resValues/debug
+com.giblets.roadwatch.app-rs-2 /data/data/com.termux/files/home/Giblets/RoadWatch/app/build/generated/res/rs/debug
+com.giblets.roadwatch.app-packageDebugResources-3 /data/data/com.termux/files/home/Giblets/RoadWatch/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.giblets.roadwatch.app-packageDebugResources-4 /data/data/com.termux/files/home/Giblets/RoadWatch/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.giblets.roadwatch.app-merged_res-5 /data/data/com.termux/files/home/Giblets/RoadWatch/app/build/intermediates/merged_res/debug
+com.giblets.roadwatch.app-debug-6 /data/data/com.termux/files/home/Giblets/RoadWatch/app/src/debug/res
+com.giblets.roadwatch.app-main-7 /data/data/com.termux/files/home/Giblets/RoadWatch/app/src/main/res

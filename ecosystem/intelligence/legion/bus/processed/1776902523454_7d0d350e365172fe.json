@@ -1,0 +1,17 @@
+{
+  "msg_id": "7d0d350e365172fe",
+  "from": "router",
+  "to": "auditor",
+  "type": "AUDIT_REQUEST",
+  "payload": {
+    "strategyId": "STRAT-037",
+    "strategyPath": "/data/data/com.termux/files/home/legion/strategies/active/STRAT-037_ringo_mutated.json",
+    "parentId": "STRAT-037",
+    "mutation": {
+      "path": "risk.max_spread_percent",
+      "old": 0.1,
+      "new": 0.05
+    }
+  },
+  "timestamp": "2026-04-23T00:02:03.454Z"
+}

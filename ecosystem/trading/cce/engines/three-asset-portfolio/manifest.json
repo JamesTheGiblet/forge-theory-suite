@@ -1,0 +1,25 @@
+{
+  "id": "three-asset-portfolio",
+  "name": "Three Asset Portfolio",
+  "version": "1.0.0",
+  "author": "Giblets Creations",
+  "type": "strategy",
+  "timeframe": "1D",
+  "assets": ["LINK/USD", "BTC/USD", "LTC/USD"],
+  "allocations": {
+    "LINK/USD": 0.40,
+    "BTC/USD": 0.40,
+    "LTC/USD": 0.20
+  },
+  "capital": 250,
+  "status": "dry_run",
+  "description": "4 red days strategy on LINK, BTC, LTC — 83-86% forward win rate",
+  "entry": "4 consecutive red days",
+  "exit": "+1% target / -0.75% stop / 5 day timeout",
+  "created": "2026-04-09",
+  "forward_validation": {
+    "return": "+23.4%",
+    "win_rate": "84%",
+    "period": "20% unseen data"
+  }
+}

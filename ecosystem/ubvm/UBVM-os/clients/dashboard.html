@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuddAI — UBVM Command Interface</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0a0a0f;
+    --bg2:       #0f0f1a;
+    --bg3:       #141428;
+    --border:    #1e1e3a;
+    --accent:    #4f46e5;
+    --accent2:   #7c3aed;
+    --gold:      #f59e0b;
+    --green:     #10b981;
+    --red:       #ef4444;
+    --text:      #e2e8f0;
+    --text2:     #94a3b8;
+    --text3:     #475569;
+    --mono:      'Space Mono', monospace;
+    --sans:      'Syne', sans-serif;
+    --glow:      0 0 20px rgba(79,70,229,0.3);
+    --glow2:     0 0 40px rgba(79,70,229,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* ── HEADER ── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: var(--sans);
+    font-weight: 800;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.8); }
+  }
+
+  .header-meta {
+    font-size: 0.7rem;
+    color: var(--text3);
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  .header-meta span { color: var(--accent); }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+    overflow-x: auto;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    padding: 0.75rem 1.5rem;
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text3);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+
+  .tab:hover { color: var(--text2); }
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    text-shadow: 0 0 8px rgba(79,70,229,0.5);
+  }
+
+  /* ── LAYOUT ── */
+  .page { display: none; padding: 1.5rem 2rem; }
+  .page.active { display: block; }
+
+  /* ── BUDDAI CHAT ── */
+  .chat-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.5rem;
+    height: calc(100vh - 180px);
+  }
+
+  .chat-main {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .chat-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .chat-header-title {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .chat-messages::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .chat-messages::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .chat-messages::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+  }
+
+  .message {
+    display: flex;
+    gap: 0.75rem;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .message-avatar {
+    width: 28px; height: 28px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .message.james .message-avatar {
+    background: var(--accent);
+    color: white;
+  }
+
+  .message.buddai .message-avatar {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--accent);
+  }
+
+  .message-content {
+    flex: 1;
+  }
+
+  .message-sender {
+    font-size: 0.65rem;
+    color: var(--text3);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .message-text {
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--bg3);
+    padding: 0.75rem 1rem;
+    border-radius: 2px;
+    border-left: 2px solid var(--border);
+  }
+
+  .message.james .message-text {
+    border-left-color: var(--accent);
+    background: rgba(79,70,229,0.08);
+  }
+
+  .message.buddai .message-text {
+    border-left-color: var(--green);
+  }
+
+  .message.thinking .message-text {
+    color: var(--text3);
+    font-style: italic;
+  }
+
+  .message.thinking .message-text::after {
+    content: '▊';
+    animation: blink 1s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .chat-input-area {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .chat-input {
+    flex: 1;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    padding: 0.6rem 0.875rem;
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .chat-input:focus { border-color: var(--accent); }
+  .chat-input::placeholder { color: var(--text3); }
+
+  .send-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.25rem;
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .send-btn:hover { background: var(--accent2); }
+  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ── MEMORY PANEL ── */
+  .memory-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+  }
+
+  .panel-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .panel-title {
+    padding: 0.625rem 1rem;
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .panel-body { padding: 0.875rem 1rem; }
+
+  .memory-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem;
+    line-height: 1.5;
+    color: var(--text2);
+  }
+
+  .memory-item:last-child { border-bottom: none; }
+
+  .memory-tier {
+    font-size: 0.6rem;
+    padding: 1px 5px;
+    border-radius: 2px;
+    margin-right: 0.4rem;
+    font-weight: 700;
+  }
+
+  .tier-lt { background: rgba(245,158,11,0.15); color: var(--gold); }
+  .tier-st { background: rgba(79,70,229,0.15); color: var(--accent); }
+
+  .memory-weight {
+    font-size: 0.6rem;
+    color: var(--text3);
+    float: right;
+  }
+
+  /* ── STAT GRID ── */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem 1.25rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-value {
+    font-family: var(--sans);
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .stat-sub {
+    font-size: 0.65rem;
+    color: var(--text3);
+    margin-top: 0.25rem;
+  }
+
+  .stat-value.green { color: var(--green); }
+  .stat-value.gold  { color: var(--gold); }
+  .stat-value.red   { color: var(--red); }
+
+  /* ── EVENT FEED ── */
+  .event-feed {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .event-item {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem;
+    transition: background 0.15s;
+  }
+
+  .event-item:hover { background: var(--bg3); }
+  .event-item:last-child { border-bottom: none; }
+
+  .event-ts { color: var(--text3); white-space: nowrap; flex-shrink: 0; }
+  .event-name { color: var(--accent); font-weight: 700; flex-shrink: 0; }
+  .event-source { color: var(--text3); }
+
+  /* ── SIGNAL TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+  }
+
+  th {
+    text-align: left;
+    padding: 0.5rem 0.875rem;
+    color: var(--text3);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+  }
+
+  td {
+    padding: 0.5rem 0.875rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg3); }
+
+  .signal-buy  { color: var(--green); font-weight: 700; }
+  .signal-sell { color: var(--red); font-weight: 700; }
+
+  /* ── CUBE ── */
+  .cube-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .cube-node {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem;
+    font-size: 0.72rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cube-node::after {
+    content: attr(data-type);
+    position: absolute;
+    top: 0.5rem; right: 0.75rem;
+    font-size: 0.6rem;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .cube-node-id { color: var(--accent); margin-bottom: 0.25rem; }
+  .cube-node-name { font-weight: 700; margin-bottom: 0.5rem; }
+  .cube-node-ts { color: var(--text3); }
+
+  /* ── LOG ── */
+  .log-feed {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem;
+    font-size: 0.72rem;
+    line-height: 1.8;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .log-feed::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .log-feed::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .log-feed::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+
+  .log-line { color: var(--text2); }
+  .log-line.info  { color: var(--text); }
+  .log-line.error { color: var(--red); }
+  .log-line.cron  { color: var(--gold); }
+  .log-line.event { color: var(--accent); }
+
+  /* ── ACTIONS ── */
+  .action-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .action-btn {
+    padding: 0.5rem 1rem;
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 1px solid;
+    transition: all 0.2s;
+    letter-spacing: 0.03em;
+  }
+
+  .action-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  .action-btn.primary:hover { background: var(--accent2); border-color: var(--accent2); }
+
+  .action-btn.danger {
+    background: transparent;
+    border-color: var(--red);
+    color: var(--red);
+  }
+
+  .action-btn.danger:hover { background: rgba(239,68,68,0.1); }
+
+  .action-btn.secondary {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text2);
+  }
+
+  .action-btn.secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── MISC ── */
+  .section-title {
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-size: 0.65rem;
+    font-weight: 700;
+  }
+
+  .badge-green { background: rgba(16,185,129,0.15); color: var(--green); }
+  .badge-gold  { background: rgba(245,158,11,0.15); color: var(--gold); }
+  .badge-red   { background: rgba(239,68,68,0.15); color: var(--red); }
+  .badge-blue  { background: rgba(79,70,229,0.15); color: var(--accent); }
+
+  .empty { color: var(--text3); font-size: 0.75rem; padding: 1rem; text-align: center; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(10,10,15,0.85); backdrop-filter: blur(4px);
+    display: none; justify-content: center; align-items: center; z-index: 2000; opacity: 0; transition: opacity 0.2s;
+  }
+  .modal-overlay.active { display: flex; opacity: 1; }
+  .modal-content {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 4px;
+    width: 90%; max-width: 600px; max-height: 80vh; display: flex; flex-direction: column;
+    box-shadow: var(--glow2);
+  }
+  .modal-header {
+    padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;
+  }
+  .modal-title { font-family: var(--mono); font-weight: 700; font-size: 0.8rem; color: var(--accent); }
+  .modal-close { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 1.5rem; line-height: 1; }
+  .modal-close:hover { color: var(--text); }
+  .modal-body {
+    padding: 1.5rem; overflow-y: auto; font-size: 0.75rem; line-height: 1.6; color: var(--text); white-space: pre-wrap; font-family: var(--mono);
+  }
+  .clickable { cursor: pointer; transition: border-color 0.2s; }
+  .clickable:hover { border-color: var(--accent); }
+
+  /* ── VISUALIZER ── */
+  .cube-visualizer {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    height: 280px;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .cube-visualizer canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    header { padding: 0.875rem 1rem; }
+    .page { padding: 1rem; }
+    .chat-layout { grid-template-columns: 1fr; height: auto; }
+    .memory-panel { display: none; }
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    BuddAI
+  </div>
+  <div class="header-meta">
+    <div>UBVM v2.0 — Forge Theory</div>
+    <div>Node: <span id="node-id">loading...</span> &nbsp;|&nbsp; <span id="header-ts">—</span></div>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('buddai')">BuddAI</button>
+  <button class="tab" onclick="showTab('legion')">LEGION</button>
+  <button class="tab" onclick="showTab('cube')">Data Cube</button>
+  <button class="tab" onclick="showTab('system')">UBVM</button>
+</div>
+
+<!-- ── BUDDAI TAB ── -->
+<div id="tab-buddai" class="page active">
+  <div class="chat-layout">
+    <div class="chat-main">
+      <div class="chat-header">
+        <div class="logo-dot"></div>
+        <div class="chat-header-title">BuddAI — Cognitive Extension</div>
+      </div>
+      <div class="chat-messages" id="chat-messages">
+        <div class="message buddai">
+          <div class="message-avatar">B</div>
+          <div class="message-content">
+            <div class="message-sender">BuddAI</div>
+            <div class="message-text">I am online. James built me to think alongside him — not for him. Ask me anything about the system, the strategy, or what's on your mind.</div>
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <input class="chat-input" id="chat-input" type="text" placeholder="Talk to BuddAI..." autocomplete="off">
+        <button class="send-btn" id="send-btn" onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+    <div class="memory-panel">
+      <div class="panel-card">
+        <div class="panel-title">
+          Memory
+          <span id="mem-counts" class="mem-counts-text">—</span>
+        </div>
+        <div class="panel-body" id="memory-list">
+          <div class="empty">Loading memories...</div>
+        </div>
+      </div>
+      <div class="panel-card">
+        <div class="panel-title">Latest Signal</div>
+        <div class="panel-body" id="latest-signal">
+          <div class="empty">No signals yet</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── LEGION TAB ── -->
+<div id="tab-legion" class="page">
+  <div class="stat-grid" id="legion-stats">
+    <div class="stat-card">
+      <div class="stat-label">BTC/USDT Live</div>
+      <div class="stat-value" id="stat-btc-price">—</div>
+      <div class="stat-sub" id="stat-btc-change">24h change</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Strategy</div>
+      <div class="stat-value stat-strategy-value" id="stat-strategy">—</div>
+      <div class="stat-sub" id="stat-fitness">fitness: —</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Return</div>
+      <div class="stat-value green" id="stat-return">—</div>
+      <div class="stat-sub">out-of-sample</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Win Rate</div>
+      <div class="stat-value gold" id="stat-winrate">—</div>
+      <div class="stat-sub" id="stat-trades">— trades</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Sharpe Ratio</div>
+      <div class="stat-value" id="stat-sharpe">—</div>
+      <div class="stat-sub">annualised</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Max Drawdown</div>
+      <div class="stat-value red" id="stat-drawdown">—</div>
+      <div class="stat-sub">worst peak→trough</div>
+    </div>
+  </div>
+
+  <div class="action-grid">
+    <button class="action-btn primary" onclick="emitEvent('strategy.generated', {source:'dashboard'})">▶ Run Pipeline</button>
+    <button class="action-btn secondary" onclick="emitEvent('market.data.updated', {source:'dashboard'})">↻ Fetch Market Data</button>
+    <button class="action-btn danger" onclick="emitEvent('trading.stop', {reason:'manual', source:'dashboard'})">■ Stop Trading</button>
+  </div>
+
+  <div class="section-title">Dry Run Signals</div>
+  <div class="panel-card panel-card-bottom-margin">
+    <table>
+      <thead><tr><th>Time</th><th>Strategy</th><th>Signal</th><th>Price</th></tr></thead>
+      <tbody id="signals-table"><tr><td colspan="4" class="empty">No signals</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Anchors</div>
+  <div class="cube-grid" id="anchors-grid">
+    <div class="empty">No anchors</div>
+  </div>
+</div>
+
+<!-- ── DATA CUBE TAB ── -->
+<div id="tab-cube" class="page">
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Nodes Mapped</div>
+      <div class="stat-value gold" id="cube-node-count">—</div>
+      <div class="stat-sub">in Data Cube</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Last Event</div>
+      <div class="stat-value cube-last-event-text" id="cube-last-event">—</div>
+    </div>
+  </div>
+
+  <div class="section-title">Semantic Visualizer</div>
+  <div class="cube-visualizer">
+    <canvas id="cube-canvas"></canvas>
+  </div>
+
+  <div class="section-title">Recent Nodes</div>
+  <div class="cube-grid" id="cube-nodes-grid">
+    <div class="empty">Loading...</div>
+  </div>
+
+  <div class="section-title event-bus-title">Event Bus</div>
+  <div class="event-feed" id="event-feed">
+    <div class="empty">No events</div>
+  </div>
+</div>
+
+<!-- ── SYSTEM TAB ── -->
+<div id="tab-system" class="page">
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Capsules Loaded</div>
+      <div class="stat-value gold" id="sys-capsules">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">System Time</div>
+      <div class="stat-value sys-time-value" id="sys-time">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Memories</div>
+      <div class="stat-value" id="sys-memories">—</div>
+      <div class="stat-sub">short + long term</div>
+    </div>
+  </div>
+
+  <div class="action-grid">
+    <button class="action-btn primary" onclick="emitForgeEvent('scp')">🛠️ Draft SCP Capsule</button>
+    <button class="action-btn secondary" onclick="emitForgeEvent('python')">🐍 Draft Python Primitive</button>
+  </div>
+
+  <div class="section-title">System Log</div>
+  <div class="log-feed" id="system-log">Loading...</div>
+</div>
+
+<!-- ── MODAL ── -->
+<div class="modal-overlay" id="node-modal" onclick="if(event.target===this) closeModal()">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Node Details</div>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="modal-body">Loading...</div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let statusData = null;
+let currentNodes = [];
+let activeForgeThinkId = null;
+let lastMemoryTs = '';
+
+// ── TABS ──
+function showTab(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── CHAT ──
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const msg   = input.value.trim();
+  if (!msg) return;
+
+  input.value = '';
+  document.getElementById('send-btn').disabled = true;
+
+  appendMessage('james', 'James', msg);
+  const thinkId = appendMessage('buddai', 'BuddAI', '...', 'thinking');
+
+  try {
+    const r = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({message: msg})
+    });
+    const data = await r.json();
+    updateMessage(thinkId, data.response || data.error || 'No response');
+  } catch(e) {
+    updateMessage(thinkId, 'Connection error: ' + e.message);
+  }
+
+  document.getElementById('send-btn').disabled = false;
+  input.focus();
+}
+
+function appendMessage(type, sender, text, cls='') {
+  const container = document.getElementById('chat-messages');
+  const id        = 'msg-' + Date.now();
+  const div       = document.createElement('div');
+  div.className   = 'message ' + type + (cls ? ' ' + cls : '');
+  div.id          = id;
+  div.innerHTML   = `
+    <div class="message-avatar">${sender[0]}</div>
+    <div class="message-content">
+      <div class="message-sender">${sender}</div>
+      <div class="message-text">${escHtml(text)}</div>
+    </div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return id;
+}
+
+function updateMessage(id, text) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('thinking');
+  el.querySelector('.message-text').textContent = text;
+  document.getElementById('chat-messages').scrollTop = 99999;
+}
+
+document.getElementById('chat-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') sendMessage();
+});
+
+// ── API STATUS ──
+async function loadStatus() {
+  try {
+    const r    = await fetch('/api/status');
+    statusData = await r.json();
+    renderAll(statusData);
+  } catch(e) {
+    console.error('Status fetch failed', e);
+  }
+}
+
+function renderAll(d) {
+  if (!d) return;
+
+  // Header
+  document.getElementById('header-ts').textContent = d.ts ? d.ts.replace('T',' ').replace('Z','') : '—';
+
+  // Strategy stats
+  const s = d.strategy || {};
+  const m = s.metrics || {};
+  setText('stat-strategy', s.strategy_name || '—');
+  setText('stat-fitness',  s.fitness_score != null ? 'fitness: ' + s.fitness_score.toFixed(4) : 'fitness: —');
+  setText('stat-return',   m.total_return  != null ? (m.total_return * 100).toFixed(2) + '%' : '—');
+  setText('stat-winrate',  m.win_rate      != null ? (m.win_rate * 100).toFixed(0) + '%' : '—');
+  setText('stat-trades',   (m.total_trades || 0) + ' trades (' + (m.winning_trades || 0) + ' wins)');
+  setText('stat-sharpe',   m.sharpe_ratio  != null ? m.sharpe_ratio.toFixed(2) : '—');
+  setText('stat-drawdown', m.max_drawdown  != null ? (m.max_drawdown * 100).toFixed(2) + '%' : '—');
+
+  // Market Data
+  const mkt = d.market || {};
+  if (mkt.lastPrice) {
+    const price = parseFloat(mkt.lastPrice);
+    const change = parseFloat(mkt.priceChangePercent);
+    setText('stat-btc-price', '$' + price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+    const changeEl = document.getElementById('stat-btc-change');
+    changeEl.textContent = (change > 0 ? '+' : '') + change.toFixed(2) + '% 24h';
+    changeEl.style.color = change > 0 ? 'var(--green)' : 'var(--red)';
+  }
+
+  // Memories
+  const mems = d.memories || [];
+  const lt   = mems.filter(m => m.tier === 'long_term').length;
+  const st   = mems.filter(m => m.tier !== 'long_term').length;
+  setText('mem-counts', `${lt} LT · ${st} ST`);
+
+  const memList = document.getElementById('memory-list');
+  if (mems.length === 0) {
+    memList.innerHTML = '<div class="empty">No memories yet</div>';
+  } else {
+    memList.innerHTML = mems.slice(0,8).map(m => `
+      <div class="memory-item">
+        <span class="memory-tier ${m.tier === 'long_term' ? 'tier-lt' : 'tier-st'}">
+          ${m.tier === 'long_term' ? 'LT' : 'ST'}
+        </span>
+        <span class="memory-weight">${(m.weight||0).toFixed(2)}</span>
+        ${escHtml((m.thought || '').slice(0, 100))}${m.thought && m.thought.length > 100 ? '…' : ''}
+      </div>`).join('');
+  }
+
+  // Latest signal
+  const sigs = d.signals || [];
+  const latestSig = document.getElementById('latest-signal');
+  if (sigs.length > 0) {
+    const sig = sigs[sigs.length - 1];
+    latestSig.innerHTML = `
+      <div style="font-size:0.8rem;">
+        <span class="signal-${sig.signal}">${(sig.signal||'').toUpperCase()}</span>
+        <span style="color:var(--text2); margin-left:0.5rem;">$${parseFloat(sig.price||0).toLocaleString()}</span>
+      </div>
+      <div style="font-size:0.65rem; color:var(--text3); margin-top:0.25rem;">${sig.strategy || ''} · ${sig.ts ? sig.ts.slice(0,16).replace('T',' ') : ''}</div>`;
+  } else {
+    latestSig.innerHTML = '<div class="empty">No signals yet</div>';
+  }
+
+  // Signals table
+  const tbody = document.getElementById('signals-table');
+  if (sigs.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="empty">No signals</td></tr>';
+  } else {
+    tbody.innerHTML = sigs.slice(-10).reverse().map(s => `
+      <tr>
+        <td style="color:var(--text3)">${s.ts ? s.ts.slice(0,16).replace('T',' ') : ''}</td>
+        <td>${escHtml(s.strategy||'')}</td>
+        <td class="signal-${s.signal}">${(s.signal||'').toUpperCase()}</td>
+        <td>$${parseFloat(s.price||0).toLocaleString()}</td>
+      </tr>`).join('');
+  }
+
+  // Anchors
+  const anchors = d.anchors || [];
+  const anchGrid = document.getElementById('anchors-grid');
+  if (anchors.length === 0) {
+    anchGrid.innerHTML = '<div class="empty">No anchors yet</div>';
+  } else {
+    anchGrid.innerHTML = anchors.map(a => `
+      <div class="cube-node" data-type="anchor">
+        <div class="cube-node-id">${escHtml(a.strategy_name||'unknown')}</div>
+        <div style="margin:0.25rem 0;"><span class="badge badge-gold">fitness ${(a.fitness_score||0).toFixed(4)}</span></div>
+        <div class="cube-node-ts">${a.anchored_at ? a.anchored_at.slice(0,16).replace('T',' ') : ''}</div>
+        ${a.anchor_note ? `<div style="color:var(--text3);margin-top:0.25rem;font-size:0.65rem;">${escHtml(a.anchor_note)}</div>` : ''}
+      </div>`).join('');
+  }
+
+  // Cube nodes
+  const nodes = d.cube_nodes || [];
+  currentNodes = nodes;
+  setText('cube-node-count', nodes.length);
+  updateVisualizer(nodes);
+  const cubeGrid = document.getElementById('cube-nodes-grid');
+  if (nodes.length === 0) {
+    cubeGrid.innerHTML = '<div class="empty">No nodes mapped yet</div>';
+  } else {
+    cubeGrid.innerHTML = nodes.slice(-12).reverse().map(n => `
+      <div class="cube-node clickable" data-type="${escHtml(n.type||'node')}" onclick="openNodeModal('${n.id}')">
+        <div class="cube-node-id">${escHtml((n.id||'').slice(0,12))}</div>
+        <div class="cube-node-name">${escHtml(n.name||n.type||'—')}</div>
+        <div class="cube-node-ts">${n.timestamp ? n.timestamp.slice(0,16).replace('T',' ') : ''}</div>
+      </div>`).join('');
+  }
+
+  const lastNode = nodes[nodes.length - 1];
+  setText('cube-last-event', lastNode ? escHtml(lastNode.name||'—') : '—');
+
+  // Events
+  const events = d.events || [];
+  const feed   = document.getElementById('event-feed');
+  if (events.length === 0) {
+    feed.innerHTML = '<div class="empty">No events</div>';
+  } else {
+    feed.innerHTML = events.slice(-20).reverse().map(e => `
+      <div class="event-item">
+        <span class="event-ts">${e.ts ? e.ts.slice(0,16).replace('T',' ') : ''}</span>
+        <span class="event-name">${escHtml(e.event||'')}</span>
+        <span class="event-source">${escHtml(e.source||'')}</span>
+      </div>`).join('');
+  }
+
+  // System
+  setText('sys-capsules', d.capsule_count || '—');
+  setText('sys-time', d.ts ? d.ts.replace('T',' ').replace('Z','') : '—');
+  setText('sys-memories', mems.length);
+
+  const logEl = document.getElementById('system-log');
+  const logs  = d.logs || [];
+  if (logs.length === 0) {
+    logEl.innerHTML = '<div class="empty">No logs</div>';
+  } else {
+    logEl.innerHTML = logs.map(line => {
+      let cls = 'log-line';
+      if (line.includes('[CRON]'))  cls += ' cron';
+      if (line.includes('[EVENT]')) cls += ' event';
+      if (line.includes('[ERROR]')) cls += ' error';
+      if (line.includes('[INFO]'))  cls += ' info';
+      return `<div class="${cls}">${escHtml(line)}</div>`;
+    }).join('');
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  // Check Forge Status
+  const currentMemoryTs = (mems.length > 0) ? mems[0].ts : '';
+  if (activeForgeThinkId) {
+    if (currentMemoryTs !== lastMemoryTs && mems[0] && mems[0].thought.includes('successfully drafted')) {
+      updateMessage(activeForgeThinkId, mems[0].thought);
+      activeForgeThinkId = null;
+    } else {
+      // Check logs for errors if it hasn't completed yet
+      for (let i = Math.max(0, logs.length - 15); i < logs.length; i++) {
+        if (logs[i].includes('[ERROR]') && (logs[i].includes('forge') || logs[i].includes('llm_reason'))) {
+          updateMessage(activeForgeThinkId, 'Drafting failed. System error detected:\n' + logs[i]);
+          activeForgeThinkId = null;
+          break;
+        }
+      }
+    }
+  }
+  lastMemoryTs = currentMemoryTs;
+}
+
+// ── ACTIONS ──
+async function emitEvent(eventName, payload) {
+  try {
+    await fetch('/api/emit', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({event: eventName, payload})
+    });
+    setTimeout(loadStatus, 1000);
+  } catch(e) {
+    console.error('Emit failed', e);
+  }
+}
+
+async function emitForgeEvent(type) {
+  const req = prompt(`Describe the ${type === 'scp' ? 'SCP capsule' : 'Python primitive'} you want BuddAI to build:`);
+  if (!req) return;
+  
+  showTab('buddai');
+  appendMessage('james', 'James', `[Forge Request] Build a ${type}: ${req}`);
+  activeForgeThinkId = appendMessage('buddai', 'BuddAI', `Drafting ${type === 'scp' ? 'capsule' : 'primitive'}... (This process takes 30-60 seconds)`, 'thinking');
+  
+  try {
+    await fetch('/api/emit', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        event: `buddai.request.build_${type}`, 
+        payload: {source:'dashboard', request: req}
+      })
+    });
+    setTimeout(loadStatus, 1000);
+  } catch(e) {
+    updateMessage(activeForgeThinkId, 'Connection error: ' + e.message);
+    activeForgeThinkId = null;
+  }
+}
+
+// ── MODAL UTILS ──
+function openNodeModal(id) {
+  const node = currentNodes.find(n => n.id === id);
+  if (!node) return;
+  document.getElementById('modal-title').textContent = 'Node: ' + id;
+  
+  let bodyText = `Tags: [${node.dimensions ? node.dimensions.join(', ') : ''}]\n`;
+  bodyText += `Mapped: ${node.mapped_at || '—'}\n\n`;
+  
+  if (node.file_data) {
+    try {
+      const parsed = JSON.parse(node.file_data);
+      bodyText += JSON.stringify(parsed, null, 2);
+    } catch(e) {
+      bodyText += node.file_data;
+    }
+  } else {
+    bodyText += node.content || 'No detailed content available.';
+  }
+  
+  document.getElementById('modal-body').textContent = bodyText;
+  document.getElementById('node-modal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('node-modal').classList.remove('active');
+}
+
+// ── CUBE VISUALIZER ──
+const canvas = document.getElementById('cube-canvas');
+const ctx = canvas.getContext('2d');
+let visualNodes = [];
+
+function resizeCanvas() {
+  if (!canvas.parentElement) return;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+}
+window.addEventListener('resize', resizeCanvas);
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => setTimeout(resizeCanvas, 50)));
+setTimeout(resizeCanvas, 100);
+
+let angleX = 0.0015;
+let angleY = 0.0025;
+
+function updateVisualizer(nodes) {
+  const existingIds = new Set(visualNodes.map(n => n.id));
+  nodes.forEach(n => {
+    if (!existingIds.has(n.id)) {
+      visualNodes.push({
+        id: n.id,
+        name: n.name || n.type || '—',
+        tags: n.dimensions || (n.name ? n.name.split(', ') : []),
+        x: (Math.random() - 0.5) * 400,
+        y: (Math.random() - 0.5) * 400,
+        z: (Math.random() - 0.5) * 400,
+        radius: 3 + Math.random() * 2
+      });
+    }
+  });
+  
+  if (visualNodes.length > 50) {
+    visualNodes = visualNodes.slice(visualNodes.length - 50);
+  }
+}
+
+function drawVisualizer() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  const fl = 400; // Focal length
+
+  let projected = [];
+  visualNodes.forEach(n => {
+    // Rotate Y
+    let cosY = Math.cos(angleY), sinY = Math.sin(angleY);
+    let x1 = n.x * cosY - n.z * sinY;
+    let z1 = n.z * cosY + n.x * sinY;
+    n.x = x1; n.z = z1;
+
+    // Rotate X
+    let cosX = Math.cos(angleX), sinX = Math.sin(angleX);
+    let y1 = n.y * cosX - n.z * sinX;
+    let z2 = n.z * cosX + n.y * sinX;
+    n.y = y1; n.z = z2;
+
+    // Project to 2D
+    let scale = fl / (fl + n.z + 600); 
+    projected.push({
+      orig: n,
+      px: n.x * scale + cx,
+      py: n.y * scale + cy,
+      scale: scale,
+      z: n.z
+    });
+  });
+
+  // Sort by depth (Z) so background renders first
+  projected.sort((a, b) => b.z - a.z);
+
+  ctx.lineWidth = 1;
+  // Draw Edges and Semantic Faces
+  for (let i = 0; i < projected.length; i++) {
+    for (let j = i + 1; j < projected.length; j++) {
+      const p1 = projected[i]; const p2 = projected[j];
+      const n1 = p1.orig; const n2 = p2.orig;
+      
+      let shared = (n1.tags && n2.tags) ? n1.tags.filter(t => n2.tags.includes(t)) : [];
+      
+      if (shared.length > 0) {
+        const alpha = Math.max(0.1, p1.scale * 0.8);
+        ctx.strokeStyle = `rgba(16, 185, 129, ${alpha})`; // Semantic edge
+        ctx.beginPath(); ctx.moveTo(p1.px, p1.py); ctx.lineTo(p2.px, p2.py); ctx.stroke();
+
+        // If 3 nodes share a tag, they form a solid face (triangle/polygon)
+        for (let k = j + 1; k < projected.length; k++) {
+          const p3 = projected[k];
+          const n3 = p3.orig;
+          let shared3 = shared.filter(t => n3.tags.includes(t));
+          if (shared3.length > 0) {
+            ctx.fillStyle = `rgba(16, 185, 129, ${alpha * 0.15})`; // Translucent face
+            ctx.beginPath(); ctx.moveTo(p1.px, p1.py); ctx.lineTo(p2.px, p2.py); ctx.lineTo(p3.px, p3.py); ctx.closePath(); ctx.fill();
+          }
+        }
+      } else {
+        // Weak spatial proximity edge
+        const dist = Math.hypot(n1.x - n2.x, n1.y - n2.y, n1.z - n2.z);
+        if (dist < 150) {
+          const alpha = Math.max(0, 1 - dist/150) * 0.25 * p1.scale;
+          ctx.strokeStyle = `rgba(79, 70, 229, ${alpha})`;
+          ctx.beginPath(); ctx.moveTo(p1.px, p1.py); ctx.lineTo(p2.px, p2.py); ctx.stroke();
+        }
+      }
+    }
+  }
+
+  // Draw vertices (Nodes)
+  projected.forEach(p => {
+    const alpha = Math.max(0.2, Math.min(1, p.scale * 1.5));
+    ctx.fillStyle = `rgba(79, 70, 229, ${alpha})`;
+    ctx.beginPath(); ctx.arc(p.px, p.py, p.orig.radius * p.scale * 2, 0, Math.PI * 2); ctx.fill();
+    
+    // Only show text for nodes close to the front
+    if (p.scale > 0.65) {
+      ctx.fillStyle = `rgba(226, 232, 240, ${alpha})`;
+      ctx.font = `${Math.max(8, 10 * p.scale)}px "Space Mono"`;
+      ctx.fillText(p.orig.name.substring(0, 15), p.px + 8*p.scale, p.py + 4*p.scale);
+    }
+  });
+  requestAnimationFrame(drawVisualizer);
+}
+drawVisualizer();
+
+// ── UTILS ──
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function escHtml(str) {
+  return String(str || '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+// ── DISCOVER ──
+fetch('/discover').then(r => r.json()).then(d => {
+  setText('node-id', d.node_id || 'unknown');
+}).catch(() => {});
+
+// ── POLLING ──
+loadStatus();
+setInterval(loadStatus, 15000);
+</script>
+</body>
+</html>

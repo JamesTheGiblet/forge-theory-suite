@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>LEGION EV21 — Complete Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0e27;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            color: #e2e8f0;
+            padding: 16px;
+        }
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0f1535, #1a1f4e);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .logo h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #a78bfa, #ec489a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .logo p { font-size: 0.7rem; color: #7e8aa2; }
+        .stats {
+            display: flex;
+            gap: 24px;
+        }
+        .stat { text-align: center; }
+        .stat-label { font-size: 0.7rem; color: #7e8aa2; }
+        .stat-value { font-weight: bold; font-size: 1.2rem; }
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #1a1f4e;
+            padding-bottom: 8px;
+        }
+        .tab {
+            background: #0f122e;
+            border: 1px solid #1a1f4e;
+            border-radius: 12px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab:hover { background: #1a1f4e; }
+        .tab.active {
+            background: #4f46e5;
+            border-color: #818cf8;
+        }
+        /* Two-column layout */
+        .two-columns {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .left-column {
+            flex: 2;
+            min-width: 280px;
+        }
+        .right-column {
+            flex: 3;
+            min-width: 400px;
+        }
+        /* Cards */
+        .card {
+            background: #0f122e;
+            border-radius: 16px;
+            border: 1px solid #1a1f4e;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .card-header {
+            background: #1a1f4e;
+            padding: 12px 16px;
+            border-bottom: 1px solid #2a2f6e;
+            font-weight: bold;
+        }
+        .card-body {
+            padding: 16px;
+        }
+        /* Chat area */
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .message {
+            display: flex;
+            gap: 8px;
+        }
+        .message.user { justify-content: flex-end; }
+        .message-bubble {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            background: #1a1f4e;
+        }
+        .message.user .message-bubble { background: #4f46e5; }
+        .chat-input {
+            display: flex;
+            gap: 8px;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            background: #1a1f4e;
+            border: 1px solid #2a2f6e;
+            border-radius: 12px;
+            color: white;
+        }
+        .chat-input button {
+            padding: 10px 16px;
+            background: #4f46e5;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+        }
+        /* Agent grid */
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 8px;
+        }
+        .agent-tag {
+            background: #1a1f4e;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 0.7rem;
+            text-align: center;
+        }
+        .agent-tag .class { font-size: 0.6rem; color: #a78bfa; display: block; }
+        .status-online { color: #22c55e; }
+        /* Table styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th, .data-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #1a1f4e;
+        }
+        .data-table th {
+            color: #7e8aa2;
+            font-weight: normal;
+            font-size: 0.7rem;
+        }
+        .rule-card {
+            background: #1a1f4e;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+        .rule-condition { font-family: monospace; font-size: 0.8rem; color: #a78bfa; }
+        .rule-action { color: #22c55e; }
+        /* Settings sliders */
+        .settings-group {
+            margin-bottom: 16px;
+        }
+        .settings-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+            color: #7e8aa2;
+        }
+        input[type="range"] {
+            width: 100%;
+            background: #1a1f4e;
+            height: 4px;
+            border-radius: 2px;
+        }
+        .metric-value { font-size: 1.2rem; color: #a78bfa; }
+        .entropy-meter {
+            background: #1a1f4e;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .entropy-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
+            transition: width 0.3s;
+            width: 0%;
+        }
+        @media (max-width: 768px) {
+            body { padding: 8px; }
+            .two-columns { flex-direction: column; }
+            .right-column { min-width: auto; }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <div class="header">
+        <div class="logo">
+            <h1>⚡ LEGION EV21</h1>
+            <p>COMPLETE DASHBOARD | FORGE INTEGRATION</p>
+        </div>
+        <div class="stats">
+            <div class="stat"><div class="stat-label">AGENTS</div><div class="stat-value" id="agentCount">31</div></div>
+            <div class="stat"><div class="stat-label">ENTROPY</div><div class="stat-value" id="entropyVal">0.00</div></div>
+            <div class="stat"><div class="stat-label">MODE</div><div class="stat-value" id="paperMode">PAPER</div></div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <div class="tab active" data-tab="dashboard">📊 Dashboard</div>
+        <div class="tab" data-tab="agents">🤖 Agents</div>
+        <div class="tab" data-tab="behaviors">⚡ Behaviors</div>
+        <div class="tab" data-tab="rules">📜 Rules</div>
+        <div class="tab" data-tab="settings">⚙️ Settings</div>
+        <div class="tab" data-tab="gallery">🏆 Gallery</div>
+    </div>
+
+    <div id="tabContent">
+        <!-- Dashboard content will load here -->
+    </div>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:3011';
+    let currentTab = 'dashboard';
+    
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            currentTab = tab.dataset.tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            loadTab();
+        });
+    });
+    
+    async function loadTab() {
+        if (currentTab === 'dashboard') await loadDashboard();
+        else if (currentTab === 'agents') await loadAgents();
+        else if (currentTab === 'behaviors') await loadBehaviors();
+        else if (currentTab === 'rules') await loadRules();
+        else if (currentTab === 'settings') await loadSettings();
+        else if (currentTab === 'gallery') await loadGallery();
+    }
+    
+    async function loadDashboard() {
+        try {
+            const [status, entropy, intelligence] = await Promise.all([
+                fetch(`${API_URL}/api/status`).then(r => r.json()),
+                fetch(`${API_URL}/api/entropy`).then(r => r.json()),
+                fetch(`${API_URL}/api/intelligence/status`).then(r => r.json())
+            ]);
+            
+            document.getElementById('agentCount').innerText = status.agents || 31;
+            document.getElementById('entropyVal').innerText = status.entropy || 0.1;
+            document.getElementById('paperMode').innerText = status.paper_mode === 'RUNNING' ? 'PAPER' : 'LIVE';
+            
+            const entropyPercent = (status.entropy / 0.7) * 100;
+            
+            document.getElementById('tabContent').innerHTML = `
+                <div class="two-columns">
+                    <div class="left-column">
+                        <div class="card">
+                            <div class="card-header">🤖 Legion Assistant (Gemini AI)</div>
+                            <div class="card-body">
+                                <div class="chat-messages" id="chatMessages">
+                                    <div class="message assistant"><div class="message-bubble">Hello! I'm Legion. Ask me about system status, agents, rates, or anything about LEGION EV21!</div></div>
+                                </div>
+                                <div class="chat-input">
+                                    <input type="text" id="chatInput" placeholder="Ask me anything..." onkeypress="if(event.key==='Enter') sendMessage()">
+                                    <button onclick="sendMessage()">Send</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">🧠 Intelligence Models</div>
+                            <div class="card-body">
+                                <div><span class="metric-value">${intelligence.chameleon?.accuracy || 98}%</span> <span style="color:#7e8aa2;">Chameleon LM</span></div>
+                                <div><span class="metric-value">${intelligence.dqn?.validation_roi || 0.12}%</span> <span style="color:#7e8aa2;">DQN ROI</span></div>
+                                <div><span class="metric-value">${intelligence.lstm?.accuracy_1h || 84.2}%</span> <span style="color:#7e8aa2;">LSTM 1h Accuracy</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right-column">
+                        <div class="card">
+                            <div class="card-header">📊 System Status</div>
+                            <div class="card-body">
+                                <div>Entropy: ${status.entropy} / 0.7</div>
+                                <div class="entropy-meter"><div class="entropy-fill" style="width: ${entropyPercent}%"></div></div>
+                                <div style="margin-top: 12px;">Agents: ${status.agents}</div>
+                                <div>Paper Mode: ${status.paper_mode}</div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">🌊 Cascade Phase</div>
+                            <div class="card-body">
+                                <div id="cascadePhase">DORMANT — Watching</div>
+                                <div class="entropy-meter" style="margin-top: 8px;"><div class="entropy-fill" style="width: ${entropyPercent}%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } catch(e) { console.error('Dashboard error:', e); }
+    }
+    
+    async function loadAgents() {
+        try {
+            const agents = await fetch(`${API_URL}/api/agents`).then(r => r.json());
+            document.getElementById('tabContent').innerHTML = `
+                <div class="card">
+                    <div class="card-header">🤖 Active Agents (${agents.length})</div>
+                    <div class="card-body">
+                        <div class="agent-grid">
+                            ${agents.map(a => `
+                                <div class="agent-tag">
+                                    <span class="status-online">●</span> ${a.name}
+                                    <span class="class">${a.class || 'Euclid'}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        } catch(e) { console.error(e); }
+    }
+    
+    async function loadBehaviors() {
+        try {
+            const behaviors = [
+                { name: "AdaptiveLearning", trigger: "user_interaction", action: "update_model", containment: "monitor_drift" },
+                { name: "StrategyEvolution", trigger: "time_interval", action: "mutate_strategies", containment: "entropy_check" },
+                { name: "GenerateReport", trigger: "time_interval", action: "create_report", containment: "output_limits" },
+                { name: "ScanArbitrage", trigger: "time_interval", action: "scan_opportunities", containment: "profit_threshold" }
+            ];
+            document.getElementById('tabContent').innerHTML = `
+                <div class="card">
+                    <div class="card-header">⚡ System Behaviors</div>
+                    <div class="card-body">
+                        <table class="data-table">
+                            <thead><tr><th>Behavior</th><th>Trigger</th><th>Action</th><th>Containment</th></tr></thead>
+                            <tbody>
+                                ${behaviors.map(b => `
+                                    <tr><td>${b.name}</td><td>${b.trigger}</td><td>${b.action}</td><td>${b.containment}</td></tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        } catch(e) { console.error(e); }
+    }
+    
+    async function loadRules() {
+        try {
+            const rules = [
+                { name: "AgentCrashRecovery", condition: "agent_status == 'crashed'", action: "auto_restart", max_attempts: 3 },
+                { name: "EntropyContainment", condition: "entropy > 0.7", action: "reset_entropy", notify: true },
+                { name: "ResourceLimit", condition: "memory_mb > 500", action: "reaper_intervention" },
+                { name: "StrategyEvolution", condition: "new_strategy_created", action: "run_audit_and_tournament" }
+            ];
+            document.getElementById('tabContent').innerHTML = `
+                <div class="card">
+                    <div class="card-header">📜 System Rules</div>
+                    <div class="card-body">
+                        ${rules.map(r => `
+                            <div class="rule-card">
+                                <div><strong>${r.name}</strong></div>
+                                <div class="rule-condition">if ${r.condition}</div>
+                                <div class="rule-action">then ${r.action}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        } catch(e) { console.error(e); }
+    }
+    
+    async function loadSettings() {
+        try {
+            const thresholds = await fetch(`${API_URL}/api/thresholds`).then(r => r.json()).catch(() => ({}));
+            document.getElementById('tabContent').innerHTML = `
+                <div class="two-columns">
+                    <div class="left-column">
+                        <div class="card">
+                            <div class="card-header">⚙️ Confidence Thresholds</div>
+                            <div class="card-body">
+                                <div class="settings-group">
+                                    <label>Min Buy Confidence: <span id="buyThreshold">${thresholds.MIN_CONFIDENCE_BUY || 0.65}</span></label>
+                                    <input type="range" id="minBuy" min="0.5" max="0.9" step="0.01" value="${thresholds.MIN_CONFIDENCE_BUY || 0.65}" onchange="updateThreshold('MIN_CONFIDENCE_BUY', this.value)">
+                                </div>
+                                <div class="settings-group">
+                                    <label>Min Sell Confidence: <span id="sellThreshold">${thresholds.MIN_CONFIDENCE_SELL || 0.65}</span></label>
+                                    <input type="range" id="minSell" min="0.5" max="0.9" step="0.01" value="${thresholds.MIN_CONFIDENCE_SELL || 0.65}" onchange="updateThreshold('MIN_CONFIDENCE_SELL', this.value)">
+                                </div>
+                                <div class="settings-group">
+                                    <label>LSTM Boost: <span id="boostVal">${thresholds.LSTM_BOOST || 0.08}</span></label>
+                                    <input type="range" id="lstmBoost" min="0" max="0.2" step="0.01" value="${thresholds.LSTM_BOOST || 0.08}" onchange="updateThreshold('LSTM_BOOST', this.value)">
+                                </div>
+                                <div class="settings-group">
+                                    <label>LSTM Penalty: <span id="penaltyVal">${thresholds.LSTM_PENALTY || 0.12}</span></label>
+                                    <input type="range" id="lstmPenalty" min="0" max="0.25" step="0.01" value="${thresholds.LSTM_PENALTY || 0.12}" onchange="updateThreshold('LSTM_PENALTY', this.value)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right-column">
+                        <div class="card">
+                            <div class="card-header">🎮 System Controls</div>
+                            <div class="card-body">
+                                <button onclick="emergencyStop()" style="background:#ef4444; width:100%; margin-bottom:8px;">🚨 Emergency Stop</button>
+                                <button onclick="resetSystem()" style="background:#f59e0b; width:100%; margin-bottom:8px;">🔄 Reset System</button>
+                                <button onclick="exportData()" style="background:#22c55e; width:100%;">📊 Export Data</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } catch(e) { console.error(e); }
+    }
+    
+    async function loadGallery() {
+        try {
+            const strategies = await fetch(`${API_URL}/api/strategies/gallery`).then(r => r.json());
+            document.getElementById('tabContent').innerHTML = `
+                <div class="card">
+                    <div class="card-header">🏆 Strategy Gallery (Top ${strategies.length})</div>
+                    <div class="card-body">
+                        <table class="data-table">
+                            <thead><tr><th>Name</th><th>Class</th><th>Fitness</th><th>Rating</th><th>Actions</th></tr></thead>
+                            <tbody>
+                                ${strategies.map(s => `
+                                    <tr>
+                                        <td>${s.name}</td>
+                                        <td>${s.class}</td>
+                                        <td>${s.fitness?.toFixed(2) || '0.00'}</td>
+                                        <td>${s.userRating || '-'}</td>
+                                        <td><button onclick="rateStrategy('${s.id}', 5)">👍</button> <button onclick="rateStrategy('${s.id}', 1)">👎</button></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        } catch(e) { console.error(e); }
+    }
+    
+    // Global functions
+    window.sendMessage = async () => {
+        const input = document.getElementById('chatInput');
+        const msg = input.value.trim();
+        if (!msg) return;
+        const messagesDiv = document.getElementById('chatMessages');
+        messagesDiv.innerHTML += `<div class="message user"><div class="message-bubble">${escapeHtml(msg)}</div></div>`;
+        input.value = '';
+        try {
+            const res = await fetch(`${API_URL}/api/intelligence/chat`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: msg })
+            });
+            const data = await res.json();
+            messagesDiv.innerHTML += `<div class="message assistant"><div class="message-bubble">${escapeHtml(data.response)}</div></div>`;
+        } catch(e) {
+            messagesDiv.innerHTML += `<div class="message assistant"><div class="message-bubble">⚠️ Error: ${e.message}</div></div>`;
+        }
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    };
+    
+    window.rateStrategy = async (id, rating) => {
+        await fetch(`${API_URL}/api/strategies/rate`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ strategyId: id, rating })
+        });
+        loadGallery();
+    };
+    
+    window.updateThreshold = async (key, value) => {
+        await fetch(`${API_URL}/api/thresholds`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ [key]: parseFloat(value) })
+        });
+        document.getElementById(key === 'MIN_CONFIDENCE_BUY' ? 'buyThreshold' : 
+                           (key === 'MIN_CONFIDENCE_SELL' ? 'sellThreshold' :
+                            (key === 'LSTM_BOOST' ? 'boostVal' : 'penaltyVal'))).innerText = value;
+    };
+    
+    window.emergencyStop = async () => {
+        if(confirm('🚨 Emergency stop will halt all trading. Continue?')) {
+            await fetch(`http://localhost:3003/api/kill_switch`, { method: 'POST' });
+            alert('Emergency stop triggered');
+        }
+    };
+    
+    window.resetSystem = () => { alert('Reset functionality would clear state'); };
+    window.exportData = () => { alert('Export would download strategy data'); };
+    
+    function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+    
+    loadDashboard();
+    setInterval(() => { loadDashboard(); }, 30000);
+</script>
+</body>
+</html>

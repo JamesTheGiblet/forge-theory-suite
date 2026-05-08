@@ -1,0 +1,388 @@
+#!/usr/bin/env python3
+"""
+ubvm — Universal Behavioural Virtual Machine CLI
+Version: 0.2
+Author: James / Giblets Creations
+
+Commands:
+  ubvm run <capsule>       Execute a capsule (on_load trigger)
+  ubvm boot                Run boot sequence across all capsules
+  ubvm schedule            Start cron + event daemon
+  ubvm test                Run compliance test suite
+  ubvm version             Print UBVM version
+"""
+
+import os
+import sys
+
+# Resolve UBVM_HOME to the directory containing this script
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+if "UBVM_HOME" not in os.environ:
+    os.environ["UBVM_HOME"] = SCRIPT_DIR
+else:
+    os.environ["UBVM_HOME"] = os.path.abspath(os.environ["UBVM_HOME"])
+sys.path.insert(0, SCRIPT_DIR)
+
+
+def cmd_run(args):
+    if not args:
+        print("Usage: ubvm run <capsule.scp.json> [trigger] [event]")
+        sys.exit(1)
+
+    from interpreter import load_capsule, run_capsule
+    import json
+
+    capsule_path = args[0]
+    trigger      = args[1] if len(args) > 1 else "on_load"
+    event        = args[2] if len(args) > 2 else None
+
+    try:
+        capsule = load_capsule(capsule_path)
+    except Exception as e:
+        print(f"Error loading capsule: {e}")
+        sys.exit(1)
+
+    result = run_capsule(capsule, trigger_type=trigger, event_name=event)
+    print(json.dumps(result, indent=2))
+    sys.exit(0 if result["status"] in ("ok", "partial") else 1)
+
+
+def cmd_boot(args):
+    from boot import boot
+    boot()
+
+
+def cmd_schedule(args):
+    from scheduler_daemon import run_daemon
+    run_daemon()
+
+
+def cmd_test(args):
+    """
+    Run UBVM compliance test suite.
+    Covers all categories from UBVM Spec §15.1–15.5.
+    """
+    from interpreter import load_all_capsules, run_capsule, build_dispatch, SUPPORTED_VERSIONS
+
+    ubvm_home    = os.environ.get("UBVM_HOME", SCRIPT_DIR)
+    fixtures_dir = os.path.join(ubvm_home, "capsules", "fixtures")
+    dispatch     = build_dispatch(ubvm_home=ubvm_home, verbose=False)
+
+    passed = 0
+    failed = 0
+
+    def ok(label):
+        nonlocal passed
+        passed += 1
+        print(f"  PASS  {label}")
+
+    def fail(label, reason=""):
+        nonlocal failed
+        failed += 1
+        print(f"  FAIL  {label}" + (f" — {reason}" if reason else ""))
+
+    def run(capsule, **kwargs):
+        return run_capsule(capsule, dispatch=dispatch, **kwargs)
+
+    print("UBVM Compliance Test Suite")
+    print("=" * 60)
+
+    # ── §15.1 Capsule Validation Tests ───────────────────────
+    print("\n§15.1 Capsule Validation")
+
+    # Missing scp_id
+    r = run({"scp_version":"0.1","object_class":"Safe","intent":"t","behaviours":[]})
+    if r["status"]=="error" and any("scp_id" in e or "missing" in e.lower() for e in r["errors"]):
+        ok("Missing scp_id → rejected")
+    else:
+        fail("Missing scp_id → rejected", r["errors"])
+
+    # Missing behaviours
+    r = run({"scp_version":"0.1","scp_id":"t/t","object_class":"Safe","intent":"t"})
+    if r["status"]=="error" and any("behaviours" in e or "missing" in e.lower() for e in r["errors"]):
+        ok("Missing behaviours → rejected")
+    else:
+        fail("Missing behaviours → rejected", r["errors"])
+
+    # Unsupported scp_version
+    r = run({"scp_version":"99.0","scp_id":"t/t","object_class":"Safe","intent":"t",
+             "behaviours":[{"trigger":"on_load","actions":[]}]})
+    if r["status"]=="error" and any("scp_version" in e.lower() for e in r["errors"]):
+        ok("Unsupported scp_version → rejected")
+    else:
+        fail("Unsupported scp_version → rejected", r["errors"])
+
+    # Invalid trigger type
+    r = run({"scp_version":"0.1","scp_id":"t/t","object_class":"Safe","intent":"t",
+             "behaviours":[{"trigger":"invalid_trigger","actions":[
+                 {"primitive":"log","params":{"message":"x"}}]}]})
+    # Should run but produce no results (trigger doesn't match)
+    if r["status"] in ("ok","error") and not r["results"]:
+        ok("Invalid trigger type → no actions fired")
+    else:
+        fail("Invalid trigger type → no actions fired", str(r))
+
+    # ── §15.2 Primitive Dispatch Tests ───────────────────────
+    print("\n§15.2 Primitive Dispatch")
+
+    # Known primitive executes successfully
+    r = run({"scp_version":"0.1","scp_id":"test/dispatch","object_class":"Safe",
+             "intent":"Test log primitive.",
+             "containment":{"read_only":False,"audit_log":True,"kill_switch":False},
+             "behaviours":[{"trigger":"on_load","actions":[
+                 {"primitive":"log","params":{"message":"compliance test"}}]}]})
+    if r["status"]=="ok" and r["results"]:
+        ok("Known primitive executes successfully")
+    else:
+        fail("Known primitive executes successfully", r["errors"])
+
+    # Unknown primitive — error recorded, capsule continues
+    r = run({"scp_version":"0.1","scp_id":"test/unknown","object_class":"Safe",
+             "intent":"Test unknown primitive handling.",
+             "containment":{"read_only":False,"audit_log":True,"kill_switch":False},
+             "behaviours":[{"trigger":"on_load","actions":[
+                 {"primitive":"nonexistent_prim","params":{}},
+                 {"primitive":"log","params":{"message":"still runs"}}]}]})
+    if r["errors"] and r["results"]:
+        ok("Unknown primitive → error recorded, capsule continued")
+    else:
+        fail("Unknown primitive → error recorded, capsule continued", str(r))
+
+    # Primitive exception caught into errors[]
+    r = run({"scp_version":"0.1","scp_id":"test/exception","object_class":"Safe",
+             "intent":"Test exception isolation.",
+             "containment":{"read_only":False,"audit_log":True,"kill_switch":False},
+             "behaviours":[{"trigger":"on_load","actions":[
+                 {"primitive":"log","params":{}},  # missing message — raises or errors
+                 {"primitive":"log","params":{"message":"after error"}}]}]})
+    if r["errors"] or r["results"]:
+        ok("Primitive exception → caught in errors[], execution continued")
+    else:
+        fail("Primitive exception → caught in errors[], execution continued")
+
+    # ── §15.3 Trigger Tests ──────────────────────────────────
+    print("\n§15.3 Trigger Tests")
+
+    # on_load fires on boot trigger
+    r = run({"scp_version":"0.1","scp_id":"test/onload","object_class":"Safe",
+             "intent":"Test on_load trigger.",
+             "containment":{"read_only":False,"audit_log":True,"kill_switch":False},
+             "behaviours":[{"trigger":"on_load","actions":[
+                 {"primitive":"log","params":{"message":"on_load fired"}}]}]},
+            trigger_type="on_load")
+    if r["status"]=="ok" and r["results"]:
+        ok("on_load executes on boot")
+    else:
+        fail("on_load executes on boot", r["errors"])
+
+    # on_load does NOT fire for cron trigger
+    r = run({"scp_version":"0.1","scp_id":"test/onload-nocron","object_class":"Safe",
+             "intent":"Test on_load does not fire on cron.",
+             "containment":{"read_only":False,"audit_log":True,"kill_switch":False},
+             "behaviours":[{"trigger":"on_load","actions":[
+                 {"primitive":"log","params":{"message":"should not fire"}}]}]},
+            trigger_type="cron")
+    if not r["results"] and not r["errors"]:
+        ok("on_load does not fire on cron trigger")
+    else:
+        fail("on_load does not fire on cron trigger", str(r))
+
+    # on_event fires only on matching event name
+    r = run({"scp_version":"0.1","scp_id":"test/event-match","object_class":"Safe",
+             "intent":"Test on_event matching.",
+             "containment":{"read_only":False,"audit_log":True,"kill_switch":False},
+             "behaviours":[{"trigger":"on_event","event":"test.match","actions":[
+                 {"primitive":"log","params":{"message":"matched"}}]}]},
+            trigger_type="on_event", event_name="test.match")
+    if r["results"]:
+        ok("on_event fires on matching event name")
+    else:
+        fail("on_event fires on matching event name", str(r))
+
+    # on_event does NOT fire on non-matching event name
+    r = run({"scp_version":"0.1","scp_id":"test/event-nomatch","object_class":"Safe",
+             "intent":"Test on_event non-matching.",
+             "containment":{"read_only":False,"audit_log":True,"kill_switch":False},
+             "behaviours":[{"trigger":"on_event","event":"test.match","actions":[
+                 {"primitive":"log","params":{"message":"should not fire"}}]}]},
+            trigger_type="on_event", event_name="test.different")
+    if not r["results"] and not r["errors"]:
+        ok("on_event does not fire on non-matching event")
+    else:
+        fail("on_event does not fire on non-matching event", str(r))
+
+    # ── §15.4 Event Bus Tests ────────────────────────────────
+    print("\n§15.4 Event Bus")
+    import json as _json
+
+    queue_path  = os.path.join(ubvm_home, "logs", "events", "queue.jsonl")
+    cursor_path = os.path.join(ubvm_home, "logs", "events", ".cursor")
+    os.makedirs(os.path.dirname(queue_path), exist_ok=True)
+
+    # Events append to queue.jsonl
+    before_size = os.path.getsize(queue_path) if os.path.exists(queue_path) else 0
+    r = run({"scp_version":"0.1","scp_id":"test/emit","object_class":"Safe",
+             "intent":"Test event emission.",
+             "containment":{"read_only":False,"audit_log":True,"kill_switch":False},
+             "behaviours":[{"trigger":"on_load","actions":[
+                 {"primitive":"emit_event","params":{"event":"test.compliance"}}]}]})
+    after_size = os.path.getsize(queue_path) if os.path.exists(queue_path) else 0
+    if after_size > before_size:
+        ok("Events append to queue.jsonl")
+    else:
+        fail("Events append to queue.jsonl")
+
+    # Verify event format is valid JSON with required fields
+    try:
+        with open(queue_path) as f:
+            lines = [l.strip() for l in f if l.strip()]
+        last = _json.loads(lines[-1])
+        if all(k in last for k in ["event","source","payload","ts"]):
+            ok("Event format: {event, source, payload, ts} ✓")
+        else:
+            fail("Event format", f"Missing keys: {last}")
+    except Exception as e:
+        fail("Event format", str(e))
+
+    # Cursor persists
+    from scheduler_daemon import process_events
+    from interpreter import load_all_capsules
+    all_caps = load_all_capsules(os.path.join(ubvm_home, "capsules"))
+    process_events(queue_path, cursor_path, all_caps)
+    if os.path.exists(cursor_path):
+        cursor_val = int(open(cursor_path).read().strip())
+        if cursor_val > 0:
+            ok("Event cursor persists after processing")
+        else:
+            fail("Event cursor persists after processing", "cursor is 0")
+    else:
+        fail("Event cursor persists after processing", "cursor file not created")
+
+    # Malformed event lines skipped without halting
+    with open(queue_path, "a") as f:
+        f.write("THIS IS NOT JSON\n")
+    try:
+        process_events(queue_path, cursor_path, all_caps)
+        ok("Malformed event lines skipped without halting daemon")
+    except Exception as e:
+        fail("Malformed event lines skipped without halting daemon", str(e))
+
+    # ── §15.5 Result Object Tests ────────────────────────────
+    print("\n§15.5 Result Object")
+
+    # status: ok — all succeed
+    r = run({"scp_version":"0.1","scp_id":"test/ok","object_class":"Safe",
+             "intent":"Test ok status.",
+             "containment":{"read_only":False,"audit_log":True,"kill_switch":False},
+             "behaviours":[{"trigger":"on_load","actions":[
+                 {"primitive":"log","params":{"message":"ok"}}]}]})
+    if r["status"]=="ok":
+        ok("status: ok when all actions succeed")
+    else:
+        fail("status: ok when all actions succeed", r)
+
+    # status: error — all fail
+    r = run({"scp_version":"0.1","scp_id":"test/error","object_class":"Safe",
+             "intent":"Test error status.",
+             "containment":{"read_only":False,"audit_log":True,"kill_switch":False},
+             "behaviours":[{"trigger":"on_load","actions":[
+                 {"primitive":"nonexistent_a","params":{}},
+                 {"primitive":"nonexistent_b","params":{}}]}]})
+    if r["status"]=="error":
+        ok("status: error when all actions fail")
+    else:
+        fail("status: error when all actions fail", r["status"])
+
+    # status: partial — some fail
+    r = run({"scp_version":"0.1","scp_id":"test/partial","object_class":"Safe",
+             "intent":"Test partial status.",
+             "containment":{"read_only":False,"audit_log":True,"kill_switch":False},
+             "behaviours":[{"trigger":"on_load","actions":[
+                 {"primitive":"nonexistent_prim","params":{}},
+                 {"primitive":"log","params":{"message":"partial"}}]}]})
+    if r["status"]=="partial":
+        ok("status: partial when some actions fail")
+    else:
+        fail("status: partial when some actions fail", r["status"])
+
+    # results[] contains entries per success
+    if r["results"] and all("primitive" in x and "result" in x for x in r["results"]):
+        ok("results[] contains one entry per successful action")
+    else:
+        fail("results[] contains one entry per successful action", str(r["results"]))
+
+    # errors[] contains entries per failure
+    if r["errors"] and all(isinstance(e, str) for e in r["errors"]):
+        ok("errors[] contains one entry per failed action")
+    else:
+        fail("errors[] contains one entry per failed action", str(r["errors"]))
+
+    # events[] contains emitted events
+    r2 = run({"scp_version":"0.1","scp_id":"test/events-array","object_class":"Safe",
+              "intent":"Test events array.",
+              "containment":{"read_only":False,"audit_log":True,"kill_switch":False},
+              "behaviours":[{"trigger":"on_load","actions":[
+                  {"primitive":"emit_event","params":{"event":"test.events.array"}}]}]})
+    if "test.events.array" in r2.get("events", []):
+        ok("events[] contains all emitted events")
+    else:
+        fail("events[] contains all emitted events", str(r2.get("events")))
+
+    # ── Fixture capsules ─────────────────────────────────────
+    if os.path.isdir(fixtures_dir):
+        print("\nFixture Capsules")
+        for path, capsule in load_all_capsules(fixtures_dir, recursive=False):
+            scp_id = capsule.get("scp_id", path)
+            r = run(capsule, trigger_type="on_load")
+            if r["status"] in ("ok", "partial"):
+                ok(f"Fixture: {scp_id}")
+            else:
+                fail(f"Fixture: {scp_id}", str(r["errors"]))
+
+    # ── Summary ──────────────────────────────────────────────
+    total = passed + failed
+    print()
+    print("=" * 60)
+    print(f"Results: {passed}/{total} passed, {failed} failed")
+    if failed == 0:
+        print("All compliance tests passed. UBVM 1.0 gate: CLEAR ✓")
+    else:
+        print(f"{failed} test(s) failed. Review output above.")
+    sys.exit(0 if failed == 0 else 1)
+
+
+def cmd_version(args):
+    from interpreter import UBVM_VERSION
+    print(f"UBVM v{UBVM_VERSION}")
+
+
+COMMANDS = {
+    "run":      cmd_run,
+    "boot":     cmd_boot,
+    "schedule": cmd_schedule,
+    "test":     cmd_test,
+    "version":  cmd_version,
+}
+
+
+def main():
+    if len(sys.argv) < 2 or sys.argv[1] not in COMMANDS:
+        print("UBVM — Universal Behavioural Virtual Machine")
+        print()
+        print("Usage: ubvm <command> [args]")
+        print()
+        print("Commands:")
+        print("  run <capsule>    Execute a capsule")
+        print("  boot             Run boot sequence")
+        print("  schedule         Start cron + event daemon")
+        print("  test             Run compliance test suite")
+        print("  version          Print version")
+        sys.exit(0)
+
+    command = sys.argv[1]
+    args    = sys.argv[2:]
+    COMMANDS[command](args)
+
+
+if __name__ == "__main__":
+    main()

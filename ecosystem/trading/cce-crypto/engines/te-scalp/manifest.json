@@ -1,0 +1,16 @@
+{
+  "id":          "te-scalp",
+  "name":        "T.E Scalp",
+  "version":     "1.0.0",
+  "type":        "TACTICAL",
+  "ecosystem":   "T.E",
+  "cycle":       "5min",
+  "capitalKey":  "scalp",
+  "author":      "James Gilbert — Giblets Creations",
+  "description": "High frequency BTC scalper. RSI divergence + volume spike entries. Small positions, fast exits. 10-20 trades per week in any market.",
+  "requires": {
+    "exchange": false,
+    "notifier": true,
+    "config":   true
+  }
+}

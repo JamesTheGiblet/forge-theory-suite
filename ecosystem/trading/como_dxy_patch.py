@@ -1,0 +1,8 @@
+f = open('src/como-data-feed.js', 'r')
+c = f.read()
+f.close()
+c = c.replace("'DX-Y.NYB'", "'DX=F'")
+f = open('src/como-data-feed.js', 'w')
+f.write(c)
+f.close()
+print('done')

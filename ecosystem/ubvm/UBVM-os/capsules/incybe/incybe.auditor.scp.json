@@ -1,0 +1,38 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "datacube/auditor",
+  "object_class": "Thaumiel",
+  "intent": "Listen to all system events and map them into the spatial Data Cube.",
+  "containment": {
+    "read_only": false,
+    "audit_log": false,
+    "kill_switch": false
+  },
+  "behaviours": [
+    {
+      "trigger": "on_event",
+      "event": "*",
+      "actions": [
+        {
+          "primitive": "map_to_cube",
+          "params": {}
+        },
+        {
+          "primitive": "render_template",
+          "params": {
+            "template": "Data Cube mapped event ${event_name} into the Data Cube.",
+            "variables": {
+              "event_name": "$context.event.name"
+            }
+          }
+        },
+        {
+          "primitive": "log",
+          "params": {
+            "message": "$results.1.output"
+          }
+        }
+      ]
+    }
+  ]
+}

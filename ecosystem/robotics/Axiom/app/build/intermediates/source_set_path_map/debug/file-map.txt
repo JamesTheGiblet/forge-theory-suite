@@ -1,0 +1,7 @@
+com.giblets.axiom.app-pngs-0 /data/data/com.termux/files/home/Axiom/app/build/generated/res/pngs/debug
+com.giblets.axiom.app-resValues-1 /data/data/com.termux/files/home/Axiom/app/build/generated/res/resValues/debug
+com.giblets.axiom.app-packageDebugResources-2 /data/data/com.termux/files/home/Axiom/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.giblets.axiom.app-packageDebugResources-3 /data/data/com.termux/files/home/Axiom/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.giblets.axiom.app-merged_res-4 /data/data/com.termux/files/home/Axiom/app/build/intermediates/merged_res/debug
+com.giblets.axiom.app-debug-5 /data/data/com.termux/files/home/Axiom/app/src/debug/res
+com.giblets.axiom.app-main-6 /data/data/com.termux/files/home/Axiom/app/src/main/res

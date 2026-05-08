@@ -1,0 +1,175 @@
+{
+  "scp_id": "README-LEGION-EV21",
+  "object_class": "Thaumiel",
+  "title": "LEGION EV21 — Complete System Documentation",
+  "subtitle": "A self-governing vault of living strategy organisms, evolved by AI agents, protected by SCP-style containment",
+  "version": "EV21.1",
+  "author": "James Gilbert (JamesTheGiblet)",
+  "date": "2026-04-24",
+  "motto": "I wanted it. So I forged it.",
+  
+  "quick_start": [
+    "./start.sh                    # Start all services",
+    "./status.sh                   # Check system status",
+    "./stop.sh                     # Stop all services",
+    "tail -f logs/legion.log       # Watch live logs",
+    "open http://localhost:9000    # Visual dashboard"
+  ],
+  
+  "system_overview": {
+    "total_agents": 31,
+    "active_agents": 31,
+    "total_strategies_generated": 12,
+    "promoted_strategies": 4,
+    "current_entropy": 0.1,
+    "entropy_threshold": 0.7,
+    "paper_mode": "RUNNING",
+    "paper_hours_remaining": 48,
+    "breaches": 0
+  },
+  
+  "intelligence_models": {
+    "chameleon_lm": {
+      "accuracy": 98,
+      "memories": 97,
+      "fringe_trained": true,
+      "specialized_categories": ["Technical Analysis", "Risk Management", "Market Psychology", "Advanced Trading", "Philosophy"]
+    },
+    "dqn_trader": {
+      "validation_roi": 0.12,
+      "regimes": ["bull", "bear", "sideways", "high_volatility", "capitulation", "euphoria"],
+      "patterns": ["double_bottom", "double_top", "falling_wedge", "rising_wedge"],
+      "fringe_trained": true
+    },
+    "lstm_predictor": {
+      "accuracy_1h": 84.2,
+      "accuracy_4h": 77.1,
+      "accuracy_24h": 64.8,
+      "fringe_trained": true
+    }
+  },
+  
+  "agents": [
+    {"name": "ForgeLord", "class": "Thaumiel", "type": "orchestrator", "status": "active"},
+    {"name": "Reaper", "class": "Euclid", "type": "maintenance", "status": "active"},
+    {"name": "Librarian", "class": "Safe", "type": "storage", "status": "active"},
+    {"name": "ChameleonLM", "class": "Euclid", "type": "learning", "status": "trained"},
+    {"name": "Auditor", "class": "Safe", "type": "validation", "status": "active"},
+    {"name": "Diplomat", "class": "Safe", "type": "communication", "status": "active"},
+    {"name": "Treasurer", "class": "Euclid", "type": "finance", "status": "active"},
+    {"name": "Tournament", "class": "Safe", "type": "ranking", "status": "active"},
+    {"name": "Narrator", "class": "Safe", "type": "voice", "status": "active"},
+    {"name": "Predictor", "class": "Euclid", "type": "forecast", "status": "trained"},
+    {"name": "OnchainIntel", "class": "Euclid", "type": "blockchain", "status": "active"},
+    {"name": "Sentiment", "class": "Safe", "type": "social", "status": "active"},
+    {"name": "ReportGenerator", "class": "Safe", "type": "reporting", "status": "active"},
+    {"name": "ArbitrageHunter", "class": "Euclid", "type": "arbitrage", "status": "active"},
+    {"name": "EmergencyKillSwitch", "class": "Thaumiel", "type": "security", "status": "active"},
+    {"name": "TelegramBot", "class": "Safe", "type": "alerts", "status": "active"},
+    {"name": "Backtester", "class": "Safe", "type": "analysis", "status": "active"},
+    {"name": "CoinbaseArbitrage", "class": "Euclid", "type": "arbitrage", "status": "active"},
+    {"name": "ReinforcementLearning", "class": "Euclid", "type": "ml", "status": "trained"},
+    {"name": "PricePredictor", "class": "Safe", "type": "ml", "status": "trained"},
+    {"name": "VoiceCommander", "class": "Safe", "type": "interface", "status": "active"},
+    {"name": "PortfolioAPI", "class": "Safe", "type": "api", "status": "active"},
+    {"name": "Dashboard", "class": "Safe", "type": "ui", "status": "active"},
+    {"name": "LineageTracker", "class": "Safe", "type": "tracking", "status": "active"},
+    {"name": "GeminiAssistant", "class": "Safe", "type": "ai", "status": "active"},
+    {"name": "DQNTrader", "class": "Euclid", "type": "reinforcement", "status": "trained"},
+    {"name": "LSTMPredictor", "class": "Safe", "type": "forecast", "status": "trained"},
+    {"name": "IntelligentTrader", "class": "Euclid", "type": "trading", "status": "active"},
+    {"name": "CascadeEngine", "class": "Thaumiel", "type": "orchestrator", "status": "active"},
+    {"name": "StrategyGenerator", "class": "Euclid", "type": "generation", "status": "active"},
+    {"name": "EvolutionAuditor", "class": "Thaumiel", "type": "evolution", "status": "active"}
+  ],
+  
+  "strategy_classification": {
+    "BOT": "Fast execution, rules-based, high confidence (>85%)",
+    "ENGINE": "State machine, multi-phase, cascade detection",
+    "ANCHOR": "Capital preservation, low risk, market unclear",
+    "OBSERVE": "New pattern, experimental, not yet trusted"
+  },
+  
+  "promoted_strategies": [
+    {"name": "Phantom ENGINE Watcher", "confidence": 77, "trigger": "BTC dumps >5% in 24h -> 3-week timer -> buy alts"},
+    {"name": "Oscillating OBSERVE Weaver", "confidence": 83, "trigger": "Fear & Greed >80 -> sell into strength"},
+    {"name": "Cascade BOT Rider", "confidence": 72, "trigger": "BTC confirms -> enter -> exit on momentum loss"},
+    {"name": "Quantum BOT Hunter", "confidence": 86, "trigger": "Pattern detected -> execute fast"}
+  ],
+  
+  "philosophy": {
+    "core_belief": "The market flows like water. BTC moves first. Large caps follow. Small caps pump last.",
+    "the_3_laws": [
+      "No entry without BTC confirmation",
+      "Respect the temporal lag — don't chase, let the cascade come to you",
+      "Exit before euphoria peaks — leave the last 10% for the greedy"
+    ],
+    "no_deletion_only_evolution": "Every strategy, every agent, every line of code is an ancestor. Nothing is ever deleted — only evolved."
+  },
+  
+  "api_endpoints": {
+    "base_url": "http://localhost:3011",
+    "endpoints": [
+      "GET  /api/status",
+      "GET  /api/agents",
+      "GET  /api/entropy",
+      "GET  /api/reports",
+      "GET  /api/intelligence/status",
+      "POST /api/intelligence/chat",
+      "POST /api/intelligence/trade",
+      "POST /api/intelligence/predict",
+      "POST /api/trade/decision",
+      "GET  /api/thresholds",
+      "GET  /api/philosophy",
+      "GET  /api/strategies/classify",
+      "GET  /api/strategies/obscure",
+      "GET  /api/fear-greed",
+      "GET  /api/context"
+    ]
+  },
+  
+  "visual_interfaces": {
+    "dashboard": "http://localhost:9000",
+    "emergent_monitor": "http://localhost:9000/emergent_standalone.html",
+    "editor": "http://localhost:9000/editor"
+  },
+  
+  "live_trading": {
+    "status": "PENDING",
+    "condition": "48 hours paper mode + 0 breaches",
+    "current_breaches": 0,
+    "hours_elapsed": 0,
+    "auto_enable": true
+  },
+  
+  "deployment": {
+    "platform": "Hetzner Cloud (planned)",
+    "current": "S24 Ultra (Termux)",
+    "next_step": "Migrate to VPS for 24/7 operation"
+  },
+  
+  "commands": {
+    "start": "./start.sh",
+    "stop": "./stop.sh",
+    "status": "./status.sh",
+    "restart": "./restart.sh",
+    "logs": "tail -f logs/legion.log",
+    "kill_switch": "curl -X POST http://localhost:3003/api/kill_switch"
+  },
+  
+  "fun_facts": [
+    "LEGION runs on a phone right now",
+    "31 agents, 3 AI models, built in 12 hours",
+    "The Strategy Generator invented the Echo Strategy on its own",
+    "0 loss in 2 market crashes",
+    "Can mutate itself when performance drops",
+    "Visualizes the market as particles that cluster and flow"
+  ],
+  
+  "signature": {
+    "author": "James Gilbert",
+    "date": "2026-04-24",
+    "version": "EV21.1",
+    "status": "READY FOR HETZNER DEPLOYMENT"
+  }
+}

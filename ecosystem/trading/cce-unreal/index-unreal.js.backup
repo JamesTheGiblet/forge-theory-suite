@@ -1,0 +1,278 @@
+#!/usr/bin/env node
+/**
+ * CCE Unreal Platform - The Unreal Engine of Trading
+ * Runs alongside original CCE Crypto on port 3001
+ */
+
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
+
+// Load Unreal platform config
+let config = {};
+try {
+    config = require('./config.unreal');
+    console.log('✓ Unreal config loaded');
+} catch(e) {
+    console.warn('⚠️  No config.unreal.js found, using defaults');
+    config = { platform: { port: 3001 }, go: { enabled: false } };
+}
+
+// Import registry modules - these export classes directly
+const EngineRegistry = require('./src/engine-registry');
+const LayerRegistry = require('./src/layer-registry');
+console.log('✓ EngineRegistry loaded');
+console.log('✓ LayerRegistry loaded');
+
+let GO = null;
+try {
+    GO = require('./src/cce-go-engine');
+    console.log('✓ G.O Orchestrator loaded');
+} catch(e) {
+    console.warn('⚠️  G.O not available');
+}
+
+const app = express();
+const PORT = config.platform?.port || 3001;
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.get('/docs', (req, res) => res.sendFile(path.join(__dirname, 'public/docs/index.html')));
+app.get('/docs/', (req, res) => res.sendFile(path.join(__dirname, 'public/docs/index.html')));
+app.get('/docs/files/*', (req, res) => {
+  const safe = req.params[0].replace(/\.\./g, '');
+  res.sendFile(path.join(__dirname, 'docs', safe), err => {
+    if (err) res.status(404).json({ error: 'Not found: ' + safe });
+  });
+});
+app.use(express.static('public'));
+
+let engineRegistry = null;
+let layerRegistry = null;
+
+// API Routes
+app.get('/api/health', (req, res) => {
+    res.json({ 
+        status: 'online', 
+        platform: config.platform?.name || 'CCE Unreal',
+        version: config.platform?.version || '1.0.0',
+        timestamp: new Date().toISOString()
+    });
+});
+
+app.get('/api/registry/overview', async (req, res) => {
+    try {
+        if (engineRegistry && engineRegistry.getAll) {
+            const engines = engineRegistry.getAll();
+            res.json({ 
+                status: 'running', 
+                engineCount: Object.keys(engines).length,
+                engines: Object.keys(engines).map(id => ({
+                    id,
+                    name: engines[id].name,
+                    type: engines[id].type,
+                    state: engines[id].state,
+                    isRunning: engines[id].isRunning
+                }))
+            });
+        } else {
+            res.json({ status: 'initializing', engines: [], message: 'Registry initializing' });
+        }
+    } catch(e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.get('/api/registry/engines', async (req, res) => {
+    try {
+        if (engineRegistry && engineRegistry.getAll) {
+            const engines = engineRegistry.getAll();
+            res.json(engines);
+        } else {
+            res.json({});
+        }
+    } catch(e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Serve pages
+app.get('/forge/builder', (req, res) => {
+    const builderPath = path.join(__dirname, 'public/forge/builder.html');
+    if (fs.existsSync(builderPath)) {
+        res.sendFile(builderPath);
+    } else {
+        res.status(404).send('<h1>Visual Builder</h1><p>Coming soon. Run: cp -r ~/cce-crypto/public/forge/* public/forge/</p>');
+    }
+});
+
+app.get('/forge/replay', (req, res) => {
+    const replayPath = path.join(__dirname, 'public/forge/replay.html');
+    if (fs.existsSync(replayPath)) {
+        res.sendFile(replayPath);
+    } else {
+        res.status(404).send('<h1>Backtest Replay</h1><p>Coming soon</p>');
+    }
+});
+
+app.get('/marketplace', (req, res) => {
+    const marketplacePath = path.join(__dirname, 'public/marketplace/index.html');
+    if (fs.existsSync(marketplacePath)) {
+        res.sendFile(marketplacePath);
+    } else {
+        res.status(404).send('<h1>Engine Marketplace</h1><p>Coming soon</p>');
+    }
+});
+
+app.get('/', (req, res) => {
+    res.redirect('/marketplace');
+});
+
+async function start() {
+    console.log('\n═══════════════════════════════════════════════════════');
+    console.log('🚀 CCE UNREAL PLATFORM — The Unreal Engine of Trading');
+    console.log('═══════════════════════════════════════════════════════\n');
+    
+    // Initialize engine registry
+    try {
+        // Need to pass config and dependencies
+        const dummyConfig = { engines: { defaultDryRun: true } };
+        const dummyNotifier = { emit: () => {} };
+        const dummyExchange = { getBalance: () => ({ free: { USD: 10000 } }) };
+        
+        engineRegistry = new EngineRegistry(dummyConfig, dummyNotifier, dummyExchange);
+        
+        const enginesPath = path.join(__dirname, 'engines');
+        if (fs.existsSync(enginesPath)) {
+            await engineRegistry.scan();
+            const allEngines = engineRegistry.getAll();
+            const engineCount = Object.keys(allEngines).length;
+            console.log(`📦 Engine Registry: ${engineCount} engines loaded`);
+ 
+  // Start cycle runner after engines are loaded
+  startCycleRunner();
+            
+            if (engineCount > 0) {
+                Object.entries(allEngines).slice(0, 5).forEach(([id, engine]) => {
+                    console.log(`   ├─ ${engine.name || id} (${id}) — ${engine.type || 'STRATEGIC'}`);
+                });
+                if (engineCount > 5) {
+                    console.log(`   └─ ... and ${engineCount - 5} more`);
+                }
+            } else {
+                console.log('   └─ No engines found in engines/ folder');
+            }
+        } else {
+            console.log('📦 Engine Registry: engines/ folder not found');
+ 
+  // Start cycle runner after engines are loaded
+  startCycleRunner();
+            console.log('   Create one with: mkdir engines && cce new-engine my-first-engine');
+        }
+    } catch(e) {
+        console.error('❌ Engine registry error:', e.message);
+        console.error(e.stack);
+    }
+    
+    // Initialize layer registry
+    try {
+        layerRegistry = new LayerRegistry();
+        const layersPath = path.join(__dirname, 'ai-layers');
+        if (fs.existsSync(layersPath)) {
+            await layerRegistry.scan();
+            console.log(`🧠 Layer Registry: AI layers ready`);
+        } else {
+            console.log('🧠 Layer Registry: ai-layers/ folder not found');
+        }
+    } catch(e) {
+        console.error('❌ Layer registry error:', e.message);
+    }
+    
+    // G.O status
+    if (GO && config.go && config.go.enabled) {
+        console.log('🎛️  G.O Orchestrator: ACTIVE');
+    } else {
+        console.log('🎛️  G.O Orchestrator: DISABLED (set go.enabled=true in config.unreal.js)');
+    }
+    
+    // Start server
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log('\n═══════════════════════════════════════════════════════');
+        console.log(`✨ CCE UNREAL PLATFORM READY`);
+        console.log(`   URL:      http://localhost:${PORT}`);
+        console.log(`   Builder:  http://localhost:${PORT}/forge/builder`);
+        console.log(`   Replay:   http://localhost:${PORT}/forge/replay`);
+        console.log(`   Market:   http://localhost:${PORT}/marketplace`);
+        console.log(`   Registry: http://localhost:${PORT}/api/registry/overview`);
+        console.log('═══════════════════════════════════════════════════════\n');
+    });
+}
+
+process.on('SIGINT', () => {
+    console.log('\n🛑 Shutting down CCE Unreal Platform...');
+    process.exit(0);
+});
+
+start().catch(error => {
+    console.error('❌ Fatal error:', error);
+    process.exit(1);
+});
+
+// Serve documentation
+app.use('/docs', express.static(path.join(__dirname, 'docs')));
+console.log('✓ Docs route added at /docs');
+
+// Endpoint for cycle runner to update engine cycles
+app.post('/api/engine/cycle', (req, res) => {
+  const { id, state, cycleCount, obsCount } = req.body;
+  if (engineRegistry && engineRegistry.engines && engineRegistry.engines[id]) {
+    const engine = engineRegistry.engines[id];
+    if (engine) {
+      engine.state = state;
+      engine.cycleCount = cycleCount;
+      if (obsCount !== undefined) engine.obsCount = obsCount;
+      res.json({ success: true });
+    } else {
+      res.json({ success: false, error: 'Engine not found' });
+    }
+  } else {
+    res.json({ success: false, error: 'Registry not ready' });
+  }
+});
+
+// Internal cycle runner - runs cycles for all engines every 10 seconds
+let cycleInterval = null;
+
+async function runEngineCycles() {
+  if (!engineRegistry || !engineRegistry.getAll) return;
+  
+  const engines = engineRegistry.getAll();
+  const engineIds = Object.keys(engines);
+  if (engineIds.length === 0) return;
+  
+  const timestamp = new Date().toISOString().substring(11, 19);
+  console.log(`\n⏰ [${timestamp}] Running cycles for ${engineIds.length} engines`);
+  
+  for (const [id, engine] of Object.entries(engines)) {
+    try {
+      if (typeof engine.runCycle === 'function') {
+        await engine.runCycle();
+        const state = engine.getState ? engine.getState() : engine.state;
+        const cycleCount = engine.cycleCount || 0;
+        console.log(`   ✓ ${id}: ${state} (cycle ${cycleCount})`);
+      }
+    } catch (err) {
+      console.log(`   ✗ ${id}: ${err.message}`);
+    }
+  }
+}
+
+function startCycleRunner(intervalMs = 10000) {
+  if (cycleInterval) clearInterval(cycleInterval);
+  cycleInterval = setInterval(runEngineCycles, intervalMs);
+  console.log(`🔄 Cycle runner started (interval: ${intervalMs}ms)`);
+}
+
+// Call this after engines are loaded, near the end of start() function
+// We'll add the call right after engines are loaded.

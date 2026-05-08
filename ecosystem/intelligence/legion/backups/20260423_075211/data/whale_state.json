@@ -1,0 +1,48 @@
+{
+  "lastTxId": null,
+  "alerts": [],
+  "lastCheck": 1776767633145,
+  "summary": {
+    "totalValue": 130000000,
+    "largestTx": {
+      "id": "mock_1776767633143",
+      "symbol": "BTC",
+      "amount": 1250,
+      "amount_usd": 95000000,
+      "transaction_type": "transfer",
+      "hash": "0xmock...",
+      "from": {
+        "address": "Unknown Whale",
+        "owner_type": "exchange"
+      },
+      "to": {
+        "address": "Cold Wallet",
+        "owner_type": "private"
+      },
+      "timestamp": 1776767633143
+    },
+    "recentTxs": [
+      {
+        "symbol": "BTC",
+        "amount": 1250,
+        "value": 95000000,
+        "from": "exchange",
+        "to": "private",
+        "timestamp": 1776767633143
+      },
+      {
+        "symbol": "ETH",
+        "amount": 15000,
+        "value": 35000000,
+        "from": "exchange",
+        "to": "private",
+        "timestamp": 1776764033143
+      }
+    ],
+    "assets": {
+      "BTC": 1,
+      "ETH": 1
+    },
+    "sentiment": "neutral"
+  }
+}

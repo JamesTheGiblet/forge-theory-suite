@@ -1,0 +1,56 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "legion/dist-worker",
+  "object_class": "Euclid",
+  "intent": "Listen for remote evaluation requests, run backtest and forward validation, then emit results back to the orchestrator node.",
+  "containment": {
+    "read_only": false,
+    "audit_log": true,
+    "kill_switch": true
+  },
+  "provenance": {
+    "author": "James / Giblets Creations",
+    "created_at": "2026-05-05T23:30:00Z",
+    "version": "1.0.0",
+    "context": "UBVM 2.0 distributed network worker."
+  },
+  "behaviours": [
+    {
+      "trigger": "on_event",
+      "event": "dist.strategy.evaluate",
+      "actions": [
+        {
+          "primitive": "split_data",
+          "params": { "input_path": "data/btcusdt_5m.csv" }
+        },
+        {
+          "primitive": "backtest",
+          "params": {
+            "strategy": "$context.event.payload.strategy_path",
+            "data_path": "data/train.csv"
+          }
+        },
+        {
+          "primitive": "forward_validate",
+          "params": {
+            "strategy": "$context.event.payload.strategy_path",
+            "data_path": "data/test.csv",
+            "backtest_metrics": "$results.1.metrics"
+          }
+        },
+        {
+          "primitive": "emit_remote_event",
+          "params": {
+            "target_url": "$context.event.payload.reply_to",
+            "event": "validation.complete",
+            "payload": {
+              "strategy_name": "$results.2.strategy_name",
+              "fitness_score": "$results.2.fitness_score",
+              "strategy_path": "$results.2.output_path"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

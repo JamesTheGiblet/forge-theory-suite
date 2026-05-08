@@ -1,0 +1,17 @@
+logs/
+data/
+results/
+anchors/
+strategies/raw/
+strategies/mutated/
+strategies/selected/
+__pycache__/
+extensions/trading/__pycache__/
+interpreter-1.py
+!logs/.gitkeep
+!data/.gitkeep
+!results/.gitkeep
+!anchors/.gitkeep
+!strategies/raw/.gitkeep
+!strategies/mutated/.gitkeep
+!strategies/selected/.gitkeep

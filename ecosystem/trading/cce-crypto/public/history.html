@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>CCE · Portfolio History</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { background:#FFFFFF; font-family:'Inter',-apple-system,sans-serif; color:#0A2540; }
+
+.header {
+  background: linear-gradient(135deg,#0A2540,#0066FF);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.header-title { color:#fff; font-size:18px; font-weight:700; }
+.header-back { color:rgba(255,255,255,0.8); font-size:14px; text-decoration:none; }
+
+.summary-strip {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 1px;
+  background: #F0F2F5;
+  border-bottom: 1px solid #F0F2F5;
+}
+.summary-cell {
+  background: #fff;
+  padding: 14px 12px;
+  text-align: center;
+}
+.summary-val {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0066FF;
+  display: block;
+}
+.summary-val.green { color: #10b981; }
+.summary-val.red   { color: #ef4444; }
+.summary-lbl {
+  font-size: 10px;
+  font-weight: 500;
+  color: #8DA0B0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+  display: block;
+}
+
+.range-btns {
+  display: flex;
+  gap: 6px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.range-btns::-webkit-scrollbar { display:none; }
+.range-btn {
+  padding: 6px 16px;
+  border-radius: 40px;
+  border: 1px solid #E5E7EB;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8DA0B0;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.range-btn.active {
+  background: #0066FF;
+  border-color: #0066FF;
+  color: #fff;
+}
+
+.chart-wrap {
+  padding: 0 16px 16px;
+  height: 280px;
+  position: relative;
+}
+
+.state-legend {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px 12px;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: #8DA0B0;
+  font-weight: 500;
+}
+.legend-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+
+.cycles-section { padding: 0 16px 24px; }
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0A2540;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.cycle-row {
+  display: grid;
+  grid-template-columns: 80px 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid #F0F2F5;
+  font-size: 12px;
+}
+.cycle-date { color: #8DA0B0; font-size: 11px; }
+.cycle-state {
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  width: fit-content;
+}
+.state-DORMANT    { background:#EEF2F6; color:#2C3E50; }
+.state-WATCHING   { background:#FFF3E0; color:#C97E0A; }
+.state-IGNITION   { background:#E0F2E9; color:#0F7B3A; }
+.state-CASCADE    { background:#E0EEFF; color:#0066FF; }
+.state-EXTRACTION { background:#FFECEE; color:#D1453B; }
+.cycle-val { font-weight: 700; color:#0A2540; text-align:right; }
+.cycle-ret {
+  font-size: 11px;
+  font-weight: 600;
+  text-align: right;
+  min-width: 50px;
+}
+.ret-pos { color: #10b981; }
+.ret-neg { color: #ef4444; }
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #8DA0B0;
+  font-size: 14px;
+}
+
+.btc-overlay-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px 8px;
+  font-size: 12px;
+  color: #8DA0B0;
+  cursor: pointer;
+}
+.toggle-switch {
+  width: 32px; height: 18px;
+  background: #D4AF37;
+  border-radius: 9px;
+  position: relative;
+  transition: background 0.2s;
+}
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  width: 14px; height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  top: 2px; right: 2px;
+  transition: right 0.2s;
+}
+.toggle-switch.off { background: #E5E7EB; }
+.toggle-switch.off::after { right: auto; left: 2px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a class="header-back" href="/">← Dashboard</a>
+  <span class="header-title">Portfolio History</span>
+  <span style="width:60px"></span>
+</div>
+
+<div class="summary-strip">
+  <div class="summary-cell">
+    <span class="summary-val" id="currentVal">$--</span>
+    <span class="summary-lbl">Current</span>
+  </div>
+  <div class="summary-cell">
+    <span class="summary-val green" id="totalReturn">--%</span>
+    <span class="summary-lbl">Total Return</span>
+  </div>
+  <div class="summary-cell">
+    <span class="summary-val" id="totalCycles">--</span>
+    <span class="summary-lbl">Cycles</span>
+  </div>
+</div>
+
+<div class="range-btns">
+  <button class="range-btn" onclick="setRange(7,this)">7D</button>
+  <button class="range-btn active" onclick="setRange(30,this)">30D</button>
+  <button class="range-btn" onclick="setRange(90,this)">90D</button>
+  <button class="range-btn" onclick="setRange(180,this)">6M</button>
+  <button class="range-btn" onclick="setRange(365,this)">1Y</button>
+  <button class="range-btn" onclick="setRange(9999,this)">ALL</button>
+</div>
+
+<div class="chart-wrap">
+  <canvas id="histChart"></canvas>
+</div>
+
+<div class="btc-overlay-toggle" onclick="toggleBTC()">
+  <div class="toggle-switch" id="btcToggle"></div>
+  <span>Show BTC price overlay</span>
+</div>
+
+<div class="state-legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#EEF2F6;border:1px solid #ccc"></div>DORMANT</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#FFF3E0"></div>WATCHING</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#E0F2E9"></div>IGNITION</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#E0EEFF"></div>CASCADE</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#FFECEE"></div>EXTRACTION</div>
+</div>
+
+<div class="cycles-section">
+  <div class="section-title">Recent Cycles</div>
+  <div id="cycleList"><div class="loading">Loading...</div></div>
+</div>
+
+<script>
+let allData = [];
+let chart = null;
+let showBTC = false;
+let currentRange = 30;
+
+const STATE_COLORS = {
+  DORMANT:    'rgba(238,242,246,0.5)',
+  WATCHING:   'rgba(255,243,224,0.5)',
+  IGNITION:   'rgba(224,242,233,0.5)',
+  CASCADE:    'rgba(224,238,255,0.5)',
+  EXTRACTION: 'rgba(255,236,238,0.5)'
+};
+
+async function loadData() {
+  try {
+    const res = await fetch('/api/history?limit=1000');
+    let rows = await res.json();
+    if (!Array.isArray(rows)) rows = [rows];
+    allData = rows.filter(r => r.portfolio_value > 0).reverse();
+    updateSummary();
+    renderChart(currentRange);
+    renderCycles();
+  } catch(e) {
+    document.getElementById('cycleList').innerHTML = '<div class="loading">Failed to load data</div>';
+  }
+}
+
+function updateSummary() {
+  if (!allData.length) return;
+  const latest = allData[allData.length - 1];
+  const first  = allData[0];
+  const ret    = ((latest.portfolio_value - first.portfolio_value) / first.portfolio_value * 100);
+  document.getElementById('currentVal').textContent  = '$' + latest.portfolio_value.toFixed(2);
+  document.getElementById('totalReturn').textContent = (ret >= 0 ? '+' : '') + ret.toFixed(1) + '%';
+  document.getElementById('totalReturn').className   = 'summary-val ' + (ret >= 0 ? 'green' : 'red');
+  document.getElementById('totalCycles').textContent = allData.length;
+}
+
+function setRange(days, el) {
+  document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  currentRange = days;
+  renderChart(days);
+}
+
+function renderChart(days) {
+  const cutoff = days === 9999 ? 0 : Date.now() - days * 86400000;
+  const data   = allData.filter(r => new Date(r.timestamp).getTime() >= cutoff);
+  if (!data.length) return;
+
+  // Downsample if too many points
+  const maxPts = 60;
+  const step   = Math.max(1, Math.floor(data.length / maxPts));
+  const pts    = data.filter((_, i) => i % step === 0 || i === data.length - 1);
+
+  const labels   = pts.map(r => new Date(r.timestamp).toLocaleDateString('en-GB', {day:'numeric',month:'short'}));
+  const portVals = pts.map(r => r.portfolio_value);
+  const btcVals  = pts.map(r => r.btc_price);
+
+  const datasets = [{
+    label: 'Portfolio ($)',
+    data: portVals,
+    borderColor: '#0066FF',
+    backgroundColor: 'rgba(0,102,255,0.08)',
+    fill: true,
+    tension: 0.4,
+    pointRadius: pts.length > 30 ? 0 : 3,
+    borderWidth: 2,
+    yAxisID: 'y'
+  }];
+
+  if (showBTC) {
+    datasets.push({
+      label: 'BTC Price ($)',
+      data: btcVals,
+      borderColor: '#D4AF37',
+      backgroundColor: 'transparent',
+      fill: false,
+      tension: 0.4,
+      pointRadius: 0,
+      borderWidth: 1.5,
+      borderDash: [4,4],
+      yAxisID: 'y2'
+    });
+  }
+
+  const el = document.getElementById('histChart');
+  if (chart) { chart.destroy(); chart = null; }
+
+  chart = new Chart(el, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: showBTC, position: 'bottom', labels: { font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: ctx => ctx.dataset.yAxisID === 'y2'
+              ? 'BTC: $' + ctx.raw.toLocaleString()
+              : 'Portfolio: $' + ctx.raw.toFixed(2)
+          }
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { maxTicksLimit: 6, font: { size: 10 }, color: '#8DA0B0' } },
+        y: {
+          beginAtZero: false,
+          grid: { color: 'rgba(0,0,0,0.04)' },
+          ticks: { callback: v => '$' + v.toFixed(0), font: { size: 10 }, color: '#8DA0B0' }
+        },
+        ...(showBTC ? { y2: {
+          position: 'right',
+          beginAtZero: false,
+          grid: { display: false },
+          ticks: { callback: v => '$' + v.toLocaleString(), font: { size: 9 }, color: '#D4AF37' }
+        }} : {})
+      }
+    }
+  });
+}
+
+function renderCycles() {
+  const recent = allData.slice().reverse().slice(0, 50);
+  const list = document.getElementById('cycleList');
+  if (!recent.length) { list.innerHTML = '<div class="loading">No data yet</div>'; return; }
+
+  list.innerHTML = recent.map((r, i) => {
+    const prev = recent[i + 1];
+    const ret  = prev ? ((r.portfolio_value - prev.portfolio_value) / prev.portfolio_value * 100) : 0;
+    const retStr = prev ? (ret >= 0 ? '+' : '') + ret.toFixed(2) + '%' : '--';
+    const retClass = ret >= 0 ? 'ret-pos' : 'ret-neg';
+    const date = new Date(r.timestamp).toLocaleDateString('en-GB', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    return `<div class="cycle-row">
+      <span class="cycle-date">${date}</span>
+      <span class="cycle-state state-${r.current_state||'DORMANT'}">${r.current_state||'DORMANT'}</span>
+      <span class="cycle-val">$${r.portfolio_value.toFixed(2)}</span>
+      <span class="cycle-ret ${retClass}">${retStr}</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleBTC() {
+  showBTC = !showBTC;
+  document.getElementById('btcToggle').className = 'toggle-switch' + (showBTC ? '' : ' off');
+  renderChart(currentRange);
+}
+
+loadData();
+</script>
+</body>
+</html>

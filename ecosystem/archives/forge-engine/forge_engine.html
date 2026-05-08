@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Forge Engine Template</title>
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ==========================================================================
+           ZONE 1: THEME & STYLING
+           Change these colors to "skin" your app (Green for money, Red for health, etc.)
+           ========================================================================== */
+        :root {
+            /* Currently set to a "Tech Blue" theme */
+            --primary: #2563eb;       /* Main Brand Color */
+            --primary-light: #60a5fa; /* Lighter shade for gradients */
+            --primary-dark: #1e40af;  /* Darker shade for text/contrast */
+            --secondary: #10b981;     /* Accent/Success Color */
+            --bg-gradient-start: #f8fafc;
+            --bg-gradient-end: #e2e8f0;
+            
+            /* Structural Colors (Rarely need changing) */
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark-text: #1e293b;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+        }
+
+        /* --- CORE ENGINE CSS (Do not touch unless you want to change layout) --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end)); color: var(--dark-text); padding-bottom: 80px; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+        
+        /* Header */
+        .header { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; padding: 16px; text-align: center; position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow); }
+        .header h1 { font-size: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        
+        /* Tab Nav */
+        .tab-nav { background: white; position: sticky; top: 70px; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow-x: auto; }
+        .tab-buttons { display: flex; min-width: 100%; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: none; border-bottom: 3px solid transparent; font-weight: 600; color: #64748b; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.8rem; }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
+        .tab-content { display: none; padding: 20px 0; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Cards & Inputs */
+        .card { background: var(--card-bg); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow); }
+        .card-header h3 { color: var(--primary-dark); display: flex; align-items: center; gap: 8px; font-size: 1.1rem; margin-bottom: 15px; }
+        
+        /* Range Sliders */
+        .slider-group { margin-bottom: 20px; }
+        .slider-label { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 500; }
+        .slider-val { background: #f1f5f9; padding: 4px 12px; border-radius: 12px; color: var(--primary); font-weight: 700; font-size: 0.9rem; }
+        input[type=range] { width: 100%; height: 6px; background: #cbd5e1; border-radius: 3px; outline: none; -webkit-appearance: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; background: var(--primary); border-radius: 50%; cursor: pointer; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+
+        /* Toggles & Radios */
+        .radio-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .radio-btn { padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .radio-btn.selected { border-color: var(--primary); background: rgba(37, 99, 235, 0.1); color: var(--primary-dark); font-weight: 600; }
+        
+        .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .toggle-switch { position: relative; width: 44px; height: 24px; background: #cbd5e1; border-radius: 12px; transition: 0.3s; cursor: pointer; }
+        .toggle-switch::after { content: ''; position: absolute; left: 2px; top: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: 0.3s; }
+        input:checked + .toggle-switch { background: var(--secondary); }
+        input:checked + .toggle-switch::after { transform: translateX(20px); }
+
+        /* Metrics Grid */
+        .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        .metric-box { background: #f8fafc; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #e2e8f0; }
+        .metric-val { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+        .metric-lbl { font-size: 0.8rem; color: #64748b; margin-top: 4px; }
+
+        /* Items Grid (Was Drinks) */
+        .item-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .item-card { background: #f8fafc; padding: 15px; border-radius: 8px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
+        .item-card:active { transform: scale(0.95); border-color: var(--primary); }
+        .item-icon { font-size: 1.5rem; margin-bottom: 5px; }
+
+        /* Progress Bars */
+        .prog-bar-container { margin-bottom: 15px; }
+        .prog-label { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem; font-weight: 500; }
+        .prog-bg { height: 10px; background: #e2e8f0; border-radius: 5px; overflow: hidden; }
+        .prog-fill { height: 100%; background: var(--secondary); transition: width 0.5s; }
+        .prog-fill.high { background: var(--danger); }
+        .prog-fill.med { background: var(--warning); }
+
+        /* Chart */
+        #chart-container { width: 100%; height: 350px; overflow: hidden; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1><i class="fas fa-cubes"></i> Forge Template</h1>
+        <div style="font-size: 0.8rem; opacity: 0.9;">Generic Modeling Engine</div>
+    </div>
+
+    <div class="tab-nav">
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('tab-calc', this)">
+                <i class="fas fa-calculator"></i> Calculator
+            </button>
+            <button class="tab-btn" onclick="switchTab('tab-items', this)">
+                <i class="fas fa-plus-circle"></i> Builder
+            </button>
+            <button class="tab-btn" onclick="switchTab('tab-data', this)">
+                <i class="fas fa-chart-pie"></i> Analysis
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <div id="tab-calc" class="tab-content active">
+            
+            <div class="card">
+                <div id="chart-container"></div>
+            </div>
+
+            <div class="card">
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="metric-val" id="disp-metric-1">0</div>
+                        <div class="metric-lbl">Primary Output</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-val" id="disp-metric-2">0%</div>
+                        <div class="metric-lbl">Efficiency</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h3><i class="fas fa-sliders-h"></i> Input Variables</h3></div>
+                
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Variable A (e.g., Money)</span>
+                        <span class="slider-val" id="val-varA">50</span>
+                    </div>
+                    <input type="range" id="input-varA" min="0" max="100" value="50" oninput="updateEngine()">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Variable B (e.g., Time)</span>
+                        <span class="slider-val" id="val-varB">2.5</span>
+                    </div>
+                    <input type="range" id="input-varB" min="0.5" max="5.0" step="0.1" value="2.5" oninput="updateEngine()">
+                </div>
+
+                <div class="radio-group">
+                    <div class="radio-btn selected" onclick="setMode('low', this)">Conservative</div>
+                    <div class="radio-btn" onclick="setMode('med', this)">Balanced</div>
+                    <div class="radio-btn" onclick="setMode('high', this)">Aggressive</div>
+                </div>
+
+                <div class="toggle-row">
+                    <span><i class="fas fa-bolt"></i> Enable Turbo Mode</span>
+                    <label>
+                        <input type="checkbox" id="toggle-turbo" onchange="updateEngine()" style="display:none;">
+                        <div class="toggle-switch"></div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-items" class="tab-content">
+            <div class="card">
+                <div class="card-header"><h3><i class="fas fa-list"></i> Add Stackable Items</h3></div>
+                <div class="item-grid" id="preset-grid">
+                    </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><h3>Active Stack</h3></div>
+                <div id="active-stack-list" style="color: #64748b; text-align: center; padding: 20px;">
+                    No items added yet.
+                </div>
+                <button onclick="clearStack()" style="width:100%; padding:12px; background:var(--danger); color:white; border:none; border-radius:8px; margin-top:10px;">Clear All</button>
+            </div>
+        </div>
+
+        <div id="tab-data" class="tab-content">
+            <div class="card">
+                <div class="card-header"><h3><i class="fas fa-tachometer-alt"></i> Impact Assessment</h3></div>
+                
+                <div class="prog-bar-container">
+                    <div class="prog-label">
+                        <span>Risk Factor</span>
+                        <span id="lbl-risk">0%</span>
+                    </div>
+                    <div class="prog-bg"><div class="prog-fill" id="bar-risk" style="width: 0%"></div></div>
+                </div>
+
+                <div class="prog-bar-container">
+                    <div class="prog-label">
+                        <span>Sustainability</span>
+                        <span id="lbl-sust">0%</span>
+                    </div>
+                    <div class="prog-bg"><div class="prog-fill" id="bar-sust" style="width: 0%"></div></div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header"><h3><i class="fas fa-lightbulb"></i> AI Recommendations</h3></div>
+                <div id="recommendation-text" style="font-size: 0.9rem; line-height: 1.6;">
+                    Adjust inputs to generate recommendations.
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 1. CONFIGURATION: Define your Items and Defaults ---
+        const config = {
+            mode: 'low', // default mode
+            presets: [
+                { id: 1, name: 'Small Unit', value: 10, icon: '🔹' },
+                { id: 2, name: 'Medium Unit', value: 25, icon: '🔷' },
+                { id: 3, name: 'Large Unit', value: 50, icon: '🟦' },
+                { id: 4, name: 'Booster', value: 15, icon: '🚀' },
+                { id: 5, name: 'Dampener', value: -10, icon: '🛡️' },
+                { id: 6, name: 'Wildcard', value: 100, icon: '🃏' }
+            ]
+        };
+
+        // State Container
+        let state = {
+            varA: 50,
+            varB: 2.5,
+            isTurbo: false,
+            stack: [] // Array to hold added items
+        };
+
+        // --- 2. THE ENGINE LOOP: Triggers on every user interaction ---
+        function updateEngine() {
+            // A. Get latest DOM values
+            state.varA = parseFloat(document.getElementById('input-varA').value);
+            state.varB = parseFloat(document.getElementById('input-varB').value);
+            state.isTurbo = document.getElementById('toggle-turbo').checked;
+
+            // B. Run the Math Model
+            const results = calculateModel(state);
+
+            // C. Update the UI
+            renderChart(results);
+            updateMetrics(results);
+            updateLabels();
+        }
+
+        // --- 3. THE MATH MODEL: Replace this with your specific Formula ---
+        function calculateModel(input) {
+            // EXAMPLE MATH: A generic curve based on inputs
+            
+            // 1. Calculate Base Value (e.g., Total Inputs + Stack Items)
+            let stackTotal = input.stack.reduce((sum, item) => sum + item.value, 0);
+            let base = input.varA + stackTotal;
+
+            // 2. Apply Multipliers (Mode & Variable B)
+            let multiplier = input.varB;
+            if (config.mode === 'med') multiplier *= 1.2;
+            if (config.mode === 'high') multiplier *= 1.5;
+            if (input.isTurbo) multiplier *= 2.0;
+
+            // 3. Generate Curve Data (X and Y arrays)
+            let xData = [];
+            let yData = [];
+            
+            // Generate 20 points generic curve
+            for (let i = 0; i <= 20; i++) {
+                xData.push(i);
+                // Fake Formula: Quadratic curve that plateaus
+                let y = base * Math.log(i + 1) * multiplier; 
+                yData.push(y);
+            }
+
+            // 4. Calculate Derived Metrics (Risks, Efficiency, etc.)
+            let maxVal = Math.max(...yData);
+            let riskScore = (maxVal > 500) ? 90 : (maxVal / 500) * 100;
+            
+            return {
+                x: xData,
+                y: yData,
+                totalValue: Math.round(maxVal),
+                efficiency: Math.round((base / maxVal) * 100) || 0,
+                risk: riskScore,
+                sustainability: 100 - (riskScore * 0.8)
+            };
+        }
+
+        // --- 4. RENDERERS (Chart & Metrics) ---
+        function renderChart(data) {
+            const trace = {
+                x: data.x,
+                y: data.y,
+                mode: 'lines',
+                fill: 'tozeroy', // Fills area under line
+                line: { color: getComputedStyle(document.documentElement).getPropertyValue('--primary'), width: 3 }
+            };
+
+            const layout = {
+                margin: { t: 20, r: 20, l: 40, b: 40 }, // Tight margins for mobile
+                height: 350,
+                showlegend: false,
+                xaxis: { title: 'Time / Units' },
+                yaxis: { title: 'Output Value' },
+                paper_bgcolor: 'rgba(0,0,0,0)', // Transparent bg
+                plot_bgcolor: 'rgba(0,0,0,0)'
+            };
+
+            Plotly.newPlot('chart-container', [trace], layout, {displayModeBar: false});
+        }
+
+        function updateMetrics(data) {
+            // Top Cards
+            document.getElementById('disp-metric-1').textContent = data.totalValue;
+            document.getElementById('disp-metric-2').textContent = data.efficiency + '%';
+
+            // Progress Bars
+            updateBar('risk', data.risk);
+            updateBar('sust', data.sustainability);
+
+            // Recommendations logic
+            let rec = "System is running stable.";
+            if (data.risk > 70) rec = "Warning: Output is too high. Consider reducing Variable A or disabling Turbo.";
+            else if (data.totalValue < 100) rec = "Output is low. Try adding Items from the Builder tab.";
+            document.getElementById('recommendation-text').textContent = rec;
+        }
+
+        // --- 5. UTILITIES (UI Helpers) ---
+        function updateLabels() {
+            document.getElementById('val-varA').textContent = state.varA;
+            document.getElementById('val-varB').textContent = state.varB;
+        }
+
+        function updateBar(id, val) {
+            const bar = document.getElementById('bar-' + id);
+            const lbl = document.getElementById('lbl-' + id);
+            val = Math.max(0, Math.min(100, val)); // Clamp 0-100
+            
+            bar.style.width = val + '%';
+            lbl.textContent = Math.round(val) + '%';
+            
+            // Color Logic
+            bar.className = 'prog-fill';
+            if(val > 80) bar.classList.add('high');
+            else if(val > 50) bar.classList.add('med');
+        }
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+            // Resize chart when switching to it (fixes Plotly sizing bug)
+            if(tabId === 'tab-calc') Plotly.Plots.resize('chart-container');
+        }
+
+        function setMode(mode, btn) {
+            config.mode = mode;
+            document.querySelectorAll('.radio-btn').forEach(el => el.classList.remove('selected'));
+            btn.classList.add('selected');
+            updateEngine();
+        }
+
+        // --- 6. ITEM BUILDER LOGIC ---
+        function initPresets() {
+            const grid = document.getElementById('preset-grid');
+            config.presets.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'item-card';
+                div.innerHTML = `<div class="item-icon">${item.icon}</div><div>${item.name}</div><small>${item.value}</small>`;
+                div.onclick = () => addItem(item);
+                grid.appendChild(div);
+            });
+        }
+
+        function addItem(item) {
+            state.stack.push(item);
+            renderStack();
+            updateEngine(); // Recalculate with new items
+        }
+
+        function clearStack() {
+            state.stack = [];
+            renderStack();
+            updateEngine();
+        }
+
+        function renderStack() {
+            const list = document.getElementById('active-stack-list');
+            if (state.stack.length === 0) {
+                list.innerHTML = "No items added yet.";
+                return;
+            }
+            list.innerHTML = state.stack.map(i => `<span style="display:inline-block; background:#e2e8f0; padding:4px 8px; border-radius:4px; margin:2px;">${i.icon} ${i.name}</span>`).join('');
+        }
+
+        // --- INITIALIZATION ---
+        initPresets();
+        updateEngine();
+
+    </script>
+</body>
+</html>

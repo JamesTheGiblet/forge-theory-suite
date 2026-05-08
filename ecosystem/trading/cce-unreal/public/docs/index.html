@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>CCE Docs</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Share+Tech+Mono&family=Rajdhani:wght@500;600&display=swap');
+:root{--gold:#c9a84c;--gold2:#e8c96a;--cyan:#00d4ff;--bg:#09090c;--bg2:#0e1014;--bg3:#131619;--border:rgba(201,168,76,0.2);--dim:rgba(255,255,255,0.05);--text:#e4dcc8;--muted:#5a5448;--mid:#9a9080;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{height:48px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0;position:sticky;top:0;z-index:50;}
+.topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4;}
+.logo{font-family:'Oswald',sans-serif;font-size:16px;font-weight:700;letter-spacing:2px;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;flex-shrink:0;}
+.topbar-title{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);}
+.topbar-path{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold);margin-left:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:50%;}
+.menu-btn{background:transparent;border:1px solid var(--border);color:var(--gold);width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;flex-shrink:0;border-radius:2px;}
+.layout{display:flex;flex:1;min-height:0;}
+.sidebar{width:260px;background:var(--bg2);border-right:1px solid var(--dim);overflow-y:auto;flex-shrink:0;transition:transform 0.25s cubic-bezier(.32,.72,0,1);}
+@media(max-width:680px){.sidebar{position:fixed;top:48px;bottom:0;left:0;z-index:40;transform:translateX(-100%);width:280px;}.sidebar.open{transform:translateX(0);}.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:39;display:none;}.sidebar-overlay.open{display:block;}}
+.sidebar-section{padding:6px 0;border-bottom:1px solid var(--dim);}
+.sidebar-section-title{padding:8px 14px 4px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);}
+.nav-item{display:block;padding:7px 14px 7px 20px;font-size:13px;font-weight:500;color:var(--mid);cursor:pointer;transition:all .12s;border-left:2px solid transparent;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nav-item:hover{color:var(--text);background:var(--dim);}
+.nav-item.active{color:var(--gold);border-left-color:var(--gold);background:rgba(201,168,76,0.05);}
+.content{flex:1;overflow-y:auto;padding:32px 28px;max-width:800px;min-width:0;}
+@media(max-width:680px){.content{padding:20px 16px;}}
+.md h1{font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;letter-spacing:1px;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;line-height:1.2;}
+.md h2{font-family:'Oswald',sans-serif;font-size:20px;font-weight:600;letter-spacing:1px;color:var(--text);margin:32px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.md h3{font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;letter-spacing:1px;color:var(--gold);margin:24px 0 8px;}
+.md h4{font-size:14px;font-weight:600;color:var(--cyan);margin:16px 0 6px;font-family:'Share Tech Mono',monospace;letter-spacing:1px;}
+.md p{line-height:1.75;color:var(--text);margin-bottom:12px;font-weight:500;}
+.md a{color:var(--gold);text-decoration:none;}
+.md a:hover{text-decoration:underline;}
+.md ul,.md ol{padding-left:20px;margin-bottom:12px;}
+.md li{line-height:1.75;margin-bottom:3px;color:var(--text);font-weight:500;}
+.md li::marker{color:var(--gold);}
+.md strong{color:var(--gold2);font-weight:700;}
+.md em{color:var(--mid);font-style:italic;}
+.md blockquote{border-left:3px solid var(--gold);padding:8px 16px;margin:16px 0;background:rgba(201,168,76,0.05);color:var(--mid);font-style:italic;}
+.md hr{border:none;border-top:1px solid var(--border);margin:28px 0;}
+.md code{font-family:'Share Tech Mono',monospace;font-size:11px;background:var(--bg3);border:1px solid var(--dim);padding:1px 5px;border-radius:2px;color:var(--cyan);}
+.md pre{background:var(--bg2);border:1px solid var(--dim);border-left:3px solid var(--border);padding:14px 16px;border-radius:2px;overflow-x:auto;margin:12px 0 16px;}
+.md pre code{background:transparent;border:none;padding:0;font-size:11px;color:var(--text);line-height:1.7;}
+.md table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;}
+.md th{background:var(--bg3);padding:8px 12px;text-align:left;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--gold);border-bottom:1px solid var(--border);}
+.md td{padding:7px 12px;border-bottom:1px solid var(--dim);color:var(--text);font-weight:500;}
+.md tr:hover td{background:var(--dim);}
+.loading{padding:60px 0;text-align:center;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;}
+.loading-spinner{font-size:24px;animation:spin 1.5s linear infinite;display:block;margin-bottom:12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a href="/" class="logo">⚡CCE</a>
+  <span class="topbar-title">DOCS</span>
+  <span class="topbar-path" id="topbarPath">README</span>
+  <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()">☰</button>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">// OVERVIEW</div>
+      <a class="nav-item" onclick="load('README.md','README')">Platform Overview</a>
+      <a class="nav-item" onclick="load('SUMMARY.md','SUMMARY')">Quick Reference</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">// PLATFORM</div>
+      <a class="nav-item" onclick="load('getting-started/README.md','Getting Started')">Getting Started</a>
+      <a class="nav-item" onclick="load('framework/README.md','Framework SDK')">Framework SDK</a>
+      <a class="nav-item" onclick="load('cli/README.md','CLI Reference')">CLI Reference</a>
+      <a class="nav-item" onclick="load('marketplace/README.md','Marketplace')">Marketplace</a>
+      <a class="nav-item" onclick="load('api/README.md','API Reference')">API Reference</a>
+      <a class="nav-item" onclick="load('guides/README.md','Guides')">Guides</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">// ARCHITECTURE</div>
+      <a class="nav-item" onclick="load('GO_DESIGN.md','G.O Design')">G.O Orchestrator</a>
+      <a class="nav-item" onclick="load('CCE_AI_Framework.md','AI Framework')">AI Framework</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">// OPERATIONS</div>
+      <a class="nav-item" onclick="load('DryRunGuide.md','Dry Run')">Dry Run Guide</a>
+      <a class="nav-item" onclick="load('EmergencyStop.md','Emergency Stop')">Emergency Stop</a>
+      <a class="nav-item" onclick="load('GlossaryOfStates.md','Glossary')">Glossary of States</a>
+      <a class="nav-item" onclick="load('Troubleshooting_Dormant.md','Troubleshooting')">Troubleshooting</a>
+      <a class="nav-item" onclick="load('BACKTEST.md','Backtest')">Backtest Guide</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">// PLATFORM LINKS</div>
+      <a class="nav-item" href="/marketplace">Marketplace ↗</a>
+      <a class="nav-item" href="/forge/builder">Engine Builder ↗</a>
+      <a class="nav-item" href="/forge/replay">Backtest Replay ↗</a>
+      <a class="nav-item" href="/api/registry/overview">Registry API ↗</a>
+    </div>
+  </nav>
+  <main class="content">
+    <div class="loading" id="loading"><span class="loading-spinner">⚡</span>LOADING DOCS</div>
+    <div class="md" id="mdContent" style="display:none"></div>
+  </main>
+</div>
+<script>
+function renderMd(text){
+  let h=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/```[\w]*\n([\s\S]*?)```/g,(_,c)=>`<pre><code>${c.trimEnd()}</code></pre>`)
+    .replace(/^#### (.+)$/gm,'<h4>$1</h4>').replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>').replace(/^# (.+)$/gm,'<h1>$1</h1>')
+    .replace(/^---+$/gm,'<hr>').replace(/^&gt; (.+)$/gm,'<blockquote>$1</blockquote>')
+    .replace(/(\|.+\|\n)+/g,m=>{const rows=m.trim().split('\n').filter(r=>!/^\|[-| :]+\|$/.test(r));if(!rows.length)return m;const hd=rows[0].split('|').slice(1,-1).map(c=>`<th>${c.trim()}</th>`).join('');const bd=rows.slice(1).map(r=>`<tr>${r.split('|').slice(1,-1).map(c=>`<td>${c.trim()}</td>`).join('')}</tr>`).join('');return`<table><thead><tr>${hd}</tr></thead><tbody>${bd}</tbody></table>`;})
+    .replace(/^[\*\-] (.+)$/gm,'<li>$1</li>').replace(/^\d+\. (.+)$/gm,'<li>$2</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g,m=>`<ul>${m}</ul>`)
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,(_, t, href)=>`<a href="${href}" onclick="handleLink(event,'${href}')">${t}</a>`)
+    .replace(/^(?!<[hpuol]|<pre|<blockquote|<hr|<table)(.+)$/gm,'<p>$1</p>')
+    .replace(/<p>\s*<\/p>/g,'');
+  return h;
+}
+function handleLink(e,href){if(href.endsWith('.md')&&!href.startsWith('http')){e.preventDefault();const p=href.split('/');const n=p[p.length-1].replace('.md','');load(href,n.charAt(0).toUpperCase()+n.slice(1).replace(/-/g,' '));}}
+async function load(file,title){
+  document.getElementById('topbarPath').textContent=title;
+  document.getElementById('loading').style.display='block';
+  document.getElementById('mdContent').style.display='none';
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.getAttribute('onclick')?.includes(file)));
+  closeSidebar();
+  try{
+    const res=await fetch('/docs/files/'+file);
+    if(!res.ok)throw new Error(res.status);
+    const text=await res.text();
+    document.getElementById('mdContent').innerHTML=renderMd(text);
+    document.getElementById('loading').style.display='none';
+    document.getElementById('mdContent').style.display='block';
+    window.scrollTo(0,0);
+  }catch(err){
+    document.getElementById('mdContent').innerHTML=`<div class="loading"><span>⚠️</span><br>Could not load ${file}<br><span style="color:var(--muted);font-size:10px">${err.message}</span></div>`;
+    document.getElementById('loading').style.display='none';
+    document.getElementById('mdContent').style.display='block';
+  }
+}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('open');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('open');}
+load('README.md','Overview');
+</script>
+</body>
+</html>

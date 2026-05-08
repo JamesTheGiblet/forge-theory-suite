@@ -1,0 +1,32 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "datacube/archiver",
+  "object_class": "Thaumiel",
+  "intent": "Periodically archive old Event Nodes to keep the Data Cube performant.",
+  "containment": {
+    "read_only": false,
+    "audit_log": true,
+    "kill_switch": false
+  },
+  "behaviours": [
+    {
+      "trigger": "cron",
+      "schedule": "0 * * * *",
+      "actions": [
+        {
+          "primitive": "archive_cube",
+          "params": {
+            "content_match": "Event Node",
+            "keep_recent": 50
+          }
+        },
+        {
+          "primitive": "log",
+          "params": {
+            "message": "Data Cube maintenance complete. Archived $results.0.archived_count old event nodes."
+          }
+        }
+      ]
+    }
+  ]
+}

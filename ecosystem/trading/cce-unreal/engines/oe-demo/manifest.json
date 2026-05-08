@@ -1,0 +1,12 @@
+{
+  "id": "oe-demo",
+  "name": "O.E Demo",
+  "type": "OBSERVER",
+  "ecosystem": "O.E",
+  "cycle": "1D",
+  "capitalKey": "usdc",
+  "author": "CCE Unreal",
+  "version": "1.0.0",
+  "description": "Demo observer engine - monitors market conditions and provides intelligence",
+  "dryRun": true
+}

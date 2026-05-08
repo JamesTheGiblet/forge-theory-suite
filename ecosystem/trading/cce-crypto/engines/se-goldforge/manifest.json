@@ -1,0 +1,16 @@
+{
+  "id": "se-goldforge",
+  "name": "S.E GoldForge",
+  "version": "1.0.0",
+  "type": "STRATEGIC",
+  "ecosystem": "S.E",
+  "cycle": "4H",
+  "capitalKey": "goldForge",
+  "author": "James Gilbert — Giblets Creations",
+  "description": "Trades XAUT/USDT (Tether Gold) on Kraken. Enters when crypto fear is extreme and gold momentum is rising. Exits when crypto recovers and gold retreats.",
+  "requires": {
+    "exchange": false,
+    "notifier": true,
+    "config": true
+  }
+}

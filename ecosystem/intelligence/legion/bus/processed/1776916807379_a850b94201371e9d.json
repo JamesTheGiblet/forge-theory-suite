@@ -1,0 +1,17 @@
+{
+  "msg_id": "a850b94201371e9d",
+  "from": "router",
+  "to": "auditor",
+  "type": "AUDIT_REQUEST",
+  "payload": {
+    "strategyId": "STRAT-039",
+    "strategyPath": "/data/data/com.termux/files/home/legion/strategies/active/STRAT-039_ringo_mutated.json",
+    "parentId": "STRAT-039",
+    "mutation": {
+      "path": "containment_procedures.max_drawdown_pct",
+      "old": 3,
+      "new": 4
+    }
+  },
+  "timestamp": "2026-04-23T04:00:07.379Z"
+}

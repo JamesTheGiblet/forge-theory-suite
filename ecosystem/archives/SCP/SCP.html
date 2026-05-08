@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCP Test - Creating test.txt Capsule</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .header h1 {
+            color: #4a5568;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+        
+        .scp-logo {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+            font-weight: bold;
+        }
+        
+        .test-section {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .test-section h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .test-section h2 i {
+            color: #667eea;
+        }
+        
+        .file-display {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .capsule-display {
+            background: #1a202c;
+            color: #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 400px;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .capsule-header {
+            color: #63b3ed;
+            font-weight: bold;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #4a5568;
+        }
+        
+        .json-key {
+            color: #68d391;
+        }
+        
+        .json-string {
+            color: #fbb6ce;
+        }
+        
+        .json-number {
+            color: #f6ad55;
+        }
+        
+        .json-boolean {
+            color: #90cdf4;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border-radius: 10px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            flex: 1;
+            justify-content: center;
+            min-width: 200px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .btn-secondary:hover {
+            background: #cbd5e0;
+            transform: translateY(-3px);
+        }
+        
+        .status {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .status.success {
+            background: #c6f6d5;
+            color: #22543d;
+            display: flex;
+        }
+        
+        .status i {
+            font-size: 1.5rem;
+        }
+        
+        .file-system {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .file-item {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            min-width: 150px;
+        }
+        
+        .file-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .file-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .txt-icon {
+            color: #4299e1;
+        }
+        
+        .json-icon {
+            color: #68d391;
+        }
+        
+        .arrow {
+            font-size: 2rem;
+            color: #a0aec0;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .btn {
+                min-width: 100%;
+            }
+            
+            .file-system {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="scp-logo">SCP</div>
+            <h1>Semantic Capsule Protocol</h1>
+            <div class="subtitle">Beta Test - Creating test.txt with SCP Capsule</div>
+        </div>
+        
+        <div class="test-section">
+            <h2><i class="fas fa-file-alt"></i> Step 1: Create test.txt</h2>
+            <p>First, let's create a sample text file to test the SCP system:</p>
+            
+            <div class="file-display" id="testTxtContent">
+# SCP Protocol Test File
+=======================
+
+Created: November 1, 2023
+Purpose: Test Semantic Capsule Protocol
+
+## Test Content
+This file contains test data to demonstrate how SCP attaches semantic meaning to files.
+
+Key Features:
+- Human readable content
+- Structured sections
+- Test data for AI interpretation
+- Example of portable meaning
+
+File Statistics:
+- Lines: 15
+- Words: 45
+- Characters: 280
+
+## Expected Use
+This file should be interpreted by AI systems using its SCP capsule for consistent understanding.
+
+## End of Test File
+</div>
+        </div>
+        
+        <div class="test-section">
+            <h2><i class="fas fa-cube"></i> Step 2: Generate SCP Capsule</h2>
+            <p>Now let's generate the semantic capsule for test.txt:</p>
+            
+            <div class="controls">
+                <button class="btn btn-primary" id="generateBtn">
+                    <i class="fas fa-magic"></i> Generate SCP Capsule
+                </button>
+                <button class="btn btn-secondary" id="downloadBtn">
+                    <i class="fas fa-download"></i> Download Both Files
+                </button>
+            </div>
+        </div>
+        
+        <div class="test-section" id="capsuleSection" style="display: none;">
+            <h2><i class="fas fa-capsules"></i> Step 3: SCP Capsule Created</h2>
+            
+            <div class="file-system">
+                <div class="file-item">
+                    <div class="file-icon txt-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>test.txt</h3>
+                    <p>Original file</p>
+                </div>
+                
+                <div class="arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                
+                <div class="file-item">
+                    <div class="file-icon json-icon">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <h3>test.txt.scp.json</h3>
+                    <p>SCP Capsule</p>
+                </div>
+            </div>
+            
+            <div class="capsule-display" id="capsuleContent">
+                <!-- SCP Capsule will appear here -->
+            </div>
+        </div>
+        
+        <div class="status" id="statusMessage">
+            <!-- Status messages appear here -->
+        </div>
+        
+        <div class="test-section">
+            <h2><i class="fas fa-check-circle"></i> Step 4: Verify SCP Works</h2>
+            <p>Once the SCP capsule is created, here's what happens:</p>
+            
+            <div style="background: #edf2f7; padding: 20px; border-radius: 10px; margin-top: 15px;">
+                <h3 style="color: #4a5568; margin-bottom: 15px;">AI Interpretation with SCP:</h3>
+                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 200px; background: white; padding: 15px; border-radius: 8px;">
+                        <h4 style="color: #4299e1; margin-bottom: 10px;"><i class="fas fa-robot"></i> AI 1 (GPT-4)</h4>
+                        <p>Reads test.txt + capsule → Consistent meaning</p>
+                    </div>
+                    <div style="flex: 1; min-width: 200px; background: white; padding: 15px; border-radius: 8px;">
+                        <h4 style="color: #38b2ac; margin-bottom: 10px;"><i class="fas fa-robot"></i> AI 2 (Claude)</h4>
+                        <p>Reads test.txt + capsule → Identical meaning</p>
+                    </div>
+                    <div style="flex: 1; min-width: 200px; background: white; padding: 15px; border-radius: 8px;">
+                        <h4 style="color: #9f7aea; margin-bottom: 10px;"><i class="fas fa-robot"></i> AI 3 (Bard)</h4>
+                        <p>Reads test.txt + capsule → Same understanding</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // test.txt content
+        const testTxtContent = `# SCP Protocol Test File
+=======================
+
+Created: November 1, 2023
+Purpose: Test Semantic Capsule Protocol
+
+## Test Content
+This file contains test data to demonstrate how SCP attaches semantic meaning to files.
+
+Key Features:
+- Human readable content
+- Structured sections
+- Test data for AI interpretation
+- Example of portable meaning
+
+File Statistics:
+- Lines: 15
+- Words: 45
+- Characters: 280
+
+## Expected Use
+This file should be interpreted by AI systems using its SCP capsule for consistent understanding.
+
+## End of Test File`;
+
+        // Generate SCP capsule
+        function generateSCPCapsule() {
+            const now = new Date();
+            
+            const scpCapsule = {
+                "scp_version": "beta-1.0.0",
+                "capsule_id": `scp_${now.getTime()}`,
+                "target_file": "test.txt",
+                "generated_at": now.toISOString(),
+                "structural_map": {
+                    "file_type": "text/plain",
+                    "encoding": "UTF-8",
+                    "sections": [
+                        "header",
+                        "creation_info",
+                        "content_section",
+                        "features_list",
+                        "statistics",
+                        "usage_declaration",
+                        "footer"
+                    ],
+                    "schema": "markdown_like",
+                    "line_count": 15,
+                    "word_count": 45,
+                    "char_count": 280
+                },
+                "semantic_summary": {
+                    "domain": "protocol_testing",
+                    "primary_concept": "semantic_capsule_demonstration",
+                    "entities": [
+                        "SCP",
+                        "test_file",
+                        "AI_system",
+                        "semantic_meaning"
+                    ],
+                    "relationships": [
+                        "file demonstrates SCP",
+                        "SCP enables consistent AI interpretation",
+                        "capsule contains semantic meaning"
+                    ],
+                    "key_topics": [
+                        "protocol testing",
+                        "semantic attachment",
+                        "AI interpretation",
+                        "meaning preservation"
+                    ]
+                },
+                "intent_declaration": {
+                    "purpose": "To test and demonstrate the Semantic Capsule Protocol",
+                    "expected_use": [
+                        "AI interpretation testing",
+                        "SCP protocol validation",
+                        "semantic meaning demonstration"
+                    ],
+                    "constraints": [
+                        "test_data_only",
+                        "not_for_production",
+                        "requires_SCP_aware_AI"
+                    ],
+                    "assumptions": [
+                        "AI_can_read_text_files",
+                        "AI_can_parse_JSON_capsules",
+                        "sidecar_file_storage"
+                    ],
+                    "required_context": "SCP_beta_specification_v1"
+                },
+                "embedding_signature": {
+                    "vector_model": "scp_semantic_v1",
+                    "dimensions": 10,
+                    "vector": [
+                        0.42, -0.18, 0.76, 0.91, -0.05,
+                        0.33, 0.67, -0.22, 0.48, 0.12
+                    ],
+                    "latent_concepts": [
+                        "protocol_testing",
+                        "semantic_attachment",
+                        "AI_interpretation",
+                        "meaning_preservation"
+                    ],
+                    "semantic_fingerprint": "scp_test_" + now.getTime().toString(36)
+                },
+                "provenance": {
+                    "creator": "SCP_Beta_Test_Suite",
+                    "generator": "scp_demo.html",
+                    "timestamp": now.toISOString(),
+                    "upstream_sources": [],
+                    "version": "test_1.0",
+                    "lineage": [
+                        "initial_test_creation"
+                    ]
+                },
+                "ai_instructions": {
+                    "interpretation_guidance": "This is a test file for SCP. Interpret it as a demonstration of semantic capsule attachment.",
+                    "importance_level": "test",
+                    "trust_score": 0.95
+                }
+            };
+            
+            return scpCapsule;
+        }
+
+        // Format JSON with syntax highlighting
+        function formatJSON(json) {
+            const jsonStr = JSON.stringify(json, null, 2);
+            
+            // Apply syntax highlighting
+            return jsonStr
+                .replace(/("[\w]+":)/g, '<span class="json-key">$1</span>')
+                .replace(/("[^"]*")/g, '<span class="json-string">$1</span>')
+                .replace(/\b(true|false|null)\b/g, '<span class="json-boolean">$1</span>')
+                .replace(/\b(\d+\.?\d*)\b/g, '<span class="json-number">$1</span>')
+                .replace(/\n/g, '<br>')
+                .replace(/ /g, '&nbsp;');
+        }
+
+        // Download files
+        function downloadFile(filename, content, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // Generate and display SCP capsule
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            // Generate capsule
+            const scpCapsule = generateSCPCapsule();
+            
+            // Display capsule
+            const capsuleSection = document.getElementById('capsuleSection');
+            const capsuleContent = document.getElementById('capsuleContent');
+            
+            capsuleContent.innerHTML = `
+                <div class="capsule-header">test.txt.scp.json - SCP Semantic Capsule</div>
+                ${formatJSON(scpCapsule)}
+            `;
+            
+            capsuleSection.style.display = 'block';
+            
+            // Show status
+            const status = document.getElementById('statusMessage');
+            status.className = 'status success';
+            status.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <strong>SCP Capsule Generated Successfully!</strong><br>
+                    Semantic meaning attached to test.txt
+                </div>
+            `;
+            
+            // Scroll to capsule
+            capsuleSection.scrollIntoView({ behavior: 'smooth' });
+            
+            // Enable download button
+            document.getElementById('downloadBtn').onclick = function() {
+                downloadFile('test.txt', testTxtContent, 'text/plain');
+                
+                setTimeout(() => {
+                    downloadFile('test.txt.scp.json', JSON.stringify(scpCapsule, null, 2), 'application/json');
+                    
+                    status.innerHTML = `
+                        <i class="fas fa-check-double"></i>
+                        <div>
+                            <strong>Both Files Downloaded!</strong><br>
+                            test.txt and test.txt.scp.json saved
+                        </div>
+                    `;
+                }, 300);
+            };
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set test.txt content
+            document.getElementById('testTxtContent').textContent = testTxtContent;
+        });
+    </script>
+</body>
+</html>

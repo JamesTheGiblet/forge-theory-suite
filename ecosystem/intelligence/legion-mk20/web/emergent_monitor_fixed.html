@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>LEGION EV21 — Emergent Market Monitor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0e27;
+            font-family: 'Segoe UI', -apple-system, sans-serif;
+            color: #e2e8f0;
+            overflow: hidden;
+            height: 100vh;
+        }
+        .app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .header {
+            background: rgba(15, 18, 46, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 12px 20px;
+            border-bottom: 1px solid #2d3a5e;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            z-index: 10;
+        }
+        .logo h1 {
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, #a78bfa, #ec489a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .logo p {
+            font-size: 0.7rem;
+            color: #7e8aa2;
+        }
+        .controls {
+            display: flex;
+            gap: 12px;
+        }
+        button {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+        button.active {
+            background: #4f46e5;
+            border-color: #818cf8;
+            color: white;
+        }
+        button:hover {
+            background: #334155;
+        }
+        .stats {
+            display: flex;
+            gap: 24px;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-label {
+            color: #7e8aa2;
+            font-size: 0.7rem;
+        }
+        .stat-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            background: #050816;
+            overflow: hidden;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(15, 18, 46, 0.9);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            padding: 12px 16px;
+            border-left: 3px solid #4f46e5;
+            max-width: 280px;
+            font-size: 0.75rem;
+            pointer-events: none;
+            z-index: 20;
+        }
+        .info-panel h4 {
+            color: #a78bfa;
+            margin-bottom: 6px;
+        }
+        .energy-bar {
+            margin-top: 8px;
+            height: 4px;
+            background: #1e293b;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .energy-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
+            transition: width 0.3s;
+        }
+        .compact-grid, .detailed-table {
+            padding: 20px;
+            overflow-y: auto;
+            height: 100%;
+        }
+        .compact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        .stock-card {
+            background: #0f122e;
+            border-radius: 12px;
+            padding: 12px;
+            border-left: 3px solid #22c55e;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .stock-card:hover {
+            transform: translateY(-2px);
+        }
+        .stock-symbol {
+            font-weight: bold;
+        }
+        .stock-price {
+            font-size: 1.2rem;
+        }
+        .stock-change {
+            font-size: 0.8rem;
+        }
+        .positive { color: #22c55e; }
+        .negative { color: #ef4444; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #1e293b;
+        }
+        th {
+            color: #7e8aa2;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="header">
+        <div class="logo">
+            <h1>⚡ LEGION EV21</h1>
+            <p>EMERGENT MARKET MONITOR | CASCADE PHYSICS</p>
+        </div>
+        <div class="controls">
+            <button id="btnCompact" class="active">📊 Compact</button>
+            <button id="btnDetailed">📋 Detailed</button>
+            <button id="btnEmergent">🌀 Emergent</button>
+        </div>
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-label">ENTROPY</div>
+                <div class="stat-value" id="entropyVal">0.00</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">AGENTS</div>
+                <div class="stat-value" id="agentsVal">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">MODE</div>
+                <div class="stat-value" id="paperVal">--</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="canvas-container" id="canvasContainer">
+        <canvas id="emergentCanvas"></canvas>
+        <div id="compactView" class="compact-grid"></div>
+        <div id="detailedView" class="detailed-table" style="display: none;"></div>
+    </div>
+
+    <div class="info-panel" id="infoPanel">
+        <h4>🌀 CASCADE STATUS</h4>
+        <p id="cascadeStatus">DORMANT — Watching</p>
+        <div class="energy-bar"><div class="energy-fill" id="energyFill"></div></div>
+        <p id="energyText" style="margin-top: 6px;">Energy: 0%</p>
+        <p id="resonanceText">⚡ No resonance</p>
+    </div>
+</div>
+
+<script>
+    const API_BASE = 'http://localhost:3011';
+    let currentView = 'compact';
+    let particles = [];
+    let animationId = null;
+    let canvas = null;
+    let ctx = null;
+    let width = 800, height = 600;
+    
+    let marketData = {
+        assets: [],
+        entropy: 0.1,
+        agents: 30,
+        paperMode: 'RUNNING'
+    };
+    
+    async function fetchData() {
+        try {
+            const statusRes = await fetch(`${API_BASE}/api/status`);
+            const status = await statusRes.json();
+            marketData.entropy = status.entropy || 0.1;
+            marketData.agents = status.agents || 30;
+            marketData.paperMode = status.paper_mode || 'RUNNING';
+            
+            const pricesRes = await fetch(`${API_BASE}/api/arbitrage/prices`);
+            const prices = await pricesRes.json();
+            
+            const symbols = ['BTC/USD', 'ETH/USD', 'SOL/USD', 'XRP/USD', 'LINK/USD'];
+            marketData.assets = symbols.map(sym => ({
+                symbol: sym,
+                price: prices.prices?.[sym] || (sym === 'BTC/USD' ? 52800 : sym === 'ETH/USD' ? 3150 : 88.5),
+                change: (Math.random() - 0.5) * 3,
+                volume: Math.random() * 1000000
+            }));
+            
+            document.getElementById('entropyVal').innerText = marketData.entropy.toFixed(2);
+            document.getElementById('agentsVal').innerText = marketData.agents;
+            document.getElementById('paperVal').innerText = marketData.paperMode === 'RUNNING' ? 'PAPER' : 'LIVE';
+            
+            // Update cascade status
+            let statusText = '💤 DORMANT — Waiting for BTC';
+            if (marketData.entropy > 0.6) statusText = '💥 CASCADE 2 — Small caps pumping';
+            else if (marketData.entropy > 0.3) statusText = '🌊 CASCADE 1 — Large caps moving';
+            document.getElementById('cascadeStatus').innerHTML = statusText;
+            
+            const energyPercent = marketData.entropy * 100;
+            document.getElementById('energyFill').style.width = `${energyPercent}%`;
+            document.getElementById('energyText').innerHTML = `Entropy: ${(marketData.entropy * 100).toFixed(1)}%`;
+            
+        } catch(e) {
+            console.warn('API error:', e);
+        }
+    }
+    
+    function initParticles() {
+        const container = document.getElementById('canvasContainer');
+        const rect = container.getBoundingClientRect();
+        width = rect.width || 800;
+        height = rect.height || 600;
+        
+        particles = [];
+        const assets = marketData.assets;
+        for (let i = 0; i < assets.length; i++) {
+            particles.push({
+                x: width/2 + (Math.random() - 0.5) * 200,
+                y: height/2 + (Math.random() - 0.5) * 200,
+                vx: (Math.random() - 0.5) * 1.5,
+                vy: (Math.random() - 0.5) * 1.5,
+                mass: 0.5 + Math.random(),
+                trail: [],
+                symbol: assets[i].symbol.split('/')[0],
+                price: assets[i].price,
+                change: assets[i].change
+            });
+        }
+    }
+    
+    function updateParticles() {
+        if (!particles.length) return;
+        
+        const centerX = width / 2;
+        const centerY = height / 2;
+        
+        for (let p of particles) {
+            // Store trail
+            p.trail.push({ x: p.x, y: p.y });
+            if (p.trail.length > 15) p.trail.shift();
+            
+            // Attraction to center
+            const dx = centerX - p.x;
+            const dy = centerY - p.y;
+            const dist = Math.hypot(dx, dy);
+            const force = 0.003 * (dist / 100);
+            
+            p.vx += dx * force + (Math.random() - 0.5) * 0.3;
+            p.vy += dy * force + (Math.random() - 0.5) * 0.3;
+            
+            // Damping
+            p.vx *= 0.97;
+            p.vy *= 0.97;
+            
+            p.x += p.vx;
+            p.y += p.vy;
+            
+            // Boundaries
+            p.x = Math.min(Math.max(p.x, 30), width - 30);
+            p.y = Math.min(Math.max(p.y, 30), height - 30);
+        }
+    }
+    
+    function drawParticles() {
+        if (!ctx) return;
+        ctx.clearRect(0, 0, width, height);
+        
+        // Draw trails
+        for (let p of particles) {
+            if (p.trail.length > 1) {
+                ctx.beginPath();
+                ctx.strokeStyle = `rgba(79, 70, 229, 0.3)`;
+                ctx.lineWidth = 1.5;
+                ctx.moveTo(p.trail[0].x, p.trail[0].y);
+                for (let i = 1; i < p.trail.length; i++) {
+                    ctx.lineTo(p.trail[i].x, p.trail[i].y);
+                }
+                ctx.stroke();
+            }
+        }
+        
+        // Draw particles
+        for (let p of particles) {
+            const size = 12 + p.mass * 6;
+            const isPositive = p.change >= 0;
+            
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+            ctx.fillStyle = isPositive ? 'rgba(34, 197, 94, 0.8)' : 'rgba(239, 68, 68, 0.8)';
+            ctx.fill();
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = isPositive ? '#22c55e' : '#ef4444';
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${Math.max(10, size - 4)}px monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(p.symbol, p.x, p.y);
+            ctx.shadowBlur = 0;
+        }
+    }
+    
+    function animateEmergent() {
+        if (currentView !== 'emergent') return;
+        if (!canvas || !ctx) {
+            canvas = document.getElementById('emergentCanvas');
+            if (canvas) ctx = canvas.getContext('2d');
+            else return;
+        }
+        
+        const container = document.getElementById('canvasContainer');
+        const rect = container.getBoundingClientRect();
+        if (rect.width !== width || rect.height !== height) {
+            width = rect.width;
+            height = rect.height;
+            canvas.width = width;
+            canvas.height = height;
+            initParticles();
+        }
+        
+        updateParticles();
+        drawParticles();
+        requestAnimationFrame(animateEmergent);
+    }
+    
+    async function renderCompact() {
+        document.getElementById('compactView').style.display = 'grid';
+        document.getElementById('detailedView').style.display = 'none';
+        document.getElementById('emergentCanvas').style.display = 'none';
+        
+        await fetchData();
+        
+        document.getElementById('compactView').innerHTML = marketData.assets.map(a => `
+            <div class="stock-card" style="border-left-color: ${a.change >= 0 ? '#22c55e' : '#ef4444'}">
+                <div class="stock-symbol">${a.symbol}</div>
+                <div class="stock-price">$${a.price.toLocaleString()}</div>
+                <div class="stock-change ${a.change >= 0 ? 'positive' : 'negative'}">${a.change >= 0 ? '+' : ''}${a.change.toFixed(2)}%</div>
+                <div style="font-size:0.7rem; color:#7e8aa2;">Vol: ${(a.volume/1e6).toFixed(1)}M</div>
+            </div>
+        `).join('');
+    }
+    
+    async function renderDetailed() {
+        document.getElementById('compactView').style.display = 'none';
+        document.getElementById('detailedView').style.display = 'block';
+        document.getElementById('emergentCanvas').style.display = 'none';
+        
+        await fetchData();
+        
+        document.getElementById('detailedView').innerHTML = `
+            <table>
+                <thead><tr>
+                    <th>Symbol</th><th>Price</th><th>Change</th><th>Volume</th>
+                </tr></thead>
+                <tbody>
+                    ${marketData.assets.map(a => `
+                        <tr>
+                            <td>${a.symbol}</td>
+                            <td>$${a.price.toLocaleString()}</td>
+                            <td class="${a.change >= 0 ? 'positive' : 'negative'}">${a.change >= 0 ? '+' : ''}${a.change.toFixed(2)}%</td>
+                            <td>$${(a.volume/1e6).toFixed(1)}M</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
+    
+    function startEmergent() {
+        document.getElementById('compactView').style.display = 'none';
+        document.getElementById('detailedView').style.display = 'none';
+        document.getElementById('emergentCanvas').style.display = 'block';
+        
+        canvas = document.getElementById('emergentCanvas');
+        ctx = canvas.getContext('2d');
+        
+        const container = document.getElementById('canvasContainer');
+        const rect = container.getBoundingClientRect();
+        width = rect.width;
+        height = rect.height;
+        canvas.width = width;
+        canvas.height = height;
+        
+        fetchData().then(() => {
+            initParticles();
+            animateEmergent();
+        });
+        
+        // Refresh data every 10 seconds
+        setInterval(() => {
+            if (currentView === 'emergent') {
+                fetchData();
+                initParticles();
+            }
+        }, 10000);
+    }
+    
+    // View switching
+    document.getElementById('btnCompact').onclick = async () => {
+        currentView = 'compact';
+        document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        document.getElementById('btnCompact').classList.add('active');
+        await renderCompact();
+    };
+    document.getElementById('btnDetailed').onclick = async () => {
+        currentView = 'detailed';
+        document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        document.getElementById('btnDetailed').classList.add('active');
+        await renderDetailed();
+    };
+    document.getElementById('btnEmergent').onclick = () => {
+        currentView = 'emergent';
+        document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        document.getElementById('btnEmergent').classList.add('active');
+        startEmergent();
+    };
+    
+    // Start with compact view
+    renderCompact();
+</script>
+</body>
+</html>

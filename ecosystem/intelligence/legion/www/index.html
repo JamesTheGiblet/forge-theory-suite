@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LEGION MK8 - Trading Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg-primary: #0a0a0c;
+      --bg-secondary: #13131a;
+      --bg-tertiary: #0f0f14;
+      --border: #1e1e2e;
+      --border-hover: #2a2a3e;
+      --text-primary: #c5c8d8;
+      --text-secondary: #5a5c72;
+      --text-bright: #e8eaf6;
+      --accent: #f0b429;
+      --success: #00c896;
+      --danger: #e84040;
+      --info: #3b82f6;
+      --warning: #f0b429;
+    }
+    body.light {
+      --bg-primary: #f4f0e8;
+      --bg-secondary: #ede8dc;
+      --bg-tertiary: #e4ddd0;
+      --border: #c8bfaa;
+      --border-hover: #9a8f7a;
+      --text-primary: #0e0e0e;
+      --text-secondary: #6a6255;
+      --text-bright: #1a1a1a;
+      --accent: #8b1a1a;
+      --success: #2a4a2a;
+      --danger: #8b1a1a;
+      --info: #1a2a4a;
+      --warning: #b8860b;
+    }
+    body { background: var(--bg-primary); color: var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 20px; transition: all 0.3s; }
+    .header { background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary)); border: 1px solid var(--border); border-radius: 20px; padding: 20px 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { font-size: 40px; }
+    .logo-text { font-size: 28px; font-weight: 800; background: linear-gradient(135deg, var(--accent), #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .logo-version { font-size: 12px; color: var(--accent); background: rgba(240,180,41,0.15); padding: 4px 10px; border-radius: 20px; }
+    .theme-toggle { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 30px; padding: 8px 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+    .status { display: flex; align-items: center; gap: 8px; }
+    .status-dot { width: 10px; height: 10px; background: #00c896; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .time { font-family: monospace; }
+    .tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+    .tab-btn { background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-secondary); padding: 12px 24px; border-radius: 12px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+    .tab-btn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+    .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+    .tab-pane { display: none; animation: fadeIn 0.3s ease; }
+    .tab-pane.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary)); border: 1px solid var(--border); border-radius: 16px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .stat-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+    .stat-icon { font-size: 36px; margin-bottom: 12px; }
+    .stat-value { font-size: 32px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+    .dashboard-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 24px; }
+    .card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; }
+    .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 600; color: var(--text-bright); background: var(--bg-tertiary); display: flex; align-items: center; gap: 8px; }
+    .card-body { padding: 20px; }
+    .widget-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .widget { background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary)); border: 1px solid var(--border); border-radius: 16px; padding: 16px; text-align: center; }
+    .widget-emoji { font-size: 32px; margin-bottom: 8px; }
+    .widget-value { font-size: 20px; font-weight: 700; }
+    .widget-label { font-size: 10px; color: var(--text-secondary); margin-top: 4px; }
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .metric-card { text-align: center; padding: 16px; background: var(--bg-tertiary); border-radius: 16px; }
+    .metric-value { font-size: 28px; font-weight: 700; }
+    .metric-positive { color: var(--success); }
+    .metric-negative { color: var(--danger); }
+    .metric-label { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+    .gauge-item { margin-bottom: 24px; }
+    .gauge-label { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
+    .gauge-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .gauge-fill { height: 100%; transition: width 0.5s ease; border-radius: 4px; }
+    .strategy-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .strategy-name { font-family: monospace; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+    .strategy-hot { color: var(--success); font-weight: 600; }
+    .strategy-solid { color: var(--warning); font-weight: 600; }
+    .strategy-cold { color: var(--danger); font-weight: 600; }
+    .trade-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .trade-positive { color: var(--success); }
+    .trade-negative { color: var(--danger); }
+    .settings-group { margin-bottom: 24px; }
+    .settings-label { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-bright); display: flex; align-items: center; gap: 8px; }
+    .settings-input { width: 100%; padding: 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); }
+    .settings-hint { font-size: 11px; color: var(--text-secondary); margin-top: 8px; }
+    .btn { background: var(--accent); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+    .btn:hover { opacity: 0.9; transform: scale(1.02); }
+    .btn-secondary { background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary); }
+    .btn-danger { background: var(--danger); }
+    .footer { text-align: center; margin-top: 24px; padding: 16px; border-top: 1px solid var(--border); }
+    .refresh-btn { background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary); padding: 8px 20px; border-radius: 8px; cursor: pointer; margin-left: 12px; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-content { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 20px; max-width: 400px; width: 90%; padding: 24px; position: relative; }
+    .modal-close { position: absolute; top: 16px; right: 20px; font-size: 24px; cursor: pointer; }
+    .error { background: rgba(232,64,64,0.1); border: 1px solid var(--danger); padding: 20px; border-radius: 12px; text-align: center; }
+    .chart-container { height: 250px; position: relative; }
+    @media (max-width: 768px) { .dashboard-row { grid-template-columns: 1fr; } .widget-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+<div class="header">
+  <div class="logo"><span class="logo-icon">⚡🤖</span><span class="logo-text">LEGION</span><span class="logo-version">MK8</span></div>
+  <div style="display: flex; gap: 12px; align-items: center;">
+    <div class="theme-toggle" onclick="toggleTheme()">🌓 <span id="themeText">Dark</span></div>
+    <div class="status"><span class="status-dot"></span><span>ACTIVE</span></div>
+    <div class="time" id="clock"></div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+  <button class="tab-btn" onclick="switchTab('portfolio')">💰 Portfolio</button>
+  <button class="tab-btn" onclick="switchTab('charts')">📈 Charts</button>
+  <button class="tab-btn" onclick="switchTab('settings')">⚙️ Settings</button>
+  <button class="tab-btn" onclick="switchTab('api')">🔑 API Keys</button>
+  <button class="tab-btn" onclick="switchTab('system')">🖥️ System</button>
+</div>
+
+<!-- Dashboard Tab -->
+<div id="dashboard-tab" class="tab-pane active">
+  <div class="widget-grid">
+    <div class="widget"><div class="widget-emoji">📊</div><div class="widget-value" id="widgetStrategies">--</div><div class="widget-label">Active Strategies</div></div>
+    <div class="widget"><div class="widget-emoji">🏆</div><div class="widget-value" id="widgetTournament">--</div><div class="widget-label">Tournament</div></div>
+    <div class="widget"><div class="widget-emoji">🛡️</div><div class="widget-value" id="widgetBreaches">--</div><div class="widget-label">Safety Breaches</div></div>
+    <div class="widget"><div class="widget-emoji">⏰</div><div class="widget-value" id="widgetPaper">--</div><div class="widget-label">Paper Mode</div></div>
+  </div>
+  <div id="statsGrid" class="stats-grid">Loading...</div>
+  <div class="dashboard-row">
+    <div class="card"><div class="card-header">📊 Market Pulse</div><div class="card-body" id="marketIntel">Loading...</div></div>
+    <div class="card"><div class="card-header">🏆 Top Performers</div><div class="card-body" id="strategyList">Loading...</div></div>
+  </div>
+  <div class="footer">Last updated: <span id="lastUpdated">--</span> <button class="refresh-btn" onclick="fetchData()">🔄 Refresh</button></div>
+</div>
+
+<!-- Portfolio Tab -->
+<div id="portfolio-tab" class="tab-pane">
+  <div class="widget-grid">
+    <div class="widget"><div class="widget-emoji">💰</div><div class="widget-value" id="portfolioReturn">--</div><div class="widget-label">Total Return</div></div>
+    <div class="widget"><div class="widget-emoji">💵</div><div class="widget-value" id="portfolioPnl">--</div><div class="widget-label">Profit/Loss</div></div>
+    <div class="widget"><div class="widget-emoji">🎯</div><div class="widget-value" id="portfolioWinRate">--</div><div class="widget-label">Win Rate</div></div>
+    <div class="widget"><div class="widget-emoji">📈</div><div class="widget-value" id="portfolioSharpe">--</div><div class="widget-label">Sharpe Ratio</div></div>
+  </div>
+  <div class="dashboard-row">
+    <div class="card"><div class="card-header">📊 Strategy Performance</div><div class="card-body" id="strategyPerformance">Loading...</div></div>
+    <div class="card"><div class="card-header">📋 Recent Trades</div><div class="card-body" id="recentTrades">Loading...</div></div>
+  </div>
+</div>
+
+<!-- Charts Tab -->
+<div id="charts-tab" class="tab-pane">
+  <div class="dashboard-row">
+    <div class="card"><div class="card-header">📈 P&L Over Time</div><div class="card-body"><div class="chart-container"><canvas id="pnlChart"></canvas></div></div></div>
+    <div class="card"><div class="card-header">🎯 Win/Loss Distribution</div><div class="card-body"><div class="chart-container"><canvas id="winLossChart"></canvas></div></div></div>
+  </div>
+  <div class="dashboard-row">
+    <div class="card"><div class="card-header">📊 Strategy Performance</div><div class="card-body"><div class="chart-container"><canvas id="strategyChart"></canvas></div></div></div>
+    <div class="card"><div class="card-header">📉 Volatility Trend</div><div class="card-body"><div class="chart-container"><canvas id="vixChart"></canvas></div></div></div>
+  </div>
+</div>
+
+<!-- Settings Tab -->
+<div id="settings-tab" class="tab-pane">
+  <div class="card"><div class="card-header">🎨 Display Settings</div><div class="card-body">
+    <div class="settings-group"><div class="settings-label">🌓 Theme Mode</div><button class="btn btn-secondary" onclick="toggleTheme()" style="width:100%">Switch to <span id="themeToggleText2">Light</span> Mode</button><div class="settings-hint">Choose between dark and light theme</div></div>
+    <div class="settings-group"><div class="settings-label">🔄 Auto-Refresh Interval</div><select id="refreshInterval" class="settings-input" onchange="setRefreshInterval()"><option value="10">10 seconds</option><option value="30" selected>30 seconds</option><option value="60">1 minute</option><option value="300">5 minutes</option></select><div class="settings-hint">How often the dashboard updates</div></div>
+  </div></div>
+  <div class="card"><div class="card-header">📊 Display Preferences</div><div class="card-body">
+    <div class="settings-group"><div class="settings-label">ℹ️ Show Info Modals</div><label style="display:flex;align-items:center;gap:12px;margin-top:8px"><input type="checkbox" id="showModals" checked onchange="toggleModals()"> Enable info popups</label></div>
+    <div class="settings-group"><div class="settings-label">🎨 Show Win Rate Colors</div><label style="display:flex;align-items:center;gap:12px;margin-top:8px"><input type="checkbox" id="showColors" checked onchange="toggleColors()"> Color-code strategy win rates</label></div>
+  </div></div>
+</div>
+
+<!-- API Keys Tab -->
+<div id="api-tab" class="tab-pane">
+  <div class="card"><div class="card-header">🔑 Kraken API</div><div class="card-body">
+    <div class="settings-group"><div class="settings-label"><span id="krakenStatus" style="display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;background:#e84040"></span> Kraken API Key</div><input type="password" id="krakenKey" class="settings-input" placeholder="Enter Kraken API Key"><div class="settings-hint">Get from <a href="https://www.kraken.com/settings/api" target="_blank" style="color:var(--accent)">Kraken API Settings</a></div></div>
+    <div class="settings-group"><div class="settings-label">🔐 Kraken API Secret</div><input type="password" id="krakenSecret" class="settings-input" placeholder="Enter Kraken API Secret"><div class="settings-hint">Keep this secret. Never share it.</div></div>
+    <button class="btn" onclick="saveKrakenKeys()">💾 Save Kraken Keys</button>
+  </div></div>
+  <div class="card"><div class="card-header">📱 Telegram Bot</div><div class="card-body">
+    <div class="settings-group"><div class="settings-label"><span id="telegramStatus" style="display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;background:#e84040"></span> Bot Token</div><input type="password" id="telegramToken" class="settings-input" placeholder="Enter Telegram Bot Token"><div class="settings-hint">Get from <a href="https://t.me/BotFather" target="_blank" style="color:var(--accent)">@BotFather</a></div></div>
+    <div class="settings-group"><div class="settings-label">💬 Chat ID</div><input type="text" id="telegramChatId" class="settings-input" placeholder="Enter Telegram Chat ID"><div class="settings-hint">Get from <a href="https://t.me/userinfobot" target="_blank" style="color:var(--accent)">@userinfobot</a></div></div>
+    <button class="btn" onclick="saveTelegramKeys()" style="margin-right:12px">💾 Save Telegram Keys</button><button class="btn btn-secondary" onclick="testTelegram()">📨 Test Alert</button>
+  </div></div>
+  <div class="card"><div class="card-header">🐋 Whale Alert API</div><div class="card-body">
+    <div class="settings-group"><div class="settings-label"><span id="whaleStatus" style="display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;background:#e84040"></span> API Key</div><input type="password" id="whaleKey" class="settings-input" placeholder="Enter Whale Alert API Key"><div class="settings-hint">Optional. Get from <a href="https://whale-alert.io" target="_blank" style="color:var(--accent)">whale-alert.io</a></div></div>
+    <button class="btn" onclick="saveWhaleKey()">💾 Save Whale Key</button>
+  </div></div>
+</div>
+
+<!-- System Tab -->
+<div id="system-tab" class="tab-pane">
+  <div class="card"><div class="card-header">🖥️ System Status</div><div class="card-body" id="systemStatusContent">Loading...</div></div>
+  <div class="card"><div class="card-header">⚙️ Trading Configuration</div><div class="card-body">
+    <div class="settings-group"><div class="settings-label">💰 Live Trading Mode</div><label style="display:flex;align-items:center;gap:12px;margin-top:8px"><input type="checkbox" id="liveTrading" onchange="toggleLiveTrading()"> Enable Live Trading (REAL MONEY)</label><div class="settings-hint" style="color:var(--danger)">⚠️ WARNING: Real orders on Kraken</div></div>
+    <div class="settings-group"><div class="settings-label">📊 Maximum Position Size (BTC)</div><input type="number" id="maxPosition" class="settings-input" value="0.1" step="0.01"></div>
+    <div class="settings-group"><div class="settings-label">📉 Maximum Daily Loss (%)</div><input type="number" id="maxDailyLoss" class="settings-input" value="5" step="1"></div>
+    <button class="btn" onclick="saveTradingConfig()">💾 Save Trading Config</button>
+  </div></div>
+  <div class="card"><div class="card-header">🔄 System Actions</div><div class="card-body">
+    <button class="btn btn-secondary" onclick="restartLegion()">🔄 Restart LEGION Core</button>
+    <button class="btn btn-secondary" onclick="restartAPI()" style="margin-left:12px">🔄 Restart API Server</button>
+    <button class="btn btn-danger" onclick="clearData()" style="margin-left:12px">🗑️ Clear All Data</button>
+  </div></div>
+</div>
+
+<div id="modal" class="modal" onclick="closeModal(event)"><div class="modal-content"><span class="modal-close" onclick="closeModal()">&times;</span><div class="modal-title" id="modalTitle"></div><div class="modal-body" id="modalBody"></div></div></div>
+
+<script>
+const API_URL = 'http://localhost:3001';
+const PORTFOLIO_API = 'http://localhost:3002';
+let pnlChart, winLossChart, strategyChart, vixChart;
+let refreshInterval = null;
+let showModalsFlag = true;
+let showColorsFlag = true;
+
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+  document.getElementById('themeText').innerText = document.body.classList.contains('light') ? 'Light' : 'Dark';
+  document.getElementById('themeToggleText2').innerText = document.body.classList.contains('light') ? 'Dark' : 'Light';
+  setTimeout(() => { if (pnlChart) pnlChart.update(); }, 100);
+}
+if (localStorage.getItem('theme') === 'light') document.body.classList.add('light');
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tab + '-tab').classList.add('active');
+  event.target.classList.add('active');
+  if (tab === 'portfolio') loadPortfolioData();
+  if (tab === 'charts') setTimeout(() => updateCharts(), 100);
+}
+
+function setRefreshInterval() {
+  const val = parseInt(document.getElementById('refreshInterval').value);
+  localStorage.setItem('refreshInterval', val);
+  if (refreshInterval) clearInterval(refreshInterval);
+  refreshInterval = setInterval(() => { fetchData(); loadPortfolioData(); }, val * 1000);
+}
+
+function toggleModals() { showModalsFlag = document.getElementById('showModals').checked; localStorage.setItem('showModals', showModalsFlag); }
+function toggleColors() { showColorsFlag = document.getElementById('showColors').checked; localStorage.setItem('showColors', showColorsFlag); }
+
+function openModal(title, content) {
+  if (!showModalsFlag) return;
+  document.getElementById('modalTitle').innerHTML = title;
+  document.getElementById('modalBody').innerHTML = content;
+  document.getElementById('modal').style.display = 'flex';
+}
+function closeModal(e) { if (!e || e.target === document.getElementById('modal') || e.target.classList.contains('modal-close')) document.getElementById('modal').style.display = 'none'; }
+
+function saveKrakenKeys() {
+  const key = document.getElementById('krakenKey').value;
+  const secret = document.getElementById('krakenSecret').value;
+  if (key && secret) {
+    localStorage.setItem('kraken_key', key);
+    localStorage.setItem('kraken_secret', secret);
+    document.getElementById('krakenStatus').style.background = '#00c896';
+    alert('✅ Kraken API keys saved');
+  } else alert('⚠️ Please enter both API key and secret');
+}
+function saveTelegramKeys() {
+  const token = document.getElementById('telegramToken').value;
+  const chatId = document.getElementById('telegramChatId').value;
+  if (token && chatId) {
+    localStorage.setItem('telegram_token', token);
+    localStorage.setItem('telegram_chat_id', chatId);
+    document.getElementById('telegramStatus').style.background = '#00c896';
+    alert('✅ Telegram keys saved');
+  } else alert('⚠️ Please enter both Bot Token and Chat ID');
+}
+function saveWhaleKey() {
+  const key = document.getElementById('whaleKey').value;
+  if (key) {
+    localStorage.setItem('whale_key', key);
+    document.getElementById('whaleStatus').style.background = '#00c896';
+    alert('✅ Whale Alert API key saved');
+  }
+}
+function testTelegram() { alert('📨 Test alert sent to Telegram (if configured)'); }
+function toggleLiveTrading() {
+  const enabled = document.getElementById('liveTrading').checked;
+  if (enabled && confirm('⚠️ WARNING: Enable REAL trading?')) {
+    localStorage.setItem('live_trading', 'true');
+    alert('✅ Live trading enabled. Restart LEGION to apply.');
+  } else {
+    document.getElementById('liveTrading').checked = false;
+    localStorage.setItem('live_trading', 'false');
+  }
+}
+function saveTradingConfig() {
+  localStorage.setItem('max_position', document.getElementById('maxPosition').value);
+  localStorage.setItem('max_daily_loss', document.getElementById('maxDailyLoss').value);
+  alert('✅ Trading configuration saved');
+}
+function restartLegion() { if(confirm('Restart LEGION?')) alert('Restarting...'); }
+function restartAPI() { if(confirm('Restart API?')) alert('Restarting...'); }
+function clearData() { if(confirm('Clear all data?')) alert('Data cleared'); }
+
+function loadSavedSettings() {
+  const savedInterval = localStorage.getItem('refreshInterval');
+  if (savedInterval) document.getElementById('refreshInterval').value = savedInterval;
+  setRefreshInterval();
+  showModalsFlag = localStorage.getItem('showModals') !== 'false';
+  document.getElementById('showModals').checked = showModalsFlag;
+  showColorsFlag = localStorage.getItem('showColors') !== 'false';
+  document.getElementById('showColors').checked = showColorsFlag;
+  
+  const krakenKey = localStorage.getItem('kraken_key');
+  const krakenSecret = localStorage.getItem('kraken_secret');
+  const telegramToken = localStorage.getItem('telegram_token');
+  const telegramChatId = localStorage.getItem('telegram_chat_id');
+  const whaleKey = localStorage.getItem('whale_key');
+  if (krakenKey && krakenSecret) document.getElementById('krakenStatus').style.background = '#00c896';
+  if (telegramToken && telegramChatId) document.getElementById('telegramStatus').style.background = '#00c896';
+  if (whaleKey) document.getElementById('whaleStatus').style.background = '#00c896';
+  if (localStorage.getItem('live_trading') === 'true') document.getElementById('liveTrading').checked = true;
+  if (localStorage.getItem('max_position')) document.getElementById('maxPosition').value = localStorage.getItem('max_position');
+  if (localStorage.getItem('max_daily_loss')) document.getElementById('maxDailyLoss').value = localStorage.getItem('max_daily_loss');
+}
+
+function updateCharts() {
+  const isLight = document.body.classList.contains('light');
+  const textColor = isLight ? '#0e0e0e' : '#c5c8d8';
+  const gridColor = isLight ? '#c8bfaa' : '#1e1e2e';
+  if (pnlChart) pnlChart.destroy();
+  pnlChart = new Chart(document.getElementById('pnlChart'), { type: 'line', data: { labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'], datasets: [{ label: 'P&L %', data: [0, 1.2, 0.8, 2.1, 1.5, 2.8, 3.3], borderColor: '#00c896', backgroundColor: 'rgba(0,200,150,0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { color: textColor } } }, scales: { x: { ticks: { color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor }, grid: { color: gridColor } } } } });
+  if (winLossChart) winLossChart.destroy();
+  winLossChart = new Chart(document.getElementById('winLossChart'), { type: 'doughnut', data: { labels: ['Wins ✅', 'Losses ❌'], datasets: [{ data: [2, 1], backgroundColor: ['#00c896', '#e84040'], borderWidth: 0 }] }, options: { responsive: true, plugins: { legend: { labels: { color: textColor } } } } });
+  if (strategyChart) strategyChart.destroy();
+  strategyChart = new Chart(document.getElementById('strategyChart'), { type: 'bar', data: { labels: ['STRAT-021', 'STRAT-025', 'STRAT-026'], datasets: [{ label: 'Return %', data: [3.3, 0.5, -0.5], backgroundColor: ['#00c896', '#f0b429', '#e84040'], borderRadius: 8 }] }, options: { responsive: true, plugins: { legend: { labels: { color: textColor } } }, scales: { x: { ticks: { color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor }, grid: { color: gridColor } } } } });
+  if (vixChart) vixChart.destroy();
+  vixChart = new Chart(document.getElementById('vixChart'), { type: 'line', data: { labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], datasets: [{ label: 'VIX', data: [32, 30, 29, 30], borderColor: '#f0b429', backgroundColor: 'rgba(240,180,41,0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, plugins: { legend: { labels: { color: textColor } } }, scales: { x: { ticks: { color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor }, grid: { color: gridColor } } } } });
+}
+
+async function fetchData() {
+  try {
+    const stats = await fetch(API_URL + '/api/stats').then(r => r.json());
+    document.getElementById('widgetStrategies').innerText = stats.strategies || 0;
+    document.getElementById('widgetTournament').innerText = stats.tournament || 0;
+    document.getElementById('widgetBreaches').innerText = stats.breaches || 0;
+    document.getElementById('widgetPaper').innerText = (stats.paperHours ? stats.paperHours.toFixed(0) : 48) + 'h';
+    document.getElementById('statsGrid').innerHTML = `
+      <div class="stat-card" onclick="openModal('📊 Active Strategies','Trading bots LEGION created')"><div class="stat-icon">📊</div><div class="stat-value">${stats.strategies||0}</div><div class="stat-label">Strategies</div></div>
+      <div class="stat-card" onclick="openModal('🏆 Tournament','Strategies competing with fake money')"><div class="stat-icon">🏆</div><div class="stat-value">${stats.tournament||0}</div><div class="stat-label">Tournament</div></div>
+      <div class="stat-card" onclick="openModal('🛡️ Safety Breaches','When a strategy breaks its rules')"><div class="stat-icon">🛡️</div><div class="stat-value">${stats.breaches||0}</div><div class="stat-label">Breaches</div></div>
+      <div class="stat-card" onclick="openModal('😨 Market Fear','0-24 Fear | 45-55 Neutral | 76-100 Greed')"><div class="stat-icon">😨</div><div class="stat-value">${stats.sentiment||50}</div><div class="stat-label">Fear</div></div>
+      <div class="stat-card" onclick="openModal('📈 Volatility','0-29 Calm | 30-49 Normal | 50-69 Bumpy')"><div class="stat-icon">📈</div><div class="stat-value">${stats.vix?stats.vix.toFixed(1):50}</div><div class="stat-label">VIX</div></div>
+      <div class="stat-card" onclick="openModal('📋 Safety Test','48-hour test with fake money')"><div class="stat-icon">📋</div><div class="stat-value">${stats.paperHours?stats.paperHours.toFixed(0):48}h</div><div class="stat-label">Test</div></div>
+    `;
+    const vix = stats.vix||50, sentiment = stats.sentiment||50;
+    document.getElementById('marketIntel').innerHTML = `
+      <div class="gauge-item"><div class="gauge-label"><span>📈 Volatility</span><span>${vix.toFixed(1)}</span></div><div class="gauge-bar"><div class="gauge-fill" style="width:${Math.min(100,vix)}%;background:${vix<30?'#00c896':(vix<50?'#f0b429':'#e84040')}"></div></div></div>
+      <div class="gauge-item"><div class="gauge-label"><span>😨 Fear & Greed</span><span>${sentiment}</span></div><div class="gauge-bar"><div class="gauge-fill" style="width:${sentiment}%;background:#f0b429"></div></div></div>
+      <div class="gauge-item"><div class="gauge-label"><span>⏰ Safety Test</span><span>${stats.paperHours?stats.paperHours.toFixed(0):48}h left</span></div><div class="gauge-bar"><div class="gauge-fill" style="width:${((48-(stats.paperHours||48))/48*100)}%;background:#8b5cf6"></div></div></div>
+    `;
+    document.getElementById('lastUpdated').innerText = new Date().toLocaleTimeString();
+  } catch(e) { document.getElementById('statsGrid').innerHTML = '<div class="error">⚠️ API Error</div>'; }
+}
+
+async function loadPortfolioData() {
+  try {
+    const data = await fetch(PORTFOLIO_API + '/api/portfolio/metrics').then(r => r.json());
+    document.getElementById('portfolioReturn').innerHTML = `${data.metrics.totalPnl >= 0 ? '+' : ''}${data.metrics.totalPnl.toFixed(1)}%`;
+    document.getElementById('portfolioPnl').innerHTML = `$${data.metrics.totalPnlUsd.toFixed(0)}`;
+    document.getElementById('portfolioWinRate').innerHTML = `${data.metrics.winRate.toFixed(0)}%`;
+    document.getElementById('portfolioSharpe').innerHTML = data.metrics.sharpe;
+    document.getElementById('strategyPerformance').innerHTML = data.strategyPerformance.map(s => `<div class="strategy-row"><span class="strategy-name">${s.isProfitable ? '✅' : '❌'} ${s.strategyId}</span><span class="${s.isProfitable ? 'trade-positive' : 'trade-negative'}">${s.pnl}% (${s.winRate}% WR)</span><span>${s.wins}W/${s.losses}L</span></div>`).join('');
+    document.getElementById('recentTrades').innerHTML = data.recentTrades.slice(0,10).map(t => `<div class="trade-row"><span>${t.isWin ? '✅' : '❌'} ${t.strategyId}</span><span class="${t.isWin ? 'trade-positive' : 'trade-negative'}">${t.isWin ? '+' : ''}${t.pnl}%</span><span style="color:#5a5c72">${new Date(t.timestamp).toLocaleTimeString()}</span></div>`).join('');
+  } catch(e) { document.getElementById('strategyPerformance').innerHTML = '<div class="error">⚠️ Portfolio API Error</div>'; }
+}
+
+async function loadSystemStatus() {
+  try {
+    const stats = await fetch(API_URL + '/api/stats').then(r => r.json());
+    document.getElementById('systemStatusContent').innerHTML = `
+      <div class="strategy-row"><span>🖥️ LEGION Core</span><span style="color:#00c896">✅ Running</span></div>
+      <div class="strategy-row"><span>📡 API Server</span><span style="color:#00c896">✅ Port 3001</span></div>
+      <div class="strategy-row"><span>💰 Portfolio API</span><span style="color:#00c896">✅ Port 3002</span></div>
+      <div class="strategy-row"><span>📊 Active Strategies</span><span>${stats.strategies}</span></div>
+      <div class="strategy-row"><span>📋 Paper Mode</span><span>${stats.paperHours.toFixed(0)}h left</span></div>
+    `;
+  } catch(e) { document.getElementById('systemStatusContent').innerHTML = '<div class="error">⚠️ Cannot connect</div>'; }
+}
+
+function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }
+setInterval(updateClock, 1000); updateClock();
+loadSavedSettings();
+fetchData();
+loadPortfolioData();
+loadSystemStatus();
+setInterval(fetchData, 30000);
+setInterval(loadPortfolioData, 30000);
+setInterval(loadSystemStatus, 30000);
+</script>
+</body>
+</html>

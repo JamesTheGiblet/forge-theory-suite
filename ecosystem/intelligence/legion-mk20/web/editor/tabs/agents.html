@@ -1,0 +1,22 @@
+<div class="card">
+    <h3>🤖 Active Agents (31 total)</h3>
+    <div id="agentsList" class="agents-grid">Loading agents...</div>
+</div>
+
+<script>
+const API = 'http://localhost:3011';
+
+async function loadAgents() {
+    try {
+        const res = await fetch(API + '/api/agents');
+        const data = await res.json();
+        document.getElementById('agentsList').innerHTML = data.map(a => 
+            '<div class="agent-item">' + a.name + '<span class="agent-class">' + (a.class || 'Euclid') + '</span></div>'
+        ).join('');
+    } catch(e) {
+        document.getElementById('agentsList').innerHTML = 'Error loading agents';
+    }
+}
+
+loadAgents();
+</script>

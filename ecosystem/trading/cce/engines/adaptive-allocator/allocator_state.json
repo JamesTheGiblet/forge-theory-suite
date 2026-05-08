@@ -1,0 +1,38 @@
+{
+  "currentEngine": {
+    "name": "grid-trading-2026-04-15",
+    "pm2Name": "grid-trading-2026-04-15-dry",
+    "type": "grid-trading",
+    "regime": "RANGING",
+    "phase": "ACCUMULATION",
+    "sentiment": "NEUTRAL",
+    "target": 0.5,
+    "stop": 0.3,
+    "hold": 3,
+    "capital": 500,
+    "startDate": "2026-04-15T08:08:02.669Z",
+    "dryRunDays": 0,
+    "status": "dry_run"
+  },
+  "engineHistory": [
+    {
+      "name": "grid-trading-2026-04-15",
+      "pm2Name": "grid-trading-2026-04-15-dry",
+      "type": "grid-trading",
+      "regime": "RANGING",
+      "phase": "ACCUMULATION",
+      "sentiment": "NEUTRAL",
+      "target": 0.5,
+      "stop": 0.3,
+      "hold": 3,
+      "capital": 500,
+      "startDate": "2026-04-15T08:08:02.669Z",
+      "dryRunDays": 0,
+      "status": "dry_run",
+      "endDate": null
+    }
+  ],
+  "dryRunStartDate": "2026-04-15T08:08:02.669Z",
+  "dryRunDays": 0,
+  "status": "dry_run"
+}

@@ -1,0 +1,70 @@
+{
+  "meta": {
+    "id": "ranging-strategy-1776238809199",
+    "name": "Ranging Accumulation Strategy",
+    "version": "1.0.0",
+    "generated": "2026-04-15T07:40:09.199Z",
+    "marketState": {
+      "regime": "RANGING",
+      "sentiment": "NEUTRAL",
+      "phase": "ACCUMULATION",
+      "volatility": 1.8544292584549222,
+      "trend": 1.2863820204323457,
+      "volumeRatio": 0.21916770841695482,
+      "btcPrice": 71422.7,
+      "lastUpdated": "2026-04-15T07:23:42.681Z",
+      "timestamp": "2026-04-15T07:23:42.681Z"
+    },
+    "reasoning": "\nStrategy generated for current market conditions:\n\nMarket State:\n  Regime: RANGING\n  Phase: ACCUMULATION\n  Sentiment: NEUTRAL\n  Volatility: 1.85%\n  Trend: 1.3%\n  Volume: 0.22x avg\n\nParameter Selection:\n  Target: 2% (based on normal volatility)\n  Stop: 0.8% (40% of target)\n  Hold: 7 days (optimized for accumulation phase)\n\nExpected Performance:\n  Win Rate: ~65-75%\n  Risk/Reward: 1:2.5\n  Best suited for: RANGING markets with neutral sentiment\n"
+  },
+  "manifest": {
+    "id": "ranging-strategy-1776238809199",
+    "name": "Ranging Accumulation Strategy",
+    "version": "1.0.0",
+    "type": "generated",
+    "timeframe": "1D",
+    "symbol": "BTC/USD",
+    "exchange": "kraken",
+    "capital": 1000,
+    "status": "dry_run",
+    "entry": "Price within range, place limit orders",
+    "exit": "+2% target / -0.8% stop / 7 day timeout",
+    "created": "2026-04-15T07:40:09.200Z"
+  },
+  "strategy": {
+    "name": "Ranging Accumulation Strategy",
+    "version": "1.0.0",
+    "validate": true,
+    "entryRules": {
+      "type": "grid",
+      "description": "Price within range, place limit orders",
+      "params": {
+        "levels": 5,
+        "spacing": 0.5
+      }
+    },
+    "exitRules": {
+      "targetPct": 2,
+      "stopPct": 0.8,
+      "maxHoldDays": 7
+    },
+    "entryTiming": "next_open",
+    "params": {
+      "targetPct": 2,
+      "stopPct": 0.8,
+      "maxHoldDays": 7
+    }
+  },
+  "deployment": {
+    "directory": "~/cce/engines/generated/ranging-strategy-1776238809199",
+    "files": [
+      "manifest.json",
+      "strategy.js",
+      "storage.js",
+      "engine.js",
+      "monitor.js"
+    ],
+    "pm2Name": "ranging-strategy-1776238809199",
+    "startCommand": "pm2 start monitor.js --name ranging-strategy-1776238809199"
+  }
+}

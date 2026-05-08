@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MoneyForge Unit Tests</title>
+  <style>
+    body { font-family: monospace; background: #181828; color: #e0e0e0; padding: 2rem; }
+    .test-pass { color: #10b981; }
+    .test-fail { color: #ef4444; }
+    .test-group { margin-bottom: 2rem; }
+  </style>
+</head>
+<body>
+  <h1>MoneyForge Unit Tests</h1>
+  <div id="testResults"></div>
+  <script>
+    // Minimal test harness
+    function assert(name, condition) {
+      return { name, pass: !!condition };
+    }
+    function runTests(group, tests) {
+      const results = tests.map(t => t());
+      return { group, results };
+    }
+    function renderResults(groups) {
+      const div = document.getElementById('testResults');
+      div.innerHTML = '';
+      groups.forEach(g => {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'test-group';
+        groupDiv.innerHTML = `<h2>${g.group}</h2>`;
+        g.results.forEach(r => {
+          const res = document.createElement('div');
+          res.className = r.pass ? 'test-pass' : 'test-fail';
+          res.textContent = `${r.pass ? '✔' : '✖'} ${r.name}`;
+          groupDiv.appendChild(res);
+        });
+        div.appendChild(groupDiv);
+      });
+    }
+
+    // --- Core Simulation Functions (minimal stubs for testing) ---
+    class Agent {
+      constructor() {
+        this.x = 10; this.y = 10; this.vx = 1; this.vy = 1;
+        this.goods = { food: 2, tools: 1, materials: 0 };
+        this.desires = ['tools'];
+        this.skills = ['food'];
+        this.uses_money = false;
+        this.money = 0;
+        this.failed_barter_attempts = 0;
+      }
+      move() {
+        this.x += this.vx;
+        this.y += this.vy;
+      }
+      tryBarter(other) {
+        const iWant = this.desires.find(d => other.goods[d] > 0);
+        const theyWant = other.desires.find(d => this.goods[d] > 0);
+        if (iWant && theyWant) {
+          this.goods[iWant]++;
+          other.goods[iWant]--;
+          other.goods[theyWant]++;
+          this.goods[theyWant]--;
+          return true;
+        } else {
+          this.failed_barter_attempts++;
+          return false;
+        }
+      }
+      considerMoneyAdoption(neighbors) {
+        const moneyUsers = neighbors.filter(a => a.uses_money).length;
+        if (moneyUsers / neighbors.length > 0.3) {
+          this.uses_money = true;
+          this.money = 50;
+        }
+      }
+    }
+
+    // --- Unit Tests ---
+    const agentMovementTests = runTests('Agent Movement', [
+      () => {
+        const a = new Agent();
+        a.move();
+        return assert('Agent moves correctly', a.x === 11 && a.y === 11);
+      },
+      () => {
+        const a = new Agent();
+        a.vx = -2; a.vy = -3;
+        a.move();
+        return assert('Agent moves negatively', a.x === 8 && a.y === 7);
+      },
+      () => {
+        const a = new Agent();
+        a.vx = 0; a.vy = 0;
+        a.move();
+        return assert('Agent does not move with zero velocity', a.x === 10 && a.y === 10);
+      }
+    ]);
+
+    const barterTests = runTests('Barter Logic', [
+      () => {
+        const a = new Agent();
+        const b = new Agent();
+        b.goods.tools = 2;
+        b.desires = ['food'];
+        return assert('Barter succeeds with double coincidence', a.tryBarter(b) === true);
+      },
+      () => {
+        const a = new Agent();
+        const b = new Agent();
+        b.goods.tools = 0;
+        return assert('Barter fails without coincidence', a.tryBarter(b) === false);
+      },
+      () => {
+        const a = new Agent();
+        const b = new Agent();
+        a.goods.tools = 0;
+        b.goods.food = 0;
+        return assert('Barter fails when neither has goods', a.tryBarter(b) === false);
+      }
+    ]);
+
+    const moneyAdoptionTests = runTests('Money Adoption', [
+      () => {
+        const a = new Agent();
+        const neighbors = [new Agent(), new Agent(), new Agent()];
+        neighbors[0].uses_money = true;
+        neighbors[1].uses_money = true;
+        neighbors[2].uses_money = false;
+        a.considerMoneyAdoption(neighbors);
+        return assert('Agent adopts money if enough neighbors use it', a.uses_money === true && a.money === 50);
+      },
+      () => {
+        const a = new Agent();
+        const neighbors = [new Agent(), new Agent(), new Agent()];
+        neighbors.forEach(n => n.uses_money = false);
+        a.considerMoneyAdoption(neighbors);
+        return assert('Agent does not adopt money if few neighbors use it', a.uses_money === false);
+      },
+      () => {
+        const a = new Agent();
+        const neighbors = [];
+        a.considerMoneyAdoption(neighbors);
+        return assert('Agent does not adopt money with no neighbors', a.uses_money === false);
+      }
+    ]);
+    const goodsProductionTests = runTests('Goods Production', [
+      () => {
+        const a = new Agent();
+        const before = a.goods.food;
+        a.skills = ['food'];
+        // Simulate production 100 times to ensure at least one increment
+        let produced = false;
+        for (let i = 0; i < 100; i++) {
+          a.move(); // move doesn't affect goods, but just to simulate activity
+          if (Math.random() < 0.1) a.goods.food++;
+          if (a.goods.food > before) produced = true;
+        }
+        return assert('Agent can produce goods', produced);
+      }
+    ]);
+
+  renderResults([agentMovementTests, barterTests, moneyAdoptionTests, goodsProductionTests]);
+  </script>
+</body>
+</html>

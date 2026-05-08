@@ -1,0 +1,68 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "ubvm/chain-test-a",
+  "object_class": "Safe",
+  "intent": "Emit a test event to verify the event bus triggers another capsule.",
+  "containment": {
+    "read_only": false,
+    "audit_log": true,
+    "kill_switch": false
+  },
+  "interpretation": {
+    "this_is": "Phase 0 test capsule \u2013 proves event bus chaining.",
+    "purpose": [
+      "Emit test.chain event",
+      "Validate event bus write path"
+    ],
+    "tone": "Technical",
+    "audience": [
+      "UBVM developers",
+      "Compliance suite"
+    ],
+    "importance": [
+      "Event emission",
+      "Chain triggering"
+    ],
+    "ignore": [
+      "Domain logic"
+    ],
+    "dont_change": [
+      "scp_id",
+      "intent",
+      "event name"
+    ],
+    "trust_score": "reserved"
+  },
+  "provenance": {
+    "author": "James / Giblets Creations",
+    "agent": "Claude Sonnet 4.6",
+    "created_at": "2026-05-05T12:00:00Z",
+    "version": "1.0.0",
+    "context": "Phase 0 event bus validation",
+    "capture_mode": "conversation",
+    "lineage": []
+  },
+  "behaviours": [
+    {
+      "trigger": "manual",
+      "actions": [
+        {
+          "primitive": "log",
+          "params": {
+            "message": "Chain A loaded \u2013 emitting test.chain"
+          }
+        },
+        {
+          "primitive": "emit_event",
+          "params": {
+            "event": "test.chain",
+            "payload": {
+              "from": "ubvm/chain-test-a"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "signature": "d06b7478978f64c385e7f1266ff6c781f8bddbd0f26f1911a9aa0f12353f7671"
+}

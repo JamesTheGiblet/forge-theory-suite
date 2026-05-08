@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EnergyFlowForge: Innovative solutions for energy management, real-time analytics, and sustainable practices. Monitor, analyze, and optimize your energy consumption.">
+    <meta name="keywords" content="energy, energy management, analytics, sustainability, smart devices, IoT, dashboard, monitoring, optimization, EnergyFlowForge">
+    <title>EnergyFlowForge - Pendulum</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0e27;
+            color: #e0e0e0;
+            overflow-x: hidden;
+            touch-action: pan-y;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        header {
+            text-align: center;
+            padding: 15px 10px;
+            background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+            font-style: italic;
+        }
+
+        .main-content {
+            display: grid;
+            gap: 15px;
+        }
+
+        .simulation-panel {
+            background: #1a1f3a;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        #canvas {
+            width: 100%;
+            height: 60vh;
+            background: #0f1429;
+            border-radius: 8px;
+            display: block;
+            touch-action: none;
+        }
+
+        .panel {
+            background: #1a1f3a;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .help-icon {
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            font-weight: bold;
+            color: #a0a0a0;
+            border: 1px solid #a0a0a0;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            text-align: center;
+            line-height: 16px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .help-icon .tooltip-text {
+            visibility: hidden;
+            width: 250px;
+            background-color: #2d3561;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 10;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -125px; /* Half of width to center */
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+            font-weight: normal;
+            line-height: 1.4;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .help-icon:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .energy-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .energy-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .energy-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .energy-name {
+            font-weight: 600;
+        }
+
+        .energy-value {
+            font-family: 'Courier New', monospace;
+            color: #a0a0a0;
+        }
+
+        .energy-bar-container {
+            height: 30px;
+            background: #0f1429;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #2d3561;
+        }
+
+        .energy-bar {
+            height: 100%;
+            transition: width 0.1s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .kinetic-bar {
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .potential-bar {
+            background: linear-gradient(90deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .thermal-bar {
+            background: linear-gradient(90deg, #f83600 0%, #f9d423 100%);
+        }
+
+        .total-energy {
+            margin-top: 15px;
+            padding: 12px;
+            background: #0f1429;
+            border-radius: 6px;
+            border: 2px solid #667eea;
+        }
+
+        .total-label {
+            font-size: 0.85rem;
+            color: #a0a0a0;
+            margin-bottom: 5px;
+        }
+
+        .total-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            color: #667eea;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .control-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #2d3561;
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .settings-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .slider-control {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .slider-value {
+            font-family: 'Courier New', monospace;
+            color: #667eea;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #2d3561;
+            outline: none;
+        }
+
+        .stat-label {
+            color: #a0a0a0;
+            font-size: 0.8rem;
+        }
+
+        .stat-value {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #667eea;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                padding: 20px;
+                max-width: 1400px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .main-content {
+                grid-template-columns: 2fr 1fr;
+            }
+
+            .simulation-panel {
+                grid-row: 1 / 3;
+            }
+
+            #canvas {
+                height: 70vh;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .main-content {
+                grid-template-columns: 2fr 1fr 1fr;
+            }
+
+            .simulation-panel {
+                grid-row: 1 / 4;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 EnergyFlowForge</h1>
+            <div class="tagline">Watch Energy Transform, Never Disappear</div>
+        </header>
+
+        <div class="main-content">
+            <div class="simulation-panel">
+                <div class="panel-title">
+                    <span>⚡</span>
+                    <span>Pendulum Simulation</span>
+                </div>
+                <canvas id="canvas"></canvas>
+            </div>
+
+            <div class="right-column">
+                <div class="panel">
+                <div class="panel-title">
+                    <span>📊</span>
+                    <span>Energy Distribution</span>
+                    <div class="help-icon">?
+                        <span class="tooltip-text"><b>Kinetic:</b> Energy of motion, max at the bottom.<br><b>Potential:</b> Stored energy from height, max at the peaks.<br><b>Thermal:</b> Heat generated by friction (if enabled).</span>
+                </div>
+                <div class="energy-bars">
+                    <div class="energy-label">
+                        <span class="energy-name">Kinetic</span>
+                        <span class="energy-value" id="kinetic-value">0.00 J</span>
+                    </div>
+                    <div class="energy-bar-container">
+                        <div class="energy-bar kinetic-bar" id="kinetic-bar"></div>
+                    </div>
+                    <div class="energy-item">
+                        <div class="energy-label">
+                            <span class="energy-name">Potential</span>
+                            <span class="energy-value" id="potential-value">0.00 J</span>
+                        </div>
+                        <div class="energy-bar-container">
+                            <div class="energy-bar potential-bar" id="potential-bar"></div>
+                        </div>
+                    </div>
+                    <div class="energy-item">
+                        <div class="energy-label">
+                            <span class="energy-name">Thermal</span>
+                            <span class="energy-value" id="thermal-value">0.00 J</span>
+                        </div>
+                        <div class="energy-bar-container">
+                            <div class="energy-bar thermal-bar" id="thermal-bar"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="total-energy">
+                    <div class="total-label">TOTAL ENERGY (CONSERVED)</div>
+                    <div class="total-value" id="total-value">100.00 J</div>
+                    <div class="conservation-check conservation-perfect" id="conservation-check">
+                        ✓ Perfect Conservation
+                    </div>
+                </div>
+            </div>
+            </div>
+
+                <div class="panel">
+                <div class="panel-title">
+                    <span>⚙️</span>
+                    <span>Controls</span>
+                    <div class="help-icon">?
+                        <span class="tooltip-text">Adjust the physical properties of the simulation. Dragging the pendulum bob also sets its starting position and energy.</span>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-row">
+                        <span class="control-label">Friction</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="friction-toggle" title="Toggle friction">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="control-row">
+                        <span class="control-label">Show Trail</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="trail-toggle" title="Show Trail">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <div class="slider-control">
+                        <div class="slider-label">
+                            <span>Gravity</span>
+                            <span class="slider-value" id="gravity-value">9.81 m/s²</span>
+                        </div>
+                        <label for="gravity-slider" class="visually-hidden">Gravity Slider</label>
+                        <input type="range" id="gravity-slider" min="1" max="20" step="0.1" value="9.81" title="Adjust gravity (m/s²)">
+                    </div>
+                    
+                    <div class="slider-control">
+                        <div class="slider-label">
+                            <span>Length</span>
+                            <span class="slider-value" id="length-value">200 px</span>
+                        </div>
+                        <label for="length-slider" class="visually-hidden">Length Slider</label>
+                        <input type="range" id="length-slider" min="100" max="400" step="10" value="200" title="Adjust pendulum length (px)">
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" id="reset-btn">Reset</button>
+                    <button class="btn-secondary" id="pause-btn">Pause</button>
+                    <button class="btn-tertiary" id="export-btn">📥 Export Data</button>
+                </div>
+            </div>
+
+                <div class="panel">
+                <div class="panel-title">
+                    <span>📈</span>
+                    <span>Physics Stats</span>
+                    <div class="help-icon">?
+                        <span class="tooltip-text"><b>Oscillations:</b> A full back-and-forth swing.<br><b>Period:</b> Time taken for one full oscillation.<br><b>Energy → Heat:</b> Percentage of the initial mechanical energy converted to thermal energy.</span>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Oscillations</div>
+                        <div class="stat-value" id="oscillations-value">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Max Speed</div>
+                        <div class="stat-value" id="max-speed-value">0.0 m/s</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Period</div>
+                        <div class="stat-value" id="period-value">0.0 s</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Energy → Heat</div>
+                        <div class="stat-value" id="energy-loss-value">0.0%</div>
+                    </div>
+                </div>
+            </div>
+
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>🌌</span>
+                        <span>Phase Space Plot</span>
+                    </div>
+                    <canvas id="phase-space-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sound effects for pendulum events -->
+    <audio id="peak-sound" src="peak.mp3" preload="auto"></audio>
+    <audio id="maxspeed-sound" src="maxspeed.mp3" preload="auto"></audio>
+
+    <script>
+        // ============================================================================
+        // ENERGY SYSTEM - Exact Conservation
+        // ============================================================================
+        class EnergySystem {
+            constructor(totalEnergy) {
+                this.TOTAL_ENERGY = totalEnergy;
+                this.initialEnergy = totalEnergy;
+                this.kinetic = 0;
+                this.potential = totalEnergy;
+            }
+
+            setKinetic(value) {
+                this.kinetic = Math.max(0, value);
+            }
+
+            setPotential(value) {
+                this.potential = Math.max(0, value);
+            }
+
+            getThermal() {
+                // Thermal is calculated as residual - ensures perfect conservation
+                return Math.max(0, this.TOTAL_ENERGY - this.kinetic - this.potential);
+            }
+
+            getTotal() {
+                return this.kinetic + this.potential + this.getThermal();
+            }
+
+            getMechanicalEnergy() {
+                return this.kinetic + this.potential;
+            }
+
+            getEnergyLossPercentage() {
+                // Calculate percentage of initial energy converted to thermal
+                const currentMechanical = this.getMechanicalEnergy();
+                if (this.initialEnergy === 0) return 0;
+                return ((this.initialEnergy - currentMechanical) / this.initialEnergy * 100);
+            }
+
+            checkConservation() {
+                const total = this.getTotal();
+                const diff = Math.abs(total - this.TOTAL_ENERGY);
+                return diff < 0.01;
+            }
+        }
+
+        // ============================================================================
+        // PENDULUM PHYSICS
+        // ============================================================================
+        class Pendulum {
+            constructor(length, mass, angle, gravity) {
+                this.length = length;
+                this.mass = mass;
+                this.angle = angle;
+                this.angularVelocity = 0;
+                this.gravity = gravity;
+                this.damping = 0;
+                
+                // Statistics
+                this.oscillationCount = 0;
+                this.lastAngle = angle;
+                this.period = 0;
+                this.lastPeakTime = 0;
+                this.maxSpeed = 0;
+                
+                // Trail
+                this.trail = [];
+                this.showTrail = false;
+                this.maxTrailLength = 60;
+            }
+
+            update(dt) {
+                this.lastAngle = this.angle;
+                const prevVel = this.angularVelocity; // Store previous velocity
+                
+                // Physics update
+                const angularAcceleration = -(this.gravity / this.length) * Math.sin(this.angle);
+                this.angularVelocity += angularAcceleration * dt;
+                this.angularVelocity *= (1 - this.damping * dt);
+                this.angle += this.angularVelocity * dt;
+                
+                // Track max speed
+                const speed = Math.abs(this.length * this.angularVelocity / 100); // Convert to m/s
+                if (speed > this.maxSpeed) {
+                    this.maxSpeed = speed;
+                }
+                
+                // Detect oscillations using velocity sign change (at peaks)
+                const prevVelSign = Math.sign(prevVel);
+                const currentVelSign = Math.sign(this.angularVelocity);
+                if (Math.abs(prevVel) > 0.01 && prevVelSign !== currentVelSign) {
+                    const now = performance.now();
+                    if (this.lastPeakTime > 0) {
+                        this.period = (now - this.lastPeakTime) / 1000;
+                        this.oscillationCount += 0.5; // Half oscillation per peak
+                    }
+                    this.lastPeakTime = now;
+                }
+                
+                // Update trail
+                if (this.showTrail) {
+                    this.updateTrail();
+                }
+            }
+
+            updateTrail() {
+                this.trail.push({ angle: this.angle, time: performance.now() });
+                
+                // Limit trail length
+                if (this.trail.length > this.maxTrailLength) {
+                    this.trail.shift();
+                }
+            }
+
+            getKineticEnergy() {
+                const velocity = this.length * this.angularVelocity / 100; // m/s
+                return 0.5 * this.mass * velocity * velocity;
+            }
+
+            getPotentialEnergy(referenceHeight) {
+                const height = referenceHeight - this.length * Math.cos(this.angle);
+                return this.mass * this.gravity * height / 100; // Adjust for pixel units
+            }
+
+            getPosition(centerX, centerY) {
+                return {
+                    x: centerX + this.length * Math.sin(this.angle),
+                    y: centerY + this.length * Math.cos(this.angle)
+                };
+            }
+
+            resetStats() {
+                this.oscillationCount = 0;
+                this.lastPeakTime = 0;
+                this.period = 0;
+                this.maxSpeed = 0;
+                this.trail = [];
+            }
+        }
+
+        // ============================================================================
+        // MAIN SIMULATION
+        // ============================================================================
+        class Simulation {
+            constructor() {
+                this.canvas = document.getElementById('canvas');
+                this.ctx = this.canvas.getContext('2d');
+
+                // Phase Space Plot
+                this.phaseCanvas = document.getElementById('phase-space-canvas');
+                this.phaseCtx = this.phaseCanvas.getContext('2d');
+                this.phaseHistory = [];
+
+                this.setupCanvas();
+                
+                // Initialize pendulum
+                const initialAngle = Math.PI / 3;
+                const pendulumLength = 200;
+                const mass = 1;
+                const gravity = 9.81;
+
+                this.pendulum = new Pendulum(pendulumLength, mass, initialAngle, gravity);
+                this.referenceHeight = pendulumLength;
+
+                // Initialize energy system
+                const initialPE = this.pendulum.getPotentialEnergy(this.referenceHeight);
+                this.energySystem = new EnergySystem(initialPE);
+
+                // Simulation state
+                this.paused = false;
+                this.lastTime = performance.now();
+                this.dragging = false;
+
+                // Data recording for export
+                this.dataHistory = [];
+                this.recordingStartTime = performance.now();
+                this.lastRecordTime = 0;
+                this.recordInterval = 50; // Record every 50ms
+
+                // Sound effect state
+                this.lastAngularVelocity = 0;
+                this.lastMaxSpeed = 0;
+
+                // Setup
+                this.setupControls();
+                this.setupInteraction();
+                
+                // Start
+                this.animate();
+            }
+
+            setupCanvas() {
+                const resize = () => {
+                    const rect = this.canvas.getBoundingClientRect();
+                    this.canvas.width = rect.width * window.devicePixelRatio;
+                    this.canvas.height = rect.height * window.devicePixelRatio;
+                    this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+                    this.canvasWidth = rect.width;
+                    this.canvasHeight = rect.height;
+                };
+                resize();
+
+                const resizePhase = () => {
+                    const rect = this.phaseCanvas.getBoundingClientRect();
+                    this.phaseCanvas.width = rect.width * window.devicePixelRatio;
+                    this.phaseCanvas.height = rect.height * window.devicePixelRatio;
+                    this.phaseCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+                };
+                resizePhase();
+
+                window.addEventListener('resize', resize);
+            }
+
+            setupControls() {
+                // Friction toggle
+                document.getElementById('friction-toggle').addEventListener('change', (e) => {
+                    this.pendulum.damping = e.target.checked ? 0.15 : 0;
+                });
+
+                // Trail toggle
+                document.getElementById('trail-toggle').addEventListener('change', (e) => {
+                    this.pendulum.showTrail = e.target.checked;
+                    if (!e.target.checked) {
+                        this.pendulum.trail = [];
+                    }
+                });
+
+                // Gravity slider
+                const gravitySlider = document.getElementById('gravity-slider');
+                const gravityValue = document.getElementById('gravity-value');
+                gravitySlider.addEventListener('input', (e) => {
+                    const value = parseFloat(e.target.value);
+                    this.pendulum.gravity = value;
+                    gravityValue.textContent = value.toFixed(2) + ' m/s²';
+                    this.recalculateEnergy();
+                });
+
+                // Length slider
+                const lengthSlider = document.getElementById('length-slider');
+                const lengthValue = document.getElementById('length-value');
+                lengthSlider.addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    this.pendulum.length = value;
+                    this.referenceHeight = value;
+                    lengthValue.textContent = value + ' px';
+                    this.recalculateEnergy();
+                });
+
+                // Buttons
+                document.getElementById('reset-btn').addEventListener('click', () => this.reset());
+                document.getElementById('pause-btn').addEventListener('click', () => this.togglePause());
+                document.getElementById('export-btn').addEventListener('click', () => this.exportData());
+            }
+
+            setupInteraction() {
+                // Touch events
+                this.canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.dragging = true;
+                    this.handleDrag(e.touches[0]);
+                });
+
+                this.canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    if (this.dragging) this.handleDrag(e.touches[0]);
+                });
+
+                this.canvas.addEventListener('touchend', () => {
+                    this.dragging = false;
+                });
+
+                // Mouse events
+                this.canvas.addEventListener('mousedown', (e) => {
+                    this.dragging = true;
+                    this.handleDrag(e);
+                });
+
+                this.canvas.addEventListener('mousemove', (e) => {
+                    if (this.dragging) this.handleDrag(e);
+                });
+
+                this.canvas.addEventListener('mouseup', () => {
+                    this.dragging = false;
+                });
+
+                this.canvas.addEventListener('mouseleave', () => {
+                    this.dragging = false;
+                });
+            }
+
+            handleDrag(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = this.canvasWidth / 2;
+                const centerY = this.canvasHeight / 2 - 50;
+
+                // Calculate angle from center to mouse/touch position
+                const angle = Math.atan2(x - centerX, y - centerY);
+                this.pendulum.angle = angle;
+                this.pendulum.angularVelocity = 0;
+                
+                this.recalculateEnergy();
+                this.pendulum.resetStats();
+            }
+
+            recalculateEnergy() {
+                // This should be the single source of truth for resetting energy
+                const pe = this.pendulum.getPotentialEnergy(this.pendulum.length);
+                const ke = this.pendulum.getKineticEnergy();
+                this.energySystem.TOTAL_ENERGY = pe + ke;
+                this.energySystem.initialEnergy = pe + ke;
+                this.energySystem.setPotential(pe);
+                this.energySystem.setKinetic(ke);
+            }
+
+            togglePause() {
+                this.paused = !this.paused;
+                document.getElementById('pause-btn').textContent = this.paused ? 'Resume' : 'Pause';
+            }
+
+            reset() {
+                // Reset pendulum
+                this.pendulum.angle = Math.PI / 3;
+                this.pendulum.angularVelocity = 0;
+                this.pendulum.gravity = 9.81;
+                this.pendulum.length = 200;
+                this.pendulum.resetStats();
+
+                // Reset UI
+                document.getElementById('friction-toggle').checked = false;
+                document.getElementById('trail-toggle').checked = false;
+                document.getElementById('gravity-slider').value = 9.81;
+                document.getElementById('gravity-value').textContent = '9.81 m/s²';
+                const lengthSlider = document.getElementById('length-slider');
+                lengthSlider.value = 200;
+                document.getElementById('length-value').textContent = '200 px';
+                
+                // Manually trigger events to ensure all state is updated
+                document.getElementById('friction-toggle').dispatchEvent(new Event('change'));
+                lengthSlider.dispatchEvent(new Event('input'));
+
+                this.recalculateEnergy();
+                this.paused = false;
+                document.getElementById('pause-btn').textContent = 'Pause';
+                
+                // Reset data recording
+                this.dataHistory = [];
+                this.recordingStartTime = performance.now();
+                this.lastRecordTime = 0;
+
+                // Reset phase space
+                this.phaseHistory = [];
+            }
+
+            update(dt) {
+                if (this.paused || this.dragging) return;
+
+                this.pendulum.update(dt);
+
+                // Sound effect: Peak detection (when angular velocity crosses zero)
+                if (this.lastAngularVelocity * this.pendulum.angularVelocity < 0) {
+                    if (!this.dragging) {
+                        const peakAudio = document.getElementById('peak-sound');
+                        if (peakAudio) { peakAudio.currentTime = 0; peakAudio.play(); }
+                    }
+                }
+                this.lastAngularVelocity = this.pendulum.angularVelocity;
+
+                // Sound effect: Max speed detection (local maximum)
+                const currentSpeed = Math.abs(this.pendulum.angularVelocity);
+                if (currentSpeed > this.lastMaxSpeed && currentSpeed > 0.01) {
+                    this.lastMaxSpeed = currentSpeed;
+                }
+                // If speed was decreasing and now increases, play max speed sound
+                if (currentSpeed < this.lastMaxSpeed - 0.01 && this.lastMaxSpeed > 0.5) {
+                    if (!this.dragging) {
+                        const maxSpeedAudio = document.getElementById('maxspeed-sound');
+                        if (maxSpeedAudio) { maxSpeedAudio.currentTime = 0; maxSpeedAudio.play(); }
+                    }
+                    this.lastMaxSpeed = 0;
+                }
+
+                // Update energy values
+                const ke = this.pendulum.getKineticEnergy();
+                const pe = this.pendulum.getPotentialEnergy(this.referenceHeight);
+                
+                this.energySystem.setKinetic(ke);
+                this.energySystem.setPotential(pe);
+                
+                // Record data for export
+                this.recordData();
+            }
+
+            draw() {
+                const ctx = this.ctx;
+                const phaseCtx = this.phaseCtx;
+                const centerX = this.canvasWidth / 2;
+                const centerY = this.canvasHeight / 2 - 50;
+
+                // Clear
+                ctx.fillStyle = '#0f1429';
+                ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+                // Clear and draw phase space background
+                phaseCtx.fillStyle = '#0f1429';
+                phaseCtx.fillRect(0, 0, this.phaseCanvas.width, this.phaseCanvas.height);
+                this.drawPhaseSpace();
+
+                // Draw trail
+                if (this.pendulum.showTrail && this.pendulum.trail.length > 1) {
+                    ctx.strokeStyle = 'rgba(102, 126, 234, 0.3)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    
+                    this.pendulum.trail.forEach((point, i) => {
+                        const pos = {
+                            x: centerX + this.pendulum.length * Math.sin(point.angle),
+                            y: centerY + this.pendulum.length * Math.cos(point.angle)
+                        };
+                        
+                        if (i === 0) {
+                            ctx.moveTo(pos.x, pos.y);
+                        } else {
+                            ctx.lineTo(pos.x, pos.y);
+                        }
+                    });
+                    
+                    ctx.stroke();
+                }
+
+                // Draw reference line
+                ctx.beginPath();
+                ctx.moveTo(centerX - 150, centerY + this.pendulum.length);
+                ctx.lineTo(centerX + 150, centerY + this.pendulum.length);
+                ctx.strokeStyle = 'rgba(102, 126, 234, 0.2)';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Draw pendulum rod
+                const pos = this.pendulum.getPosition(centerX, centerY);
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.strokeStyle = '#667eea';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Draw pivot
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
+                ctx.fillStyle = '#8b5cf6';
+                ctx.fill();
+
+                // Draw bob
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
+                const gradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 20);
+                gradient.addColorStop(0, '#4facfe');
+                gradient.addColorStop(1, '#00f2fe');
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                ctx.strokeStyle = '#667eea';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Draw velocity vector
+                const speed = Math.abs(this.pendulum.angularVelocity);
+                if (speed > 0.1) {
+                    const scale = 50;
+                    const vx = this.pendulum.angularVelocity * this.pendulum.length * Math.cos(this.pendulum.angle) * scale;
+                    const vy = -this.pendulum.angularVelocity * this.pendulum.length * Math.sin(this.pendulum.angle) * scale;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(pos.x, pos.y);
+                    ctx.lineTo(pos.x + vx, pos.y + vy);
+                    ctx.strokeStyle = '#4facfe';
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                    
+                    // Arrow head
+                    const angle = Math.atan2(vy, vx);
+                    ctx.beginPath();
+                    ctx.moveTo(pos.x + vx, pos.y + vy);
+                    ctx.lineTo(
+                        pos.x + vx - 10 * Math.cos(angle - Math.PI / 6),
+                        pos.y + vy - 10 * Math.sin(angle - Math.PI / 6)
+                    );
+                    ctx.lineTo(
+                        pos.x + vx - 10 * Math.cos(angle + Math.PI / 6),
+                        pos.y + vy - 10 * Math.sin(angle + Math.PI / 6)
+                    );
+                    ctx.closePath();
+                    ctx.fillStyle = '#4facfe';
+                    ctx.fill();
+                }
+            }
+
+            drawPhaseSpace() {
+                const ctx = this.phaseCtx;
+                const width = this.phaseCanvas.getBoundingClientRect().width;
+                const height = this.phaseCanvas.getBoundingClientRect().height;
+
+                // Map state to canvas coordinates
+                const mapX = (angle) => width / 2 + (angle / (Math.PI * 1.1)) * (width / 2);
+                const mapY = (velocity) => height / 2 - (velocity / 0.3) * (height / 2);
+
+                // Draw axes
+                ctx.strokeStyle = 'rgba(102, 126, 234, 0.2)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, height / 2);
+                ctx.lineTo(width, height / 2); // X-axis (Angle)
+                ctx.moveTo(width / 2, 0);
+                ctx.lineTo(width / 2, height); // Y-axis (Velocity)
+                ctx.stroke();
+
+                // Draw axis labels
+                ctx.fillStyle = '#a0a0a0';
+                ctx.font = '12px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Angle (rad)', width / 2, height - 5);
+                ctx.save();
+                ctx.translate(15, height / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.fillText('Angular Velocity (rad/s)', 0, 0);
+                ctx.restore();
+
+                // Draw the phase history
+                if (this.phaseHistory.length < 2) return;
+
+                ctx.beginPath();
+                const firstPoint = this.phaseHistory[0];
+                ctx.moveTo(mapX(firstPoint.angle), mapY(firstPoint.velocity));
+
+                for (let i = 1; i < this.phaseHistory.length; i++) {
+                    const point = this.phaseHistory[i];
+                    const x = mapX(point.angle);
+                    const y = mapY(point.velocity);
+                    ctx.lineTo(x, y);
+                }
+
+                const gradient = ctx.createLinearGradient(0, 0, width, 0);
+                gradient.addColorStop(0, '#fa709a');
+                gradient.addColorStop(0.5, '#4facfe');
+                gradient.addColorStop(1, '#fee140');
+                ctx.strokeStyle = gradient;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+
+            updateUI() {
+                const ke = this.energySystem.kinetic;
+                const pe = this.energySystem.potential;
+                const thermal = this.energySystem.getThermal();
+                const total = this.energySystem.getTotal();
+
+                // Update energy values
+                document.getElementById('kinetic-value').textContent = ke.toFixed(2) + ' J';
+                document.getElementById('potential-value').textContent = pe.toFixed(2) + ' J';
+                document.getElementById('thermal-value').textContent = thermal.toFixed(2) + ' J';
+                document.getElementById('total-value').textContent = total.toFixed(2) + ' J';
+
+                // Update energy bars
+                const maxEnergy = this.energySystem.TOTAL_ENERGY || 1;
+                document.getElementById('kinetic-bar').style.width = (ke / maxEnergy * 100) + '%';
+                document.getElementById('potential-bar').style.width = (pe / maxEnergy * 100) + '%';
+                document.getElementById('thermal-bar').style.width = (thermal / maxEnergy * 100) + '%';
+
+                // Update conservation check
+                const conserved = this.energySystem.checkConservation();
+                const checkEl = document.getElementById('conservation-check');
+                checkEl.className = 'conservation-check ' + (conserved ? 'conservation-perfect' : '');
+                checkEl.textContent = conserved ? '✓ Perfect Conservation' : '⚠ Calculation Error';
+
+                // Update stats
+                document.getElementById('oscillations-value').textContent = Math.floor(this.pendulum.oscillationCount);
+                document.getElementById('max-speed-value').textContent = this.pendulum.maxSpeed.toFixed(1) + ' m/s';
+                document.getElementById('period-value').textContent = this.pendulum.period.toFixed(1) + ' s';
+                document.getElementById('energy-loss-value').textContent = 
+                    this.energySystem.getEnergyLossPercentage().toFixed(1) + '%';
+            }
+
+            recordData() {
+                const now = performance.now();
+                if (now - this.lastRecordTime < this.recordInterval) return;
+                
+                this.lastRecordTime = now;
+                
+                const dataPoint = {
+                    time: (now - this.recordingStartTime) / 1000, // seconds
+                    angle: this.pendulum.angle,
+                    angularVelocity: this.pendulum.angularVelocity,
+                    kineticEnergy: this.energySystem.kinetic,
+                    potentialEnergy: this.energySystem.potential,
+                    thermalEnergy: this.energySystem.getThermal(),
+                    totalEnergy: this.energySystem.getTotal(),
+                    mechanicalEnergy: this.energySystem.getMechanicalEnergy(),
+                    oscillations: this.pendulum.oscillationCount,
+                    period: this.pendulum.period
+                };
+                
+                this.dataHistory.push(dataPoint);
+                this.phaseHistory.push({ angle: dataPoint.angle, velocity: dataPoint.angularVelocity });
+                
+                // Limit history to last 10000 points (about 8 minutes at 20Hz)
+                if (this.dataHistory.length > 10000) {
+                    this.dataHistory.shift();
+                }
+                // Limit phase history for performance
+                if (this.phaseHistory.length > 500) {
+                    this.phaseHistory.shift();
+                }
+            }
+
+            exportData() {
+                if (this.dataHistory.length === 0) {
+                    alert('No data to export yet. Let the simulation run for a few seconds first!');
+                    return;
+                }
+
+                // Get current parameters
+                const metadata = {
+                    exportDate: new Date().toISOString(),
+                    pendulumLength: this.pendulum.length,
+                    pendulumMass: this.pendulum.mass,
+                    gravity: this.pendulum.gravity,
+                    dampingCoefficient: this.pendulum.damping,
+                    initialEnergy: this.energySystem.initialEnergy,
+                    dataPoints: this.dataHistory.length,
+                    duration: this.dataHistory[this.dataHistory.length - 1].time.toFixed(2) + ' seconds'
+                };
+
+                // Create CSV content
+                let csv = '# EnergyFlowForge - Pendulum Data Export\n';
+                csv += '# Export Date: ' + metadata.exportDate + '\n';
+                csv += '# Pendulum Length: ' + metadata.pendulumLength + ' px\n';
+                csv += '# Pendulum Mass: ' + metadata.pendulumMass + ' kg\n';
+                csv += '# Gravity: ' + metadata.gravity + ' m/s²\n';
+                csv += '# Damping Coefficient: ' + metadata.dampingCoefficient + '\n';
+                csv += '# Initial Energy: ' + metadata.initialEnergy.toFixed(4) + ' J\n';
+                csv += '# Data Points: ' + metadata.dataPoints + '\n';
+                csv += '# Duration: ' + metadata.duration + '\n';
+                csv += '#\n';
+                csv += 'Time (s),Angle (rad),Angular Velocity (rad/s),Kinetic Energy (J),Potential Energy (J),Thermal Energy (J),Total Energy (J),Mechanical Energy (J),Oscillations,Period (s)\n';
+                
+                this.dataHistory.forEach(point => {
+                    csv += point.time.toFixed(4) + ',';
+                    csv += point.angle.toFixed(6) + ',';
+                    csv += point.angularVelocity.toFixed(6) + ',';
+                    csv += point.kineticEnergy.toFixed(6) + ',';
+                    csv += point.potentialEnergy.toFixed(6) + ',';
+                    csv += point.thermalEnergy.toFixed(6) + ',';
+                    csv += point.totalEnergy.toFixed(6) + ',';
+                    csv += point.mechanicalEnergy.toFixed(6) + ',';
+                    csv += point.oscillations.toFixed(2) + ',';
+                    csv += point.period.toFixed(4) + '\n';
+                });
+
+                // Create download
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                
+                // Generate filename with timestamp
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
+                a.download = `energyforge-pendulum-${timestamp}.csv`;
+                
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                // Show confirmation
+                const exportBtn = document.getElementById('export-btn');
+                const originalText = exportBtn.textContent;
+                exportBtn.textContent = '✓ Exported!';
+                exportBtn.style.background = 'linear-gradient(135deg, #34d399 0%, #10b981 100%)';
+                
+                setTimeout(() => {
+                    exportBtn.textContent = originalText;
+                    exportBtn.style.background = '';
+                }, 2000);
+            }
+
+            animate() {
+                const currentTime = performance.now();
+                const dt = Math.min((currentTime - this.lastTime) / 1000, 0.016);
+                this.lastTime = currentTime;
+
+                this.update(dt);
+                this.draw();
+                this.updateUI();
+
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // ============================================================================
+        // START
+        // ============================================================================
+        window.addEventListener('load', () => {
+            new Simulation();
+        });
+    </script>
+    </main>
+</body>
+</html>

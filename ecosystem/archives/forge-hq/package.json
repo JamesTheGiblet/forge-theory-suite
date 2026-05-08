@@ -1,0 +1,29 @@
+{
+  "name": "forge-hq",
+  "version": "0.1.0",
+  "description": "The Forge HQ",
+  "main": "server/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "./node_modules/.bin/vite build",
+    "server": "node server/index.js",
+    "start": "npm run build && node server/index.js"
+  },
+  "author": "Giblets Creations",
+  "license": "ISC",
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.1",
+    "@vitejs/plugin-react": "^5.1.4",
+    "autoprefixer": "^10.4.27",
+    "vite": "^7.3.1"
+  },
+  "dependencies": {
+    "compression": "^1.8.1",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "sql.js": "^1.14.1"
+  }
+}

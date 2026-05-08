@@ -1,0 +1,11 @@
+{
+  "msg_id": "17f6e40b33f9b10c",
+  "from": "router",
+  "to": "necromancer",
+  "type": "REGIME_CHANGE",
+  "payload": {
+    "old": "fear",
+    "new": "bull"
+  },
+  "timestamp": "2026-04-23T00:02:02.776Z"
+}

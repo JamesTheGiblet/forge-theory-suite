@@ -1,0 +1,54 @@
+{
+  "scp_id": "PHILOSOPHY-001",
+  "object_class": "Thaumiel",
+  "title": "The Philosophy of Flow — A Trading Manifesto",
+  "version": "1.0.0",
+  "author": "James Gilbert",
+  "date": "2026-04-23",
+  
+  "core_beliefs": [
+    {
+      "name": "The Cascade",
+      "statement": "Capital flows like water. BTC moves first. Large caps follow. Small caps pump last. The cascade is inevitable.",
+      "implication": "Don't predict. Observe. Position at the ledge. Wait for the water."
+    },
+    {
+      "name": "The Temporal Lag",
+      "statement": "There is a 3-day lag from BTC to large caps. A 7-day lag from large caps to small caps. A 3-week lag from BTC dump to alt crash.",
+      "implication": "Markets have memory. Time is the edge."
+    },
+    {
+      "name": "The Spillway",
+      "statement": "Exhaustion precedes the crash. Euphoria signals the top. The spillway forms before the flood recedes.",
+      "implication": "Exit while others are still euphoric. Never wait for the crash."
+    },
+    {
+      "name": "The Flow",
+      "statement": "Fighting the river exhausts you. Riding it moves you. The market is not an enemy. It is water.",
+      "implication": "Don't predict. Don't force. Follow."
+    }
+  ],
+  
+  "trading_laws": [
+    "No entry without BTC confirmation — the cascade doesn't start without the first drop",
+    "Respect the temporal lag — don't chase, let the water come to you",
+    "Exit before euphoria peaks — leave the last 10% for the greedy",
+    "Survive first. Profit second.",
+    "The system runs on autopilot while you build the next thing"
+  ],
+  
+  "strategy_encoding": {
+    "cascade_principle": "Encoded in CCE state machine (7 states)",
+    "temporal_lag": "Encoded in 3-day and 7-day detection logic",
+    "spillway": "Encoded in Fear & Greed > 75 exit trigger",
+    "flow_philosophy": "Encoded in LEGION's 'follow, don't fight' architecture"
+  },
+  
+  "legacy_statement": "I don't fight the river anymore. I built a raft. Now I follow the water wherever it goes.",
+  
+  "signature": {
+    "manifesto_writer": "James Gilbert",
+    "date": "2026-04-23",
+    "status": "The philosophy that drives every strategy"
+  }
+}

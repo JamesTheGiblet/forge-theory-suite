@@ -1,0 +1,16 @@
+{
+  "id": "te-template",
+  "name": "T.E Template",
+  "version": "1.0.0",
+  "type": "TACTICAL",
+  "ecosystem": "T.E",
+  "cycle": "5min",
+  "capitalKey": "template",
+  "author": "Your Name",
+  "description": "One sentence describing what this engine does.",
+  "requires": {
+    "exchange": true,
+    "notifier": true,
+    "config": true
+  }
+}

@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organic Tree Growth Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 300;
+            font-size: clamp(1.5em, 5vw, 2em);
+            color: #7fdbca;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .control-group {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .control-group h3 {
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #7fdbca;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .control-item {
+            margin-bottom: 15px;
+        }
+        
+        .control-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85em;
+            margin-bottom: 8px;
+            color: #b0b0b0;
+        }
+        
+        .value {
+            font-weight: 600;
+            color: #7fdbca;
+            font-size: 0.95em;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #7fdbca;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #5fc4b0;
+            transform: scale(1.2);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #7fdbca;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        
+        input[type="range"]::-moz-range-thumb:hover {
+            background: #5fc4b0;
+            transform: scale(1.2);
+        }
+        
+        .canvas-container {
+            background: rgba(10, 14, 39, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        canvas {
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .timelapse-control {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .timelapse-control h3 {
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #7fdbca;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .play-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .play-controls-margin {
+            margin-top: 15px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px;
+            background: rgba(127, 219, 202, 0.2);
+            border: 1px solid #7fdbca;
+            color: #7fdbca;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            background: rgba(127, 219, 202, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.active {
+            background: #7fdbca;
+            color: #0a0e27;
+        }
+        
+        .tree-type-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .tree-type-btn {
+            flex: 1;
+            padding: 8px;
+            font-size: 0.8em;
+        }
+        
+        .leaves-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: #7fdbca;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: rgba(127, 219, 202, 0.3);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .canvas-container {
+                order: -1;
+                min-height: 400px;
+            }
+            
+            .controls {
+                gap: 15px;
+            }
+            
+            .control-group {
+                padding: 15px;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                padding: 15px;
+                border-radius: 15px;
+            }
+            
+            h1 {
+                margin-bottom: 15px;
+                font-size: 1.5em;
+            }
+            
+            .main-content {
+                gap: 15px;
+            }
+            
+            .canvas-container {
+                padding: 10px;
+                min-height: 300px;
+            }
+            
+            .control-group {
+                padding: 12px;
+            }
+            
+            .control-group h3 {
+                font-size: 0.85em;
+                margin-bottom: 12px;
+            }
+            
+            label {
+                font-size: 0.8em;
+            }
+            
+            button {
+                padding: 10px;
+                font-size: 0.85em;
+            }
+            
+            .timelapse-control {
+                margin-top: 15px;
+                padding: 15px;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .canvas-container {
+                min-height: 250px;
+            }
+            
+            .control-group h3 {
+                font-size: 0.8em;
+            }
+            
+            label {
+                font-size: 0.75em;
+            }
+        }
+    </style></head><body>
+    <div class="container">
+        <h1>🌳 Organic Tree Growth Simulator</h1>
+        
+        <div class="main-content">
+            <div class="controls">
+                <div class="control-group">
+                    <h3>Tree Type</h3>
+                    <div class="tree-type-selector">
+                        <button class="tree-type-btn" data-type="oak">Oak</button>
+                        <button class="tree-type-btn" data-type="pine">Pine</button>
+                        <button class="tree-type-btn" data-type="willow">Willow</button>
+                    </div>
+                    <div class="leaves-toggle">
+                        <span>Show Leaves</span>
+                        <label class="toggle-switch">
+                            <label for="leavesToggle" title="Toggle leaves visibility">
+                                <input type="checkbox" id="leavesToggle" checked title="Toggle leaves visibility">
+                                <span class="slider"></span>
+                            </label>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Evolution Parameters</h3>
+                    <div class="control-item">
+                        <label>
+                            Branch Angle
+                            <span class="value" id="angleValue">25°</span>
+                        </label>
+                        <input type="range" id="angle" min="10" max="45" value="25" step="1" title="Adjust branch angle">
+                    </div>
+                    <div class="control-item">
+                        <label>
+                            Branch Length Ratio
+                            <span class="value" id="lengthValue">0.70</span>
+                        </label>
+                        <input type="range" id="lengthRatio" min="0.5" max="0.9" value="0.7" step="0.01" title="Adjust branch length ratio">
+                    </div>
+                    <div class="control-item">
+                        <label>
+                            Thickness Decay
+                            <span class="value" id="thicknessValue">0.70</span>
+                        </label>
+                        <input type="range" id="thicknessFactor" min="0.5" max="0.9" value="0.7" step="0.01" title="Adjust thickness decay">
+                    </div>
+                    <div class="control-item">
+                        <label>
+                            Max Depth
+                            <span class="value" id="depthValue">10</span>
+                        </label>
+                        <input type="range" id="maxDepth" min="5" max="15" value="10" step="1" title="Adjust maximum tree depth">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Growth Dynamics</h3>
+                    <div class="control-item">
+                        <label>
+                            Randomness
+                            <span class="value" id="randomValue">15%</span>
+                        </label>
+                        <input type="range" id="randomness" min="0" max="50" value="15" step="1" title="Adjust randomness">
+                    </div>
+                    <div class="control-item">
+                        <label>
+                            Asymmetry
+                            <span class="value" id="asymmetryValue">0.10</span>
+                        </label>
+                        <input type="range" id="asymmetry" min="0" max="0.5" value="0.1" step="0.01" title="Adjust asymmetry">
+                    </div>
+                    <div class="control-item">
+                        <label>
+                            Gravity Influence
+                            <span class="value" id="gravityValue">0.05</span>
+                        </label>
+                        <input type="range" id="gravity" min="0" max="0.2" value="0.05" step="0.01" title="Adjust gravity influence">
+                    </div>
+                    <div class="control-item">
+                        <label>
+                            Animation Speed
+                            <span class="value" id="speedValue">1.0x</span>
+                        </label>
+                        <input type="range" id="speed" min="0.1" max="3" value="1" step="0.1" title="Adjust animation speed">
+                    </div>
+                </div>
+                
+                <div class="timelapse-control">
+                    <h3>Time-Lapse Control</h3>
+                    <div class="play-controls">
+                        <button id="playBtn">▶ Play</button>
+                        <button id="resetBtn">↻ Reset</button>
+                    </div>
+                    <div class="control-item">
+                        <label>
+                            Growth Stage
+                            <span class="value" id="timeValue">0%</span>
+                    <div class="play-controls play-controls-margin">
+                        <button id="exportSvgBtn">📄 SVG</button>
+                        <button id="exportCodeBtn">💾 Code</button>
+                    </div>
+                        <button id="exportSvgBtn2">📄 SVG</button>
+                        <button id="exportCodeBtn2">💾 Code</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="treeCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('treeCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Parameters
+        let params = {
+            treeType: 'oak',
+            showLeaves: true,
+            angle: 25,
+            lengthRatio: 0.7,
+            thicknessFactor: 0.7,
+            maxDepth: 10,
+            randomness: 15,
+            asymmetry: 0.1,
+            gravity: 0.05,
+            speed: 1.0,
+            growthStage: 0
+        };
+        
+        // Tree type presets
+        const treePresets = {
+            oak: {
+                angle: 25,
+                lengthRatio: 0.7,
+                thicknessFactor: 0.7,
+                maxDepth: 10,
+                randomness: 15,
+                asymmetry: 0.1,
+                gravity: 0.05
+            },
+            pine: {
+                angle: 15,
+                lengthRatio: 0.8,
+                thicknessFactor: 0.8,
+                maxDepth: 12,
+                randomness: 10,
+                asymmetry: 0.05,
+                gravity: 0.02
+            },
+            willow: {
+                angle: 40,
+                lengthRatio: 0.6,
+                thicknessFactor: 0.6,
+                maxDepth: 8,
+                randomness: 25,
+                asymmetry: 0.2,
+                gravity: 0.1
+            }
+        };
+        
+        let isPlaying = false;
+        let animationId = null;
+        
+        // Update display values
+        function updateDisplay() {
+            document.getElementById('angleValue').textContent = params.angle + '°';
+            document.getElementById('lengthValue').textContent = params.lengthRatio.toFixed(2);
+            document.getElementById('thicknessValue').textContent = params.thicknessFactor.toFixed(2);
+            document.getElementById('depthValue').textContent = params.maxDepth;
+            document.getElementById('randomValue').textContent = params.randomness + '%';
+            document.getElementById('asymmetryValue').textContent = params.asymmetry.toFixed(2);
+            document.getElementById('gravityValue').textContent = params.gravity.toFixed(2);
+            document.getElementById('speedValue').textContent = params.speed.toFixed(1) + 'x';
+            document.getElementById('timeValue').textContent = Math.round(params.growthStage) + '%';
+        }
+        
+        // Apply tree type preset
+        function applyTreeType(type) {
+            const preset = treePresets[type];
+            Object.keys(preset).forEach(key => {
+                params[key] = preset[key];
+                const input = document.getElementById(key);
+                if (input) {
+                    input.value = preset[key];
+                }
+            });
+            updateDisplay();
+            drawTree();
+        }
+        
+        // Event listeners
+        document.getElementById('angle').addEventListener('input', (e) => {
+            params.angle = parseFloat(e.target.value);
+            updateDisplay();
+            drawTree();
+        });
+        
+        document.getElementById('lengthRatio').addEventListener('input', (e) => {
+            params.lengthRatio = parseFloat(e.target.value);
+            updateDisplay();
+            drawTree();
+        });
+        
+        document.getElementById('thicknessFactor').addEventListener('input', (e) => {
+            params.thicknessFactor = parseFloat(e.target.value);
+            updateDisplay();
+            drawTree();
+        });
+        
+        document.getElementById('maxDepth').addEventListener('input', (e) => {
+            params.maxDepth = parseInt(e.target.value);
+            updateDisplay();
+            drawTree();
+        });
+        
+        document.getElementById('randomness').addEventListener('input', (e) => {
+            params.randomness = parseFloat(e.target.value);
+            updateDisplay();
+            drawTree();
+        });
+        
+        document.getElementById('asymmetry').addEventListener('input', (e) => {
+            params.asymmetry = parseFloat(e.target.value);
+            updateDisplay();
+            drawTree();
+        });
+        
+        document.getElementById('gravity').addEventListener('input', (e) => {
+            params.gravity = parseFloat(e.target.value);
+            updateDisplay();
+            drawTree();
+        });
+        
+        document.getElementById('speed').addEventListener('input', (e) => {
+            params.speed = parseFloat(e.target.value);
+            updateDisplay();
+        });
+        
+        document.getElementById('timeSlider').addEventListener('input', (e) => {
+            params.growthStage = parseFloat(e.target.value);
+            updateDisplay();
+            drawTree();
+        });
+        
+        document.getElementById('leavesToggle').addEventListener('change', (e) => {
+            params.showLeaves = e.target.checked;
+            drawTree();
+        });
+        
+        document.querySelectorAll('.tree-type-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.tree-type-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                params.treeType = e.target.dataset.type;
+                applyTreeType(params.treeType);
+            });
+        });
+        
+        document.getElementById('playBtn').addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            document.getElementById('playBtn').textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+            document.getElementById('playBtn').classList.toggle('active');
+            if (isPlaying) {
+                animate();
+            } else {
+                cancelAnimationFrame(animationId);
+            }
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            params.growthStage = 0;
+            document.getElementById('timeSlider').value = 0;
+            updateDisplay();
+            drawTree();
+        });
+        
+        document.getElementById('exportSvgBtn').addEventListener('click', () => {
+            exportToSVG();
+        });
+        
+        document.getElementById('exportCodeBtn').addEventListener('click', () => {
+            exportToCode();
+        });
+        
+        // Export to SVG
+        function exportToSVG() {
+            let svgContent = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${canvas.width}" height="${canvas.height}" viewBox="0 0 ${canvas.width} ${canvas.height}">
+  <defs>
+    <radialGradient id="bg-gradient" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" style="stop-color:rgba(127,219,202,0.03);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgba(10,14,39,0.8);stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  <rect width="${canvas.width}" height="${canvas.height}" fill="url(#bg-gradient)"/>
+`;
+            
+            const startX = canvas.width / 2;
+            const startY = canvas.height - (canvas.height * 0.1);
+            const initialLength = canvas.height * 0.2;
+            const initialThickness = canvas.width * 0.02;
+            
+            svgContent += generateSVGBranch(startX, startY, initialLength, initialThickness, -Math.PI / 2, 0);
+            svgContent += '</svg>';
+            
+            // Download SVG
+            const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tree-${params.treeType}-${Date.now()}.svg`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function generateSVGBranch(x, y, length, thickness, angle, depth, parentGrowth = 1) {
+            if (depth >= params.maxDepth) return '';
+            
+            const growthFactor = params.growthStage / 100;
+            const depthsToShow = growthFactor * (params.maxDepth + 1);
+            
+            if (depth >= depthsToShow) return '';
+            if (parentGrowth < 1) return '';
+            
+            const branchGrowth = Math.min(1, depthsToShow - depth);
+            const actualLength = length * branchGrowth;
+            const gravityEffect = params.gravity * (depth / params.maxDepth);
+            const adjustedAngle = angle + gravityEffect;
+            
+            const endX = x + actualLength * Math.cos(adjustedAngle);
+            const endY = y + actualLength * Math.sin(adjustedAngle);
+            
+            const colorRatio = depth / params.maxDepth;
+            const r = Math.floor(101 * (1 - colorRatio) + 90 * colorRatio);
+            const g = Math.floor(67 * (1 - colorRatio) + 140 * colorRatio);
+            const b = Math.floor(33 * (1 - colorRatio) + 70 * colorRatio);
+            
+            const strokeWidth = thickness * (1 - depth / params.maxDepth * 0.3);
+            
+            let svg = `  <line x1="${x}" y1="${y}" x2="${endX}" y2="${endY}" stroke="rgb(${r},${g},${b})" stroke-width="${strokeWidth}" stroke-linecap="round" opacity="0.9" />\n`;
+            
+            // Add leaves for SVG
+            if (params.showLeaves && depth >= params.maxDepth - 2 && branchGrowth >= 1) {
+                svg += generateSVGLeaves(endX, endY, depth);
+            }
+            
+            const newLength = length * params.lengthRatio;
+            const newThickness = thickness * params.thicknessFactor;
+            
+            const randomAngle = (Math.random() - 0.5) * (params.randomness / 100) * Math.PI;
+            const asymmetryFactor = (Math.random() - 0.5) * params.asymmetry;
+            
+            const leftAngle = adjustedAngle - (params.angle * Math.PI / 180) * (1 + asymmetryFactor) + randomAngle;
+            svg += generateSVGBranch(endX, endY, newLength, newThickness, leftAngle, depth + 1, branchGrowth);
+            
+            const rightAngle = adjustedAngle + (params.angle * Math.PI / 180) * (1 - asymmetryFactor) + randomAngle;
+            svg += generateSVGBranch(endX, endY, newLength, newThickness, rightAngle, depth + 1, branchGrowth);
+            
+            if (Math.random() > 0.7 && depth < params.maxDepth - 2) {
+                const middleAngle = adjustedAngle + (Math.random() - 0.5) * (params.angle * Math.PI / 180) * 0.5;
+                svg += generateSVGBranch(endX, endY, newLength * 0.8, newThickness, middleAngle, depth + 1, branchGrowth);
+            }
+            
+            return svg;
+        }
+        
+        function generateSVGLeaves(x, y, depth) {
+            const leafSize = (canvas.width * 0.01) * (1 - depth / params.maxDepth);
+            const leafCount = 5 + Math.floor(Math.random() * 10);
+            let svg = '';
+            
+            for (let i = 0; i < leafCount; i++) {
+                const leafX = x + (Math.random() - 0.5) * leafSize * 8;
+                const leafY = y + (Math.random() - 0.5) * leafSize * 8;
+                
+                let r, g, b;
+                if (params.treeType === 'oak') {
+                    r = 60 + Math.floor(Math.random() * 40);
+                    g = 130 + Math.floor(Math.random() * 60);
+                    b = 50 + Math.floor(Math.random() * 30);
+                } else if (params.treeType === 'pine') {
+                    r = 40 + Math.floor(Math.random() * 30);
+                    g = 100 + Math.floor(Math.random() * 40);
+                    b = 40 + Math.floor(Math.random() * 20);
+                } else {
+                    r = 80 + Math.floor(Math.random() * 30);
+                    g = 160 + Math.floor(Math.random() * 40);
+                    b = 70 + Math.floor(Math.random() * 30);
+                }
+                
+                svg += `  <circle cx="${leafX}" cy="${leafY}" r="${leafSize}" fill="rgba(${r},${g},${b},0.7)" />\n`;
+            }
+            
+            return svg;
+        }
+        
+        // Export to Code
+        function exportToCode() {
+            const code = `// Tree Growth Parameters
+const treeParams = ${JSON.stringify(params, null, 2)};
+
+// Tree Generation Code
+function generateTree() {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  
+  // Set canvas size
+  canvas.width = 700;
+  canvas.height = 700;
+  
+  // Starting parameters
+  const startX = canvas.width / 2;
+  const startY = canvas.height - (canvas.height * 0.1);
+  const initialLength = canvas.height * 0.2;
+  const initialThickness = canvas.width * 0.02;
+  
+  // Draw the tree
+  drawBranch(ctx, startX, startY, initialLength, initialThickness, -Math.PI / 2, 0);
+}
+
+function drawBranch(ctx, x, y, length, thickness, angle, depth, parentGrowth = 1) {
+  if (depth >= treeParams.maxDepth) return;
+  
+  const growthFactor = treeParams.growthStage / 100;
+  const depthsToShow = growthFactor * (treeParams.maxDepth + 1);
+  
+  if (depth >= depthsToShow) return;
+  if (parentGrowth < 1) return;
+  
+  const branchGrowth = Math.min(1, depthsToShow - depth);
+  const actualLength = length * branchGrowth;
+  const gravityEffect = treeParams.gravity * (depth / treeParams.maxDepth);
+  const adjustedAngle = angle + gravityEffect;
+  
+  const endX = x + actualLength * Math.cos(adjustedAngle);
+  const endY = y + actualLength * Math.sin(adjustedAngle);
+  
+  const colorRatio = depth / treeParams.maxDepth;
+  const r = Math.floor(101 * (1 - colorRatio) + 90 * colorRatio);
+  const g = Math.floor(67 * (1 - colorRatio) + 140 * colorRatio);
+  const b = Math.floor(33 * (1 - colorRatio) + 70 * colorRatio);
+  
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(endX, endY);
+  ctx.strokeStyle = \`rgba(\${r}, \${g}, \${b}, 0.9)\`;
+  ctx.lineWidth = thickness * (1 - depth / treeParams.maxDepth * 0.3);
+  ctx.lineCap = 'round';
+  ctx.stroke();
+  
+  const newLength = length * treeParams.lengthRatio;
+  const newThickness = thickness * treeParams.thicknessFactor;
+  
+  const randomAngle = (Math.random() - 0.5) * (treeParams.randomness / 100) * Math.PI;
+  const asymmetryFactor = (Math.random() - 0.5) * treeParams.asymmetry;
+  
+  const leftAngle = adjustedAngle - (treeParams.angle * Math.PI / 180) * (1 + asymmetryFactor) + randomAngle;
+  drawBranch(ctx, endX, endY, newLength, newThickness, leftAngle, depth + 1, branchGrowth);
+  
+  const rightAngle = adjustedAngle + (treeParams.angle * Math.PI / 180) * (1 - asymmetryFactor) + randomAngle;
+  drawBranch(ctx, endX, endY, newLength, newThickness, rightAngle, depth + 1, branchGrowth);
+}
+
+// Call the function to generate the tree
+generateTree();`;
+            
+            // Download code
+            const blob = new Blob([code], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tree-${params.treeType}-${Date.now()}.js`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // Animation
+        function animate() {
+            if (!isPlaying) return;
+            
+            params.growthStage += 0.1 * params.speed;
+            
+            // Stop at 100% instead of looping
+            if (params.growthStage >= 100) {
+                params.growthStage = 100;
+                isPlaying = false;
+                document.getElementById('playBtn').textContent = '▶ Play';
+                document.getElementById('playBtn').classList.remove('active');
+            }
+            
+            document.getElementById('timeSlider').value = params.growthStage;
+            updateDisplay();
+            drawTree();
+            
+            if (isPlaying) {
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+        
+        // Draw tree
+        function drawTree() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Add subtle gradient background
+            const gradient = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 50, canvas.width/2, canvas.height/2, canvas.width*0.6);
+            gradient.addColorStop(0, 'rgba(127, 219, 202, 0.03)');
+            gradient.addColorStop(1, 'rgba(10, 14, 39, 0.8)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Starting position (bottom center with margin)
+            const startX = canvas.width / 2;
+            const startY = canvas.height - (canvas.height * 0.1); // 10% margin from bottom
+            const initialLength = canvas.height * 0.2; // Scale to canvas size
+            const initialThickness = canvas.width * 0.02; // Scale thickness too
+            
+            // Draw trunk and branches
+            drawBranch(startX, startY, initialLength, initialThickness, -Math.PI / 2, 0);
+        }
+        
+        function drawBranch(x, y, length, thickness, angle, depth, parentGrowth = 1) {
+            if (depth >= params.maxDepth) return;
+            
+            // Calculate growth factor based on time slider
+            const growthFactor = params.growthStage / 100;
+            
+            // Calculate which depth level should be growing
+            const depthsToShow = growthFactor * (params.maxDepth + 1);
+            
+            // If this branch depth hasn't started growing yet, skip it
+            if (depth >= depthsToShow) return;
+            
+            // Only grow if parent is fully grown
+            if (parentGrowth < 1) return;
+            
+            // Calculate how much this specific branch should have grown
+            const branchGrowth = Math.min(1, depthsToShow - depth);
+            
+            const actualLength = length * branchGrowth;
+            
+            // Apply gravity influence (branches droop more at the ends)
+            const gravityEffect = params.gravity * (depth / params.maxDepth);
+            const adjustedAngle = angle + gravityEffect;
+            
+            // Calculate end position
+            const endX = x + actualLength * Math.cos(adjustedAngle);
+            const endY = y + actualLength * Math.sin(adjustedAngle);
+            
+            // Color based on depth (trunk is brown, branches transition to green)
+            const colorRatio = depth / params.maxDepth;
+            const r = Math.floor(101 * (1 - colorRatio) + 90 * colorRatio);
+            const g = Math.floor(67 * (1 - colorRatio) + 140 * colorRatio);
+            const b = Math.floor(33 * (1 - colorRatio) + 70 * colorRatio);
+            
+            // Draw branch with gradient
+            const gradient = ctx.createLinearGradient(x, y, endX, endY);
+            gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.9)`);
+            gradient.addColorStop(1, `rgba(${r + 20}, ${g + 20}, ${b + 20}, 0.7)`);
+            
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(endX, endY);
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = thickness * (1 - depth / params.maxDepth * 0.3);
+            ctx.lineCap = 'round';
+            ctx.stroke();
+            
+            // Draw leaves at the end of fully grown branches
+            if (params.showLeaves && depth >= params.maxDepth - 2 && branchGrowth >= 1) {
+                drawLeaves(endX, endY, depth);
+            }
+            
+            // Recursively draw child branches only if current branch is fully grown
+            const newLength = length * params.lengthRatio;
+            const newThickness = thickness * params.thicknessFactor;
+            
+            // Random variation
+            const randomAngle = (Math.random() - 0.5) * (params.randomness / 100) * Math.PI;
+            const asymmetryFactor = (Math.random() - 0.5) * params.asymmetry;
+            
+            // Left branch
+            const leftAngle = adjustedAngle - (params.angle * Math.PI / 180) * (1 + asymmetryFactor) + randomAngle;
+            drawBranch(endX, endY, newLength, newThickness, leftAngle, depth + 1, branchGrowth);
+            
+            // Right branch
+            const rightAngle = adjustedAngle + (params.angle * Math.PI / 180) * (1 - asymmetryFactor) + randomAngle;
+            drawBranch(endX, endY, newLength, newThickness, rightAngle, depth + 1, branchGrowth);
+            
+            // Add a third branch for more natural look (with lower probability)
+            if (Math.random() > 0.7 && depth < params.maxDepth - 2) {
+                const middleAngle = adjustedAngle + (Math.random() - 0.5) * (params.angle * Math.PI / 180) * 0.5;
+                drawBranch(endX, endY, newLength * 0.8, newThickness, middleAngle, depth + 1, branchGrowth);
+            }
+        }
+        
+        function drawLeaves(x, y, depth) {
+            const leafSize = (canvas.width * 0.01) * (1 - depth / params.maxDepth);
+            const leafCount = 5 + Math.floor(Math.random() * 10);
+            
+            for (let i = 0; i < leafCount; i++) {
+                const leafX = x + (Math.random() - 0.5) * leafSize * 8;
+                const leafY = y + (Math.random() - 0.5) * leafSize * 8;
+                
+                // Different leaf colors based on tree type
+                let r, g, b;
+                if (params.treeType === 'oak') {
+                    r = 60 + Math.floor(Math.random() * 40);
+                    g = 130 + Math.floor(Math.random() * 60);
+                    b = 50 + Math.floor(Math.random() * 30);
+                } else if (params.treeType === 'pine') {
+                    r = 40 + Math.floor(Math.random() * 30);
+                    g = 100 + Math.floor(Math.random() * 40);
+                    b = 40 + Math.floor(Math.random() * 20);
+                } else { // willow
+                    r = 80 + Math.floor(Math.random() * 30);
+                    g = 160 + Math.floor(Math.random() * 40);
+                    b = 70 + Math.floor(Math.random() * 30);
+                }
+                
+                ctx.beginPath();
+                ctx.arc(leafX, leafY, leafSize, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.7)`;
+                ctx.fill();
+            }
+        }
+        
+        // Make canvas responsive
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const size = Math.min(container.clientWidth - 40, 700);
+            canvas.width = size;
+            canvas.height = size;
+            drawTree();
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Initial setup
+        resizeCanvas();
+        updateDisplay();
+        document.querySelector('.tree-type-btn[data-type="oak"]').classList.add('active');
+    </script>
+</body>
+</html>

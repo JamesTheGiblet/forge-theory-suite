@@ -1,0 +1,84 @@
+{
+  "timestamp": "2026-04-15T09:24:37.949Z",
+  "strategy": {
+    "type": "consecutive_red",
+    "target": 2,
+    "stop": 1,
+    "hold": 5,
+    "count": 4
+  },
+  "result": {
+    "passed": true,
+    "strategy": "Manual Test",
+    "optimalStrategy": {
+      "type": "consecutive_red",
+      "target": 2,
+      "stop": 1,
+      "hold": 5,
+      "count": 4
+    },
+    "optimalResult": {
+      "attempt": 1,
+      "strategy": {
+        "type": "consecutive_red",
+        "target": 2,
+        "stop": 1,
+        "hold": 5,
+        "count": 4
+      },
+      "backtest": {
+        "trades": 15,
+        "winRate": 73.33333333333333,
+        "totalReturn": 15.920377031384646,
+        "expectancy": 1.17622933576564,
+        "profitFactor": 3.026166402204479,
+        "sharpe": 0.4261924392214677,
+        "finalCapital": 115.92037703138465
+      },
+      "forward": {
+        "trades": 7,
+        "winRate": 85.71428571428571,
+        "totalReturn": 23.575690585333703,
+        "expectancy": 3.2486288308001257,
+        "profitFactor": 18.35962542577325,
+        "sharpe": 0.809583384014906,
+        "finalCapital": 123.5756905853337
+      },
+      "score": 773.6979361805319,
+      "passed": true
+    },
+    "optimizationHistory": [
+      {
+        "attempt": 1,
+        "strategy": {
+          "type": "consecutive_red",
+          "target": 2,
+          "stop": 1,
+          "hold": 5,
+          "count": 4
+        },
+        "backtest": {
+          "trades": 15,
+          "winRate": 73.33333333333333,
+          "totalReturn": 15.920377031384646,
+          "expectancy": 1.17622933576564,
+          "profitFactor": 3.026166402204479,
+          "sharpe": 0.4261924392214677,
+          "finalCapital": 115.92037703138465
+        },
+        "forward": {
+          "trades": 7,
+          "winRate": 85.71428571428571,
+          "totalReturn": 23.575690585333703,
+          "expectancy": 3.2486288308001257,
+          "profitFactor": 18.35962542577325,
+          "sharpe": 0.809583384014906,
+          "finalCapital": 123.5756905853337
+        },
+        "score": 773.6979361805319,
+        "passed": true
+      }
+    ],
+    "attemptsUsed": 0
+  }
+}

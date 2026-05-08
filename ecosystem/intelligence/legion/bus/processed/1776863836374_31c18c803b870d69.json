@@ -1,0 +1,10 @@
+{
+  "msg_id": "31c18c803b870d69",
+  "from": "router",
+  "to": "diplomat",
+  "type": "NARRATIVE",
+  "payload": {
+    "text": "🗣️ *LEGION NARRATIVE – 4/22/2026 2:17:16 PM*\n\n📊 *Market Pulse*\nBTC: $78391 | ETH: $2408 | SOL: $88.71\nFear & Greed: 50 (Neutral) | VIX: 30.0\n\n🏆 *Tournament Leader*\nNo active tournament strategies yet.\nActive strategies: 0 | Paper mode: 48h remaining\n\n🧠 *Intelligence Highlights*\n🔍 Arbitrage: LTC/DOGE: -21.90% undervalued\n🐋 Whale activity: recent large transactions detected.\n🧬 Evolution: 14 lineages tracked, 0 evolving, 0 thrashing.\n🤖 DQN: DQN trader is exploring and learning.\n\n🛡️ *Containment*\nSafety breaches: 0 | System status: online\n\n_This narrative is generated autonomously by LEGION MK11._"
+  },
+  "timestamp": "2026-04-22T13:17:16.374Z"
+}

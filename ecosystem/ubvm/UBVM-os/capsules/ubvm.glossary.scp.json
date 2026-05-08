@@ -1,0 +1,111 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "ubvm/glossary",
+  "object_class": "Thaumiel",
+  "intent": "Define the canonical terminology for UBVM, SCP, and the Forge Theory ecosystem, ensuring consistent interpretation across runtimes, documents, and organisms.",
+  "containment": {
+    "read_only": true,
+    "audit_log": true,
+    "kill_switch": false
+  },
+  "interpretation": {
+    "this_is": "The official glossary of UBVM — the authoritative vocabulary for capsules, primitives, triggers, interpreter behaviour, and ecosystem concepts.",
+    "purpose": [
+      "Provide canonical definitions for all UBVM and SCP terms",
+      "Prevent semantic drift across implementations and documents",
+      "Serve as the reference vocabulary for capsule authors and primitive developers",
+      "Anchor the conceptual language of the Forge Theory ecosystem"
+    ],
+    "tone": "Precise, technical, definitional, stable.",
+    "audience": [
+      "Developers implementing UBVM",
+      "Authors writing capsules",
+      "Engineers creating primitives",
+      "Architects designing UBVM organisms",
+      "Researchers analysing behavioural VMs"
+    ],
+    "importance": [
+      "Definitions of capsule, primitive, behaviour, trigger, interpreter",
+      "Event bus and scheduler semantics",
+      "Object classes and containment",
+      "UBVM Core 1.0 primitives",
+      "Organism and node definitions"
+    ],
+    "ignore": [
+      "Examples that are illustrative rather than normative",
+      "Domain-specific artefacts not part of UBVM Core",
+      "Deprecated terminology unless explicitly marked"
+    ],
+    "dont_change": [
+      "Term names",
+      "Core definitions",
+      "Conceptual boundaries",
+      "UBVM Core 1.0 vocabulary"
+    ],
+    "trust_score": "reserved",
+    "semantic_contract": {
+      "guarantees": [
+        "All terms defined in this glossary are canonical for UBVM and SCP.",
+        "Definitions override informal usage in code comments or external documents.",
+        "Terms remain stable across UBVM versions unless explicitly deprecated.",
+        "This glossary forms the semantic backbone for all UBVM organisms."
+      ],
+      "non_guarantees": [
+        "Domain-specific terminology outside UBVM Core.",
+        "Experimental or provisional terms not yet added to the glossary.",
+        "Interpretations of terms in third-party runtimes."
+      ],
+      "conflict_resolution": "If contradictions arise, prefer glossary definitions over README, code comments, or external documentation."
+    }
+  },
+  "links": {
+    "self":     "ubvm/glossary",
+    "spec":     "ubvm/spec",
+    "readme":   "ubvm/core-identity",
+    "roadmap":  "ubvm/roadmap",
+    "scp_spec": "scp/spec"
+  },
+  "provenance": {
+    "author":       "James / Giblets Creations",
+    "agent":        "Claude Sonnet 4.6",
+    "created_at":   "2026-05-05T08:00:00Z",
+    "version":      "1.1.0",
+    "context":      "Created during UBVM documentation session, May 2026. Revised to move semantic_contract into interpretation, add provenance, correct capture_mode, remove duplicate core_identity link, add daily validation behaviour, and add scp/spec link.",
+    "capture_mode": "conversation",
+    "source_ref":   "",
+    "lineage":      []
+  },
+  "behaviours": [
+    {
+      "trigger": "on_load",
+      "actions": [
+        {
+          "primitive": "log",
+          "params": {
+            "message": "UBVM glossary capsule loaded — canonical terminology active."
+          }
+        },
+        {
+          "primitive": "validate_self",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "trigger": "cron",
+      "schedule": "0 0 * * *",
+      "actions": [
+        {
+          "primitive": "validate_self",
+          "params": {}
+        },
+        {
+          "primitive": "log",
+          "params": {
+            "message": "ubvm/glossary daily self-validation passed."
+          }
+        }
+      ]
+    }
+  ]
+}

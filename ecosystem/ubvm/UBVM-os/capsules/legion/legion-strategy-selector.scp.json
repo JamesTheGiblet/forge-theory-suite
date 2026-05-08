@@ -1,0 +1,43 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "legion/strategy-selector",
+  "object_class": "Thaumiel",
+  "intent": "Upon completion of forward validation, select the strategy with the highest fitness score and save it as the current best.",
+  "containment": {
+    "read_only": false,
+    "audit_log": true,
+    "kill_switch": true
+  },
+  "provenance": {
+    "author": "James / Giblets Creations",
+    "created_at": "2026-05-05T19:30:00Z",
+    "version": "1.0.0",
+    "context": "Final step of the Phase 1 strategy loop. Chains from ForwardValidator.",
+    "capture_mode": "manual"
+  },
+  "behaviours": [
+    {
+      "trigger": "on_event",
+      "event": "validation.complete",
+      "actions": [
+        {
+          "primitive": "select_best_strategy",
+          "params": {
+            "min_trades": 0
+          }
+        },
+        {
+          "primitive": "emit_event",
+          "params": {
+            "event": "strategy.selected",
+            "payload": {
+              "strategy_name": "$results.0.best_strategy_name",
+              "fitness_score": "$results.0.fitness_score",
+              "strategy_path": "$results.0.output_path"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

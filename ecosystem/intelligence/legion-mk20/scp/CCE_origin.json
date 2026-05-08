@@ -1,0 +1,21 @@
+{
+  "name": "Cascade Compounding Engine (CCE)",
+  "role": "The insight that opened the door",
+  "discovered_by": "James Gilbert",
+  "date": "Before LEGION",
+  "core_insight": "Capital flows through crypto like a waterfall with predictable time lags",
+  "the_7_states": ["DORMANT", "ANCHOR", "IGNITION", "CASCADE 1", "CASCADE 2", "SPILLWAY", "EXTRACTION"],
+  "the_3_laws": [
+    "No entry without BTC confirmation",
+    "Respect the temporal lag — don't chase, let the cascade come to you",
+    "Exit before euphoria peaks, not after"
+  ],
+  "performance": {
+    "seed_capital": 300,
+    "currency": "GBP",
+    "cycles": 30,
+    "timespan_years": 11,
+    "return_percent": 24000
+  },
+  "legacy": "CCE opened the door. LEGION walked through it."
+}

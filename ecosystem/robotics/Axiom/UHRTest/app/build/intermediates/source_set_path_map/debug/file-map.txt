@@ -1,0 +1,7 @@
+com.giblets.uhrtest.app-pngs-0 /data/data/com.termux/files/home/Axiom/UHRTest/app/build/generated/res/pngs/debug
+com.giblets.uhrtest.app-resValues-1 /data/data/com.termux/files/home/Axiom/UHRTest/app/build/generated/res/resValues/debug
+com.giblets.uhrtest.app-packageDebugResources-2 /data/data/com.termux/files/home/Axiom/UHRTest/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.giblets.uhrtest.app-packageDebugResources-3 /data/data/com.termux/files/home/Axiom/UHRTest/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.giblets.uhrtest.app-merged_res-4 /data/data/com.termux/files/home/Axiom/UHRTest/app/build/intermediates/merged_res/debug
+com.giblets.uhrtest.app-debug-5 /data/data/com.termux/files/home/Axiom/UHRTest/app/src/debug/res
+com.giblets.uhrtest.app-main-6 /data/data/com.termux/files/home/Axiom/UHRTest/app/src/main/res

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCE Platform — Analytics Report</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root {
+    --bg: #080c12; --bg2: #0d1420; --border: #1a2d45;
+    --accent: #00d4ff; --green: #39ff14; --gold: #ffc300;
+    --red: #ff2d55; --orange: #ff6b35; --text: #c8d8e8; --dim: #4a6080;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Share Tech Mono',monospace; font-size:13px; padding:24px; }
+  h1 { font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:900; letter-spacing:4px; color:var(--orange); margin-bottom:4px; }
+  h2 { font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:700; letter-spacing:3px; color:var(--dim); text-transform:uppercase; margin:24px 0 12px; border-bottom:1px solid var(--border); padding-bottom:8px; }
+  h3 { font-size:11px; letter-spacing:3px; color:var(--dim); text-transform:uppercase; margin:16px 0 8px; }
+  .meta { color:var(--dim); font-size:11px; margin-bottom:24px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; margin-bottom:24px; }
+  .card { background:var(--bg2); border:1px solid var(--border); padding:16px; }
+  .card-title { font-size:10px; letter-spacing:3px; color:var(--dim); text-transform:uppercase; margin-bottom:12px; }
+  .big { font-size:28px; font-weight:bold; color:var(--text); }
+  .sub { font-size:11px; color:var(--dim); margin-top:4px; }
+  .pos { color:var(--green); }
+  .neg { color:var(--red); }
+  .state { color:var(--accent); font-size:11px; }
+  table { width:100%; border-collapse:collapse; margin-top:8px; }
+  th { text-align:left; font-size:10px; letter-spacing:2px; color:var(--dim); padding:6px 8px; border-bottom:1px solid var(--border); }
+  td { padding:6px 8px; border-bottom:1px solid rgba(26,45,69,0.4); font-size:12px; }
+  tr:last-child td { border-bottom:none; }
+  .chart-wrap { position:relative; height:220px; margin-top:12px; }
+  .section { background:var(--bg2); border:1px solid var(--border); padding:20px; margin-bottom:16px; }
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .stat-row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(26,45,69,0.3); }
+  .stat-row:last-child { border-bottom:none; }
+  .stat-label { color:var(--dim); font-size:11px; }
+  .stat-val { color:var(--text); font-size:12px; }
+  .engine-badge { display:inline-block; padding:2px 8px; border:1px solid; font-size:10px; letter-spacing:1px; margin-left:8px; }
+  .live-badge { color:var(--green); border-color:var(--green); }
+  .dry-badge  { color:var(--dim);   border-color:var(--border); }
+  @media (max-width:600px) { .two-col { grid-template-columns:1fr; } }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<h1>CCE PLATFORM CORE</h1>
+<div class="meta">Full Analytics Report · Generated: 3/19/2026, 8:36:42 AM</div>
+
+<!-- SUMMARY CARDS -->
+<div class="grid">
+  <div class="card">
+    <div class="card-title">Crypto State <span class="engine-badge live-badge">LIVE</span></div>
+    <div class="big">DORMANT</div>
+    <div class="sub">Return: +0.00%</div>
+    <div class="sub">Portfolio: $291.70</div>
+  </div>
+  <div class="card">
+    <div class="card-title">BTC Price</div>
+    <div class="big">$70216.90</div>
+    <div class="sub">Since launch: +0.46%</div>
+    <div class="sub">High: $74069.40 · Low: $69710.10</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Fear & Greed</div>
+    <div class="big">23</div>
+    <div class="sub">Average since launch: 22.5</div>
+    <div class="sub">BTC Dominance: 56.3%</div>
+  </div>
+  <div class="card">
+    <div class="card-title">REIT State <span class="engine-badge dry-badge">DRY</span></div>
+    <div class="big">WATCHING</div>
+    <div class="sub">Fed: 3.64% · 10Y: 4.20%</div>
+    <div class="sub">Spread: -0.200%</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Stocks State <span class="engine-badge dry-badge">DRY</span></div>
+    <div class="big">DORMANT</div>
+    <div class="sub">SPY: $661.43 · VIX: 25.81</div>
+    <div class="sub">RSI: 30.7</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Commodities State <span class="engine-badge dry-badge">DRY</span></div>
+    <div class="big">DORMANT</div>
+    <div class="sub">WTI: $96.31 · Gold: $4720.80</div>
+    <div class="sub">DXY: 99.87</div>
+  </div>
+</div>
+
+<!-- CRYPTO SECTION -->
+<h2>1. CCE Crypto <span class="engine-badge live-badge">LIVE</span></h2>
+<div class="section">
+  <div class="two-col">
+    <div>
+      <h3>Performance</h3>
+      <div class="stat-row"><span class="stat-label">Period</span><span class="stat-val">3/12/2026, 9:05:18 AM → 3/19/2026, 8:20:47 AM</span></div>
+      <div class="stat-row"><span class="stat-label">Total cycles</span><span class="stat-val">30</span></div>
+      <div class="stat-row"><span class="stat-label">Portfolio start</span><span class="stat-val">$391.70</span></div>
+      <div class="stat-row"><span class="stat-label">Portfolio now</span><span class="stat-val">$291.70</span></div>
+      <div class="stat-row"><span class="stat-label">Total return</span><span class="stat-val">+0.00%</span></div>
+      <div class="stat-row"><span class="stat-label">State transitions</span><span class="stat-val">0</span></div>
+      <div class="stat-row"><span class="stat-label">Trades executed</span><span class="stat-val">0</span></div>
+    </div>
+    <div>
+      <h3>Market Data</h3>
+      <div class="stat-row"><span class="stat-label">BTC at launch</span><span class="stat-val">$69896.20</span></div>
+      <div class="stat-row"><span class="stat-label">BTC current</span><span class="stat-val">$70216.90</span></div>
+      <div class="stat-row"><span class="stat-label">BTC change</span><span class="stat-val">+0.46%</span></div>
+      <div class="stat-row"><span class="stat-label">BTC high</span><span class="stat-val">$74069.40</span></div>
+      <div class="stat-row"><span class="stat-label">BTC low</span><span class="stat-val">$69710.10</span></div>
+      <div class="stat-row"><span class="stat-label">Avg Fear & Greed</span><span class="stat-val">22.5</span></div>
+      <div class="stat-row"><span class="stat-label">BTC Dominance</span><span class="stat-val">56.3%</span></div>
+    </div>
+  </div>
+  <h3>State Distribution</h3>
+  <table><tr><th>State</th><th>Cycles</th><th>%</th></tr><tr><td><span class="state">DORMANT</span></td><td>30</td><td>100.0%</td></tr></table>
+  <h3>Portfolio History</h3>
+  <div class="chart-wrap"><canvas id="cryptoChart"></canvas></div>
+</div>
+
+<!-- REIT SECTION -->
+<h2>2. CCE REIT <span class="engine-badge dry-badge">DRY RUN</span></h2>
+<div class="section">
+  <div class="two-col">
+    <div>
+      <h3>Rate Environment</h3>
+      <div class="stat-row"><span class="stat-label">Cycles</span><span class="stat-val">5</span></div>
+      <div class="stat-row"><span class="stat-label">Current state</span><span class="stat-val">WATCHING</span></div>
+      <div class="stat-row"><span class="stat-label">Fed rate</span><span class="stat-val">3.64% (was 3.64%)</span></div>
+      <div class="stat-row"><span class="stat-label">10Y Treasury</span><span class="stat-val">4.20%</span></div>
+      <div class="stat-row"><span class="stat-label">Yield spread</span><span class="stat-val">-0.200% (avg: -0.228%)</span></div>
+    </div>
+    <div>
+      <h3>Signal Stats</h3>
+      <div class="stat-row"><span class="stat-label">Fed cutting</span><span class="stat-val">0% of cycles</span></div>
+      <div class="stat-row"><span class="stat-label">Spread favourable</span><span class="stat-val">0% of cycles</span></div>
+      <div class="stat-row"><span class="stat-label">Portfolio value</span><span class="stat-val">£300.00</span></div>
+    </div>
+  </div>
+  <h3>State Distribution</h3>
+  <table><tr><th>State</th><th>Cycles</th><th>%</th></tr><tr><td><span class="state">WATCHING</span></td><td>5</td><td>100.0%</td></tr></table>
+</div>
+
+<!-- STOCKS SECTION -->
+<h2>3. CCE Stocks <span class="engine-badge dry-badge">DRY RUN</span></h2>
+<div class="section">
+  <div class="two-col">
+    <div>
+      <h3>SPY Data</h3>
+      <div class="stat-row"><span class="stat-label">Cycles</span><span class="stat-val">19</span></div>
+      <div class="stat-row"><span class="stat-label">Current state</span><span class="stat-val">DORMANT</span></div>
+      <div class="stat-row"><span class="stat-label">SPY at launch</span><span class="stat-val">$662.29</span></div>
+      <div class="stat-row"><span class="stat-label">SPY current</span><span class="stat-val">$661.43</span></div>
+      <div class="stat-row"><span class="stat-label">SPY change</span><span class="stat-val">-0.13%</span></div>
+      <div class="stat-row"><span class="stat-label">SMA50 / SMA200</span><span class="stat-val">$684.74 / $678.89</span></div>
+    </div>
+    <div>
+      <h3>Volatility</h3>
+      <div class="stat-row"><span class="stat-label">VIX current</span><span class="stat-val">25.81</span></div>
+      <div class="stat-row"><span class="stat-label">VIX average</span><span class="stat-val">24.59</span></div>
+      <div class="stat-row"><span class="stat-label">VIX high</span><span class="stat-val">25.81</span></div>
+      <div class="stat-row"><span class="stat-label">RSI current</span><span class="stat-val">30.7 (avg: 30.9)</span></div>
+      <div class="stat-row"><span class="stat-label">Golden cross</span><span class="stat-val">100% of cycles</span></div>
+      <div class="stat-row"><span class="stat-label">Above SMA200</span><span class="stat-val">0% of cycles</span></div>
+    </div>
+  </div>
+  <h3>State Distribution</h3>
+  <table><tr><th>State</th><th>Cycles</th><th>%</th></tr><tr><td><span class="state">DORMANT</span></td><td>19</td><td>100.0%</td></tr></table>
+</div>
+
+<!-- COMMODITIES SECTION -->
+<h2>4. CCE Commodities <span class="engine-badge dry-badge">DRY RUN</span></h2>
+<div class="section">
+  <div class="two-col">
+    <div>
+      <h3>Commodity Prices</h3>
+      <div class="stat-row"><span class="stat-label">Cycles</span><span class="stat-val">15</span></div>
+      <div class="stat-row"><span class="stat-label">Current state</span><span class="stat-val">DORMANT</span></div>
+      <div class="stat-row"><span class="stat-label">WTI Crude</span><span class="stat-val">$96.31 (5d: +0.61%)</span></div>
+      <div class="stat-row"><span class="stat-label">Gold</span><span class="stat-val">$4720.80 (5d: -7.72%)</span></div>
+      <div class="stat-row"><span class="stat-label">Copper</span><span class="stat-val">$5.447 (5d: -6.47%)</span></div>
+      <div class="stat-row"><span class="stat-label">DXY</span><span class="stat-val">99.87 (5d: +0.65%)</span></div>
+    </div>
+    <div>
+      <h3>Signal Stats</h3>
+      <div class="stat-row"><span class="stat-label">Oil bullish</span><span class="stat-val">0% of cycles</span></div>
+      <div class="stat-row"><span class="stat-label">DXY blocking</span><span class="stat-val">100% of cycles</span></div>
+      <div class="stat-row"><span class="stat-label">Gold following</span><span class="stat-val">0% of cycles</span></div>
+      <div class="stat-row"><span class="stat-label">Portfolio value</span><span class="stat-val">£300.00</span></div>
+    </div>
+  </div>
+  <h3>State Distribution</h3>
+  <table><tr><th>State</th><th>Cycles</th><th>%</th></tr><tr><td><span class="state">DORMANT</span></td><td>15</td><td>100.0%</td></tr></table>
+</div>
+
+
+<!-- GRID SECTION -->
+<h2>5. T.E Grid <span class="engine-badge dry-badge">DRY RUN</span></h2>
+<div class="section">
+  <div class="two-col">
+    <div>
+      <h3>Performance</h3>
+      <div class="stat-row"><span class="stat-label">Period</span><span class="stat-val">3/17/2026, 12:07:06 PM → 3/19/2026, 8:33:11 AM</span></div>
+      <div class="stat-row"><span class="stat-label">Grid state</span><span class="stat-val">ACTIVE</span></div>
+      <div class="stat-row"><span class="stat-label">Centre price</span><span class="stat-val">$70212.54</span></div>
+      <div class="stat-row"><span class="stat-label">BTC current</span><span class="stat-val">$70083.42</span></div>
+      <div class="stat-row"><span class="stat-label">Portfolio</span><span class="stat-val">$125.00</span></div>
+      <div class="stat-row"><span class="stat-label">Total cycles</span><span class="stat-val">115</span></div>
+    </div>
+    <div>
+      <h3>Grid Stats</h3>
+      <div class="stat-row"><span class="stat-label">Completed cycles</span><span class="stat-val">0</span></div>
+      <div class="stat-row"><span class="stat-label">Total profit</span><span class="stat-val pos">+$0.000000</span></div>
+      <div class="stat-row"><span class="stat-label">Avg per cycle</span><span class="stat-val">$0.000000</span></div>
+      <div class="stat-row"><span class="stat-label">Win rate</span><span class="stat-val">0% (0W / 0L)</span></div>
+      <div class="stat-row"><span class="stat-label">Open buys / sells</span><span class="stat-val">5 / 5</span></div>
+      <div class="stat-row"><span class="stat-label">Recentres / Stops</span><span class="stat-val">0 / 0</span></div>
+    </div>
+  </div>
+</div>
+
+<div style="border-top:1px solid var(--border);padding-top:16px;margin-top:24px;color:var(--dim);font-size:11px;">
+  <div>CCE Platform Core v2.1.0 · Giblets Creations · 2026</div>
+  <div style="margin-top:4px;font-style:italic;">"I wanted it. So I forged it. Now forge yours."</div>
+</div>
+
+<script>
+const chartData = [{"t":"2026-03-12","v":391.70207021,"b":69896.2,"f":18},{"t":"2026-03-12","v":391.70207021,"b":70446.3,"f":18},{"t":"2026-03-12","v":391.70207021,"b":70492.1,"f":18},{"t":"2026-03-12","v":391.70207021,"b":70321.7,"f":18},{"t":"2026-03-13","v":391.70207021,"b":71598.3,"f":15},{"t":"2026-03-13","v":391.70207021,"b":71291.6,"f":15},{"t":"2026-03-13","v":391.70207021,"b":71904.1,"f":15},{"t":"2026-03-13","v":391.70207021,"b":72886.8,"f":15},{"t":"2026-03-13","v":391.70207021,"b":71920.9,"f":15},{"t":"2026-03-16","v":391.70207021,"b":73649.7,"f":23},{"t":"2026-03-16","v":391.70207021,"b":73587.4,"f":23},{"t":"2026-03-16","v":391.70207021,"b":73972,"f":23},{"t":"2026-03-16","v":391.70207021,"b":73946.3,"f":23},{"t":"2026-03-17","v":521.51877021,"b":74069.4,"f":28},{"t":"2026-03-18","v":521.51877021,"b":73820.1,"f":26},{"t":"2026-03-18","v":521.51877021,"b":72339,"f":50},{"t":"2026-03-18","v":291.7,"b":71320.3,"f":26},{"t":"2026-03-18","v":291.7,"b":71343.6,"f":26},{"t":"2026-03-18","v":291.7,"b":71345,"f":26},{"t":"2026-03-19","v":291.7,"b":70830.1,"f":23},{"t":"2026-03-19","v":291.7,"b":70834.7,"f":23},{"t":"2026-03-19","v":291.7,"b":70831.4,"f":23},{"t":"2026-03-19","v":291.7,"b":70874.6,"f":23},{"t":"2026-03-19","v":291.7,"b":70933.6,"f":23},{"t":"2026-03-19","v":291.7,"b":70852.6,"f":23},{"t":"2026-03-19","v":291.7,"b":70886.9,"f":23},{"t":"2026-03-19","v":291.7,"b":70694.7,"f":23},{"t":"2026-03-19","v":291.7,"b":69710.1,"f":23},{"t":"2026-03-19","v":291.7,"b":69811.7,"f":23},{"t":"2026-03-19","v":291.7,"b":70216.9,"f":23}];
+if (chartData.length) {
+  new Chart(document.getElementById('cryptoChart'), {
+    type: 'line',
+    data: {
+      labels: chartData.map(d => d.t),
+      datasets: [
+        {
+          label: 'Portfolio ($)',
+          data: chartData.map(d => d.v),
+          borderColor: '#00d4ff',
+          backgroundColor: 'rgba(0,212,255,0.05)',
+          borderWidth: 1.5, fill: true, tension: 0.4, pointRadius: 0,
+          yAxisID: 'y'
+        },
+        {
+          label: 'BTC Price ($)',
+          data: chartData.map(d => d.b),
+          borderColor: '#ffc300',
+          borderWidth: 1.5, fill: false, tension: 0.4, pointRadius: 0,
+          yAxisID: 'y1'
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#4a6080', font: { size: 11 } } } },
+      scales: {
+        x: { ticks: { color: '#4a6080', font: { size: 10 }, maxTicksLimit: 8 }, grid: { color: '#1a2d45' } },
+        y:  { position: 'left',  ticks: { color: '#4a6080' }, grid: { color: '#1a2d45' } },
+        y1: { position: 'right', ticks: { color: '#4a6080' }, grid: { display: false } }
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>

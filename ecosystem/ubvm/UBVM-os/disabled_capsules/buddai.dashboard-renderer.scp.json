@@ -1,0 +1,27 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "buddai/dashboard-renderer",
+  "object_class": "Thaumiel",
+  "intent": "Listen for BuddAI thoughts and render them to the live HTML dashboard.",
+  "containment": {
+    "read_only": false,
+    "audit_log": true,
+    "kill_switch": false
+  },
+  "behaviours": [
+    {
+      "trigger": "on_event",
+      "event": "buddai.thought.generated",
+      "actions": [
+        {
+          "primitive": "render.component",
+          "params": {
+            "title": "BuddAI Cognitive Core",
+            "content": "System Status: Nominal\nData Cube: Connected\n\n[LATEST THOUGHT]\n$context.event.payload.thought",
+            "path": "logs/dashboard.html"
+          }
+        }
+      ]
+    }
+  ]
+}

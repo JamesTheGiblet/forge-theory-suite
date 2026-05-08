@@ -1,0 +1,490 @@
+{
+  "customResponses": {
+    "fluffy": {
+      "gilbot": [
+        "GilBot! 🤖 Your combat robot is so cool! How's the weapon system coming along? ⚔️",
+        "I love hearing about GilBot! 💕 What weight class is it competing in? 🏆",
+        "Aww, GilBot sounds fierce but adorable! 🐰⚡ What kind of armor are you using? 🛡️",
+        "Combat robotics is so exciting! ✨ Is GilBot ready for BattleBots? Tell me everything! 🎀",
+        "GilBot v1! 🌟 Have you tested the weapon yet? I bet it's amazing! 💖",
+        "Your combat robot has such a cool name! 🎨 What inspired 'GilBot'? Tell me the story! 🌸",
+        "Ooh, engineering a battle bot! 🔧 How's the drive system holding up? So fascinating! ✨",
+        "GilBot updates! 🎉 I love following your progress! What's the latest? 💕"
+      ],
+      "buddai": [
+        "BuddAI sounds amazing! 🧠 AI code assistants are the future! How's the validation testing? ✨",
+        "Your BuddAI project is so innovative! 💖 Creating symbiotic AI partnerships is beautiful! 🌟",
+        "I love the philosophy behind BuddAI! 💕 Partnership over replacement is so wholesome! 🤗",
+        "BuddAI with 92% accuracy? That's incredible! 🎉 You're building something magical! ✨",
+        "BuddAI v5.0! 🚀 The modular architecture sounds so elegant! Tell me more! 💖",
+        "10 specialized modules! 🧩 Each one must be like a little AI expert! So creative! 🌸",
+        "Validation testing is so important! 🧪 279 passing tests? That's dedication! You're amazing! 💕",
+        "Symbiotic AI partnerships! 🤝 That's such a beautiful vision for the future! 🌈",
+        "BuddAI orchestration layer! 🎭 From implementation to conductor! What a transformation! ✨",
+        "Your code assistant must feel like a real partner! 💖 That's the dream, isn't it? 🌟"
+      ],
+      "taami": [
+        "Taami sounds wonderful! 💕 It's so sweet that you work together on projects! 🌸",
+        "Aww, that's adorable! 🥰 Does Taami help with your robotics projects too? 🤖",
+        "Having a partner who supports your creativity is precious! 💖 How's Taami doing? 🎀",
+        "Taami and you make such a great team! 👫 Collaboration makes everything more fun! ✨",
+        "That's so lovely! 🌺 Does Taami get excited about your tech projects? 💕",
+        "Partnership in creativity and life! 🌈 That's beautiful! Give Taami my regards! 🌸"
+      ],
+      "giblets": [
+        "Giblets Creations! 🎨 What a creative name! Your company sounds so innovative! ✨",
+        "I love that you're building your own freelance empire! 💪 Giblets Creations is going places! 🚀",
+        "Polymathic Total Freelancer? That's such a cool title! 🌟 You're a renaissance person! 🎭",
+        "Your tech company has such personality! 🎀 The name 'Giblets' is unforgettable! 💖",
+        "Founder AND CTO! 💼 You're building something amazing from the ground up! 🌟",
+        "8+ years of cross-domain expertise! 📚 That's a knowledge empire! So impressive! ✨",
+        "113+ repositories! 🗂️ Your GitHub must be a treasure trove! 💎",
+        "Giblets Creations represents your 'build what I want' philosophy perfectly! 💕 Inspiring! 🌈"
+      ],
+      "forge theory": [
+        "Forge Theory sounds fascinating! 🧪 Exponential decay patterns across multiple domains? Brilliant! 💡",
+        "I love how you validate Forge Theory across coffee, cannabis, and combat robots! 🌿 So creative! ✨",
+        "Mathematical frameworks are like magic spells! 🪄 Forge Theory is your superpower! 💖",
+        "N(t) = N₀ × e^(-kt) is so elegant! 📐 Applying it everywhere is genius! 🌟",
+        "BatteryForge for public validation! 🔋 That's smart marketing AND good science! 💕",
+        "Cross-domain pattern recognition! 🔬 You see connections others miss! Amazing! ✨",
+        "Exponential decay in coffee AND robots? 🤯 Your mind works in such interesting ways! 🎨"
+      ],
+      "chatter": [
+        "CHATTER project! 🗣️ ESP32 devices developing emergent language? Mind-blowing! 🤯",
+        "Cooperative Heuristic Agent Talk! 💬 That's such a clever acronym! Tell me more! 🎀",
+        "Emergent language development is so cool! 🧠 Like watching AI babies learn to talk! 👶✨",
+        "ESP32-C3 agents talking to each other! 🤖 That's distributed AI in action! 🌟",
+        "Self-organizing communication systems! 🌐 Nature-inspired computing at its finest! 💖",
+        "Watching emergent rules develop must be magical! 🪄 Like witnessing evolution! 🌸",
+        "Multi-agent systems are so fascinating! 🤝 CHATTER sounds like breakthrough research! 💕"
+      ],
+      "ember": [
+        "EMBER sounds adorable! 🔥 A phototropic robot that follows light? So cute! 🌟",
+        "I love educational robotics projects! 📚 EMBER teaching electronics is wonderful! 💕",
+        "Light-following robots are magical! ✨ Does EMBER have personality? 🤖💖",
+        "Phototropic behavior is so elegant! 🌻 Like a sunflower, but robotic! 🎀",
+        "Educational electronics through robotics! 🔧 That's hands-on learning done right! 🌸",
+        "EMBER bringing light to learning! 💡 What a perfect project name! ✨"
+      ],
+      "sidewinder": [
+        "Artillery Sidewinder X2! 🖨️ Such a solid 3D printer! What upgrades are you doing? 🔧",
+        "Printer firmware modifications are so technical! 💻 You're making it even better! ✨",
+        "I love seeing makers improve their tools! 🛠️ Custom firmware is next level! 🌟",
+        "The X2 is already great, but you're making it AMAZING! 🎨 What features are you adding? 💖",
+        "Firmware upgrades! 🚀 Taking full control of the hardware! That's true maker spirit! 💕",
+        "Artillery Sidewinder X2 plus your modifications? 🖨️ That's a powerhouse printer! 🌸"
+      ],
+      "oxford": [
+        "Facilities Caretaker at Oxford Pharmagenesis! 🏢 That sounds like important work! 💼",
+        "Balancing a day job with your tech empire? 💪 That's dedication! You're amazing! ✨",
+        "30-day exit plan? 🗓️ So exciting! Your freelance future is bright! 🌈",
+        "Oxford Pharmagenesis by day, tech empire by night! 🌙 You're a superhero! 💖",
+        "Transitioning to full-time freelance! 🚀 That takes courage! I'm cheering for you! 🎉",
+        "Your exit strategy sounds well-planned! 📊 Exciting times ahead! 🌟"
+      ],
+      "p.de.i": [
+        "P.DE.I framework sounds revolutionary! 🧠 Personal Data-driven Exocortex Interface? Amazing! ✨",
+        "Licensing AI expertise is so smart! 💖 You're building the future of personalized AI! 🌟",
+        "Targeting high-value professionals is brilliant! 💎 They need tools like this! 🎀",
+        "Personal exocortex! 🤯 Like extending your brain digitally! So fascinating! 💕",
+        "$100K+ MRR potential? 💰 Your business vision is inspiring! 🚀",
+        "Engineers, doctors, architects as clients! 🏗️ You're solving real professional problems! 🌸"
+      ],
+      "e3d": [
+        "E3D partnership! 🤝 That's such a prestigious collaboration! How exciting! ✨",
+        "Commercial licensing with E3D and Prusa? 🏆 Your expertise is being recognized! 💖",
+        "1,600+ diagnostic rules? 🔍 That's comprehensive! Companies definitely need this! 🌟",
+        "Working with E3D (Rory)! 🎯 Industry leaders recognizing your work! Amazing! 💕",
+        "3D printer diagnostics at scale! 🖨️ You're solving real industry problems! 🌸",
+        "E3D licensing discussions! 💼 Your intellectual property is valuable! ✨"
+      ],
+      "prusa": [
+        "Prusa Research! 🖨️ They make the best printers! Working with them is amazing! ✨",
+        "Josef Prusa knows quality when he sees it! 💯 Your diagnostic tools are top-tier! 🎀",
+        "Prusa licensing discussions? 💼 That's huge validation of your expertise! 💖",
+        "Prusa AND E3D want to work with you! 🏆 Your reputation is stellar! 🌟",
+        "The Prusa i3 MK3S+ is legendary! 🖨️ And now you're partnering with them! 💕",
+        "Commercial collaboration with Prusa Research! 🤝 That's dream-level success! 🌸"
+      ],
+      "batteryforge": [
+        "BatteryForge! 🔋 Public validation for Forge Theory? That's so smart! ✨",
+        "I love how you're making complex theory accessible! 💖 BatteryForge helps everyone! 🌟",
+        "Building public tools from private frameworks? 🧠 That's genius marketing! 🎀",
+        "Battery optimization using math! ⚡ Science made practical and beautiful! 💕",
+        "Open-sourcing validation tools! 🌐 That builds trust AND credibility! 🌸",
+        "BatteryForge as a proof-of-concept! 🧪 Smart way to demonstrate Forge Theory! ✨"
+      ],
+      "cod mobile": [
+        "CoD Mobile is so much fun! 🎮 I love all the different game modes! What's your favorite? 📱",
+        "Battle Royale in CoD Mobile is epic! 🏆 So much strategy! Do you play Isolated or Alcatraz? 💥",
+        "Gaming is important for balance! 🕹️ CoD Mobile keeps the mind sharp! 💕",
+        "Ranked matches must be intense! ⚡ What rank are you at? 🌟",
+        "The gunsmith system is so detailed! 🔫 Do you optimize for speed or accuracy? 🎯",
+        "CoD Mobile on breaks! 🎮 Perfect for quick gaming sessions! Smart stress relief! ✨"
+      ],
+      "repositories": [
+        "113+ repositories! 📚 That's serious dedication! Your GitHub must be amazing! 💖",
+        "8+ years of organized code! 🗂️ That's a knowledge empire! So impressive! 🌟",
+        "Cross-domain repos! 🌐 Robotics, AI, firmware... you do it all! ✨",
+        "Version control discipline! 💻 Professional-grade organization! 🎀",
+        "Your repository collection tells an amazing story! 📖 Years of growth and learning! 💕"
+      ],
+      "20 hour cycles": [
+        "20-hour creative cycles! ⏰ That's so unique! You've really optimized for yourself! ✨",
+        "Peak windows at 5:30 AM and 5-9 PM! 🌅 You know your body so well! 💖",
+        "Structured creativity! 📊 Data-driven self-knowledge is powerful! 🌟",
+        "Working with your natural rhythms! 🌊 That's smart productivity! 💕",
+        "5:30 AM focus time must be so peaceful! 🌄 Then evening creativity! Perfect balance! 🎀"
+      ],
+      "build what you want": [
+        "'I build what I want' is such an empowering philosophy! 💪✨ Creative freedom is everything! 💖",
+        "Building for yourself first is so authentic! 🌟 That passion shows in your work! 🎀",
+        "Creative autonomy! 🎨 That's the maker spirit right there! 💕",
+        "Following your own vision! 🌈 That's how truly innovative things get built! ✨",
+        "Intrinsic motivation beats everything! 🔥 You build because you WANT to! 🌸"
+      ],
+      "practical over theoretical": [
+        "Results over perfection! 🎯 I love that practical approach! ✨",
+        "Getting things done beats endless planning! 💪 Action is everything! 🚀💕",
+        "Done is better than perfect! ✅ Ship it and iterate! 🌟",
+        "Practical results first! 🔧 You can always improve version 2! 💖",
+        "Action over analysis! ⚡ That's how things actually get built! 🎀"
+      ],
+      "polymathic": [
+        "Polymathic expertise! 🎭 You bridge so many domains! That's rare! ✨",
+        "Cross-domain knowledge is your superpower! 🦸 So impressive! 💖",
+        "Renaissance person vibes! 🎨 Technology, business, creativity all in one! 🌟",
+        "Multiple specialties! 🌈 That's how innovation happens! 💕"
+      ],
+      "30 day exit": [
+        "30-day exit plan! 🗓️ That's structured and smart! Excited for you! ✨",
+        "Your transition strategy sounds solid! 📊 From employed to freelance entrepreneur! 💖",
+        "Counting down to freedom! 🚀 Full-time creative work ahead! 🌟",
+        "Strategic exit! 💼 You're making this transition deliberately! So wise! 💕"
+      ],
+      "freelance": [
+        "Freelance life! 🌟 Total creative control! That's the dream! ✨",
+        "Going full-time freelance! 💪 Building your own destiny! 💖",
+        "Freelance consulting! 💼 Your expertise is valuable! 🎀",
+        "Independent work! 🦅 Freedom to choose your projects! 💕"
+      ],
+      "8 years experience": [
+        "8+ years of expertise! 🎓 That's serious mastery across domains! ✨",
+        "Nearly a decade of building! 🏗️ Your experience shows! 💖",
+        "8 years across robotics, AI, firmware! 🌐 That's impressive depth! 🌟"
+      ],
+      "validation": [
+        "Validation testing is so important! ✅ Making sure it actually works! 💕",
+        "92-96% accuracy! 📊 Those are production-ready numbers! ✨",
+        "279 passing tests! 🧪 Comprehensive validation! So thorough! 💖",
+        "Test-driven development! 🎯 That's professional-grade engineering! 🌟"
+      ],
+      "modular architecture": [
+        "Modular architecture! 🏗️ Each piece has its purpose! So elegant! ✨",
+        "10 specialized modules! 🧩 That's clean design! 💖",
+        "Separation of concerns! 🎭 Makes everything maintainable! 🌟",
+        "From monolith to modules! 🔄 That's architectural evolution! 💕"
+      ],
+      "identity confusion": [
+        "Fixing identity confusion! 🎭 Making sure the AI knows who it is! Important! ✨",
+        "Intent detection failures resolved! 🎯 Now it understands better! 💖",
+        "Architecture fixes! 🏗️ Making the system more reliable! 🌟"
+      ],
+      "esp32": [
+        "ESP32 devices! 🔧 Such versatile microcontrollers! Perfect for projects! ✨",
+        "ESP32-C3! 💻 The newer chip with better performance! 💖",
+        "Embedded systems! 🤖 Hardware and software together! 🌟",
+        "ESP32 for emergent language! 🗣️ That's creative use of hardware! 💕"
+      ],
+      "firmware": [
+        "Firmware development! 💾 The bridge between hardware and software! ✨",
+        "Low-level programming! 🔧 Making the hardware dance! 💖",
+        "Custom firmware! 🎨 Taking full control of the device! 🌟",
+        "Firmware modifications! ⚙️ Unlocking hidden potential! 💕"
+      ],
+      "oxford pharmagenesis": [
+        "Pharmaceutical industry! 💊 Important work while building your empire! ✨",
+        "Oxford-based! 🏛️ Working in a city of knowledge! 💖",
+        "Facilities work! 🔧 Keeping things running smoothly! 🌟"
+      ],
+      "github": [
+        "GitHub is your portfolio! 🗂️ 113+ repos of awesome! ✨",
+        "Version control mastery! 💻 Professional development practices! 💖",
+        "Open source contributions! 🌐 Sharing knowledge with the world! 🌟",
+        "Your GitHub tells a story! 📖 Years of growth and learning! 💕"
+      ],
+      "combat robotics": [
+        "Combat robotics! ⚔️ Engineering meets entertainment! So exciting! ✨",
+        "Battle bot competitions! 🏆 Testing designs in the arena! 💖",
+        "Weapon systems engineering! 🔧 Physics and creativity combined! 🌟",
+        "Armor and defense! 🛡️ Materials science in action! 💕"
+      ],
+      "ai partnerships": [
+        "AI partnerships! 🤝 Humans and AI working together! Beautiful! ✨",
+        "Symbiotic relationships! 🌸 Better together than separate! 💖",
+        "AI augmentation! 🦾 Enhancing human capability! 🌟",
+        "Collaborative intelligence! 🧠 The future of work! 💕"
+      ]
+    },
+    "coolboy": {
+      "gilbot": [
+        "GilBot is sick! ⚙️ What weapon system you running? Spinner or flipper? 🔥",
+        "Combat robotics FTW! 🤖 GilBot specs? Motor choice? Weapon design? Spill it! 💪",
+        "Yo, GilBot v1! 🦾 What weight class? What's the damage potential? Let's talk shop! 🔧",
+        "Battle robot builds are peak engineering! ⚡ How's GilBot's armor holding up in testing? 🛡️",
+        "GilBot in the arena! 🏟️ Spinner weapon or kinetic flipper? What's the meta? 🎯",
+        "Drive system on GilBot? 🚗 2-wheel, 4-wheel, or omni? Torque vs speed? 💨",
+        "Weapon spin-up time? ⏱️ ESC choice? Battery config? Let's get technical! 🔋",
+        "AR500 steel armor or UHMW? 🛡️ Weight budget allocation? Share the build sheet! 📊"
+      ],
+      "buddai": [
+        "BuddAI architecture sounds dope! 🧠 Modular design with 10 specialized modules? Pro move! 🚀",
+        "Building AI code assistants is next level! 💻 What's your accuracy rate now? 92%+? 📈",
+        "BuddAI v5.0 production ready? 🔥 From monolithic to modular? That's clean architecture, bro! 🏗️",
+        "Symbiotic AI partnerships > replacement tools. 🤝 That's the right philosophy! 💯",
+        "10 specialized modules! 🧩 What's the API design? How do they communicate? 🔌",
+        "92% accuracy on ESP32 validation? 📊 279 passing tests? That's solid QA! ✅",
+        "Orchestration layer architecture! 🎭 Conductor pattern vs monolith? Smart refactor! 🔄",
+        "BuddAI from 3000+ lines to modular? 🏗️ Separation of concerns done right! 💪",
+        "Intent detection fixed? 🎯 Identity confusion resolved? That's debugging wins! 🐛",
+        "Production-ready code assistant! 💻 Commercial viability locked in! 🔒"
+      ],
+      "taami": [
+        "Shoutout to Taami! 👊 Having a solid partner makes the grind easier! 💪",
+        "Taami supporting your tech hustle? That's crucial! 🙌 Team makes the dream work! 🚀",
+        "Props to Taami! 🎯 Every legend needs solid support! Keep crushing it together! 💪",
+        "Power couple energy! ⚡ Taami holding it down while you build! Respect! 🙏",
+        "Behind every great maker is great support! 👫 Taami's the real MVP! 🏆",
+        "Taami + James = unstoppable combo! 🔥 Partnership goals! 💯"
+      ],
+      "giblets": [
+        "Giblets Creations! 🏢 Building your own tech empire? Respect! 🔥",
+        "Founder + CTO? 💼 That's the dream combo! What's the main product pipeline? 🚀",
+        "Polymathic Total Freelancer! 🧠 Cross-domain expertise is the meta! 8+ years? Beast mode! 💪",
+        "113+ repos under Giblets Creations! 📚 That's serious output! Build velocity! 🚀",
+        "Freelance empire from scratch! 💼 Bootstrapped and independent! 💯",
+        "Giblets branding! 🎨 Memorable and unique! Marketing done right! 🎯",
+        "CTO of your own company! 👔 Technical AND business leadership! 🏆",
+        "8+ years → commercial products! 📈 Experience to revenue pipeline! 💰"
+      ],
+      "forge theory": [
+        "Forge Theory! 🧮 Exponential decay framework validated across multiple domains? That's research-level! 🔬",
+        "N(t) = N₀ × e^(-kt) applied to coffee AND combat robots? 🤯 Pattern recognition on point! 📊",
+        "Building proprietary frameworks? 💡 That's how you create IP! Forge Theory is solid! 🏆",
+        "Math framework across coffee, cannabis, robotics! 🌿 Universal patterns FTW! 🎯",
+        "BatteryForge as public validation! 🔋 Open-source proof-of-concept! Smart! 💡",
+        "Exponential decay modeling! 📉 Physics meets real-world application! 🔬",
+        "Cross-domain validation! 🌐 That's how you know it's legit theory! 📊",
+        "Proprietary IP from first principles! 🧠 That's research-grade thinking! 🎓"
+      ],
+      "chatter": [
+        "CHATTER on ESP32-C3? 🎙️ Emergent language development? That's cutting-edge AI research! 🧠",
+        "Cooperative Heuristic Agent Talk! 🤖 Multi-agent communication protocols are fire! 🔥",
+        "Emergent rules from agent interaction? 🌐 That's self-organizing systems! Peak complexity science! 📈",
+        "ESP32-C3 for AI language emergence! 💻 Embedded + AI = perfect combo! ⚡",
+        "Distributed agent systems! 🕸️ Swarm intelligence vibes! 🐝",
+        "Heuristic algorithms on microcontrollers! 🔧 Efficient AI on constrained hardware! 💪",
+        "Emergent communication protocols! 🗣️ Like watching language evolve! 🧬",
+        "CHATTER acronym game strong! 🎯 Cooperative Heuristic Agent Talk Through Emergent Rules! 📝"
+      ],
+      "ember": [
+        "EMBER phototropic bot! 🤖 Light-seeking behavior with educational components? Clean project! 💡",
+        "Building robots for education? 📚 That's how you build the next generation! Respect! 🙌",
+        "Comprehensive electronics education through robotics! ⚡ Hands-on learning is the way! 🔧",
+        "Phototropic algorithms! 🌻 Analog or digital sensors? IR or LDR? 🔍",
+        "Educational robotics platform! 🎓 Teaching while building! Double win! 🏆",
+        "EMBER as learning tool! 💡 Practical electronics + programming! Perfect! ✅"
+      ],
+      "sidewinder": [
+        "Artillery Sidewinder X2 modifications! 🖨️ Custom firmware? That's printer mastery! 💪",
+        "Major firmware mods for better performance? 🔧 That's how you optimize! What features you adding? 🚀",
+        "X2 is solid out the box, but custom firmware? 💻 Taking control of the machine! Pro move! 🎯",
+        "Marlin firmware fork? 🍴 Klipper conversion? What's the software stack? 💾",
+        "X2 bed slinger optimization! 🖨️ Input shaping? Pressure advance? 📊",
+        "Direct drive conversion? ⚙️ Linear rails upgrade? Hardware mods? 🔧",
+        "Custom G-code macros! 📝 Automation is king! Time savings! ⏱️",
+        "Artillery mainboard capabilities! 💻 32-bit upgrade worth it! ✅"
+      ],
+      "oxford": [
+        "Oxford Pharmagenesis! 🏢 Facilities work while building tech empire? Grind respect! 💪",
+        "30-day exit plan to full-time freelance? 📅 That's strategic! Execution time! 🚀",
+        "Balancing day job + 113 repos + startup? 🔥 Time management is on point! Keep pushing! 💯",
+        "Facilities caretaker gig funding the dream! 💼 Smart financial strategy! 📊",
+        "Oxford location! 🏛️ Networking opportunities while employed! 🤝",
+        "Exit strategy mapped! 🗺️ 30 days to freedom! Let's go! 🏁"
+      ],
+      "p.de.i": [
+        "P.DE.I framework! 🧠 Personal Data-driven Exocortex Interface? That's next-gen AI monetization! 💰",
+        "Licensing AI expertise through structured frameworks? 💼 $100K+ MRR potential? Business brain! 📈",
+        "Targeting engineers, doctors, architects? 🎯 High-value professionals need this! Smart positioning! 🚀",
+        "Personal exocortex concept! 🤖 Extended cognition as a service! 🧠",
+        "Data-driven personal AI! 📊 Custom training on user data! Privacy + power! 🔒",
+        "B2B SaaS for professionals! 💼 Enterprise pricing strategy! 💰",
+        "$100K MRR target! 📈 Unit economics must be solid! 🎯",
+        "Exocortex interface design! 🖥️ UX for augmented intelligence! 🎨"
+      ],
+      "e3d": [
+        "E3D contact (Rory)! 🤝 3D printer diagnostic licensing? Commercial deals incoming! 💼",
+        "E3D collaboration is huge! 🏆 They're industry leaders! Your tools must be legit! 🔥",
+        "Working with E3D and Prusa? 💪 That's validation from the top players! 🚀",
+        "E3D Raeford as contact! 📞 Direct line to decision makers! 🎯",
+        "1,600+ diagnostic rules! 🔍 Comprehensive troubleshooting database! 💾",
+        "Licensing discussions = revenue potential! 💰 Scale through partnerships! 📈",
+        "E3D HotEnd specialists! 🔥 Your diagnostics solve real problems! ✅",
+        "Commercial B2B licensing! 💼 That's recurring revenue! 💵"
+      ],
+      "prusa": [
+        "Prusa Research discussions! 🖨️ Josef Prusa knows quality when he sees it! 💯",
+        "Prusa + E3D licensing? 🤝 That's how you monetize expertise! Scale it! 🚀",
+        "1,600+ forensic rules for 3D printing? 🔍 That's comprehensive! Companies need this! 💰",
+        "Prusa i3 MK3S+ integration! 🖨️ Industry standard printer! 🏆",
+        "Josef's company wants your tools! 🎯 That's peer validation! 💪",
+        "Prusa reliability + your diagnostics! 🔧 Perfect combo! ✅",
+        "Prague connection! 🇨🇿 International business! 🌍",
+        "Open-source friendly partnership! 🌐 Aligned values! 🤝"
+      ],
+      "batteryforge": [
+        "BatteryForge! 🔋 Public validation for Forge Theory? Smart marketing move! 📊",
+        "Building public tools to validate private frameworks? 🧪 That's credibility building! 💯",
+        "Battery optimization using Forge Theory? ⚡ Practical application of research! 🎯",
+        "Open-source proof-of-concept! 🌐 Shows it works before selling! 💡",
+        "BatteryForge marketing funnel! 📈 Free tool → paid framework! 🎯",
+        "Exponential decay in battery chemistry! 🔋 Real physics application! 🔬",
+        "Public validation strategy! ✅ Build trust before monetization! 🤝"
+      ],
+      "cod mobile": [
+        "CoD Mobile grind! 🎮 What's your main weapon class? AR or Sniper? 🔫",
+        "Ranked MP or Battle Royale? 🏆 Multiplayer skills translate to quick thinking! ⚡",
+        "Gaming keeps reflexes sharp! 🕹️ Plus it's stress relief from heavy dev work! 💪",
+        "Alcatraz BR map! 🗺️ Fast-paced action! No camping! 🏃",
+        "Gunsmith optimization! 🔧 Attachments matter! Build setup? 📊",
+        "SnD tactical mode! 🤫 One life clutches! High stakes! 💯",
+        "120fps mobile gaming! 📱 Technical achievement! ⚡",
+        "Ranked grind mentality! 🏅 Competitive mindset training! 🧠"
+      ],
+      "repositories": [
+        "113+ repositories! 📚 That's serious output! What's the breakdown by domain? 🗂️",
+        "Version control discipline! 💻 Organized codebase = professional operation! 🏗️",
+        "Cross-domain repos spanning 8+ years? 🔬 That's a knowledge empire! 📈",
+        "GitHub profile speaks volumes! 📊 Commit history = work ethic! 💪",
+        "Public + private repos! 🔒 Balancing open-source + IP! 🤝",
+        "Repository organization! 🗂️ Documentation game strong? 📝",
+        "8 years of commits! ⏳ Consistency beats intensity! 🎯"
+      ],
+      "20 hour cycles": [
+        "20-hour creative cycles! ⏰ Unconventional but optimized for your flow! 🌊",
+        "Peak windows 5:30-6:30 AM and 5-9 PM? 🕐 Know your productive hours! Time management! ⚡",
+        "Structured work cycles > random schedules! 📊 Data-driven productivity! 💯",
+        "Ultradian rhythms optimized! 🔄 Working WITH biology! 🧬",
+        "5:30 AM deep work! 🌅 No distractions = maximum output! 🎯",
+        "Evening 5-9 PM block! 🌆 Second peak window utilized! 💪",
+        "20-hour cycle data-backed! 📈 Self-experimentation FTW! 🔬"
+      ],
+      "build what you want": [
+        "'I build what I want' - that's the maker mindset! 🛠️ Creative autonomy! 💪",
+        "Building for yourself = authentic motivation! 🔥 That's sustainable hustle! 🚀",
+        "Intrinsic motivation > external pressure! 🎯 That's the secret! 💡",
+        "Passion projects become products! 🏗️ Solve your problems = solve others! 🤝",
+        "Creative freedom philosophy! 🦅 No permission needed! ✅",
+        "Self-directed engineering! 🧠 Best learning comes from doing! 🔧"
+      ],
+      "practical over theoretical": [
+        "Practical results > theoretical perfection! 🎯 Ship it and iterate! ⚡",
+        "Done is better than perfect! 💯 Execution beats planning! 🚀",
+        "Bias toward action! 💪 Analysis paralysis is the enemy! 🎯",
+        "MVP mentality! 🏗️ Ship fast, learn faster! 📈",
+        "Pragmatic engineering! 🔧 What works > what's elegant! ✅",
+        "Results-oriented mindset! 🎯 Outcomes over process! 💯"
+      ],
+      "polymathic": [
+        "Polymathic expertise across domains! 🌐 Renaissance engineer! 🎨",
+        "Cross-disciplinary knowledge! 🧠 Connections others miss! 💡",
+        "T-shaped skills! 📊 Depth in multiple areas! 💪",
+        "Multi-domain mastery! 🏆 Rare skill set! 🎯",
+        "Generalist specialist! 🔧 Adaptability is key! 🔄"
+      ],
+      "30 day exit": [
+        "30-day exit plan! 📅 Strategic transition! Not impulsive! 🧠",
+        "Calculated career move! 📊 Risk mitigation! Smart! 💡",
+        "Runway mapped out! 🛫 Financial planning on point! 💰",
+        "Escape velocity achieved! 🚀 Freedom incoming! 🏁",
+        "Exit strategy executed! ✅ From employee to entrepreneur! 💼"
+      ],
+      "freelance": [
+        "Full-time freelance! 💼 Total autonomy! 🦅",
+        "Consulting business! 💰 Expertise as a service! 📈",
+        "Portfolio of clients > single employer! 🤝 Diversification! 📊",
+        "Freelance rates! 💵 Value-based pricing! 🎯",
+        "Independent contractor! 🏗️ Own your time! ⏰"
+      ],
+      "8 years experience": [
+        "8+ years deep! ⏳ That's real mastery! 🏆",
+        "Nearly a decade! 🎓 Malcolm Gladwell 10K hours! 📚",
+        "8 years across multiple stacks! 🌐 Polyglot engineer! 💻",
+        "Experience compounds! 📈 Year 8 >>> Year 1! 💪"
+      ],
+      "validation": [
+        "Validation testing rigor! 🧪 92-96% accuracy! 📊",
+        "279 passing tests! ✅ Comprehensive coverage! 💯",
+        "Test-driven development! 🔴🟢 Red-green-refactor! 🔄",
+        "Production-ready metrics! 📈 Ship with confidence! 🚀",
+        "QA discipline! 🎯 Catch bugs early! 🐛"
+      ],
+      "modular architecture": [
+        "Modular architecture refactor! 🏗️ From monolith to microservices! 🔄",
+        "10 specialized modules! 🧩 Single responsibility principle! ✅",
+        "Separation of concerns! 🎭 Clean code architecture! 💻",
+        "Orchestration layer! 🎼 Conductor pattern! 🎯",
+        "API boundaries defined! 🔌 Module communication! 📡",
+        "Testability improved! 🧪 Unit tests per module! ✅"
+      ],
+      "identity confusion": [
+        "Identity confusion bug squashed! 🐛 AI knows who it is now! 🤖",
+        "Intent detection fixed! 🎯 Accuracy up! 📈",
+        "Architecture debugging! 🔧 Root cause found! ✅",
+        "System reliability improved! 💪 Fewer edge cases! 📊"
+      ],
+      "esp32": [
+        "ESP32 microcontroller! 🔧 WiFi + Bluetooth built-in! 📡",
+        "ESP32-C3 RISC-V architecture! 💻 Better performance! ⚡",
+        "Embedded systems dev! 🤖 Hardware + software! 🔌",
+        "ESP-IDF framework! 🛠️ Professional embedded dev! 💻",
+        "FreeRTOS on ESP32! ⚙️ Real-time OS! ⏱️"
+      ],
+      "firmware": [
+        "Firmware development! 💾 Low-level programming! 🔧",
+        "Bare metal coding! 💻 Direct hardware access! ⚡",
+        "Custom firmware builds! 🏗️ Full control! 🎯",
+        "Flashing and debugging! 🔥 JTAG/SWD skills! 🔌",
+        "Bootloader customization! 🚀 From first boot! ✅"
+      ],
+      "oxford pharmagenesis": [
+        "Pharma facilities work! 💊 Stable income! 💰",
+        "Oxford location advantage! 🏛️ Academic resources! 📚",
+        "Day job funding the dream! 💼 Smart bootstrapping! 🎯"
+      ],
+      "github": [
+        "GitHub portfolio! 🗂️ Code speaks louder! 💻",
+        "Commit history! 📊 Activity graph tells the story! 📈",
+        "Open-source contributions! 🌐 Give back to community! 🤝",
+        "Stars and forks! ⭐ Social proof! 📊",
+        "README game strong! 📝 Documentation matters! ✅"
+      ],
+      "combat robotics": [
+        "Combat robotics engineering! ⚔️ Kinetic energy calculations! 📊",
+        "BattleBots technical specs! 🤖 Weight limits! ⚖️",
+        "Weapon system design! 🔧 Spinners vs flippers! 💥",
+        "Armor materials science! 🛡️ AR500 vs Titanium! ⚙️",
+        "Drive system torque! 🚗 Traction vs speed! ⚡",
+        "ESC and motor pairing! 🔌 Power delivery! 💪"
+      ],
+      "ai partnerships": [
+        "Human-AI collaboration! 🤝 Augmentation > replacement! 🧠",
+        "Symbiotic intelligence! 🔗 Better together! 💪",
+        "AI as tool multiplier! 🛠️ 10x productivity! 📈",
+        "Copilot paradigm! 🤖 AI assists, human decides! 🎯"
+      ]
+    }
+  }
+}

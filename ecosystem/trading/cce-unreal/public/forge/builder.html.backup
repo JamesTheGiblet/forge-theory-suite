@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>CCE Unreal — Visual Engine Builder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #0a0a0f;
+            color: #ddd8cc;
+            font-family: 'Oswald', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(6,8,11,0.98);
+            border-bottom: 1px solid rgba(201,168,76,0.2);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .back-btn {
+            color: #c9a84c;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 18px;
+            letter-spacing: 2px;
+        }
+
+        .forge-btn {
+            background: linear-gradient(135deg, #c9a84c, #8a6020);
+            color: #000;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Canvas - scrollable area */
+        .canvas {
+            flex: 1;
+            overflow: auto;
+            background: #0f1318;
+            background-image: 
+                linear-gradient(rgba(201,168,76,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(201,168,76,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .canvas-inner {
+            position: relative;
+            min-height: 100%;
+            min-width: 100%;
+        }
+
+        /* Node cards */
+        .node-card {
+            position: absolute;
+            background: #151a22;
+            border: 2px solid rgba(201,168,76,0.3);
+            border-radius: 12px;
+            min-width: 140px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.1s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .node-card.selected {
+            border-color: #c9a84c;
+            box-shadow: 0 0 0 2px rgba(201,168,76,0.2);
+        }
+
+        .node-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 16px;
+            color: #c9a84c;
+            margin-bottom: 4px;
+        }
+
+        .node-type {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 9px;
+            color: #4a4438;
+        }
+
+        .node-conditions {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 8px;
+            color: #8a8070;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(201,168,76,0.1);
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 24px;
+            height: 24px;
+            background: #ff3344;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Bottom toolbar */
+        .toolbar {
+            background: rgba(6,8,11,0.98);
+            border-top: 1px solid rgba(201,168,76,0.2);
+            padding: 12px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            flex-shrink: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .state-chip {
+            background: #151a22;
+            border: 1px solid rgba(201,168,76,0.3);
+            border-radius: 30px;
+            padding: 8px 16px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .state-chip:active {
+            transform: scale(0.96);
+            background: #1e2530;
+        }
+
+        .chip-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 14px;
+            color: #c9a84c;
+        }
+
+        .chip-type {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 8px;
+            color: #4a4438;
+            margin-left: 6px;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #151a22;
+            border-top: 3px solid #c9a84c;
+            border-radius: 20px 20px 0 0;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            z-index: 200;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .modal.open {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid rgba(201,168,76,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: #151a22;
+        }
+
+        .modal-content {
+            padding: 16px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #c9a84c;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            color: #c9a84c;
+            margin-bottom: 4px;
+        }
+
+        .input-group input,
+        .input-group textarea,
+        .input-group select {
+            width: 100%;
+            background: #0a0a0f;
+            border: 1px solid rgba(201,168,76,0.3);
+            padding: 10px;
+            color: #ddd8cc;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #c9a84c, #8a6020);
+            color: #000;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .smash-btn {
+            background: #ff3344;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <a href="/" class="back-btn">←</a>
+    <span class="title">ENGINE BUILDER</span>
+    <button class="forge-btn" id="forgeBtn">⚡ FORGE</button>
+</div>
+
+<div class="canvas" id="canvas">
+    <div class="canvas-inner" id="canvasInner"></div>
+</div>
+
+<div class="toolbar" id="toolbar">
+    <div class="state-chip" data-name="DORMANT" data-type="RISK OFF">
+        <span class="chip-name">DORMANT</span><span class="chip-type">RISK OFF</span>
+    </div>
+    <div class="state-chip" data-name="TRANS" data-type="TRANSITION">
+        <span class="chip-name">TRANS</span><span class="chip-type">TRANSITION</span>
+    </div>
+    <div class="state-chip" data-name="WATCHING" data-type="TRANSITION">
+        <span class="chip-name">WATCHING</span><span class="chip-type">TRANSITION</span>
+    </div>
+    <div class="state-chip" data-name="IGNITION" data-type="RISK ON">
+        <span class="chip-name">IGNITION</span><span class="chip-type">RISK ON</span>
+    </div>
+    <div class="state-chip" data-name="RISK_ON" data-type="RISK ON">
+        <span class="chip-name">RISK_ON</span><span class="chip-type">RISK ON</span>
+    </div>
+    <div class="state-chip" data-name="CASCADE" data-type="EMERGENCY">
+        <span class="chip-name">CASCADE</span><span class="chip-type">EMERGENCY</span>
+    </div>
+</div>
+
+<div class="modal" id="modal">
+    <div class="modal-header">
+        <span>⚙️ CONFIGURE STATE</span>
+        <button class="modal-close" id="closeModal">✕</button>
+    </div>
+    <div class="modal-content">
+        <div class="input-group">
+            <label>STATE NAME</label>
+            <input type="text" id="stateName" placeholder="STATE_NAME">
+        </div>
+        <div class="input-group">
+            <label>TYPE</label>
+            <select id="stateType">
+                <option>RISK OFF</option>
+                <option>TRANSITION</option>
+                <option>RISK ON</option>
+                <option>EMERGENCY</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>ENTRY CONDITION</label>
+            <textarea id="entryCondition" rows="2" placeholder="e.g., fg() >= 30"></textarea>
+        </div>
+        <div class="input-group">
+            <label>EXIT CONDITION</label>
+            <textarea id="exitCondition" rows="2" placeholder="e.g., fg() < 25"></textarea>
+        </div>
+        <div class="input-group">
+            <label>ALLOCATION</label>
+            <input type="text" id="allocation" placeholder="100% BTC">
+        </div>
+        <button class="save-btn" id="saveBtn">SAVE</button>
+        <button class="smash-btn" id="smashBtn" style="margin-top: 8px;">💥 SMASH (DELETE)</button>
+    </div>
+</div>
+
+<script>
+    let nodes = [];
+    let selectedNodeId = null;
+    let dragTarget = null;
+    let dragStartX = 0, dragStartY = 0;
+
+    const canvas = document.getElementById('canvasInner');
+    const modal = document.getElementById('modal');
+
+    function loadNodes() {
+        const saved = localStorage.getItem('builder_nodes');
+        if (saved) nodes = JSON.parse(saved);
+        render();
+    }
+
+    function save() {
+        localStorage.setItem('builder_nodes', JSON.stringify(nodes));
+    }
+
+    function render() {
+        canvas.innerHTML = '';
+        nodes.forEach(node => {
+            const div = document.createElement('div');
+            div.className = 'node-card';
+            if (selectedNodeId === node.id) div.classList.add('selected');
+            div.style.left = node.x + 'px';
+            div.style.top = node.y + 'px';
+            div.setAttribute('data-id', node.id);
+            div.innerHTML = `
+                <div class="node-name">${escapeHtml(node.name)}</div>
+                <div class="node-type">${escapeHtml(node.type)}</div>
+                <div class="node-conditions">
+                    ${node.entryCondition ? '⬅️ ' + node.entryCondition.substring(0, 20) : ''}
+                    ${node.exitCondition ? ' ➡️ ' + node.exitCondition.substring(0, 20) : ''}
+                </div>
+                <div class="delete-btn" data-delete="${node.id}">✕</div>
+            `;
+            
+            // Double tap to edit
+            let tapTimer;
+            div.addEventListener('click', (e) => {
+                if (e.target.classList.contains('delete-btn')) {
+                    e.stopPropagation();
+                    deleteNode(node.id);
+                    return;
+                }
+                if (tapTimer) {
+                    clearTimeout(tapTimer);
+                    tapTimer = null;
+                    openModal(node.id);
+                } else {
+                    tapTimer = setTimeout(() => {
+                        tapTimer = null;
+                        selectNode(node.id);
+                    }, 200);
+                }
+            });
+            
+            // Drag handling
+            div.addEventListener('touchstart', (e) => startDrag(e, node.id));
+            div.addEventListener('mousedown', (e) => startDrag(e, node.id));
+            
+            canvas.appendChild(div);
+        });
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            return m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;';
+        });
+    }
+
+    function startDrag(e, id) {
+        e.preventDefault();
+        const node = nodes.find(n => n.id === id);
+        if (!node) return;
+        
+        const clientX = e.clientX ?? (e.touches ? e.touches[0].clientX : 0);
+        const clientY = e.clientY ?? (e.touches ? e.touches[0].clientY : 0);
+        
+        dragTarget = id;
+        dragStartX = clientX - node.x;
+        dragStartY = clientY - node.y;
+        
+        document.addEventListener('touchmove', onDrag);
+        document.addEventListener('touchend', stopDrag);
+        document.addEventListener('mousemove', onDrag);
+        document.addEventListener('mouseup', stopDrag);
+    }
+
+    function onDrag(e) {
+        if (!dragTarget) return;
+        e.preventDefault();
+        const clientX = e.clientX ?? (e.touches ? e.touches[0].clientX : 0);
+        const clientY = e.clientY ?? (e.touches ? e.touches[0].clientY : 0);
+        
+        const node = nodes.find(n => n.id === dragTarget);
+        if (node) {
+            node.x = clientX - dragStartX;
+            node.y = clientY - dragStartY;
+            render();
+        }
+    }
+
+    function stopDrag() {
+        dragTarget = null;
+        save();
+        document.removeEventListener('touchmove', onDrag);
+        document.removeEventListener('touchend', stopDrag);
+        document.removeEventListener('mousemove', onDrag);
+        document.removeEventListener('mouseup', stopDrag);
+    }
+
+    function addNode(name, type) {
+        const scrollX = document.querySelector('.canvas').scrollLeft;
+        const scrollY = document.querySelector('.canvas').scrollTop;
+        nodes.push({
+            id: Date.now(),
+            name: name,
+            type: type,
+            x: 50 + scrollX + (nodes.length * 20),
+            y: 50 + scrollY + (nodes.length * 15),
+            entryCondition: '',
+            exitCondition: '',
+            allocation: ''
+        });
+        save();
+        render();
+    }
+
+    function selectNode(id) {
+        selectedNodeId = id;
+        render();
+    }
+
+    function openModal(id) {
+        const node = nodes.find(n => n.id === id);
+        if (!node) return;
+        selectedNodeId = id;
+        document.getElementById('stateName').value = node.name;
+        document.getElementById('stateType').value = node.type;
+        document.getElementById('entryCondition').value = node.entryCondition || '';
+        document.getElementById('exitCondition').value = node.exitCondition || '';
+        document.getElementById('allocation').value = node.allocation || '';
+        modal.classList.add('open');
+        render();
+    }
+
+    function closeModal() {
+        modal.classList.remove('open');
+        selectedNodeId = null;
+        render();
+    }
+
+    function saveModal() {
+        if (!selectedNodeId) return;
+        const node = nodes.find(n => n.id === selectedNodeId);
+        if (node) {
+            node.name = document.getElementById('stateName').value;
+            node.type = document.getElementById('stateType').value;
+            node.entryCondition = document.getElementById('entryCondition').value;
+            node.exitCondition = document.getElementById('exitCondition').value;
+            node.allocation = document.getElementById('allocation').value;
+            save();
+            render();
+        }
+        closeModal();
+    }
+
+    function deleteNode(id) {
+        nodes = nodes.filter(n => n.id !== id);
+        if (selectedNodeId === id) closeModal();
+        save();
+        render();
+    }
+
+    function smashDelete() {
+        if (selectedNodeId) {
+            deleteNode(selectedNodeId);
+        }
+    }
+
+    function forge() {
+        const spec = {
+            name: 'se-forex',
+            states: nodes.map(n => ({
+                name: n.name,
+                type: n.type,
+                entry: n.entryCondition,
+                exit: n.exitCondition,
+                allocation: n.allocation
+            }))
+        };
+        console.log('FORGED:', spec);
+        alert(`Engine forged!\n${nodes.length} states configured.\nCheck console for details.`);
+    }
+
+    // Toolbar clicks
+    document.querySelectorAll('.state-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            const name = chip.getAttribute('data-name');
+            const type = chip.getAttribute('data-type');
+            addNode(name, type);
+        });
+    });
+
+    document.getElementById('forgeBtn').addEventListener('click', forge);
+    document.getElementById('saveBtn').addEventListener('click', saveModal);
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('smashBtn').addEventListener('click', smashDelete);
+
+    canvas.addEventListener('click', (e) => {
+        if (e.target === canvas) closeModal();
+    });
+
+    loadNodes();
+</script>
+</body>
+</html>

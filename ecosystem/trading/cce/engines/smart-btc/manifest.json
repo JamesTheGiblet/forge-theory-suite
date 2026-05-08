@@ -1,0 +1,22 @@
+{
+  "id": "smart-btc",
+  "name": "Smart BTC Strategy",
+  "version": "1.0.0",
+  "author": "Kraken Intelligence",
+  "type": "strategy",
+  "timeframe": "1D",
+  "symbol": "BTC/USD",
+  "exchange": "kraken",
+  "capital": 100,
+  "status": "dry_run",
+  "description": "4-red OR RSI(21)<20 — Enter at next_open, target 5%, stop 2.5%, hold 14 days",
+  "entry": "4 consecutive red days OR RSI(21) < 20",
+  "exit": "+5% target / -2.5% stop / 14 day timeout",
+  "validation": {
+    "train": "80% WR, +40% return",
+    "test": "43% WR, +12% return",
+    "validate": "71% WR, +48% return",
+    "monte_carlo": "100% profitable shuffles"
+  },
+  "created": "2026-04-10"
+}

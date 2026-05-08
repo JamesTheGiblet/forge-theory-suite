@@ -1,0 +1,55 @@
+{
+  "scp_id": "AUTO_1776927886659_ee6k7h",
+  "name": "Genesis Strategy",
+  "object_class": "Safe",
+  "asset": "BTC/USD",
+  "timeframe": "1h",
+  "active_regimes": [
+    "any"
+  ],
+  "containment_procedures": {
+    "max_drawdown_pct": 7,
+    "daily_loss_limit_pct": 1,
+    "active_hours_utc": [],
+    "on_breach": "move_to_contained",
+    "human_review_required": false,
+    "keter_votes_required": 0
+  },
+  "conditions": {
+    "entry": {
+      "all": [
+        {
+          "indicator": "rsi",
+          "period": 14,
+          "operator": "<",
+          "value": 30
+        }
+      ],
+      "any": []
+    },
+    "exit": {
+      "any": [
+        {
+          "indicator": "rsi",
+          "operator": ">",
+          "value": 65
+        },
+        {
+          "indicator": "trailing_stop",
+          "percent": 1.5
+        }
+      ]
+    }
+  },
+  "risk": {
+    "position_size": "0.005",
+    "max_spread_percent": 0.1,
+    "leverage": 1
+  },
+  "lineage": {
+    "parent": "AUTO_1776927596528_kvwchb",
+    "generation": 3,
+    "mutations": [],
+    "mutated_by": "Mutator_1776927886658_zs8a4p"
+  }
+}

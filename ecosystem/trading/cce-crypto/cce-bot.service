@@ -1,0 +1,14 @@
+[Unit]
+Description=CCE Crypto Trading Bot
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/var/www/cce-bot
+ExecStart=/usr/bin/pm2 start ecosystem.config.js --no-daemon
+Restart=on-failure
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

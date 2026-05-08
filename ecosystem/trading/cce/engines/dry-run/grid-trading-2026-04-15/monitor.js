@@ -1,0 +1,1 @@
+const Engine = require("./engine"); const engine = new Engine(); engine.start({ id: "grid-trading-2026-04-15", mode: "dry_run", capital: 500 }).catch(console.error); process.on("SIGINT", () => engine.stop()); process.on("SIGTERM", () => engine.stop());

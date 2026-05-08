@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FORGE THEORY</title>
+    <style>
+        :root {
+            --grid-size: 50;
+            --cell-size: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #fff;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #222;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 4px;
+        }
+
+        .accent {
+            color: #00ff88;
+        }
+
+        .subtitle {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .rules {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 6px;
+            font-size: 0.7rem;
+        }
+
+        .rule {
+            background: #0a0a0a;
+            padding: 8px;
+            border-left: 2px solid #00ff88;
+        }
+
+        /* Layout */
+        .main {
+            display: grid;
+            gap: 15px;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .stat {
+            background: #0a0a0a;
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #1a1a1a;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            color: #666;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            color: #00ff88;
+            font-weight: 700;
+        }
+
+        /* Controls */
+        .controls {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .control-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .control-row:last-child {
+            margin-bottom: 0;
+        }
+
+        button {
+            flex: 1;
+            min-width: 90px;
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            border: 1px solid #1a1a1a;
+            background: #0f0f0f;
+            color: #fff;
+            transition: all 0.1s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: #1a1a1a;
+            border-color: #00ff88;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button.primary {
+            background: #00ff88;
+            color: #000;
+            border-color: #00ff88;
+            font-weight: 700;
+        }
+
+        button.primary:hover {
+            background: #00dd77;
+        }
+
+        button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .speed-control span {
+            font-size: 0.7rem;
+            color: #666;
+            min-width: 50px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #1a1a1a;
+            outline: none;
+            height: 3px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #00ff88;
+            cursor: pointer;
+            border: 2px solid #000;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: #00ff88;
+            cursor: pointer;
+            border: 2px solid #000;
+        }
+
+        /* Grid */
+        .grid-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        #grid-container {
+            display: inline-grid;
+            grid-template-columns: repeat(var(--grid-size), var(--cell-size));
+            grid-template-rows: repeat(var(--grid-size), var(--cell-size));
+            border: 1px solid #1a1a1a;
+            background: #0a0a0a;
+            cursor: crosshair;
+        }
+
+        .cell {
+            width: var(--cell-size);
+            height: var(--cell-size);
+            background: #0a0a0a;
+            border: 1px solid #000;
+        }
+
+        .cell.alive {
+            background: #00ff88;
+        }
+
+        /* Graph */
+        .graph-container {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .graph-container h3 {
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #population-graph {
+            width: 100%;
+            height: 100px;
+            background: #000;
+        }
+
+        /* Patterns */
+        .patterns {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .patterns h3 {
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .pattern-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 6px;
+        }
+
+        .pattern-btn {
+            padding: 8px;
+            background: #0f0f0f;
+            border: 1px solid #1a1a1a;
+            cursor: pointer;
+            transition: all 0.1s;
+            text-align: left;
+        }
+
+        .pattern-btn:hover {
+            background: #1a1a1a;
+            border-color: #00ff88;
+        }
+
+        .pattern-name {
+            font-size: 0.75rem;
+            color: #00ff88;
+            margin-bottom: 2px;
+        }
+
+        .pattern-desc {
+            font-size: 0.65rem;
+            color: #666;
+        }
+
+        /* Info */
+        .info {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .info h3 {
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info ul {
+            list-style: none;
+        }
+
+        .info li {
+            font-size: 0.7rem;
+            padding: 6px 0;
+            border-bottom: 1px solid #1a1a1a;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .info li:last-child {
+            border-bottom: none;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid #1a1a1a;
+            margin-top: 25px;
+            font-size: 0.7rem;
+            color: #666;
+        }
+
+        footer a {
+            color: #00ff88;
+            text-decoration: none;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            :root {
+                --grid-size: 35;
+                --cell-size: 8px;
+            }
+
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.2rem;
+                letter-spacing: 3px;
+            }
+
+            .subtitle {
+                font-size: 0.75rem;
+            }
+
+            .rules {
+                grid-template-columns: 1fr;
+                font-size: 0.65rem;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            button {
+                min-width: 75px;
+                font-size: 0.7rem;
+                padding: 7px 10px;
+            }
+
+            .pattern-list {
+                grid-template-columns: 1fr;
+            }
+
+            #population-graph {
+                height: 80px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            :root {
+                --grid-size: 30;
+                --cell-size: 7px;
+            }
+
+            h1 {
+                font-size: 1rem;
+                letter-spacing: 2px;
+            }
+
+            .stat-value {
+                font-size: 1rem;
+            }
+        }
+
+        /* Desktop */
+        @media (min-width: 1024px) {
+            .main {
+                grid-template-columns: 1fr 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><span class="accent">FORGE</span> THEORY</h1>
+            <p class="subtitle">Complex behavior from simple rules</p>
+            <div class="rules">
+                <div class="rule"><span class="accent">BIRTH:</span> 3 neighbors</div>
+                <div class="rule"><span class="accent">SURVIVE:</span> 2-3 neighbors</div>
+                <div class="rule"><span class="accent">DEATH:</span> &lt;2 or &gt;3 neighbors</div>
+                <div class="rule"><span class="accent">ITERATE:</span> Repeat forever</div>
+            </div>
+        </header>
+
+        <div class="main">
+            <div class="grid-section">
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-label">Gen</div>
+                        <div class="stat-value" id="generation">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Live</div>
+                        <div class="stat-value" id="population">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Born</div>
+                        <div class="stat-value" id="births">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Died</div>
+                        <div class="stat-value" id="deaths">0</div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <div class="control-row">
+                        <button id="start-stop-btn" class="primary">START</button>
+                        <button id="step-btn">STEP</button>
+                        <button id="clear-btn">CLEAR</button>
+                    </div>
+                    <div class="control-row">
+                        <button id="random-btn">RANDOM</button>
+                        <button id="invert-btn">INVERT</button>
+                        <button id="heatmap-btn">HEATMAP</button>
+                    </div>
+                    <div class="control-row">
+                        <button id="save-btn">SAVE</button>
+                        <button id="load-btn">LOAD</button>
+                    </div>
+                    <div class="control-row speed-control">
+                        <span>SPEED:</span>
+                        <label for="speed-slider" style="position:absolute;left:-9999px;">Simulation Speed</label>
+                        <input type="range" id="speed-slider" min="10" max="500" value="100" step="10" title="Simulation Speed">
+                        <span id="speed-value">410ms</span>
+                    </div>
+                </div>
+
+                <div class="grid-wrapper">
+                    <div id="grid-container"></div>
+                </div>
+
+                <div class="graph-container">
+                    <h3>Population History</h3>
+                    <canvas id="population-graph"></canvas>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="patterns">
+                    <h3>Patterns</h3>
+                    <div class="pattern-list">
+                        <div class="pattern-btn" data-pattern="glider">
+                            <div class="pattern-name">Glider</div>
+                            <div class="pattern-desc">Classic spaceship</div>
+                        </div>
+                        <div class="pattern-btn" data-pattern="lwss">
+                            <div class="pattern-name">LWSS</div>
+                            <div class="pattern-desc">Fast horizontal</div>
+                        </div>
+                        <div class="pattern-btn" data-pattern="glider-gun">
+                            <div class="pattern-name">Glider Gun</div>
+                            <div class="pattern-desc">Infinite gliders</div>
+                        </div>
+                        <div class="pattern-btn" data-pattern="pulsar">
+                            <div class="pattern-name">Pulsar</div>
+                            <div class="pattern-desc">Period-3 oscillator</div>
+                        </div>
+                        <div class="pattern-btn" data-pattern="pentadecathlon">
+                            <div class="pattern-name">Pentadecathlon</div>
+                            <div class="pattern-desc">Period-15 oscillator</div>
+                        </div>
+                        <div class="pattern-btn" data-pattern="acorn">
+                            <div class="pattern-name">Acorn</div>
+                            <div class="pattern-desc">5206 generations</div>
+                        </div>
+                        <div class="pattern-btn" data-pattern="rpentomino">
+                            <div class="pattern-name">R-pentomino</div>
+                            <div class="pattern-desc">1103 generations</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info">
+                    <h3>Emergence</h3>
+                    <ul>
+                        <li>Simple rules govern each cell</li>
+                        <li>Local interactions only</li>
+                        <li>No central control</li>
+                        <li>Complex patterns emerge</li>
+                        <li>Turing-complete system</li>
+                        <li>Unpredictable behavior</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p><span class="accent">FORGE COLLECTION</span> — Simple rules · Deep time · Emergent complexity</p>
+            <p><a href="#">TreeForge</a> · <a href="#">EcoForge</a> · <a href="#">NeuroForge</a> · <a href="#">LinguaForge</a> · <a href="#">QuantAlgo</a></p>
+        </footer>
+    </div>
+
+    <script>
+        class GameOfLife {
+            constructor(size) {
+                this.size = size;
+                this.cells = this.createEmptyGrid();
+                this.generation = 0;
+                this.isRunning = false;
+                this.intervalId = null;
+                this.speed = 100;
+                this.birthsThisGen = 0;
+                this.deathsThisGen = 0;
+                this.isDragging = false;
+                this.dragMode = null;
+                this.heatmapEnabled = false;
+                this.populationHistory = [];
+            }
+
+            createEmptyGrid() {
+                return Array(this.size).fill(null).map(() => 
+                    Array(this.size).fill(null).map(() => ({ alive: false, age: 0, element: null }))
+                );
+            }
+
+            countLiveNeighbors(row, col) {
+                let count = 0;
+                for (let i = -1; i <= 1; i++) {
+                    for (let j = -1; j <= 1; j++) {
+                        if (i === 0 && j === 0) continue;
+                        const x = (row + i + this.size) % this.size;
+                        const y = (col + j + this.size) % this.size;
+                        if (this.cells[x][y].alive) count++;
+                    }
+                }
+                return count;
+            }
+
+            step() {
+                const nextGen = this.createEmptyGrid();
+                this.birthsThisGen = 0;
+                this.deathsThisGen = 0;
+
+                for (let i = 0; i < this.size; i++) {
+                    for (let j = 0; j < this.size; j++) {
+                        const neighbors = this.countLiveNeighbors(i, j);
+                        const cell = this.cells[i][j];
+                        nextGen[i][j].element = cell.element;
+
+                        if (cell.alive) {
+                            if (neighbors === 2 || neighbors === 3) {
+                                nextGen[i][j].alive = true;
+                                nextGen[i][j].age = cell.age + 1;
+                            } else {
+                                nextGen[i][j].alive = false;
+                                nextGen[i][j].age = 0;
+                                this.deathsThisGen++;
+                            }
+                        } else {
+                            if (neighbors === 3) {
+                                nextGen[i][j].alive = true;
+                                nextGen[i][j].age = 1;
+                                this.birthsThisGen++;
+                            }
+                        }
+                    }
+                }
+
+                this.cells = nextGen;
+                this.generation++;
+                this.populationHistory.push(this.getLiveCount());
+                if (this.populationHistory.length > 100) this.populationHistory.shift();
+                this.draw();
+                this.updateStats();
+            }
+
+            toggleCell(row, col, forceState = null) {
+                if (forceState !== null) {
+                    this.cells[row][col].alive = forceState;
+                } else {
+                    this.cells[row][col].alive = !this.cells[row][col].alive;
+                }
+                this.cells[row][col].age = this.cells[row][col].alive ? 1 : 0;
+                this.drawCell(row, col);
+                this.updateStats();
+            }
+
+            drawCell(row, col) {
+                const cell = this.cells[row][col];
+                if (cell.alive) {
+                    if (this.heatmapEnabled && cell.age > 1) {
+                        const maxAge = 20;
+                        const intensity = Math.min(cell.age / maxAge, 1);
+                        const r = Math.floor(intensity * 255);
+                        const g = Math.floor(255 * (1 - intensity));
+                        cell.element.style.backgroundColor = `rgb(${r}, ${g}, 136)`;
+                    } else {
+                        cell.element.classList.add('alive');
+                    }
+                } else {
+                    cell.element.classList.remove('alive');
+                    cell.element.style.backgroundColor = '';
+                }
+            }
+
+            draw() {
+                for (let i = 0; i < this.size; i++) {
+                    for (let j = 0; j < this.size; j++) {
+                        this.drawCell(i, j);
+                    }
+                }
+            }
+
+            clear() {
+                this.cells = this.createEmptyGrid();
+                for (let i = 0; i < this.size; i++) {
+                    for (let j = 0; j < this.size; j++) {
+                        this.cells[i][j].element = document.querySelector(`[data-row="${i}"][data-col="${j}"]`);
+                    }
+                }
+                this.generation = 0;
+                this.birthsThisGen = 0;
+                this.deathsThisGen = 0;
+                this.populationHistory = [];
+                this.draw();
+                this.updateStats();
+            }
+
+            randomize(density = 0.3) {
+                for (let i = 0; i < this.size; i++) {
+                    for (let j = 0; j < this.size; j++) {
+                        this.cells[i][j].alive = Math.random() < density;
+                        this.cells[i][j].age = this.cells[i][j].alive ? 1 : 0;
+                    }
+                }
+                this.draw();
+                this.updateStats();
+            }
+
+            invert() {
+                for (let i = 0; i < this.size; i++) {
+                    for (let j = 0; j < this.size; j++) {
+                        this.cells[i][j].alive = !this.cells[i][j].alive;
+                        this.cells[i][j].age = this.cells[i][j].alive ? 1 : 0;
+                    }
+                }
+                this.draw();
+                this.updateStats();
+            }
+
+            getLiveCount() {
+                let count = 0;
+                for (let i = 0; i < this.size; i++) {
+                    for (let j = 0; j < this.size; j++) {
+                        if (this.cells[i][j].alive) count++;
+                    }
+                }
+                return count;
+            }
+
+            updateStats() {
+                document.getElementById('generation').textContent = this.generation;
+                document.getElementById('population').textContent = this.getLiveCount();
+                document.getElementById('births').textContent = this.birthsThisGen;
+                document.getElementById('deaths').textContent = this.deathsThisGen;
+            }
+
+            start() {
+                if (this.isRunning) return;
+                this.isRunning = true;
+                this.intervalId = setInterval(() => {
+                    this.step();
+                    graph.draw(this.populationHistory);
+                }, this.speed);
+                document.getElementById('start-stop-btn').textContent = 'PAUSE';
+            }
+
+            stop() {
+                if (!this.isRunning) return;
+                this.isRunning = false;
+                clearInterval(this.intervalId);
+                document.getElementById('start-stop-btn').textContent = 'START';
+            }
+
+            setSpeed(ms) {
+                this.speed = 510 - ms;
+                if (this.isRunning) {
+                    this.stop();
+                    this.start();
+                }
+            }
+
+            loadPattern(pattern, startRow, startCol) {
+                pattern.forEach((row, i) => {
+                    row.forEach((cell, j) => {
+                        const r = (startRow + i) % this.size;
+                        const c = (startCol + j) % this.size;
+                        this.cells[r][c].alive = cell === 1;
+                        this.cells[r][c].age = cell === 1 ? 1 : 0;
+                    });
+                });
+                this.draw();
+                this.updateStats();
+            }
+
+            saveState() {
+                const state = {
+                    cells: this.cells.map(row => row.map(cell => cell.alive ? 1 : 0)),
+                    generation: this.generation
+                };
+                localStorage.setItem('gof-save-state', JSON.stringify(state));
+                console.log('Game state saved.');
+                document.getElementById('load-btn').disabled = false;
+            }
+
+            loadState() {
+                const savedState = localStorage.getItem('gof-save-state');
+                if (savedState) {
+                    const state = JSON.parse(savedState);
+                    state.cells.forEach((row, i) => {
+                        row.forEach((cellState, j) => {
+                            this.cells[i][j].alive = cellState === 1;
+                            this.cells[i][j].age = cellState === 1 ? 1 : 0;
+                        });
+                    });
+                    this.generation = state.generation || 0;
+                    this.draw();
+                    this.updateStats();
+                    console.log('Game state loaded.');
+                }
+            }
+        }
+
+        class PopulationGraph {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.canvas.width = this.canvas.offsetWidth;
+                this.canvas.height = this.canvas.offsetHeight;
+            }
+
+            draw(history) {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                if (history.length < 2) return;
+
+                const maxVal = Math.max(...history, 1);
+                const stepX = this.canvas.width / (history.length - 1);
+
+                this.ctx.beginPath();
+                this.ctx.moveTo(0, this.canvas.height - (history[0] / maxVal) * this.canvas.height);
+
+                for (let i = 1; i < history.length; i++) {
+                    const x = i * stepX;
+                    const y = this.canvas.height - (history[i] / maxVal) * this.canvas.height;
+                    this.ctx.lineTo(x, y);
+                }
+
+                this.ctx.strokeStyle = '#00ff88';
+                this.ctx.lineWidth = 2;
+                this.ctx.stroke();
+
+                this.ctx.lineTo(this.canvas.width, this.canvas.height);
+                this.ctx.lineTo(0, this.canvas.height);
+                this.ctx.closePath();
+                this.ctx.fillStyle = 'rgba(0, 255, 136, 0.1)';
+                this.ctx.fill();
+            }
+        }
+
+        const patterns = {
+            glider: [[0,1,0],[0,0,1],[1,1,1]],
+            lwss: [[0,1,0,0,1],[1,0,0,0,0],[1,0,0,0,1],[1,1,1,1,0]],
+            'glider-gun': [
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+                [0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+                [1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [1,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,1,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+            ],
+            pulsar: [
+                [0,0,1,1,1,0,0,0,1,1,1,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                [0,0,1,1,1,0,0,0,1,1,1,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,1,1,1,0,0,0,1,1,1,0,0],
+                [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,1,1,1,0,0,0,1,1,1,0,0]
+            ],
+            pentadecathlon: [[0,0,1,0,0,0,0,1,0,0],[1,1,0,1,1,1,1,0,1,1],[0,0,1,0,0,0,0,1,0,0]],
+            acorn: [[0,1,0,0,0,0,0],[0,0,0,1,0,0,0],[1,1,0,0,1,1,1]],
+            rpentomino: [[0,1,1],[1,1,0],[0,1,0]]
+        };
+
+        const GRID_SIZE = 50;
+        const game = new GameOfLife(GRID_SIZE);
+        const graph = new PopulationGraph('population-graph');
+        const gridContainer = document.getElementById('grid-container');
+
+        for (let i = 0; i < GRID_SIZE; i++) {
+            for (let j = 0; j < GRID_SIZE; j++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.row = i;
+                cell.dataset.col = j;
+                
+                cell.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    game.isDragging = true;
+                    game.dragMode = game.cells[i][j].alive ? false : true;
+                    game.toggleCell(i, j, game.dragMode);
+                });
+                
+                cell.addEventListener('mouseenter', () => {
+                    if (game.isDragging) game.toggleCell(i, j, game.dragMode);
+                });
+                
+                gridContainer.appendChild(cell);
+                game.cells[i][j].element = cell;
+            }
+        }
+
+        document.addEventListener('mouseup', () => game.isDragging = false);
+
+        document.getElementById('start-stop-btn').addEventListener('click', () => {
+            game.isRunning ? game.stop() : game.start();
+        });
+
+        document.getElementById('step-btn').addEventListener('click', () => {
+            if (!game.isRunning) {
+                game.step();
+                graph.draw(game.populationHistory);
+            }
+        });
+
+        document.getElementById('clear-btn').addEventListener('click', () => game.clear());
+        document.getElementById('save-btn').addEventListener('click', () => game.saveState());
+        document.getElementById('load-btn').addEventListener('click', () => game.loadState());
+        document.getElementById('random-btn').addEventListener('click', () => game.randomize(0.25));
+        document.getElementById('invert-btn').addEventListener('click', () => game.invert());
+
+        document.getElementById('heatmap-btn').addEventListener('click', (e) => {
+            game.heatmapEnabled = !game.heatmapEnabled;
+            e.target.textContent = game.heatmapEnabled ? 'HEATMAP: ON' : 'HEATMAP';
+            e.target.classList.toggle('primary', game.heatmapEnabled);
+            game.draw();
+        });
+
+        const speedSlider = document.getElementById('speed-slider');
+        const speedValue = document.getElementById('speed-value');
+        
+        speedSlider.addEventListener('input', (e) => {
+            const speed = parseInt(e.target.value);
+            speedValue.textContent = (510 - speed) + 'ms';
+            game.setSpeed(speed);
+        });
+
+        document.querySelectorAll('.pattern-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const pattern = patterns[btn.dataset.pattern];
+                if (pattern) {
+                    const startRow = Math.floor((GRID_SIZE - pattern.length) / 2);
+                    const startCol = Math.floor((GRID_SIZE - pattern[0].length) / 2);
+                    game.clear();
+                    game.loadPattern(pattern, startRow, startCol);
+                }
+            });
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                game.isRunning ? game.stop() : game.start();
+            } else if (e.code === 'KeyS') {
+                game.step();
+            } else if (e.code === 'KeyC') {
+                game.clear();
+            } else if (e.code === 'KeyR') {
+                game.randomize(0.25);
+            }
+        });
+
+        game.draw();
+        game.updateStats();
+        graph.draw(game.populationHistory);
+
+        if (!localStorage.getItem('gof-save-state')) {
+            document.getElementById('load-btn').disabled = true;
+        }
+    </script>
+</body>
+</html>

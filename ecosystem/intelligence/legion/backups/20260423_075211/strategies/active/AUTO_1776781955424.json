@@ -1,0 +1,45 @@
+{
+  "scp_id": "AUTO_1776781955301_oew3ma",
+  "name": "Auto Generated",
+  "object_class": "Euclid",
+  "asset": "BTC/USD",
+  "timeframe": "1h",
+  "active_regimes": [
+    "any"
+  ],
+  "containment_procedures": {
+    "max_drawdown_pct": 10,
+    "daily_loss_limit_pct": 5,
+    "on_breach": "move_to_contained"
+  },
+  "conditions": {
+    "entry": {
+      "all": [
+        {
+          "indicator": "sma",
+          "period": 7,
+          "operator": "<",
+          "value": 56566.54748811852
+        }
+      ]
+    },
+    "exit": {
+      "any": [
+        {
+          "indicator": "trailing_stop",
+          "percent": 3.337372254019342
+        },
+        {
+          "indicator": "time_in_trade",
+          "max_hours": 48
+        }
+      ]
+    }
+  },
+  "risk": {
+    "position_size": "0.01",
+    "max_spread_percent": 0.1,
+    "leverage": 1
+  },
+  "fitness": 0.30767979087429104
+}

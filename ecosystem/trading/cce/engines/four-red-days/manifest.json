@@ -1,0 +1,16 @@
+{
+  "id": "four-red-days",
+  "name": "4 Red Days",
+  "version": "1.0.0",
+  "author": "Giblets Creations",
+  "type": "strategy",
+  "timeframe": "1D",
+  "symbol": "BTC/USDC",
+  "exchange": "kraken",
+  "capital": 100,
+  "status": "dry_run",
+  "description": "4 consecutive red days — 79% win rate, +74% return on backtest",
+  "entry": "4 consecutive red days",
+  "exit": "+1% target / -0.75% stop / 5 day timeout",
+  "created": "2026-04-09"
+}

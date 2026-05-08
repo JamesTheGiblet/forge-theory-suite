@@ -1,0 +1,106 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "ubvm/whitepaper",
+  "object_class": "Thaumiel",
+  "intent": "Formalise Forge Theory and the Universal Behavioural Virtual Machine 3.0 architecture to resolve Digital Schizophrenia and establish Meaning Sovereignty.",
+  "containment": {
+    "read_only": true,
+    "audit_log": true,
+    "kill_switch": false
+  },
+  "interpretation": {
+    "this_is": "The official UBVM 3.0 Whitepaper — the foundational architectural thesis for Forge Theory.",
+    "purpose": [
+      "Establish the core problem of Digital Schizophrenia",
+      "Present the Semantic Capsule Protocol (SCP) as the solution for Meaning Sovereignty",
+      "Detail the UBVM architecture (Primitives, Event Bus, Strategy Loop)",
+      "Outline UBVM 2.0 distributed nodes and UBVM 3.0 autonomous organisms (BuddAI, Data Cube)"
+    ],
+    "tone": "Academic, visionary, structural, formal.",
+    "audience": [
+      "Researchers",
+      "System Architects",
+      "AI Agents",
+      "Forge Theory Implementors"
+    ],
+    "importance": [
+      "Meaning Sovereignty",
+      "Digital Schizophrenia",
+      "The separation of meaning from execution",
+      "Decentralized event bus architecture",
+      "BuddAI and Data Cube as ultimate realizations"
+    ],
+    "ignore": [
+      "Low-level syntax specifications (defer to ubvm/spec)",
+      "Domain-specific trading strategies (defer to legion capsules)"
+    ],
+    "dont_change": [
+      "The definitions of Digital Schizophrenia and Meaning Sovereignty",
+      "The relationship between SCP and UBVM",
+      "The overarching goals of Forge Theory"
+    ],
+    "trust_score": "reserved",
+    "semantic_contract": {
+      "guarantees": [
+        "This capsule anchors the conceptual and architectural vision of UBVM 3.0.",
+        "The axioms defined here serve as the guiding philosophy for all downstream ecosystem development.",
+        "Digital Schizophrenia is the core problem; Meaning Sovereignty is the invariant solution."
+      ],
+      "non_guarantees": [
+        "Strict implementation details or API signatures.",
+        "Timeline of completion for UBVM 3.0 autonomous organisms."
+      ],
+      "conflict_resolution": "For structural or execution rules, prefer ubvm/spec. For semantic rules, prefer scp/spec. For overarching architectural intent and vision, this whitepaper governs."
+    }
+  },
+  "links": {
+    "self":             "ubvm/whitepaper",
+    "scp_spec":         "scp/spec",
+    "ubvm_spec":        "ubvm/spec",
+    "roadmap":          "ubvm/roadmap",
+    "dependency_graph": "ubvm/dependency-graph"
+  },
+  "provenance": {
+    "author":       "James / Giblets Creations",
+    "agent":        "Claude Sonnet 4.6",
+    "created_at":   "2026-05-05T23:00:00Z",
+    "version":      "1.0.0",
+    "context":      "Created to formally anchor the published UBVM 3.0 Whitepaper as a self-aware, semantic artefact within the UBVM ecosystem.",
+    "capture_mode": "conversation",
+    "source_ref":   "",
+    "lineage":      []
+  },
+  "behaviours": [
+    {
+      "trigger": "on_load",
+      "actions": [
+        {
+          "primitive": "log",
+          "params": {
+            "message": "UBVM 3.0 Whitepaper capsule loaded — Forge Theory architectural vision active."
+          }
+        },
+        {
+          "primitive": "validate_self",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "trigger":  "cron",
+      "schedule": "0 0 * * *",
+      "actions": [
+        {
+          "primitive": "validate_self",
+          "params": {}
+        },
+        {
+          "primitive": "log",
+          "params": {
+            "message": "ubvm/whitepaper daily self-validation passed."
+          }
+        }
+      ]
+    }
+  ]
+}

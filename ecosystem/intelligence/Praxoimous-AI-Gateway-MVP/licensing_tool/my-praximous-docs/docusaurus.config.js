@@ -1,0 +1,161 @@
+// @ts-check
+// `@type` JSDoc annotations allow editor autocompletion and type checking
+// (when paired with `@ts-check`).
+// There are various equivalent ways to declare your Docusaurus config.
+// See: https://docusaurus.io/docs/api/docusaurus-config
+
+import {themes as prismThemes} from 'prism-react-renderer';
+
+// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+
+/** @type {import('@docusaurus/types').Config} */
+const config = {
+  title: 'Praximous | Secure AI Gateway',
+  tagline: 'Your On-Premise Orchestration Layer for Enterprise AI.',
+ 
+  favicon: 'img/favicon.ico',
+
+  // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
+  future: {
+    v4: true, // Improve compatibility with the upcoming Docusaurus v4
+  },
+
+  // Set the production url of your site here
+  url: 'https://JamesTheGiblet.github.io',
+  // Set the /<baseUrl>/ pathname under which your site is served
+  // For GitHub pages deployment, it is often '/<projectName>/'
+  baseUrl: '/praximous_mvp_scaffold/',
+  
+  // Explicitly set trailingSlash to false for cleaner URLs, especially with GitHub Pages.
+  // Or set to true if you prefer all URLs to end with a slash.
+  trailingSlash: false,
+
+  // GitHub pages deployment config.
+  // If you aren't using GitHub pages, you don't need these.
+  organizationName: 'JamesTheGiblet', // Your GitHub org/user name.
+  projectName: 'praximous_mvp_scaffold', // Your actual repo name.
+
+  onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'warn',
+
+  // Even if you don't use internationalization, you can use this field to set
+  // useful metadata like html lang. For example, if your site is Chinese, you
+  // may want to replace "en" with "zh-Hans".
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en'],
+  },
+
+  presets: [
+    [
+      'classic',
+      /** @type {import('@docusaurus/preset-classic').Options} */
+      ({
+        docs: {
+          sidebarPath: './sidebars.js',
+          // Please change this to your repo.
+          // Remove this to remove the "edit this page" links.
+          editUrl:
+            'https://github.com/JamesTheGiblet/praximous_mvp_scaffold/tree/main/licensing_tool/my-praximous-docs/', // Point to your docs repo
+        },
+        blog: {
+          showReadingTime: true,
+          feedOptions: {
+            type: ['rss', 'atom'],
+            xslt: true,
+          },
+          authorsMapPath: 'authors.yml', // Explicitly point to your authors file
+          // Please change this to your repo.
+          // Remove this to remove the "edit this page" links.
+          editUrl:
+            'https://github.com/JamesTheGiblet/praximous_mvp_scaffold/tree/main/licensing_tool/my-praximous-docs/', // Point to your docs repo blog posts
+          // Useful options to enforce blogging best practices
+          onInlineTags: 'warn',
+          onInlineAuthors: 'warn',
+          onUntruncatedBlogPosts: 'warn',
+        },
+        theme: {
+          customCss: './src/css/custom.css',
+        },
+      }),
+    ],
+  ],
+
+  themeConfig:
+    /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
+    ({
+      // Replace with your project's social card
+      image: 'img/praximous-social-card.png', // Updated once custom card is created
+      navbar: {
+        // --- Please update this line ---
+        title: 'Praximous', // UPDATED from 'My Site'
+        // ---
+      logo: {
+          alt: 'Praximous Logo', // I've updated the alt text as well for consistency
+          src: 'img/my_logo.svg', // Updated to reflect roadmap's SVG logo
+        },
+        items: [
+          {
+            type: 'docSidebar',
+            sidebarId: 'docsSidebar', // Updated to use the new manual sidebar
+            position: 'left',
+            label: 'Docs', // Or 'Documentation' - to be updated with Phase 3 sidebar
+          },
+          {to: '/blog', label: 'Blog', position: 'left'},
+          {
+          href: 'https://github.com/JamesTheGiblet/Praximous', // Link to your main Praximous project
+            label: 'GitHub',
+            position: 'right',
+          },
+        ],
+      },
+      footer: {
+        style: 'dark',
+        links: [
+          {
+            title: 'Docs',
+            items: [
+              {
+                label: 'Introduction', // To be updated with Phase 3 doc structure
+                to: '/docs/getting-started/introduction', // To be updated
+              },
+            ],
+          },
+          {
+            title: 'Community',
+            items: [
+              {
+                label: 'GitHub Discussions', // Example: Update per Phase 4
+                href: 'https://github.com/JamesTheGiblet/praximous_mvp_scaffold/discussions/2', // Example
+              },
+              {
+                label: 'Discord', // Example: Update per Phase 4
+                href: 'YOUR_DISCORD_INVITE_LINK', // Example
+
+              },
+            ],
+          },
+          {
+            title: 'More',
+            items: [
+              {
+                label: 'Blog',
+                to: '/blog',
+              },
+              {
+                label: 'GitHub',
+                href: 'https://github.com/JamesTheGiblet/Praximous', // Link to your main Praximous project
+              },
+            ],
+          },
+        ],
+        copyright: `Copyright © ${new Date().getFullYear()} Praximous. All rights reserved.`,
+      },
+      prism: {
+        theme: prismThemes.github,
+        darkTheme: prismThemes.dracula,
+      },
+    }),
+};
+
+export default config;

@@ -1,0 +1,66 @@
+<div class="card">
+    <div class="stat" id="entropyVal">--</div>
+    <div>Entropy</div>
+    <div style="margin-top: 10px;"><strong>Agents:</strong> <span id="agentCount">--</span></div>
+    <div><strong>Mode:</strong> <span id="paperMode">--</span></div>
+</div>
+
+<div class="card">
+    <h3>🤖 Legion Assistant</h3>
+    <div class="chat-area" id="chatArea">
+        <div class="bot-msg">Hello! Ask me about LEGION EV22.</div>
+    </div>
+    <input type="text" id="chatInput" placeholder="Ask me..." onkeypress="if(event.key==='Enter')sendMessage()">
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+const API = 'http://localhost:3011';
+
+async function updateDashboard() {
+    try {
+        const res = await fetch(API + '/api/status');
+        const data = await res.json();
+        document.getElementById('entropyVal').innerText = data.entropy || 0;
+        document.getElementById('agentCount').innerText = data.agents || 0;
+        document.getElementById('paperMode').innerText = data.paper_mode || 'RUNNING';
+    } catch(e) {
+        console.error('Dashboard error:', e);
+    }
+}
+
+window.sendMessage = async function() {
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+    const chat = document.getElementById('chatArea');
+    chat.innerHTML += '<div class="user-msg">👤 ' + escapeHtml(msg) + '</div>';
+    input.value = '';
+    chat.scrollTop = chat.scrollHeight;
+    chat.innerHTML += '<div class="bot-msg">🤖 Thinking...</div>';
+    chat.scrollTop = chat.scrollHeight;
+    try {
+        const res = await fetch(API + '/api/intelligence/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg })
+        });
+        const data = await res.json();
+        chat.removeChild(chat.lastChild);
+        chat.innerHTML += '<div class="bot-msg">🤖 ' + escapeHtml(data.response) + '</div>';
+    } catch(e) {
+        chat.removeChild(chat.lastChild);
+        chat.innerHTML += '<div class="bot-msg">🤖 Error: ' + e.message + '</div>';
+    }
+    chat.scrollTop = chat.scrollHeight;
+};
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+updateDashboard();
+setInterval(updateDashboard, 10000);
+</script>

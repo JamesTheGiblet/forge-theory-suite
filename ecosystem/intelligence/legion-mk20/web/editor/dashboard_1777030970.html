@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LEGION EV21 — Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0a0e27; color: #e2e8f0; font-family: system-ui; padding: 16px; }
+        .header { background: linear-gradient(135deg, #0f1535, #1a1f4e); border-radius: 16px; padding: 16px; margin-bottom: 16px; }
+        h1 { font-size: 1.5rem; background: linear-gradient(135deg, #a78bfa, #ec489a); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+        .tab { background: #0f122e; border: 1px solid #1a1f4e; border-radius: 12px; padding: 8px 16px; cursor: pointer; }
+        .tab.active { background: #4f46e5; }
+        .card { background: #0f122e; border-radius: 16px; padding: 16px; margin-bottom: 16px; border: 1px solid #1a1f4e; }
+        .stat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; text-align: center; margin-bottom: 16px; }
+        .stat-value { font-size: 1.8rem; font-weight: bold; color: #a78bfa; }
+        .stat-label { font-size: 0.7rem; color: #7e8aa2; }
+        .chat-area { height: 250px; overflow-y: auto; margin-bottom: 12px; border: 1px solid #1a1f4e; border-radius: 12px; padding: 12px; }
+        .message { margin-bottom: 12px; padding: 8px 12px; border-radius: 12px; max-width: 85%; }
+        .user-message { background: #4f46e5; margin-left: auto; text-align: right; }
+        .assistant-message { background: #1a1f4e; }
+        input, button { padding: 10px; border-radius: 12px; border: none; }
+        input { background: #1a1f4e; border: 1px solid #2a2f6e; color: white; width: 75%; }
+        button { background: #4f46e5; color: white; cursor: pointer; width: 20%; }
+        .hidden { display: none; }
+        .agent-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px,1fr)); gap: 8px; }
+        .agent-tag { background: #1a1f4e; border-radius: 8px; padding: 8px; text-align: center; font-size: 0.7rem; }
+        .strategy-item { padding: 8px; border-bottom: 1px solid #1a1f4e; }
+        .fitness-bar { background: #1a1f4e; border-radius: 10px; height: 6px; margin-top: 4px; }
+        .fitness-fill { background: #a78bfa; border-radius: 10px; height: 100%; width: 0%; }
+        .settings-group { margin-bottom: 16px; }
+        .settings-group label { display: block; margin-bottom: 4px; font-size: 0.8rem; }
+        input[type="range"] { width: 100%; background: #1a1f4e; height: 4px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚡ LEGION EV21</h1>
+        <div id="statusBadge">🟢 Connecting...</div>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" data-tab="dashboard">📊 Dashboard</div>
+        <div class="tab" data-tab="agents">🤖 Agents</div>
+        <div class="tab" data-tab="gallery">🏆 Gallery</div>
+        <div class="tab" data-tab="settings">⚙️ Settings</div>
+    </div>
+
+    <div id="tabDashboard">
+        <div class="stat-grid">
+            <div><div class="stat-value" id="entropyVal">--</div><div class="stat-label">Entropy</div></div>
+            <div><div class="stat-value" id="agentVal">--</div><div class="stat-label">Agents</div></div>
+            <div><div class="stat-value" id="modeVal">--</div><div class="stat-label">Mode</div></div>
+        </div>
+        <div class="card">
+            <h3>🤖 Legion Assistant</h3>
+            <div class="chat-area" id="chatArea"><div class="message assistant-message">Hello! Ask me about LEGION EV21.</div></div>
+            <div><input type="text" id="chatInput" placeholder="Ask me..." onkeypress="if(event.key==='Enter') sendMessage()"><button onclick="sendMessage()">Send</button></div>
+        </div>
+        <div class="card">
+            <h3>📊 Cascade Status</h3>
+            <div id="cascadeStatus">Waiting...</div>
+            <div class="fitness-bar"><div class="fitness-fill" id="entropyFill"></div></div>
+        </div>
+    </div>
+
+    <div id="tabAgents" class="hidden"><div class="card"><h3>🤖 Agents</h3><div id="agentsList" class="agent-grid">Loading...</div></div></div>
+    <div id="tabGallery" class="hidden"><div class="card"><h3>🏆 Strategies</h3><div id="galleryArea">Loading...</div></div></div>
+    <div id="tabSettings" class="hidden">
+        <div class="card">
+            <h3>⚙️ Thresholds</h3>
+            <div class="settings-group"><label>Buy Confidence: <span id="buyVal">0.65</span></label><input type="range" id="minBuy" min="0.5" max="0.9" step="0.01" value="0.65" onchange="updateThreshold('MIN_CONFIDENCE_BUY',this.value)"></div>
+            <div class="settings-group"><label>Sell Confidence: <span id="sellVal">0.65</span></label><input type="range" id="minSell" min="0.5" max="0.9" step="0.01" value="0.65" onchange="updateThreshold('MIN_CONFIDENCE_SELL',this.value)"></div>
+            <div class="settings-group"><label>LSTM Boost: <span id="boostVal">0.08</span></label><input type="range" id="lstmBoost" min="0" max="0.2" step="0.01" value="0.08" onchange="updateThreshold('LSTM_BOOST',this.value)"></div>
+            <div class="settings-group"><label>LSTM Penalty: <span id="penaltyVal">0.12</span></label><input type="range" id="lstmPenalty" min="0" max="0.25" step="0.01" value="0.12" onchange="updateThreshold('LSTM_PENALTY',this.value)"></div>
+            <button onclick="emergencyStop()" style="background:#ef4444;width:100%">🚨 Emergency Stop</button>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://localhost:3011';
+        
+        document.querySelectorAll('.tab').forEach(t => {
+            t.onclick = () => {
+                document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+                t.classList.add('active');
+                document.getElementById('tabDashboard').classList.add('hidden');
+                document.getElementById('tabAgents').classList.add('hidden');
+                document.getElementById('tabGallery').classList.add('hidden');
+                document.getElementById('tabSettings').classList.add('hidden');
+                const tab = t.dataset.tab;
+                document.getElementById(`tab${tab.charAt(0).toUpperCase()+tab.slice(1)}`).classList.remove('hidden');
+                if(tab==='agents') loadAgents();
+                if(tab==='gallery') { loadGallery(); loadPatterns(); }
+                if(tab==='settings') loadThresholds();
+            };
+        });
+        
+        async function loadStatus() {
+            try {
+                const r=await fetch(`${API}/api/status`);
+                const d=await r.json();
+                document.getElementById('entropyVal').innerText=d.entropy||0.1;
+                document.getElementById('agentVal').innerText=d.agents||31;
+                document.getElementById('modeVal').innerText=d.paper_mode==='RUNNING'?'PAPER':'LIVE';
+                document.getElementById('statusBadge').innerHTML='🟢 Online';
+                const p=((d.entropy||0.1)/0.7)*100;
+                document.getElementById('entropyFill').style.width=p+'%';
+                let phase='DORMANT';
+                if(d.entropy>0.7)phase='SPILLWAY';
+                else if(d.entropy>0.4)phase='CASCADE_2';
+                else if(d.entropy>0.2)phase='CASCADE_1';
+                document.getElementById('cascadeStatus').innerHTML=`🌊 ${phase} — Entropy: ${d.entropy}/0.7`;
+            }catch(e){document.getElementById('statusBadge').innerHTML='🔴 Offline';}
+        }
+        
+        async function loadAgents() {
+            try{
+                const r=await fetch(`${API}/api/agents`);
+                const d=await r.json();
+                document.getElementById('agentsList').innerHTML=d.map(a=>`<div class="agent-tag">${a.name}<br><span style="font-size:0.6rem;">${a.class||'Euclid'}</span></div>`).join('');
+            }catch(e){document.getElementById('agentsList').innerHTML='Error';}
+        }
+        
+        async function loadGallery() {
+            try{
+                const r=await fetch(`${API}/api/strategies/gallery`);
+                const d=await r.json();
+                if(d&&d.length){
+                    document.getElementById('galleryArea').innerHTML=d.slice(0,10).map(s=>`
+                        <div class="strategy-item">
+                            <strong>${s.name||s.id}</strong> — ${s.class||'Euclid'}
+                            <div class="fitness-bar"><div class="fitness-fill" style="width:${(s.fitness||0.5)*100}%"></div></div>
+                            Fitness: ${((s.fitness||0.5)*100).toFixed(0)}% | Rating: ${s.userRating||'-'}
+                            <div><button onclick="rateStrategy('${s.id}',5)">👍</button> <button onclick="rateStrategy('${s.id}',1)">👎</button></div>
+                        </div>
+                    `).join('');
+                }else{document.getElementById('galleryArea').innerHTML='No strategies';}
+            }catch(e){document.getElementById('galleryArea').innerHTML='Unavailable';}
+        }
+        
+        async function loadPatterns() {
+            try{
+                const r=await fetch(`${API}/api/strategies/patterns`);
+                const d=await r.json();
+                document.getElementById('patternsArea')?.remove();
+                const p=document.createElement('div');
+                p.className='card';
+                p.innerHTML=`<h3>📊 Patterns</h3><div>${Object.entries(d.patterns||{}).map(([k,v])=>`${k}: ${((v.ratio||0)*100).toFixed(0)}%`).join('<br>')}</div>`;
+                document.getElementById('tabGallery').appendChild(p);
+            }catch(e){}
+        }
+        
+        async function loadThresholds() {
+            try{
+                const r=await fetch(`${API}/api/thresholds`);
+                const d=await r.json();
+                document.getElementById('buyVal').innerText=d.MIN_CONFIDENCE_BUY||0.65;
+                document.getElementById('sellVal').innerText=d.MIN_CONFIDENCE_SELL||0.65;
+                document.getElementById('boostVal').innerText=d.LSTM_BOOST||0.08;
+                document.getElementById('penaltyVal').innerText=d.LSTM_PENALTY||0.12;
+                document.getElementById('minBuy').value=d.MIN_CONFIDENCE_BUY||0.65;
+                document.getElementById('minSell').value=d.MIN_CONFIDENCE_SELL||0.65;
+                document.getElementById('lstmBoost').value=d.LSTM_BOOST||0.08;
+                document.getElementById('lstmPenalty').value=d.LSTM_PENALTY||0.12;
+            }catch(e){}
+        }
+        
+        window.rateStrategy=async(id,rating)=>{
+            await fetch(`${API}/api/strategies/rate`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({strategyId:id,rating})});
+            loadGallery();
+        };
+        
+        window.updateThreshold=async(key,value)=>{
+            await fetch(`${API}/api/thresholds`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({[key]:parseFloat(value)})});
+            loadThresholds();
+        };
+        
+        window.emergencyStop=async()=>{
+            if(confirm('Emergency stop?')){await fetch('http://localhost:3003/api/kill_switch',{method:'POST'});alert('Stopped');}
+        };
+        
+        async function sendMessage(){
+            const input=document.getElementById('chatInput');
+            const msg=input.value.trim();
+            if(!msg)return;
+            const chat=document.getElementById('chatArea');
+            chat.innerHTML+=`<div class="message user-message">👤 ${msg}</div>`;
+            input.value='';
+            chat.scrollTop=chat.scrollHeight;
+            chat.innerHTML+=`<div class="message assistant-message">🤖 Thinking...</div>`;
+            chat.scrollTop=chat.scrollHeight;
+            try{
+                const r=await fetch(`${API}/api/intelligence/chat`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})});
+                const d=await r.json();
+                const msgs=chat.querySelectorAll('.assistant-message');
+                if(msgs.length&&msgs[msgs.length-1].innerText==='🤖 Thinking...')msgs[msgs.length-1].remove();
+                chat.innerHTML+=`<div class="message assistant-message">🤖 ${d.response}</div>`;
+            }catch(e){chat.innerHTML+=`<div class="message assistant-message">🤖 Error</div>`;}
+            chat.scrollTop=chat.scrollHeight;
+        }
+        
+        loadStatus();
+        setInterval(loadStatus,10000);
+    </script>
+</body>
+</html>

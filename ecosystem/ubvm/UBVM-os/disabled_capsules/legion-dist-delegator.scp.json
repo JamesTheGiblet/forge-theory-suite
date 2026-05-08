@@ -1,0 +1,36 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "legion/dist-delegator",
+  "object_class": "Euclid",
+  "intent": "Delegate strategy evaluation to a remote worker node.",
+  "containment": {
+    "read_only": false,
+    "audit_log": true,
+    "kill_switch": true
+  },
+  "behaviours": [
+    {
+      "trigger": "on_event",
+      "event": "strategy.generated",
+      "actions": [
+        {
+          "primitive": "emit_remote_event",
+          "params": {
+            "target_url": "http://127.0.0.1:8081",
+            "event": "dist.strategy.evaluate",
+            "payload": {
+              "strategy_path": "$context.event.payload.strategy_path",
+              "reply_to": "http://127.0.0.1:8080"
+            }
+          }
+        },
+        {
+          "primitive": "log",
+          "params": {
+            "message": "Delegated strategy evaluation to Node 2."
+          }
+        }
+      ]
+    }
+  ]
+}

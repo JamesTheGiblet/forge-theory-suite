@@ -1,0 +1,56 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "legion/dashboard",
+  "object_class": "Safe",
+  "intent": "Render a live HTML dashboard reflecting the current best strategy.",
+  "containment": {
+    "read_only": false,
+    "audit_log": true,
+    "kill_switch": false
+  },
+  "behaviours": [
+    {
+      "trigger": "cron",
+      "schedule": "* * * * *",
+      "actions": [
+        {
+          "primitive": "read_file",
+          "params": {
+            "path": "strategies/selected/current_best.json"
+          }
+        },
+        {
+          "primitive": "read_file",
+          "params": {
+            "path": "data/buddai_memory/latest_thought.txt"
+          }
+        },
+        {
+          "primitive": "agent_status",
+          "params": {}
+        },
+        {
+          "primitive": "render_template",
+          "params": {
+            "template": "=== BUDDAI STATUS ===\nAge (Cycles): ${age}\nIntellect Level: ${intellect}\nTotal Memories: ${memories}\n\n=== BUDDAI'S LATEST THOUGHT ===\n${thought}\n\n=== CURRENT BEST STRATEGY ===\n${strategy}",
+            "variables": {
+              "strategy": "$results.0.content",
+              "thought": "$results.1.content",
+              "age": "$results.2.age_cycles",
+              "intellect": "$results.2.intellect_level",
+              "memories": "$results.2.total_memories"
+            }
+          }
+        },
+        {
+          "primitive": "render.component",
+          "params": {
+            "title": "UBVM Ecosystem Dashboard",
+            "content": "$results.3.output",
+            "path": "logs/dashboard.html"
+          }
+        }
+      ]
+    }
+  ]
+}

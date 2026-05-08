@@ -1,0 +1,26 @@
+[
+  {
+    "timestamp": "2026-04-23T05:06:34.082Z",
+    "type": "TEST_BREACH",
+    "message": "First test breach",
+    "source": "observability-api"
+  },
+  {
+    "timestamp": "2026-04-23T05:06:35.475Z",
+    "type": "TEST",
+    "message": "Manual",
+    "source": "observability-api"
+  },
+  {
+    "timestamp": "2026-04-23T05:07:05.078Z",
+    "type": "AGENT_TEST",
+    "message": "Testing from agent client",
+    "source": "test-script"
+  },
+  {
+    "timestamp": "2026-04-23T05:36:04.319Z",
+    "type": "FINAL_TEST",
+    "message": "Observability is back online",
+    "source": "test"
+  }
+]

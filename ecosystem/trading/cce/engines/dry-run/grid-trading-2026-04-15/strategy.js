@@ -1,0 +1,1 @@
+module.exports = { name: "GRID-TRADING - RANGING Regime", version: "1.0.0", validate: () => true, entryRules: { type: "adaptive" }, exitRules: { targetPct: 0.5, stopPct: 0.3, maxHoldDays: 3 }, entryTiming: "next_open", params: { targetPct: 0.5, stopPct: 0.3, maxHoldDays: 3 } };

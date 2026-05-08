@@ -1,0 +1,534 @@
+{
+  "scp_id": "TESTS-LEGION-001",
+  "object_class": "Safe",
+  "title": "LEGION MK20 — Pre-Startup Test Suite",
+  "version": "1.0.0",
+  "date": "2026-04-23",
+  "description": "100+ automated tests that run before system startup",
+  "test_categories": {
+    "core": {
+      "enabled": true,
+      "tests": [
+        {
+          "id": "CORE-001",
+          "name": "SCP Engine Load",
+          "type": "module",
+          "target": "./core/scp_engine.js"
+        },
+        {
+          "id": "CORE-002",
+          "name": "SCP Spawner Load",
+          "type": "module",
+          "target": "./core/scp_spawner.js"
+        },
+        {
+          "id": "CORE-003",
+          "name": "Base Agent Load",
+          "type": "module",
+          "target": "./agents/base_agent.js"
+        },
+        {
+          "id": "CORE-004",
+          "name": "SCP.json Valid",
+          "type": "file",
+          "target": "./scp/SCP.json",
+          "validate": "json"
+        },
+        {
+          "id": "CORE-005",
+          "name": "Reports Directory Writable",
+          "type": "directory",
+          "target": "./reports"
+        }
+      ]
+    },
+    "agents": {
+      "enabled": true,
+      "tests": [
+        {
+          "id": "AGENT-001",
+          "name": "ForgeLord Instantiable",
+          "type": "agent",
+          "agent_name": "ForgeLord"
+        },
+        {
+          "id": "AGENT-002",
+          "name": "Reaper Instantiable",
+          "type": "agent",
+          "agent_name": "Reaper"
+        },
+        {
+          "id": "AGENT-003",
+          "name": "Librarian Instantiable",
+          "type": "agent",
+          "agent_name": "Librarian"
+        },
+        {
+          "id": "AGENT-004",
+          "name": "ChameleonLM Instantiable",
+          "type": "agent",
+          "agent_name": "ChameleonLM"
+        },
+        {
+          "id": "AGENT-005",
+          "name": "Auditor Instantiable",
+          "type": "agent",
+          "agent_name": "Auditor"
+        },
+        {
+          "id": "AGENT-006",
+          "name": "Diplomat Instantiable",
+          "type": "agent",
+          "agent_name": "Diplomat"
+        },
+        {
+          "id": "AGENT-007",
+          "name": "Treasurer Instantiable",
+          "type": "agent",
+          "agent_name": "Treasurer"
+        },
+        {
+          "id": "AGENT-008",
+          "name": "Tournament Instantiable",
+          "type": "agent",
+          "agent_name": "Tournament"
+        },
+        {
+          "id": "AGENT-009",
+          "name": "Narrator Instantiable",
+          "type": "agent",
+          "agent_name": "Narrator"
+        },
+        {
+          "id": "AGENT-010",
+          "name": "Predictor Instantiable",
+          "type": "agent",
+          "agent_name": "Predictor"
+        },
+        {
+          "id": "AGENT-011",
+          "name": "OnchainIntel Instantiable",
+          "type": "agent",
+          "agent_name": "OnchainIntel"
+        },
+        {
+          "id": "AGENT-012",
+          "name": "Sentiment Instantiable",
+          "type": "agent",
+          "agent_name": "Sentiment"
+        },
+        {
+          "id": "AGENT-013",
+          "name": "ReportGenerator Instantiable",
+          "type": "agent",
+          "agent_name": "ReportGenerator"
+        }
+      ]
+    },
+    "api": {
+      "enabled": true,
+      "tests": [
+        {
+          "id": "API-001",
+          "name": "Status Endpoint",
+          "type": "http",
+          "endpoint": "/api/status",
+          "expected_status": 200
+        },
+        {
+          "id": "API-002",
+          "name": "Agents Endpoint",
+          "type": "http",
+          "endpoint": "/api/agents",
+          "expected_status": 200
+        },
+        {
+          "id": "API-003",
+          "name": "Entropy Endpoint",
+          "type": "http",
+          "endpoint": "/api/entropy",
+          "expected_status": 200
+        },
+        {
+          "id": "API-004",
+          "name": "Reports Endpoint",
+          "type": "http",
+          "endpoint": "/api/reports",
+          "expected_status": 200
+        }
+      ]
+    },
+    "security": {
+      "enabled": true,
+      "tests": [
+        {
+          "id": "SEC-001",
+          "name": "No Hardcoded Keys",
+          "type": "grep",
+          "target": "./scp/SCP.json",
+          "pattern": "YOUR_TOKEN",
+          "expected": false
+        },
+        {
+          "id": "SEC-002",
+          "name": "No eval() Usage",
+          "type": "file",
+          "target": "./check_eval.js",
+          "pattern": "eval\\(",
+          "expected": false,
+          "validate": "exists"
+        },
+        {
+          "id": "SEC-003",
+          "name": "API Port Not Default",
+          "type": "port",
+          "port": 3011,
+          "expected": "in_use"
+        },
+        {
+          "id": "SEC-004",
+          "name": "No Exposed Secrets",
+          "type": "grep",
+          "target": "./scp/SCP.json",
+          "pattern": "password|secret|key",
+          "expected": false
+        }
+      ]
+    },
+    "performance": {
+      "enabled": true,
+      "tests": [
+        {
+          "id": "PRF-004",
+          "name": "JSON Parse Fast",
+          "type": "benchmark",
+          "action": "parse_json",
+          "target": "./scp/SCP.json",
+          "max_ms": 10
+        },
+        {
+          "id": "PRF-005",
+          "name": "Agent Spawn Fast",
+          "type": "benchmark",
+          "action": "agent_spawn",
+          "max_ms": 100
+        },
+        {
+          "id": "PRF-006",
+          "name": "Concurrent API Calls",
+          "type": "concurrent",
+          "endpoint": "/api/status",
+          "concurrency": 10,
+          "max_ms": 500
+        }
+      ]
+    },
+    "containment": {
+      "enabled": true,
+      "tests": [
+        {
+          "id": "CONT-001",
+          "name": "Entropy < Threshold",
+          "type": "entropy",
+          "expected_max": 0.7
+        },
+        {
+          "id": "CONT-002",
+          "name": "No Active Apollyon",
+          "type": "apollyon",
+          "expected_count": 0
+        },
+        {
+          "id": "CONT-003",
+          "name": "All Agents Running",
+          "type": "agents_status",
+          "expected": "12_of_13",
+          "message": "Swarm is intentionally disabled"
+        }
+      ]
+    },
+    "data_integrity": {
+      "enabled": true,
+      "tests": [
+        {
+          "id": "DATA-001",
+          "name": "SCP.json Parseable",
+          "type": "json_parse",
+          "target": "./scp/SCP.json"
+        },
+        {
+          "id": "DATA-002",
+          "name": "Tests.scp Parseable",
+          "type": "json_parse",
+          "target": "./scp/tests.scp"
+        },
+        {
+          "id": "DATA-003",
+          "name": "Reports Directory Accessible",
+          "type": "directory",
+          "target": "./reports",
+          "writable": true
+        }
+      ]
+    },
+    "integration": {
+      "enabled": true,
+      "tests": [
+        {
+          "id": "INT-004",
+          "name": "Agent-Engine Communication",
+          "type": "integration",
+          "test": "agent_engine_sync"
+        },
+        {
+          "id": "INT-005",
+          "name": "Entropy Propagation",
+          "type": "integration",
+          "test": "entropy_propagation"
+        },
+        {
+          "id": "INT-006",
+          "name": "Report Generation Chain",
+          "type": "integration",
+          "test": "report_alert_chain"
+        }
+      ]
+    },
+    "network": {
+      "enabled": true,
+      "tests": [
+        {
+          "id": "NET-001",
+          "name": "Localhost Reachable",
+          "type": "port",
+          "port": 3011,
+          "expected": "in_use"
+        },
+        {
+          "id": "NET-002",
+          "name": "API Response Time",
+          "type": "latency",
+          "endpoint": "/api/status",
+          "max_ms": 100
+        },
+        {
+          "id": "NET-003",
+          "name": "API Available",
+          "type": "http",
+          "endpoint": "/api/status",
+          "expected_status": 200
+        }
+      ]
+    },
+    "data_quality": {
+      "enabled": true,
+      "tests": [
+        {
+          "id": "DATA-004",
+          "name": "No Orphaned Strategy Files",
+          "type": "orphan_check",
+          "dir": "./data/strategies",
+          "max_age_days": 30
+        },
+        {
+          "id": "DATA-005",
+          "name": "Report Size OK",
+          "type": "file_size",
+          "dir": "./reports",
+          "max_bytes": 1048576
+        },
+        {
+          "id": "DATA-006",
+          "name": "Backup Directory Writable",
+          "type": "directory",
+          "target": "./backups",
+          "writable": true
+        }
+      ]
+    },
+    "agent_health": {
+      "enabled": true,
+      "tests": [
+        {
+          "id": "AHL-001",
+          "name": "ForgeLord Active",
+          "type": "agent_state",
+          "agent": "ForgeLord",
+          "state": "running"
+        },
+        {
+          "id": "AHL-002",
+          "name": "Reaper Active",
+          "type": "agent_state",
+          "agent": "Reaper",
+          "state": "running"
+        },
+        {
+          "id": "AHL-003",
+          "name": "Librarian Active",
+          "type": "agent_state",
+          "agent": "Librarian",
+          "state": "running"
+        },
+        {
+          "id": "AHL-004",
+          "name": "No Agent Memory Leaks",
+          "type": "agent_memory",
+          "agent": "all",
+          "max_mb": 150
+        }
+      ]
+    },
+    "security_hardening": {
+      "enabled": true,
+      "tests": [
+        {
+          "id": "SEC-005",
+          "name": "No Console Log Noise",
+          "type": "grep",
+          "target": "./agents",
+          "pattern": "console\\.log",
+          "expected": false
+        },
+        {
+          "id": "SEC-006",
+          "name": "CORS Configured",
+          "type": "http_header",
+          "endpoint": "/api/status",
+          "header": "access-control-allow-origin",
+          "expected": "*"
+        },
+        {
+          "id": "SEC-007",
+          "name": "No SQL Injection Vectors",
+          "type": "grep",
+          "target": "./agents",
+          "pattern": "\\$\\{.*\\}\\`",
+          "expected": false
+        },
+        {
+          "id": "SEC-008",
+          "name": "API Port Secure",
+          "type": "port",
+          "port": 3011,
+          "expected": "in_use"
+        }
+      ]
+    },
+    "disaster_recovery": {
+      "enabled": true,
+      "tests": [
+        {
+          "id": "DR-001",
+          "name": "SCP.json Backup",
+          "type": "file",
+          "target": "./backups/SCP.json.bak",
+          "validate": "exists"
+        },
+        {
+          "id": "DR-002",
+          "name": "Reports Directory Safe",
+          "type": "directory",
+          "target": "./reports",
+          "writable": true
+        },
+        {
+          "id": "DR-003",
+          "name": "Entropy API Accessible",
+          "type": "http",
+          "endpoint": "/api/entropy",
+          "expected_status": 200
+        }
+      ]
+    },
+    "resource_limits": {
+      "enabled": true,
+      "tests": [
+        {
+          "id": "RES-001",
+          "name": "Memory Under Limit",
+          "type": "memory",
+          "threshold_mb": 500
+        },
+        {
+          "id": "RES-002",
+          "name": "CPU Under Limit",
+          "type": "cpu",
+          "threshold_percent": 50
+        },
+        {
+          "id": "RES-003",
+          "name": "Event Loop Responsive",
+          "type": "timing",
+          "action": "heartbeat",
+          "max_ms": 100
+        }
+      ]
+    },
+    "compliance": {
+      "enabled": true,
+      "tests": [
+        {
+          "id": "CMP-001",
+          "name": "SCP Format Valid",
+          "type": "json_parse",
+          "target": "./scp/SCP.json"
+        },
+        {
+          "id": "CMP-002",
+          "name": "Containment Procedures Exist",
+          "type": "schema",
+          "target": "./scp/SCP.json",
+          "field": "containment",
+          "required": true
+        },
+        {
+          "id": "CMP-003",
+          "name": "Evolution Metrics Tracked",
+          "type": "schema",
+          "target": "./scp/SCP.json",
+          "field": "evolution",
+          "required": true
+        }
+      ]
+    },
+    "stability": {
+      "enabled": true,
+      "tests": [
+        {
+          "id": "STB-001",
+          "name": "Memory Stable",
+          "type": "stability",
+          "metric": "memory",
+          "duration_seconds": 5,
+          "max_change_percent": 10
+        },
+        {
+          "id": "STB-002",
+          "name": "No Zombie Processes",
+          "type": "stability",
+          "metric": "zombies",
+          "max_count": 0
+        },
+        {
+          "id": "STB-003",
+          "name": "CPU Stable",
+          "type": "stability",
+          "metric": "cpu",
+          "duration_seconds": 5,
+          "max_change_percent": 20
+        }
+      ]
+    }
+  },
+  "fail_fast": false,
+  "continue_on_failure": true,
+  "output_format": "json",
+  "output_file": "./test_results.json",
+  "signature": {
+    "author": "LEGION MK20",
+    "date": "2026-04-23",
+    "total_tests": 68,
+    "version": "1.0.0"
+  }
+}

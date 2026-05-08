@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+  <title>CCE • Strategic Engines</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { background: #FFFFFF; font-family: 'Inter', sans-serif; color: #0A2540; padding: 20px 16px 40px; max-width: 700px; margin: 0 auto; }
+    .logo-container { display: flex; justify-content: center; margin: 8px 0 12px 0; }
+    .cce-logo { display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #FFFFFF 0%, #FBF9F2 100%); padding: 12px 28px; border-radius: 80px; box-shadow: 0 12px 28px -8px rgba(0,0,0,0.05), 0 0 0 1px rgba(212, 175, 55, 0.2); }
+    .logo-icon svg { width: 44px; height: 44px; }
+    .logo-text { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #0A2540 0%, #0066FF 70%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .logo-badge { font-size: 10px; font-weight: 500; background: #D4AF37; color: #0A2540; padding: 2px 8px; border-radius: 40px; }
+    .portfolio-center { background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFF 100%); border-radius: 48px; padding: 24px; margin: 16px 0 24px; box-shadow: 0 20px 40px -12px rgba(0,102,255,0.15), 0 0 0 1px rgba(212,175,55,0.2); cursor: pointer; text-align: center; }
+    .portfolio-total { font-size: 48px; font-weight: 800; color: #0066FF; }
+    .asset-bubbles { display: flex; justify-content: center; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+    .asset-bubble { background: #F0F2F5; border-radius: 40px; padding: 6px 14px; font-size: 13px; font-weight: 500; }
+    .rings-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .ring-card { background: #FFFFFF; border-radius: 28px; padding: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.02), 0 0 0 1px #F0F2F5; }
+    .ring-title { font-size: 11px; font-weight: 600; text-transform: uppercase; color: #5A6E8A; display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .ring-value { font-size: 20px; font-weight: 700; margin-top: 4px; }
+    .circular-chart { width: 80px; height: 80px; margin: 0 auto; }
+    .regime-widget { background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFF 100%); border-radius: 28px; padding: 16px; margin: 16px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.02), 0 0 0 1px #F0F2F5; }
+    @keyframes heartbeat { 0% { transform: scale(1); } 25% { transform: scale(1.2); } 40% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    .heartbeat { display: inline-block; animation: heartbeat 0.8s ease-in-out infinite; margin-left: 6px; }
+    .heart-icon { color: #ff3366; }
+    @keyframes pulseGreen { 0% { transform: scale(0.8); opacity: 0.6; } 100% { transform: scale(1.2); opacity: 0.4; } }
+    .pulse-ring { display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%; margin-left: 6px; animation: pulseGreen 1s infinite; }
+    @keyframes pulseOrange { 0% { opacity: 0.6; } 100% { opacity: 1; } }
+    .warning-triangle { display: inline-block; margin-left: 6px; animation: pulseOrange 1s infinite; color: #f59e0b; }
+    .sleep-icon { display: inline-block; margin-left: 6px; color: #8DA0B0; opacity: 0.6; }
+    .flame-icon { display: inline-block; margin-left: 6px; color: #f97316; animation: flicker 1.5s infinite; }
+    @keyframes flicker { 0% { opacity: 0.7; } 50% { opacity: 1; transform: scale(1.1); } 100% { opacity: 0.7; } }
+    .tab-container { display: flex; gap: 8px; margin: 16px 0; flex-wrap: wrap; }
+    .tab-btn { background: #F0F2F5; border: none; padding: 8px 20px; border-radius: 40px; font-size: 14px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+    .tab-btn.active { background: #0066FF; color: white; }
+    .engine-group { display: none; }
+    .engine-group.active { display: block; }
+    .engine-list { display: flex; flex-direction: column; gap: 8px; }
+    .engine-row { background: #FFFFFF; border-radius: 20px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 0 0 1px #F0F2F5; cursor: pointer; }
+    .engine-left { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+    .engine-code { font-weight: 800; font-size: 16px; background: linear-gradient(135deg, #0A2540 0%, #0066FF 80%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .engine-state { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+    .state-DORMANT { background: #EEF2F6; color: #2C3E50; }
+    .state-WATCHING { background: #FFF3E0; color: #C97E0A; }
+    .state-CAUTION { background: #FFECEE; color: #D1453B; }
+    .state-ACTIVE { background: #E0F2E9; color: #0F7B3A; }
+    .engine-preview { font-size: 12px; font-weight: 500; color: #3A5670; }
+    .expand-icon { font-size: 18px; color: #D4AF37; }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 37, 64, 0.7); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 1000; visibility: hidden; opacity: 0; transition: 0.2s; padding: 20px; }
+    .modal-overlay.active { visibility: visible; opacity: 1; }
+    .modal-card { background: #FFFFFF; max-width: 480px; width: 100%; border-radius: 48px; padding: 24px; max-height: 80vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #D4AF37; margin-bottom: 16px; padding-bottom: 12px; }
+    .close-modal { font-size: 28px; cursor: pointer; }
+    .modal-detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #F0F2F5; }
+    .anomaly-warning { background: #FFF8EB; border-left: 4px solid #D4AF37; padding: 12px; margin-top: 12px; border-radius: 16px; }
+    .status-foot { margin-top: 24px; font-size: 10px; text-align: center; color: #A0B3C6; border-top: 1px solid #F0F2F5; padding-top: 16px; }
+    .refresh-indicator { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981; margin-right: 6px; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .download-btn { background: #0066FF; color: white; border: none; padding: 6px 12px; border-radius: 40px; font-size: 10px; font-weight: 600; cursor: pointer; margin: 0 4px; }
+    .status-group { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .status-badge { padding: 4px 12px; border-radius: 40px; font-size: 11px; }
+    .tooltip { position: relative; display: inline-flex; align-items: center; justify-content: center; cursor: help; margin-left: 4px; font-size: 10px; width: 16px; height: 16px; background: #D4AF37; color: #0A2540; border-radius: 50%; font-weight: bold; }
+    .tooltip .tooltiptext { visibility: hidden; width: 200px; background-color: #0A2540; color: #fff; text-align: center; border-radius: 8px; padding: 6px 10px; position: absolute; z-index: 1; bottom: 125%; left: 50%; margin-left: -100px; font-size: 11px; font-weight: normal; font-family: 'Inter', sans-serif; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+    .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
+  </style>
+</head>
+<body>
+
+<div class="logo-container">
+  <div class="cce-logo">
+    <div class="logo-icon"><svg viewBox="0 0 100 100"><path d="M50 10 L70 25 L70 45 L85 55 L70 65 L70 85 L50 100 L30 85 L30 65 L15 55 L30 45 L30 25 L50 10Z" stroke="#D4AF37" stroke-width="2.5" fill="white"/><path d="M50 28 L62 37 L62 55 L72 63 L62 71 L62 89 L50 98 L38 89 L38 71 L28 63 L38 55 L38 37 L50 28Z" fill="#0066FF" fill-opacity="0.15" stroke="#0066FF" stroke-width="1.8"/><circle cx="50" cy="63" r="7" fill="#D4AF37" stroke="white" stroke-width="1.5"/><path d="M50 45 L50 54 M44 50 L56 50" stroke="#D4AF37" stroke-width="2"/></svg></div>
+    <span class="logo-text">CCE</span>
+    <span class="logo-badge">v2.3</span>
+  </div>
+</div>
+
+<div class="rings-wrapper">
+  <div class="ring-card"><div class="ring-title">BTC / ATH <span class="tooltip">?<span class="tooltiptext">Bitcoin price vs all‑time high. Live from Kraken.</span></span></div><div id="btcRing" class="circular-chart"></div><div class="ring-value" id="btcPrice">$--</div></div>
+  <div class="ring-card"><div class="ring-title">VIX FEAR <span class="tooltip">?<span class="tooltiptext">CCE Volatility Index – our own fear gauge from SPY price moves.</span></span></div><div id="vixRing" class="circular-chart"></div><div class="ring-value" id="vixVal">--</div></div>
+  <div class="ring-card"><div class="ring-title">BTC DOM <span class="tooltip">?<span class="tooltiptext">Bitcoin dominance – percentage of total crypto market cap.</span></span></div><div id="domRing" class="circular-chart"></div><div class="ring-value" id="domVal">--</div></div>
+  <div class="ring-card"><div class="ring-title">F&G INDEX <span class="tooltip">?<span class="tooltiptext">Fear & Greed Index – 0 = extreme fear, 100 = extreme greed.</span></span></div><div id="fgRing" class="circular-chart"></div><div class="ring-value" id="fgVal">--</div></div>
+</div>
+
+<!-- G.O Widget -->
+<div class="regime-widget">
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #5A6E8A;">Market Regime</div>
+      <div style="font-size: 24px; font-weight: 800; color: #0066FF;" id="goRegime">--</div>
+    </div>
+    <div style="text-align: right;">
+      <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #5A6E8A;">Stability</div>
+      <div style="font-size: 20px; font-weight: 700;" id="goStability">--</div>
+    </div>
+  </div>
+  <div style="margin-top: 12px;">
+    <div style="background: #EDF2F7; border-radius: 8px; height: 6px; overflow: hidden;">
+      <div id="goStabilityBar" style="background: #0066FF; width: 0%; height: 100%; border-radius: 8px;"></div>
+    </div>
+  </div>
+  <div style="font-size: 10px; color: #8DA0B0; margin-top: 8px;" id="goStatus">Learning...</div>
+</div>
+
+<div class="portfolio-center" id="portfolioCenter">
+  <div style="font-size: 12px; color: #D4AF37;">💰 TOTAL PORTFOLIO <span class="tooltip">?<span class="tooltiptext">Your real USDC balance on Kraken. This is your actual money.</span></span></div>
+  <div class="portfolio-total" id="portfolioTotal">$--</div>
+  <div id="statusGroup" class="status-group"></div>
+  <div class="asset-bubbles" id="assetBubbles"></div>
+  <div style="margin-top: 8px; font-size: 10px; color: #8DA0B0;">tap for details →</div>
+</div>
+
+
+<!-- Portfolio History Link Widget -->
+<div class="regime-widget" onclick="window.location='/history'" style="cursor:pointer;">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-size:14px;font-weight:600;color:#D4AF37;">📈 Portfolio History</div>
+    <a href="/history" style="font-size:11px;color:#0066FF;text-decoration:none;">View full →</a>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-top:10px;" id="histSummary">
+    <div style="text-align:center;">
+      <div style="font-size:18px;font-weight:800;color:#0066FF;" id="histStart">$--</div>
+      <div style="font-size:10px;color:#8DA0B0;">Started</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-size:18px;font-weight:800;" id="histReturn">--%</div>
+      <div style="font-size:10px;color:#8DA0B0;">Total Return</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-size:18px;font-weight:800;color:#0066FF;" id="histCycles">--</div>
+      <div style="font-size:10px;color:#8DA0B0;">Cycles</div>
+    </div>
+  </div>
+</div>
+
+<!-- CSS Widget -->
+<div class="regime-widget">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+    <div style="font-size: 14px; font-weight: 600; color: #D4AF37;">💰 Recent Siphons</div>
+    <a href="/fl.html" style="font-size: 11px; color: #0066FF; text-decoration: none;">View all →</a>
+  </div>
+  <div id="siphonPreview" style="font-size: 12px; color: #8DA0B0;">Loading...</div>
+</div>
+
+<!-- Guidance Layer Widget -->
+<div class="regime-widget">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+    <div style="font-size: 14px; font-weight: 600; color: #D4AF37;">🎮 Guidance Layer</div>
+    <div style="font-size: 12px; color: #8DA0B0;" id="guidanceMode">BALANCED</div>
+  </div>
+  <input type="range" id="guidanceSlider" min="0" max="100" value="50" style="width: 100%; margin: 8px 0;">
+  <div style="display: flex; justify-content: space-between; font-size: 10px; color: #8DA0B0;">
+    <span>🛡️ CAUTIOUS</span>
+    <span>⚖️ BALANCED</span>
+    <span>⚡ AGGRESSIVE</span>
+  </div>
+  <div style="font-size: 11px; color: #8DA0B0; margin-top: 8px;" id="guidanceDesc">Balanced risk – neutral allocation</div>
+</div>
+
+<!-- AUDIT Widget -->
+<div class="regime-widget">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+    <div style="font-size: 14px; font-weight: 600; color: #D4AF37;">🛡️ System Health</div>
+    <span id="auditStatus" style="font-size: 11px; color: #10b981;">● Online</span>
+  </div>
+  <div id="auditSummary" style="font-size: 12px; color: #8DA0B0;">Loading...</div>
+</div>
+
+
+<!-- Weather Widget -->
+<div class="regime-widget" id="weatherWidget">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+    <div style="font-size:14px;font-weight:600;color:#D4AF37;">🌍 Agricultural Weather Signals</div>
+    <span id="weatherStatus" style="font-size:10px;color:#8DA0B0;letter-spacing:1px;">LOADING</span>
+  </div>
+  <div id="weatherGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+    <div style="text-align:center;padding:20px;color:#8DA0B0;font-size:12px;grid-column:1/-1;">Fetching weather data...</div>
+  </div>
+  <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;">
+    <span style="font-size:10px;color:#8DA0B0;">Signal: </span>
+    <span style="font-size:10px;background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:4px;">▲ Bullish</span>
+    <span style="font-size:10px;background:#fff3e0;color:#e65100;padding:1px 6px;border-radius:4px;">◆ Neutral</span>
+    <span style="font-size:10px;background:#ffebee;color:#c62828;padding:1px 6px;border-radius:4px;">▼ Bearish</span>
+  </div>
+</div>
+
+</div>
+
+<div class="tab-container">
+  <button class="tab-btn active" data-tab="se">⚙️ S.E <span class="tooltip">?<span class="tooltiptext">Strategic Engines – Patient, macro‑driven. Wait for conditions before acting.</span></span></button>
+  <button class="tab-btn" data-tab="te">⚡ T.E <span class="tooltip">?<span class="tooltiptext">Tactical Engines – Active, mechanical. Harvest market motion continuously.</span></span></button>
+  <button class="tab-btn" data-tab="oe">👁️ O.E <span class="tooltip">?<span class="tooltiptext">Observer Engines – Watch, record, detect anomalies. No trading.</span></span></button>
+  <a href="/history" style="text-decoration: none;"><button class="tab-btn">📈 History</button></a>
+  <a href="/fl.html" style="text-decoration: none;"><button class="tab-btn">🔍 F.L <span class="tooltip">?<span class="tooltiptext">Forensic Layer – Learns from losing trades, finds patterns, builds doubt scores.</span></span></button></a>
+</div>
+
+<!-- TIER BADGE -->
+<div style="margin:8px 0 12px;display:flex;align-items:center;gap:10px">
+  <span style="font-size:11px;font-weight:600;color:#5A6E8A;text-transform:uppercase;letter-spacing:1px">Platform</span>
+  <div id="tierBadge" onclick="if(tierLocked) document.getElementById('tierLockModal').style.display='flex'"
+    style="background:#F0F2F5;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;color:#1a1a2e;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+    🌐 All Platforms
+  </div>
+</div>
+
+<div id="seEngines" class="engine-group active"><div class="engine-list"></div></div>
+<div id="teEngines" class="engine-group"><div class="engine-list"></div></div>
+<div id="oeEngines" class="engine-group"><div class="engine-list"></div></div>
+
+<div style="display: flex; justify-content: center; gap: 8px; margin: 16px 0;">
+  <button class="download-btn" onclick="downloadData()">📥 Download Data</button>
+  <button class="download-btn" onclick="downloadHistory()">📜 Download History</button>
+  <button class="download-btn" onclick="testTelegram()">📱 Test Telegram</button>
+</div>
+
+<div class="status-foot"><span id="statusText"><span class="refresh-indicator"></span>⚡ LIVE • loading...</span><span id="sensorCount" style="color:#0066FF;"> SEN:0</span></div>
+
+<div id="engineModal" class="modal-overlay"><div class="modal-card"><div class="modal-header"><h2 id="modalTitle">ENGINE</h2><span class="close-modal">&times;</span></div><div id="modalBody"></div></div></div>
+<div id="portfolioModal" class="modal-overlay"><div class="modal-card"><div class="modal-header"><h2>📊 Portfolio Details</h2><span class="close-modal" id="closePortfolioModal">&times;</span></div><div id="portfolioModalBody"></div></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+let currentData = { btc: 0, fg: 0, dom: 0, vix: 26.9 };
+let portfolioData = { totalUSD: 0, assets: [] };
+let portfolioChart = null;
+
+const engines = {
+  se: [
+    { code: "CRY", exchange: "kraken", name: "Bitcoin Fund 🟠", state: "DORMANT", key1: "$291.70", key2: "$--", key3: "F&G --", anomalies: "BTC dominance shift", extra: "LIVE (Kraken)", layer: "S.E", platform: "starter" },
+    { code: "FF", exchange: "kraken", name: "Fear Fade 😱", state: "WATCHING", key1: "DRY RUN", key2: "$100", key3: "F&G 11", anomalies: "Extreme Fear building", extra: "Buy F&G≤20 Sell F&G≥60", layer: "S.E", platform: "starter" },
+    { code: "GF", exchange: "kraken", name: "GoldForge 🥇", state: "DORMANT", key1: "DRY RUN", key2: "$100", key3: "XAUT/USDT", anomalies: "Gold/Fear correlation", extra: "Buy fear sell greed", layer: "S.E", platform: "starter" },
+    { code: "ALT", exchange: "kraken", name: "Alt Season 🔄", state: "DORMANT", key1: "DRY RUN", key2: "$100", key3: "Dom 56.2%", anomalies: "BTC dominance elevated", extra: "Rotate ETH/SOL Dom<50%", layer: "S.E", platform: "starter" },
+    { code: "UD", exchange: "kraken", name: "Underdog 🐕", state: "WATCHING", key1: "DRY RUN", key2: "$200", key3: "ALGO/DOT/ATOM/VET", anomalies: "Quality alts at historic lows", extra: "Basket — 4 assets", layer: "S.E", platform: "starter" },
+    { code: "PLS", exchange: "kraken", name: "Pulse 📉", state: "SCANNING", key1: "DRY RUN", key2: "$150", key3: "BTC/USDC", anomalies: "Mean reversion dip hunting", extra: "Buy dips sell recovery", layer: "S.E", platform: "starter" }
+  ],
+  te: [
+    { code: "GRID", exchange: "kraken", name: "Grid Bot 🔁", state: "ACTIVE", key1: "$0.00", key2: "5/5 orders", key3: "0 cycles", anomalies: "Grid active", extra: "", layer: "T.E", platform: "starter" },
+    { code: "MOM", exchange: "kraken", name: "Momentum Bot ⚡", state: "STANDBY", key1: "STANDBY", key2: "EMA pending", key3: "waiting", anomalies: "EMA waiting", extra: "", layer: "T.E", platform: "starter" },
+    { code: "BRK", exchange: "kraken", name: "Breakout Bot 💥", state: "SCANNING", key1: "SCANNING", key2: "tightening", key3: "80%", anomalies: "Bollinger squeeze", extra: "", layer: "T.E", platform: "starter" },
+    { code: "SCP", exchange: "kraken", name: "Scalp ⚡", state: "IDLE", key1: "DRY RUN", key2: "$100", key3: "RSI + Volume", anomalies: "High freq RSI divergence", extra: "5min cycles", layer: "T.E", platform: "starter" },
+  ],
+  oe: [
+    { code: "OBS", exchange: "internal", name: "Observer 👁️", state: "ACTIVE", key1: "250 obs", key2: "165 patterns", key3: "27 anomalies", anomalies: "Cross-engine snapshots", extra: "", layer: "O.E", platform: "starter" },
+    { code: "SEN", exchange: "internal", name: "Sentinel 🚨", state: "ACTIVE", key1: "3 active", key2: "EGP/COM/CRY", key3: "WARN", anomalies: "Anomaly detection", extra: "", layer: "O.E", platform: "starter" },
+    { code: "STR", exchange: "internal", name: "Strategist 🧠", state: "WAITING", key1: "96/165 obs", key2: "58%", key3: "69 to go", anomalies: "Pattern analysis pending", extra: "", layer: "O.E", platform: "starter" }
+  ]
+};
+
+
+function filterByTier(tier) {
+  localStorage.setItem('cceTier', tier);
+  const labels = {
+    'all':      '🌐 All Platforms',
+    'starter':  '🟠 Starter — Kraken only',
+    'advanced': '🟡 Advanced — Kraken + Binance',
+    'full':     '🟢 Full Platform — All exchanges'
+  };
+  const badge = document.getElementById('tierBadge');
+  if (badge) badge.textContent = labels[tier] || '🌐 All Platforms';
+
+  // Wait for rows to exist then filter
+  setTimeout(() => {
+    const saved = localStorage.getItem('cceTier') || 'all';
+  const select = document.getElementById('tierFilter');
+  if (select && select.value !== saved) select.value = saved;
+  const rows = document.querySelectorAll('.engine-row');
+    rows.forEach(row => {
+      const platform = row.dataset.platform || 'starter';
+      if (platform === 'archived') {
+        row.style.display = 'none';
+        return;
+      }
+      if (tier === 'all' || tier === 'full') {
+        row.style.display = '';
+      } else if (tier === 'starter') {
+        row.style.display = platform === 'starter' ? '' : 'none';
+      } else if (tier === 'advanced') {
+        row.style.display = ['starter','advanced'].includes(platform) ? '' : 'none';
+      }
+    });
+  }, 100);
+}
+
+function drawRing(elementId, percent, color, centerText) {
+  const radius = 32, circ = 2 * Math.PI * radius;
+  const offset = circ - (Math.min(100, Math.max(0, percent)) / 100) * circ;
+  const container = document.getElementById(elementId);
+  if (!container) return;
+  container.innerHTML = '';
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 80 80");
+  const bg = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  bg.setAttribute("cx", "40"); bg.setAttribute("cy", "40"); bg.setAttribute("r", radius);
+  bg.setAttribute("stroke", "#EDF2F7"); bg.setAttribute("stroke-width", "6"); bg.setAttribute("fill", "none");
+  const prog = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  prog.setAttribute("cx", "40"); prog.setAttribute("cy", "40"); prog.setAttribute("r", radius);
+  prog.setAttribute("stroke", color); prog.setAttribute("stroke-width", "6"); prog.setAttribute("fill", "none");
+  prog.setAttribute("stroke-dasharray", circ); prog.setAttribute("stroke-dashoffset", offset);
+  svg.appendChild(bg); svg.appendChild(prog);
+  if (centerText) {
+    const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    txt.setAttribute("x", "40"); txt.setAttribute("y", "45");
+    txt.setAttribute("text-anchor", "middle");
+    txt.setAttribute("font-size", "22");
+    txt.textContent = centerText;
+    svg.appendChild(txt);
+  }
+  container.appendChild(svg);
+}
+
+async function fetchData() {
+  try {
+    const res = await fetch('/api/status');
+    const data = await res.json();
+    currentData.btc = data.btc_price || 67844;
+    currentData.fg = data.fear_greed || 13;
+    currentData.dom = data.btc_dominance || 56.2;
+    document.getElementById("btcPrice").innerHTML = `$${currentData.btc.toLocaleString()}`;
+    document.getElementById("fgVal").innerHTML = currentData.fg;
+    document.getElementById("domVal").innerHTML = currentData.dom.toFixed(1) + '%';
+    drawRing("btcRing", (currentData.btc / 74000) * 100, "#0066FF");
+    drawRing("domRing", currentData.dom, "#0066FF");
+    const fgEmoji = currentData.fg <= 20 ? '😱' : currentData.fg <= 40 ? '😰' : currentData.fg <= 60 ? '😐' : currentData.fg <= 80 ? '😊' : '🤑';
+    drawRing("fgRing", ((100 - currentData.fg) / 100) * 100, "#D4AF37", fgEmoji);
+
+    const vixRes = await fetch('/api/cce/volatility').then(r => r.json()).catch(() => ({}));
+    currentData.vix = vixRes.vix || 26.9;
+    document.getElementById("vixVal").innerHTML = currentData.vix.toFixed(2);
+    const vixEmoji = currentData.vix >= 30 ? '🔥' : currentData.vix >= 20 ? '⚡' : currentData.vix >= 10 ? '😴' : '💤';
+    drawRing("vixRing", (currentData.vix / 45) * 100, "#D4AF37", vixEmoji);
+
+    const comoRes = await fetch('/api/como/status').then(r => r.json()).catch(() => ({}));
+    if (comoRes.oil_price) engines.se[4].key1 = `$${comoRes.oil_price}`;
+    if (comoRes.gold_price) engines.se[4].key2 = `$${comoRes.gold_price.toLocaleString()}`;
+
+    const cme = await fetch('/api/cme/status').then(r => r.json()).catch(() => ({}));
+    if (cme.spy_price) engines.se[3].key2 = `$${cme.spy_price}`;
+
+    const dxy = await fetch('/api/dxy/status').then(r => r.json()).catch(() => ({}));
+    if (dxy.dxy) engines.se[4].key3 = `DXY ${dxy.dxy.toFixed(1)}`;
+
+    const forex = await fetch('/api/forex/rate').then(r => r.json()).catch(() => ({}));
+    if (forex.eur_usd) engines.se[1].key3 = `EUR/USD ${forex.eur_usd.toFixed(4)}`;
+
+    const fred = await fetch('/api/fred/status').then(r => r.json()).catch(() => ({}));
+    if (fred.fed_rate) engines.se[2].key2 = `${fred.fed_rate.toFixed(2)}%`;
+    if (fred.treasury_10y) engines.se[2].key3 = `${fred.treasury_10y.toFixed(2)}%`;
+
+    const reit = await fetch('/api/reit/price').then(r => r.json()).catch(() => ({}));
+    if (reit.price) engines.se[2].key1 = `$${reit.price.toFixed(2)}`;
+
+    const [grid, lce, mom, brk, obs, str, sen] = await Promise.all([
+      fetch('/api/grid/status').then(r => r.json()).catch(() => ({})),
+      fetch('/api/lce/status').then(r => r.json()).catch(() => ({})),
+      fetch('/api/momentum/status').then(r => r.json()).catch(() => ({})),
+      fetch('/api/breakout/status').then(r => r.json()).catch(() => ({})),
+      fetch('/api/observer/status').then(r => r.json()).catch(() => ({})),
+      fetch('/api/strategist/status').then(r => r.json()).catch(() => ({})),
+      fetch('/api/sentinel/active').then(r => r.json()).catch(() => ({}))
+    ]);
+
+    engines.se[0].key2 = `$${currentData.btc.toLocaleString()}`;
+    engines.se[0].key3 = `F&G ${currentData.fg}`;
+    engines.te[0].key1 = `$${grid.profit || 0}`;
+    engines.te[0].key2 = `${grid.open_buys || 5}/${grid.open_sells || 5} orders`;
+    engines.te[0].state = grid.state || "ACTIVE";
+    engines.te[1].state = mom.state || "STANDBY";
+    engines.te[2].state = brk.state || "SCANNING";
+    engines.te[3].state = lce.state || "DORMANT";
+    engines.oe[0].key1 = `${obs.observations || 250} obs`;
+    engines.oe[1].key1 = `${sen.count || 3} active`;
+    engines.oe[2].key1 = `${str.current || 96}/${str.threshold || 165} obs`;
+    engines.oe[2].key2 = `${str.percent || 58}%`;
+    document.getElementById("sensorCount").innerHTML = ` SEN:${sen.count || 3}`;
+    document.getElementById("statusText").innerHTML = `<span class="refresh-indicator"></span>⚡ LIVE • ${new Date().toLocaleTimeString()}`;
+
+    buildEngineRows();
+    updateStatusIndicators();
+  } catch (e) { console.error(e); }
+}
+
+async function fetchGOData() {
+  try {
+    const res = await fetch("/api/go/status");
+    const data = await res.json();
+    if (data.regime) {
+      document.getElementById("goRegime").innerHTML = data.regime;
+      const stability = data.stability || 0;
+      document.getElementById("goStability").innerHTML = (stability * 100).toFixed(0) + "%";
+      document.getElementById("goStabilityBar").style.width = (stability * 100) + "%";
+      let statusText = data.status === "READY" ? "✅ Ready for review" : "📊 Learning";
+      document.getElementById("goStatus").innerHTML = statusText;
+    }
+  } catch(e) { console.error("Failed to fetch G.O data:", e); }
+}
+
+async function fetchSiphonPreview() {
+  try {
+    const res = await fetch("/api/css/events?limit=3");
+    const data = await res.json();
+    const container = document.getElementById("siphonPreview");
+    if (data.events && data.events.length) {
+      container.innerHTML = data.events.map(e => `
+        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #F0F2F5;">
+          <span><strong>${e.from_engine.toUpperCase()}</strong> → ${e.to_fund}</span>
+          <span style="color: #10b981;">+$${e.amount_usd.toFixed(2)}</span>
+        </div>
+      `).join("");
+    } else {
+      container.innerHTML = "<div style='padding: 8px 0;'>No siphon events yet</div>";
+    }
+  } catch(e) { console.error("Failed to fetch siphon preview:", e); }
+}
+
+async function fetchAuditStatus() {
+  try {
+    const res = await fetch("/api/audit/summary");
+    const data = await res.json();
+    const container = document.getElementById("auditSummary");
+    if (data.active_alerts > 0) {
+      document.getElementById("auditStatus").innerHTML = "<span style='color: #ef4444;'>● Issues</span>";
+      container.innerHTML = `<span style="color: #ef4444;">⚠️ ${data.active_alerts} active alert(s)</span><br>${data.alerts.map(a => `<span style="font-size: 10px;">- ${a}</span>`).join("<br>")}`;
+    } else {
+      document.getElementById("auditStatus").innerHTML = "<span style='color: #10b981;'>● All Good</span>";
+      container.innerHTML = `All systems nominal. Last check: ${new Date(data.timestamp).toLocaleTimeString()}`;
+    }
+  } catch(e) { console.error("Failed to fetch audit status:", e); }
+}
+
+
+async function saveGuidance(value) {
+  try {
+    const mode = value <= 33 ? "CAUTIOUS" : value <= 66 ? "BALANCED" : "AGGRESSIVE";
+    const res = await fetch("/api/guidance/set", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mode: mode, signal: value / 100 })
+    });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById("guidanceMode").innerHTML = mode;
+      const desc = mode === "CAUTIOUS" ? "Preserve capital – lower risk" : mode === "AGGRESSIVE" ? "Seek growth – higher risk" : "Balanced risk – neutral allocation";
+      document.getElementById("guidanceDesc").innerHTML = desc;
+    }
+  } catch(e) { console.error("Failed to save guidance:", e); }
+}
+
+async function loadGuidance() {
+  try {
+    const res = await fetch("/api/guidance/current");
+    const data = await res.json();
+    const value = data.signal * 100;
+    document.getElementById("guidanceSlider").value = value;
+    document.getElementById("guidanceMode").innerHTML = data.mode;
+    const desc = data.mode === "CAUTIOUS" ? "Preserve capital – lower risk" : data.mode === "AGGRESSIVE" ? "Seek growth – higher risk" : "Balanced risk – neutral allocation";
+    document.getElementById("guidanceDesc").innerHTML = desc;
+  } catch(e) { console.error("Failed to load guidance:", e); }
+}
+
+function getStateIcon(state, extra) {
+  if (state === "ACTIVE" || state === "SCANNING") return `<span class="heartbeat"><span class="heart-icon">❤️</span></span>`;
+  if (state === "WATCHING") return `<span class="pulse-ring"></span>`;
+  if (state === "CAUTION") return `<span class="warning-triangle">⚠️</span>`;
+  if (state === "DORMANT") return `<span class="sleep-icon">💤</span>`;
+  return "";
+}
+
+function getLiveIcon(extra) {
+  if (extra && extra.includes("LIVE")) return `<span class="flame-icon">🔥</span>`;
+  return "";
+}
+
+function buildEngineRows() {
+  for (const [group, list] of Object.entries(engines)) {
+    const container = document.getElementById(`${group}Engines`);
+    if (!container) continue;
+    const listDiv = container.querySelector('.engine-list') || container;
+    listDiv.innerHTML = '';
+    list.forEach(eng => {
+      const row = document.createElement("div");
+      row.className = "engine-row";
+      row.dataset.code = eng.code;
+      row.dataset.platform = eng.platform || "starter";
+      row.dataset.exchange = eng.exchange || "internal";
+      const stateIcon = getStateIcon(eng.state, eng.extra);
+      const liveIcon = getLiveIcon(eng.extra);
+      const exchangeLogos = {
+        kraken:   '<span title="Kraken" style="font-size:10px;margin-left:5px;background:#5741d9;color:#fff;padding:1px 6px;border-radius:4px;font-weight:700;vertical-align:middle;">K</span>',
+        binance:  '<span title="Binance" style="font-size:10px;margin-left:5px;background:#F0B90B;color:#000;padding:1px 6px;border-radius:4px;font-weight:700;vertical-align:middle;">B</span>',
+        broker:   '<span title="Broker required" style="font-size:10px;margin-left:5px;background:#e2e8f0;color:#64748b;padding:1px 6px;border-radius:4px;font-weight:700;vertical-align:middle;">BR</span>',
+        manual:   '',
+        internal: ''
+      };
+      const exchangeLogo = exchangeLogos[eng.exchange || 'internal'] || '';
+      row.innerHTML = '<div class="engine-left"><span class="engine-code">' + eng.code + '</span><span class="engine-state state-' + eng.state + '">' + eng.state + '</span><span class="engine-preview">' + eng.key1 + '</span>' + stateIcon + liveIcon + exchangeLogo + '</div><div class="expand-icon">⤤</div>';
+      row.onclick = () => openEngineModal(eng);
+      listDiv.appendChild(row);
+    });
+  }
+  // Apply tier filter after all rows rendered
+  if (tierLocked) {
+    filterByTier(localStorage.getItem('cceTier') || 'all');
+  } else {
+    filterByTier(localStorage.getItem('cceTier') || 'all');
+  }
+}
+
+let tierLocked = false;
+
+async function fetchClientTier() {
+  try {
+    const res = await fetch('/api/client/tier');
+    const data = await res.json();
+    if (data.tier && data.tier !== 'all') {
+      tierLocked = true;
+      // Lock the dropdown to client tier
+      const select = document.getElementById('tierFilter');
+      if (select) {
+        select.value = data.tier;
+        select.style.opacity = '0.85';
+        select.style.cursor = 'pointer';
+        select.style.pointerEvents = 'auto';
+        // Prevent actual value change
+        select.addEventListener('mousedown', function(e) {
+          e.preventDefault();
+          document.getElementById('tierLockModal').style.display = 'flex';
+        });
+        select.addEventListener('touchstart', function(e) {
+          e.preventDefault();
+          document.getElementById('tierLockModal').style.display = 'flex';
+        });
+      }
+
+      // Update badge
+      const badge = document.getElementById('tierBadge');
+      if (badge) badge.textContent = '🔒 ' + data.name;
+      // Apply the tier
+      filterByTier(data.tier);
+      localStorage.setItem('cceTier', data.tier);
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
+function applyStoredTier() {
+  if (tierLocked) return;
+  const saved = localStorage.getItem('cceTier') || 'all';
+  filterByTier(saved);
+}
+
+function updateStatusIndicators() {
+  let active = [], watching = [], caution = [];
+  for (const group of Object.values(engines)) {
+    for (const eng of group) {
+      if (eng.state === "ACTIVE" || eng.state === "SCANNING") active.push(eng.code);
+      else if (eng.state === "WATCHING") watching.push(eng.code);
+      else if (eng.state === "CAUTION") caution.push(eng.code);
+    }
+  }
+  const container = document.getElementById("statusGroup");
+  if (container) {
+    let html = "";
+    if (active.length) html += `<div class="status-badge" style="background:#FFF0F3;"><span class="heartbeat">❤️</span> ${active.length} active (${active.join(", ")})</div>`;
+    if (watching.length) html += `<div class="status-badge" style="background:#F0F9F0;"><span class="pulse-ring" style="display:inline-block;"></span> ${watching.length} watching (${watching.join(", ")})</div>`;
+    if (caution.length) html += `<div class="status-badge" style="background:#FFF7E5;"><span>⚠️</span> ${caution.length} caution (${caution.join(", ")})</div>`;
+    container.innerHTML = html || '<div class="status-badge">💤 All dormant</div>';
+  }
+}
+
+async function fetchPortfolio() {
+  try {
+    const res = await fetch('/api/portfolio');
+    const data = await res.json();
+    if (!data.error && data.totalUSD) {
+      portfolioData = data;
+      document.getElementById("portfolioTotal").innerHTML = `$${data.totalUSD.toFixed(2)}`;
+      const bubbles = document.getElementById("assetBubbles");
+      bubbles.innerHTML = data.assets.slice(0, 3).map(a => `<div class="asset-bubble">${a.symbol} $${a.usdValue.toFixed(0)}</div>`).join('');
+    }
+  } catch(e) { console.error(e); }
+}
+
+function openEngineModal(eng) {
+  document.getElementById("modalTitle").innerHTML = `${eng.code} · ${eng.name}`;
+  let extraNote = eng.extra ? `<div class="anomaly-warning">⚠️ ${eng.extra}</div>` : "";
+  document.getElementById("modalBody").innerHTML = `
+    <div class="modal-detail-row"><span>🔑 KEY 1</span><strong>${eng.key1}</strong></div>
+    <div class="modal-detail-row"><span>🔑 KEY 2</span><strong>${eng.key2}</strong></div>
+    <div class="modal-detail-row"><span>🔑 KEY 3</span><strong>${eng.key3}</strong></div>
+    <div class="modal-detail-row"><span>📡 ACTIVE ANOMALY</span><span style="color:#D4AF37;">${eng.anomalies}</span></div>
+    ${extraNote}`;
+  document.getElementById("engineModal").classList.add("active");
+}
+
+function openPortfolioModal() {
+  const assets = portfolioData.assets || [];
+  document.getElementById("portfolioModalBody").innerHTML = `
+    <div style="text-align:center; margin-bottom:20px;"><div style="font-size:32px; font-weight:800; color:#0066FF;">$${portfolioData.totalUSD?.toFixed(2)}</div></div>
+    ${assets.map(a => `<div style="display:flex; justify-content:space-between; padding:8px 0;"><strong>${a.symbol}</strong> ${a.amount.toFixed(4)} <span>$${a.usdValue.toFixed(2)} (${a.percentage.toFixed(1)}%)</span></div>`).join('')}
+    <div style="font-size:11px; color:#8DA0B0;">Updated: ${new Date(portfolioData.timestamp).toLocaleString()}</div>`;
+  document.getElementById("portfolioModal").classList.add("active");
+}
+
+function downloadData() { window.open('/api/export/csv', '_blank'); }
+function downloadHistory() { window.open('/api/export/history?limit=100', '_blank'); }
+async function testTelegram() {
+  try {
+    const res = await fetch('/api/telegram/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: '🔔 Test from CCE!' }) });
+    const data = await res.json();
+    alert(data.success ? '✅ Sent!' : '❌ Failed');
+  } catch(e) { alert('❌ Failed'); }
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.engine-group').forEach(g => g.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(`${btn.dataset.tab}Engines`).classList.add('active');
+  };
+});
+// Init tier lock on page load
+fetchClientTier().then(locked => { if (!locked) applyStoredTier(); });
+
+document.querySelectorAll('.close-modal').forEach(el => el.onclick = () => document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active')));
+window.onclick = (e) => { if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('active'); };
+document.getElementById('portfolioCenter').onclick = () => openPortfolioModal();
+document.getElementById("guidanceSlider").addEventListener("input", (e) => {
+  saveGuidance(parseInt(e.target.value));
+});
+
+
+async function fetchWeatherSignals() {
+  try {
+    const res = await fetch('/api/weather/signals');
+    const data = await res.json();
+    const signals = data.signals || [];
+    const grid = document.getElementById('weatherGrid');
+    const status = document.getElementById('weatherStatus');
+    if (!signals.length) {
+      grid.innerHTML = '<div style="text-align:center;padding:12px;color:#8DA0B0;font-size:11px;grid-column:1/-1;">No signals — check API key</div>';
+      status.textContent = 'OFFLINE';
+      return;
+    }
+    status.textContent = signals.length + ' SIGNALS';
+    status.style.color = '#10b981';
+    grid.innerHTML = signals.map(function(s) {
+      var bull = s.signal > 0.2;
+      var bear = s.signal < -0.2;
+      var icon = bull ? '▲' : bear ? '▼' : '◆';
+      var bg   = bull ? '#f0fdf4' : bear ? '#fff1f2' : '#fffbeb';
+      var col  = bull ? '#16a34a' : bear ? '#dc2626' : '#d97706';
+      var bar  = Math.abs(s.signal) * 100;
+      var barCol = bull ? '#16a34a' : bear ? '#dc2626' : '#d97706';
+      var pct  = (s.signal > 0 ? '+' : '') + (s.signal*100).toFixed(0) + '%';
+      var temp = s.temp ? s.temp.toFixed(0) + 'C' : '';
+      return '<div style="background:' + bg + ';border-radius:12px;padding:8px 10px;">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">'
+        + '<span style="font-size:11px;font-weight:700;color:#1a1a2e;">' + s.commodity + '</span>'
+        + '<span style="font-size:12px;font-weight:800;color:' + col + ';">' + icon + ' ' + pct + '</span>'
+        + '</div>'
+        + '<div style="font-size:9px;color:#6b7280;margin-bottom:4px;">' + s.location + ' ' + temp + ' ' + (s.condition||'') + '</div>'
+        + '<div style="background:#e5e7eb;border-radius:4px;height:3px;">'
+        + '<div style="background:' + barCol + ';width:' + bar + '%;height:100%;border-radius:4px;"></div>'
+        + '</div>'
+        + '<div style="font-size:9px;color:#9ca3af;margin-top:3px;">' + s.reason + '</div>'
+        + '</div>';
+    }).join('');
+  } catch(e) {
+    document.getElementById('weatherGrid').innerHTML = '<div style="color:#dc2626;font-size:11px;grid-column:1/-1;text-align:center;">Error loading weather</div>';
+  }
+}
+
+
+async function fetchHistorySummary() {
+  try {
+    const res = await fetch('/api/history?limit=1000');
+    let rows = await res.json();
+    if (!Array.isArray(rows)) rows = [rows];
+    const pts = rows.filter(r => r.portfolio_value > 0);
+    if (!pts.length) return;
+    const first = pts[pts.length-1].portfolio_value;
+    const last  = pts[0].portfolio_value;
+    const ret   = ((last - first) / first * 100);
+    document.getElementById('histStart').textContent = '$' + first.toFixed(0);
+    document.getElementById('histReturn').textContent = (ret>=0?'+':'') + ret.toFixed(1) + '%';
+    document.getElementById('histReturn').style.color = ret>=0 ? '#10b981' : '#ef4444';
+    document.getElementById('histCycles').textContent = pts.length;
+  } catch(e) {}
+}
+
+fetchData();
+fetchPortfolio();
+fetchGOData();
+fetchSiphonPreview();
+fetchAuditStatus();
+fetchWeatherSignals();
+loadGuidance();
+setInterval(fetchData, 30000);
+fetchHistorySummary();
+setInterval(fetchHistorySummary, 60000);
+setInterval(fetchPortfolio, 60000);
+setInterval(fetchGOData, 30000);
+setInterval(fetchSiphonPreview, 30000);
+setInterval(fetchAuditStatus, 30000);
+setInterval(fetchWeatherSignals, 300000);
+</script>
+<!-- TIER LOCK MODAL -->
+<div id="tierLockModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:20px;padding:28px 24px;max-width:320px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+    <div style="font-size:40px;margin-bottom:12px;">🔒</div>
+    <div style="font-size:18px;font-weight:700;color:#111827;margin-bottom:8px;">Platform Locked</div>
+    <div style="font-size:13px;color:#6b7280;line-height:1.6;margin-bottom:20px;">
+      Your account is configured for <strong>Kraken only</strong>.<br><br>
+      Additional platforms including Binance Futures, Forex, Stocks, REITs and Commodities are available on higher tiers.<br><br>
+      Contact your administrator to upgrade your plan and unlock more engines.
+    </div>
+    <button onclick="document.getElementById('tierLockModal').style.display='none'" 
+      style="background:#2563eb;color:white;border:none;padding:12px 32px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;width:100%;">
+      Got it
+    </button>
+  </div>
+</div>
+</body>
+</html>

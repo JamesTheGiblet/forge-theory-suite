@@ -1,0 +1,40 @@
+{
+  "updatedAt": "2026-03-13T19:28:48.238Z",
+  "score": 3,
+  "multiplier": 2,
+  "signalActive": false,
+  "snapshot": {
+    "btcPrice": 71061.72442662982,
+    "ma50": 72092.7428326421,
+    "ma200": 94328.98521921532,
+    "pctFromMA200": -0.24666077705080444,
+    "fearGreed": {
+      "value": 15,
+      "label": "Extreme Fear"
+    },
+    "dominance": {
+      "current": 56.90428343830914,
+      "sevenDayAgo": null,
+      "delta": null,
+      "insufficient": true
+    }
+  },
+  "conditions": {
+    "c1_extremeFear": {
+      "met": true,
+      "detail": "F&G = 15 (Extreme Fear)"
+    },
+    "c2_dominanceDrop": {
+      "met": false,
+      "detail": "Warming up — current dom 56.90% (need 7d history)"
+    },
+    "c3_bearStructure": {
+      "met": true,
+      "detail": "Price $71062 | MA200 $94329 | MA50 $72093"
+    },
+    "c4_notOverextended": {
+      "met": true,
+      "detail": "-24.7% from MA200"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "msg_id": "5d4b30768e7c0cbe",
+  "from": "router",
+  "to": "diplomat",
+  "type": "SWARM_LEADER_ELECTED",
+  "payload": {
+    "instanceId": "localhost-29212"
+  },
+  "timestamp": "2026-04-22T11:39:27.121Z"
+}

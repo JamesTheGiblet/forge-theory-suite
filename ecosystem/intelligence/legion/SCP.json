@@ -1,0 +1,221 @@
+{
+  "scp_id": "LEGION-MK20",
+  "object_class": "Thaumiel",
+  "clearance": "LEVEL 5",
+  "title": "LEGION MK20 – Total Sovereignty",
+  "subtitle": "A self-governing vault of living strategy organisms, evolved by AI agents, protected by SCP-style containment, running on a phone with voice, autonomous improvement, cross-exchange arbitrage, on-chain intelligence, social sentiment, decentralized execution, swarm mode, predictive AI, and a kill switch.",
+  "version": "MK20.0",
+  "author": "James Gilbert (JamesTheGiblet)",
+  "studio": "Giblets Creations",
+  "date": "2026-04-22",
+  "motto": "I wanted it. So I forged it.",
+  "lineage": {
+    "mk1": "CCE – Centralized Crypto Engine",
+    "mk2": "GOLEM – AI agents and self-healing",
+    "mk3": "LEGION – SCP vault + hash-chained voting",
+    "mk4": "The Awakening – Tournament and Treasurer",
+    "mk5": "Ascension – Chameleon LM and Telegram",
+    "mk6": "Sovereignty – Real Kraken data and live prices",
+    "mk7": "Transcendence – Portfolio allocator and Sentiment",
+    "mk8": "Apotheosis – Custom whale detection, Crypto VIX, Dashboard",
+    "mk9": "Genesis – Auto-strategy generator (genetic algorithm)",
+    "mk10": "Deep Intelligence – DQN, Reddit sentiment, cross-asset arbitrage",
+    "mk11": "Voice – Narrator, voice commands, personality",
+    "mk12": "Autonomous Improvement – Self-analysis, self-improvement",
+    "mk13": "Implementation – Acts on its own suggestions",
+    "mk14": "Cross-Exchange – Kraken, Coinbase, Gemini, Bitstamp, Bybit",
+    "mk15": "On-Chain – Whale tracking, mempool, exchange flows",
+    "mk16": "Social Sentiment – News, Twitter trends, sentiment scoring",
+    "mk17": "Decentralised Execution – Uniswap V3, Raydium, MEV protection",
+    "mk18": "Swarm – Multi-instance, leader election",
+    "mk19": "Predictive – Linear regression price forecasts, macro data",
+    "mk20": "Total Sovereignty – Autonomous action, kill switch, audit trail"
+  },
+  "intelligence_layers": {
+    "strategy_evolution": "Genetic Algorithm – production",
+    "reinforcement_learning": "DQN (Q-Learning) – production",
+    "sentiment_analysis": "Reddit + News – production",
+    "onchain_whale": "Mempool + Etherscan – production",
+    "market_regime": "VIX + Sentiment – production",
+    "price_prediction": "Linear regression – production",
+    "voice": "TTS + STT – production",
+    "autonomous_improvement": "Self‑analysis, auto‑tuning – production",
+    "decentralised_execution": "Uniswap V3, Raydium – requires API keys",
+    "swarm": "Multi‑instance – requires deployment",
+    "sovereignty": "Kill switch, audit trail – production"
+  },
+  "current_state": {
+    "active_strategies": 26,
+    "tournament_contestants": 2,
+    "chameleon_lineages": 5,
+    "containment_breaches": 0,
+    "paper_mode_remaining_hours": 45,
+    "candles_loaded": 40579,
+    "telegram": "connected",
+    "kraken": "connected",
+    "live_trading": false,
+    "pm2_status": "online",
+    "btc_price": 78100,
+    "eth_price": 2390,
+    "sol_price": 88.2,
+    "xrp_price": 1.45,
+    "link_price": 9.52,
+    "ltc_price": 56.1,
+    "doge_price": 0.0978,
+    "sentiment": 32,
+    "vix": 30.1
+  },
+  "dashboard": {
+    "url": "http://localhost:9000",
+    "api_url": "http://localhost:3001/api/stats",
+    "portfolio_api": "http://localhost:3002/api/portfolio/metrics",
+    "status": "online",
+    "features": [
+      "live_stats",
+      "strategy_rankings",
+      "market_intelligence",
+      "portfolio",
+      "charts",
+      "settings",
+      "api_keys",
+      "system"
+    ]
+  },
+  "services": {
+    "legion_core": {
+      "status": "online",
+      "pm2_name": "legion",
+      "port": null
+    },
+    "legion_api": {
+      "status": "online",
+      "pm2_name": "legion-api",
+      "port": 3001
+    },
+    "portfolio_api": {
+      "status": "online",
+      "pm2_name": "portfolio-api",
+      "port": 3002
+    },
+    "dashboard": {
+      "status": "online",
+      "pm2_name": "dashboard",
+      "port": 9000
+    },
+    "mk10_intelligence": {
+      "status": "online",
+      "pm2_name": "mk10-intelligence",
+      "port": null
+    },
+    "onchain_whale": {
+      "status": "online",
+      "pm2_name": "onchain-whale",
+      "port": null
+    },
+    "paper_mode": {
+      "status": "online",
+      "pm2_name": "paper-mode",
+      "port": null
+    },
+    "predictor": {
+      "status": "online",
+      "pm2_name": "predictor",
+      "port": null
+    },
+    "golem_mk1": {
+      "status": "online",
+      "pm2_name": "cce-bot",
+      "port": null
+    },
+    "emergency_api": {
+      "status": "online",
+      "pm2_name": "emergency-api",
+      "port": 3003
+    }
+  },
+  "telegram": {
+    "status": "connected",
+    "alerts_enabled": 18,
+    "confirmed_working": true,
+    "alert_types": [
+      "KETER_AUTHORISED",
+      "CONTAINMENT_BREACH",
+      "APOLLYON_TRIGGER",
+      "TOURNAMENT_LEADERBOARD",
+      "LINEAGE_EVOLVING",
+      "LINEAGE_THRASHING",
+      "REGIME_SHIFT",
+      "PORTFOLIO_UPDATE",
+      "ARBITRAGE_OPPORTUNITY",
+      "WHALE_TRANSACTION",
+      "EXCHANGE_FLOW",
+      "VIX_SUMMARY",
+      "REDDIT_SENTIMENT",
+      "DQN_TRADE",
+      "PRICE_PREDICTION",
+      "VOICE_COMMAND",
+      "SOVEREIGNTY_REPORT",
+      "KILL_SWITCH",
+      "EMERGENCY_CLOSE"
+    ]
+  },
+  "exchanges": {
+    "kraken": {
+      "status": "connected",
+      "permissions": "query_funds",
+      "live_trading": false
+    },
+      "status": "connected",
+      "permissions": "public_api",
+      "live_trading": false
+    },
+      "status": "connected",
+      "permissions": "public_api",
+      "live_trading": false
+    },
+      "status": "connected",
+      "permissions": "public_api",
+      "live_trading": false
+    },
+      "status": "connected",
+      "permissions": "public_api",
+      "live_trading": false
+    }
+  },
+  "paper_mode": {
+    "duration_hours": 48,
+    "required_breaches": 0,
+    "current_breaches": 0,
+    "remaining_hours": 45,
+    "status": "RUNNING"
+  },
+  "sovereignty": {
+    "kill_switch": "pm2 stop all",
+    "emergency_close": "curl -X POST http://localhost:3001/api/emergency/close_all",
+    "audit_trail": "data/implementation_history.json, data/arbitrage_history.json, pm2 logs",
+    "daily_report": "Telegram every 24 hours"
+  },
+  "commands": {
+    "start": "pm2 start start_legion_full.js --name legion",
+    "stop": "pm2 stop legion",
+    "restart": "pm2 restart legion",
+    "kill_switch": "pm2 stop all",
+    "logs": "pm2 logs legion",
+    "status": "pm2 status",
+    "dashboard": "open http://localhost:9000",
+    "api": "curl http://localhost:3001/api/stats",
+    "portfolio": "curl http://localhost:3002/api/portfolio/metrics",
+    "prices": "~/legion/scripts/prices.sh",
+    "sentiment": "~/legion/scripts/sentiment.sh",
+    "vix": "~/legion/scripts/vix.sh",
+    "whale": "~/legion/scripts/whale.sh",
+    "voice": "Say 'LEGION, what is the market doing?'",
+    "update_scp": "~/legion/scripts/update_scp.sh"
+  },
+  "signature": {
+    "author": "James Gilbert",
+    "date": "2026-04-22",
+    "version": "MK20.0",
+    "status": "LOCKED – Paper mode active, all intelligence layers operational, kill switch ready, awaiting live trading"
+  }
+}

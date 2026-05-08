@@ -1,0 +1,265 @@
+// engines/se-fear-fade/engine.js
+// S.E Fear Fade — Counter-cyclical sentiment engine
+// Buys BTC during Extreme Fear (F&G < 20), sells when Greed returns (F&G > 60)
+
+'use strict';
+
+const SeFearFadeStrategy = require('./strategy');
+const SeFearFadeStorage  = require('./storage');
+
+const PREFIX = 'SE-FF';
+
+const STATE = {
+  DORMANT:  'DORMANT',
+  WATCHING: 'WATCHING',
+  ACTIVE:   'ACTIVE',
+  EXITING:  'EXITING',
+  STOPPED:  'STOPPED'
+};
+
+class SeFearFadeEngine {
+
+  constructor(config, notifier, exchange = null) {
+    this.exchange = exchange;
+    this.config   = config;
+    this.notifier = notifier;
+
+    const cfg = config.fearFade || {};
+
+    this.isRunning    = false;
+    this.cycleCount   = 0;
+    this.currentState = STATE.DORMANT;
+    this.prevState    = STATE.DORMANT;
+
+    this.dryRun = cfg.dryRun !== false;
+
+    this.capital        = cfg.capitalUSDC || 100;
+    this.portfolioValue = this.capital;
+    this.totalPnl       = 0;
+    this.dailyPnl       = 0;
+    this.dailyTrades    = 0;
+
+    this.maxDailyLoss  = cfg.maxDailyLoss || 0.03;
+    this.circuitBroken = false;
+
+    this.entryPrice  = null;
+    this.entryFG     = null;
+
+    this.strategy = new SeFearFadeStrategy(cfg);
+    this.storage  = new SeFearFadeStorage();
+
+    this.lastCycleTime  = null;
+    this.lastTransition = null;
+    this.dailyResetTime = Date.now();
+  }
+
+  async start(intervalMinutes = 240) {
+    this.isRunning = true;
+    const intervalMs = intervalMinutes * 60 * 1000;
+
+    console.log('\n[' + PREFIX + '] Starting S.E Fear Fade Engine');
+    console.log('[' + PREFIX + '] Mode: ' + (this.dryRun ? 'DRY RUN' : '⚠️  LIVE'));
+    console.log('[' + PREFIX + '] Capital: $' + this.capital);
+    console.log('[' + PREFIX + '] Strategy: Buy Extreme Fear, Sell Greed\n');
+
+    while (this.isRunning) {
+      await this.runCycle();
+      if (!this.isRunning) break;
+      await this._sleep(intervalMs);
+    }
+  }
+
+  stop() {
+    console.log('[' + PREFIX + '] 🛑 Stopping...');
+    this.isRunning = false;
+    this.storage.close();
+  }
+
+  async runCycle() {
+    this.cycleCount++;
+    const start = Date.now();
+    this.lastCycleTime = new Date().toISOString();
+
+    console.log('\n[' + PREFIX + '] ─── Cycle #' + this.cycleCount + ' @ ' + new Date().toLocaleTimeString() + ' ───');
+
+    try {
+      this._checkDailyReset();
+      if (this._circuitBreakerTripped()) return;
+
+      const data = await this._fetchData();
+      if (!data) { console.log('[' + PREFIX + '] ⚠️  No data — skipping'); return; }
+
+      const signals = this._evaluateSignals(data);
+      console.log('[' + PREFIX + '] F&G: ' + data.fearGreed + ' | BTC: $' + data.btcPrice.toFixed(0) + ' | State: ' + this.currentState);
+
+      const nextState = this.strategy.evaluate(this.currentState, signals, data);
+      if (nextState !== this.currentState) await this._transition(nextState, signals);
+
+      await this._executeDecision(signals, data);
+
+      this.storage.logCycle({
+        timestamp:      this.lastCycleTime,
+        cycle:          this.cycleCount,
+        state:          this.currentState,
+        portfolioValue: this.portfolioValue,
+        dailyPnl:       this.dailyPnl,
+        signals:        JSON.stringify(signals)
+      });
+
+      console.log('[' + PREFIX + '] ✅ ' + (Date.now() - start) + 'ms | Portfolio: $' + this.portfolioValue.toFixed(2));
+
+    } catch (err) {
+      console.error('[' + PREFIX + '] ❌ Cycle error:', err?.message || err);
+      this.storage.logError({ timestamp: new Date().toISOString(), error: err?.message || String(err) });
+    }
+  }
+
+  // ── FETCH DATA ────────────────────────────────────────────────────────────────
+
+  async _fetchData() {
+    try {
+      const https = require('https');
+      const [fgData, btcData] = await Promise.all([
+        this._fetchJson('https://api.alternative.me/fng/?limit=1'),
+        this._fetchJson('https://api.kraken.com/0/public/Ticker?pair=XBTUSDC')
+      ]);
+
+      const fearGreed = parseInt(fgData?.data?.[0]?.value || 50);
+      const btcResult = btcData?.result;
+      const pair = btcResult ? Object.keys(btcResult)[0] : null;
+      const btcPrice = pair ? parseFloat(btcResult[pair].c[0]) : 0;
+
+      if (!btcPrice) return null;
+
+      return { fearGreed, btcPrice, timestamp: Date.now() };
+    } catch(e) {
+      console.warn('[' + PREFIX + '] Data fetch error:', e.message);
+      return null;
+    }
+  }
+
+  // ── ORDER EXECUTION ──────────────────────────────────────────────────────────
+
+  async _placeOrder(side, size, price = null) {
+    if (this.dryRun) {
+      console.log(`[/data/data/com.termux/files/usr] DRY RUN — ${side} ${size} BTC`);
+      return { orderId: 'dry-run', filled: size, price: price || 0 };
+    }
+    if (!this.exchange) {
+      console.error(`[/data/data/com.termux/files/usr] No exchange available`);
+      return null;
+    }
+    try {
+      const order = await this.exchange.createOrder('BTC/USDC', 'market', side, size, price);
+      console.log(`[/data/data/com.termux/files/usr] ✅ ${side} order filled: ${order.filled} BTC @ ${order.price}`);
+      return order;
+    } catch (err) {
+      console.error(`[/data/data/com.termux/files/usr] Order failed:`, err.message);
+      await this.notifier.send(`[/data/data/com.termux/files/usr] ❌ Order failed: ${side} BTC - ${err.message}`);
+      return null;
+    }
+  }
+
+  // ── ORDER EXECUTION ──────────────────────────────────────────────────────────
+
+  async _placeOrder(side, size, price = null) {
+    if (this.dryRun) {
+      console.log(`[/data/data/com.termux/files/usr] DRY RUN — ${side} ${size} BTC`);
+      return { orderId: 'dry-run', filled: size, price: price || 0 };
+    }
+    if (!this.exchange) {
+      console.error(`[/data/data/com.termux/files/usr] No exchange available`);
+      return null;
+    }
+    try {
+      const order = await this.exchange.createOrder('BTC/USDC', 'market', side, size, price);
+      console.log(`[/data/data/com.termux/files/usr] ✅ ${side} order filled: ${order.filled} BTC @ ${order.price}`);
+      return order;
+    } catch (err) {
+      console.error(`[/data/data/com.termux/files/usr] Order failed:`, err.message);
+      await this.notifier.send(`[/data/data/com.termux/files/usr] ❌ Order failed: ${side} BTC - ${err.message}`);
+      return null;
+    }
+  }
+
+  // ── ORDER EXECUTION ──────────────────────────────────────────────────────────
+
+  async _placeOrder(side, size, price = null) {
+    if (this.dryRun) {
+      console.log(`[/data/data/com.termux/files/usr] DRY RUN — ${side} ${size} BTC`);
+      return { orderId: 'dry-run', filled: size, price: price || 0 };
+    }
+    if (!this.exchange) {
+      console.error(`[/data/data/com.termux/files/usr] No exchange available`);
+      return null;
+    }
+    try {
+      const order = await this.exchange.createOrder('BTC/USDC', 'market', side, size, price);
+      console.log(`[/data/data/com.termux/files/usr] ✅ ${side} order filled: ${order.filled} BTC @ ${order.price}`);
+      return order;
+    } catch (err) {
+      console.error(`[/data/data/com.termux/files/usr] Order failed:`, err.message);
+      await this.notifier.send(`[/data/data/com.termux/files/usr] ❌ Order failed: ${side} BTC - ${err.message}`);
+      return null;
+    }
+  }
+
+  _fetchJson(url) {
+    return new Promise((resolve, reject) => {
+      const https = require('https');
+      https.get(url, res => {
+        let d = '';
+        res.on('data', c => d += c);
+        res.on('end', () => { try { resolve(JSON.parse(d)); } catch(e) { reject(e); } });
+      }).on('error', reject);
+    });
+  }
+
+  // ── EVALUATE SIGNALS ──────────────────────────────────────────────────────────
+
+  _evaluateSignals(data) {
+    const cfg = this.config.fearFade || {};
+    const entryFG  = cfg.entryFearGreed  || 20;
+    const exitFG   = cfg.exitFearGreed   || 60;
+    const watchFG  = cfg.watchFearGreed  || 30;
+
+    return {
+      fearGreed:      data.fearGreed,
+      btcPrice:       data.btcPrice,
+      extremeFear:    data.fearGreed <= entryFG,
+      fearBuilding:   data.fearGreed <= watchFG,
+      greedReturning: data.fearGreed >= exitFG,
+      entryPrice:     this.entryPrice,
+      pnlPct: this.entryPrice
+        ? ((data.btcPrice - this.entryPrice) / this.entryPrice * 100)
+        : 0
+    };
+  }
+
+  // ── EXECUTE DECISION ──────────────────────────────────────────────────────────
+
+  async _executeDecision(signals, data) {
+    if (this.currentState === STATE.ACTIVE && !this.entryPrice) {
+      // Open position with real order
+      const size = this.capital / data.btcPrice;
+      const order = await this._placeOrder("'buy'", size);
+      if (order) {
+        this.entryPrice = order.price || data.btcPrice;
+        this.entryFG = data.fearGreed;
+        console.log(`[/data/data/com.termux/files/usr] BUY BTC @ $${this.entryPrice.toFixed(0)} | F&G: ${data.fearGreed}`);
+        if (!this.dryRun) {
+          await this.notifier.send(`[/data/data/com.termux/files/usr] 🟢 BUY BTC @ $${this.entryPrice.toFixed(0)}\nF&G: ${data.fearGreed} (Extreme Fear)\nSize: ${size.toFixed(8)} BTC`);
+        }
+      }
+
+        if (!this.dryRun) {
+          await this.notifier.send(`[/data/data/com.termux/files/usr] 🟢 BUY BTC @ $${this.entryPrice.toFixed(0)}\nF&G: ${data.fearGreed} (Extreme Fear)\nSize: ${size.toFixed(8)} BTC`);
+        }
+      }
+
+      if (!this.dryRun) {
+        await this.notifier.send('[' + PREFIX + '] 🟢 BUY BTC @ $' + data.btcPrice.toFixed(0) + '\nF&G: ' + data.fearGreed + ' (Extreme Fear)\nCapital: $' + this.capital);
+      }
+    }
+
+    if (this.currentState === STATE.EXITING && this.entryPrice) {

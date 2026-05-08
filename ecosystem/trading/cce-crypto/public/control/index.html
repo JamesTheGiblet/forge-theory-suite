@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCE Control</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg:      #f0f2f5;
+    --surface: #ffffff;
+    --border:  #e2e8f0;
+    --gold:    #D4AF37;
+    --amber:   #f59e0b;
+    --green:   #10b981;
+    --red:     #ef4444;
+    --blue:    #2563eb;
+    --text:    #374151;
+    --muted:   #9ca3af;
+    --dark:    #111827;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; padding:12px; }
+
+  /* HEADER */
+  .header {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:12px 16px; margin-bottom:12px;
+    background:var(--blue); border-radius:16px;
+    color:white;
+  }
+  .header-title { font-size:18px; font-weight:700; letter-spacing:1px; }
+  .header-sub { font-size:11px; opacity:0.7; margin-top:2px; }
+  .status-pill {
+    display:flex; align-items:center; gap:5px;
+    background:rgba(255,255,255,0.2); padding:4px 10px; border-radius:20px;
+    font-size:11px; font-weight:600;
+  }
+  .dot { width:7px; height:7px; border-radius:50%; background:#4ade80; animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* REVENUE STRIP */
+  .rev-strip { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:12px; }
+  .rev-card {
+    background:var(--surface); border-radius:16px;
+    padding:14px 16px; box-shadow:0 1px 3px rgba(0,0,0,0.08);
+  }
+  .rev-label { font-size:11px; color:var(--muted); font-weight:500; }
+  .rev-value { font-size:22px; font-weight:700; color:var(--dark); margin-top:2px; }
+  .rev-value.green { color:var(--green); }
+  .rev-value.gold  { color:var(--gold); }
+
+  /* SECTION */
+  .section-hdr { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding:0 2px; }
+  .section-label { font-size:12px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+
+  /* ADD BUTTON */
+  .btn-add {
+    background:var(--blue); color:white; border:none;
+    padding:8px 16px; border-radius:20px; font-size:12px;
+    font-weight:600; cursor:pointer;
+  }
+  .btn-add:hover { background:#1d4ed8; }
+
+  /* CLIENT CARDS */
+  .client-card {
+    background:var(--surface); border-radius:16px;
+    padding:14px 16px; margin-bottom:10px;
+    box-shadow:0 1px 3px rgba(0,0,0,0.08);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .client-name { font-size:15px; font-weight:700; color:var(--dark); }
+  .client-date { font-size:11px; color:var(--muted); margin-top:1px; }
+  .client-right { text-align:right; }
+  .client-value { font-size:18px; font-weight:700; color:var(--blue); }
+  .client-return { font-size:12px; font-weight:600; margin-top:2px; }
+  .pos { color:var(--green); }
+  .neg { color:var(--red); }
+  .neu { color:var(--muted); }
+
+  .client-meta { display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap; }
+
+  .state-pill {
+    display:inline-block; padding:3px 10px; border-radius:20px;
+    font-size:10px; font-weight:600; text-transform:uppercase;
+  }
+  .s-DORMANT  { background:#f1f5f9; color:#64748b; }
+  .s-WATCHING { background:#eff6ff; color:var(--blue); }
+  .s-ACTIVE   { background:#ecfdf5; color:var(--green); }
+  .s-IGNITION { background:#fef9e7; color:var(--gold); }
+
+  .fee-pill {
+    display:inline-block; padding:3px 10px; border-radius:20px;
+    font-size:10px; font-weight:600;
+  }
+  .fee-paid   { background:#ecfdf5; color:var(--green); }
+  .fee-unpaid { background:#fef2f2; color:var(--red); }
+
+  .siphon-pill {
+    display:inline-block; padding:3px 10px; border-radius:20px;
+    font-size:10px; font-weight:600;
+    background:#fef9e7; color:var(--gold);
+  }
+
+  .del-btn {
+    background:none; border:none; color:var(--muted);
+    font-size:16px; cursor:pointer; padding:4px;
+  }
+  .del-btn:hover { color:var(--red); }
+
+  /* EMPTY */
+  .empty-card {
+    background:var(--surface); border-radius:16px; padding:40px 20px;
+    text-align:center; box-shadow:0 1px 3px rgba(0,0,0,0.08);
+  }
+  .empty-icon { font-size:36px; margin-bottom:10px; }
+  .empty-text { color:var(--muted); font-size:13px; }
+
+  /* MODAL */
+  .modal-bg {
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,0.5); z-index:100;
+    align-items:flex-end; justify-content:center;
+    padding-bottom:0;
+  }
+  .modal-bg.on { display:flex; }
+  .modal {
+    background:var(--surface); border-radius:24px 24px 0 0;
+    padding:24px 20px 32px; width:100%; max-width:480px;
+  }
+  .modal-handle { width:40px; height:4px; background:var(--border); border-radius:2px; margin:0 auto 20px; }
+  .modal-title { font-size:16px; font-weight:700; color:var(--dark); margin-bottom:16px; }
+  .fg { margin-bottom:12px; }
+  .fl { display:block; font-size:11px; font-weight:600; color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px; }
+  .fi {
+    width:100%; background:var(--bg); border:1.5px solid var(--border);
+    color:var(--dark); padding:10px 12px; border-radius:10px;
+    font-size:13px; font-family:'Inter',sans-serif;
+  }
+  .fi:focus { outline:none; border-color:var(--blue); }
+  .frow { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .fcheck { display:flex; align-items:center; gap:8px; margin-top:8px; }
+  .fcheck input { accent-color:var(--blue); width:16px; height:16px; }
+  .fcheck label { font-size:13px; color:var(--text); font-weight:500; }
+  .modal-acts { display:flex; gap:10px; margin-top:20px; }
+  .btn-cancel {
+    flex:1; background:var(--bg); border:1.5px solid var(--border);
+    color:var(--text); padding:12px; border-radius:12px;
+    font-size:13px; font-weight:600; cursor:pointer;
+  }
+  .btn-confirm {
+    flex:2; background:var(--blue); color:white; border:none;
+    padding:12px; border-radius:12px; font-size:13px; font-weight:600; cursor:pointer;
+  }
+  .btn-confirm:hover { background:#1d4ed8; }
+
+  /* FOOTER */
+  .footer { text-align:center; font-size:10px; color:var(--muted); margin-top:20px; }
+  .ts { font-size:10px; color:rgba(255,255,255,0.6); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">⚡ CCE Control</div>
+    <div class="header-sub">Client Management · Giblets Creations</div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+    <div class="status-pill"><div class="dot"></div>LIVE</div>
+    <div class="ts" id="lastRefresh">--</div>
+  </div>
+</div>
+
+<div class="rev-strip">
+  <div class="rev-card">
+    <div class="rev-label">Total AUM</div>
+    <div class="rev-value gold" id="totalAUM">£--</div>
+  </div>
+  <div class="rev-card">
+    <div class="rev-label">Total Earned</div>
+    <div class="rev-value green" id="totalEarned">£--</div>
+  </div>
+  <div class="rev-card">
+    <div class="rev-label">Setup Fees</div>
+    <div class="rev-value green" id="totalSetup">£--</div>
+  </div>
+  <div class="rev-card">
+    <div class="rev-label">Siphon Earned</div>
+    <div class="rev-value green" id="totalSiphon">£--</div>
+  </div>
+</div>
+
+<div class="section-hdr">
+  <div class="section-label" id="clientCount">0 Clients</div>
+  <button class="btn-add" onclick="openModal()">+ Add Client</button>
+</div>
+
+<div id="clientList">
+  <div class="empty-card">
+    <div class="empty-icon">📡</div>
+    <div class="empty-text">No clients yet — add your first client above</div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add New Client</div>
+    <div class="fg">
+      <label class="fl">Client Name</label>
+      <input class="fi" id="iName" placeholder="Abe / Mark / etc">
+    </div>
+    <div class="frow">
+      <div class="fg">
+        <label class="fl">Starting Capital (£)</label>
+        <input class="fi" id="iCap" type="number" placeholder="1000">
+      </div>
+      <div class="fg">
+        <label class="fl">Setup Fee (£)</label>
+        <input class="fi" id="iFee" type="number" value="200">
+      </div>
+    </div>
+    <div class="fg">
+      <label class="fl">Kraken Read API Key (optional)</label>
+      <input class="fi" id="iKey" placeholder="For live balance monitoring">
+    </div>
+    <div class="fg">
+      <label class="fl">Kraken Read API Secret (optional)</label>
+      <input class="fi" id="iSecret" placeholder="Read-only, no withdrawal">
+    </div>
+    <div class="fg">
+      <label class="fl">Notes</label>
+      <input class="fi" id="iNotes" placeholder="e.g. Word of mouth, friend">
+    </div>
+    <div class="fcheck">
+      <input type="checkbox" id="iFeePaid">
+      <label>Setup fee already paid</label>
+    </div>
+    <div class="modal-acts">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-confirm" onclick="addClient()">Add Client</button>
+    </div>
+  </div>
+</div>
+
+<div class="footer">CCE Control v1.0 · Giblets Creations · Port 3002</div>
+
+<script>
+async function fetchData() {
+  try {
+    const res  = await fetch('/api/control/clients');
+    const data = await res.json();
+    const clients = data.clients || [];
+    const totals  = data.totals  || {};
+
+    document.getElementById('totalAUM').textContent    = '£' + (totals.totalAUM    || 0).toFixed(2);
+    document.getElementById('totalSetup').textContent  = '£' + (totals.totalSetup  || 0).toFixed(2);
+    document.getElementById('totalSiphon').textContent = '£' + (totals.totalSiphon || 0).toFixed(2);
+    document.getElementById('totalEarned').textContent = '£' + (totals.totalEarned || 0).toFixed(2);
+    document.getElementById('clientCount').textContent = clients.length + ' Client' + (clients.length !== 1 ? 's' : '');
+    document.getElementById('lastRefresh').textContent = new Date().toLocaleTimeString();
+
+    const list = document.getElementById('clientList');
+    if (!clients.length) {
+      list.innerHTML = '<div class="empty-card"><div class="empty-icon">📡</div><div class="empty-text">No clients yet — add your first client above</div></div>';
+      return;
+    }
+
+    list.innerHTML = clients.map(c => {
+      const rc  = c.returnPct > 0 ? 'pos' : c.returnPct < 0 ? 'neg' : 'neu';
+      const rs  = (c.returnPct > 0 ? '+' : '') + c.returnPct + '%';
+      const date = c.joinDate ? new Date(c.joinDate).toLocaleDateString('en-GB') : '--';
+      const sc  = 's-' + (c.engineState || 'DORMANT');
+      const fc  = c.setupFeePaid ? 'fee-paid' : 'fee-unpaid';
+      const fs  = c.setupFeePaid ? '✅ £' + c.setupFeeAmount + ' paid' : '⏳ £' + c.setupFeeAmount + ' due';
+      const cur = c.error ? '<span class="neg">API Error</span>' : '£' + (c.currentValue || 0).toFixed(2);
+
+      return '<div class="client-card">' +
+        '<div style="flex:1">' +
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
+            '<div>' +
+              '<div class="client-name">' + c.name + '</div>' +
+              '<div class="client-date">Since ' + date + ' · £' + (c.startingCapital||0).toFixed(0) + ' starting</div>' +
+            '</div>' +
+            '<div class="client-right">' +
+              '<div class="client-value">' + cur + '</div>' +
+              '<div class="client-return ' + rc + '">' + rs + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="client-meta">' +
+            '<span class="state-pill ' + sc + '">' + (c.engineState||'DORMANT') + '</span>' +
+            '<span class="fee-pill ' + fc + '">' + fs + '</span>' +
+            '<span class="siphon-pill">💰 £' + (c.siphonTotal||0).toFixed(2) + ' siphoned</span>' +
+            '<button class="del-btn" onclick="del(\'' + c.id + '\')">✕</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  } catch(e) { console.error(e); }
+}
+
+function openModal()  { document.getElementById('modalBg').classList.add('on'); }
+function closeModal() {
+  document.getElementById('modalBg').classList.remove('on');
+  ['iName','iCap','iKey','iSecret','iNotes'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('iFee').value='200';
+  document.getElementById('iFeePaid').checked=false;
+}
+
+async function addClient() {
+  const name = document.getElementById('iName').value.trim();
+  if (!name) { alert('Client name required'); return; }
+  await fetch('/api/control/clients', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      name,
+      startingCapital:  parseFloat(document.getElementById('iCap').value)||0,
+      setupFeeAmount:   parseFloat(document.getElementById('iFee').value)||200,
+      krakenReadKey:    document.getElementById('iKey').value.trim(),
+      krakenReadSecret: document.getElementById('iSecret').value.trim(),
+      notes:            document.getElementById('iNotes').value.trim(),
+      setupFeePaid:     document.getElementById('iFeePaid').checked
+    })
+  });
+  closeModal();
+  fetchData();
+}
+
+async function del(id) {
+  if (!confirm('Remove this client?')) return;
+  await fetch('/api/control/clients/'+id,{method:'DELETE'});
+  fetchData();
+}
+
+fetchData();
+setInterval(fetchData, 60000);
+</script>
+</body>
+</html>

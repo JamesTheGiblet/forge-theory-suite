@@ -1,0 +1,87 @@
+{
+  "scp_id": "MUTATIONS-001",
+  "object_class": "Thaumiel",
+  "title": "Agent Evolution Framework — Mutation Definitions",
+  "version": "1.0.0",
+  "description": "Defines how each agent type can mutate, evolve, and improve over time",
+  
+  "mutation_rules": {
+    "learning_rate": {
+      "range": [0.01, 0.5],
+      "step": 0.01,
+      "agent_types": ["ChameleonLM", "ReinforcementLearning"],
+      "description": "How fast the agent learns from new data"
+    },
+    "memory_size": {
+      "range": [1000, 50000],
+      "step": 1000,
+      "agent_types": ["ChameleonLM", "ReinforcementLearning", "LSTMPredictor"],
+      "description": "How many past interactions to remember"
+    },
+    "exploration_rate": {
+      "range": [0.01, 0.5],
+      "step": 0.01,
+      "agent_types": ["DQNTrader", "ReinforcementLearning"],
+      "description": "Epsilon in epsilon-greedy — how often to explore vs exploit"
+    },
+    "confidence_threshold": {
+      "range": [0.5, 0.9],
+      "step": 0.05,
+      "agent_types": ["IntelligentTrader", "Auditor"],
+      "description": "Minimum confidence required to act"
+    },
+    "check_interval": {
+      "range": [5000, 120000],
+      "step": 5000,
+      "agent_types": ["Reaper", "ArbitrageHunter", "ForgeLord"],
+      "description": "How often the agent checks for work"
+    },
+    "batch_size": {
+      "range": [16, 128],
+      "step": 16,
+      "agent_types": ["ReinforcementLearning", "LSTMPredictor"],
+      "description": "Training batch size"
+    },
+    "neural_layers": {
+      "type": "architecture",
+      "options": [
+        {"name": "small", "layers": [32, 16]},
+        {"name": "medium", "layers": [64, 32]},
+        {"name": "large", "layers": [128, 64]},
+        {"name": "deep", "layers": [256, 128, 64]}
+      ],
+      "agent_types": ["DQNTrader", "LSTMPredictor"],
+      "description": "Neural network architecture"
+    }
+  },
+  
+  "evolution_strategies": {
+    "random_mutation": {
+      "description": "Randomly change one parameter within range",
+      "probability": 0.6
+    },
+    "hill_climbing": {
+      "description": "Make small incremental change in direction of improvement",
+      "probability": 0.3
+    },
+    "crossover": {
+      "description": "Combine parameters from two successful configurations",
+      "probability": 0.1
+    }
+  },
+  
+  "fitness_metrics": {
+    "accuracy": {"weight": 0.3, "higher_is_better": true},
+    "response_time": {"weight": 0.1, "higher_is_better": false},
+    "success_rate": {"weight": 0.3, "higher_is_better": true},
+    "resource_usage": {"weight": 0.1, "higher_is_better": false},
+    "roi": {"weight": 0.2, "higher_is_better": true}
+  },
+  
+  "containment": {
+    "max_mutations_per_agent": 100,
+    "rollback_on_regression": true,
+    "mutation_cooldown_ms": 3600000,
+    "require_validation": true
+  }
+}

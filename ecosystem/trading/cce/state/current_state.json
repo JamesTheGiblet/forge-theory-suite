@@ -1,0 +1,23 @@
+{
+  "capSignal": {
+    "score": 3,
+    "multiplier": 2.0,
+    "conditionsMet": [
+      true,
+      false,
+      true,
+      true
+    ],
+    "details": {
+      "current_price": 73050.28481075924,
+      "ma200": 94338.92802113602,
+      "ma50": 72132.51404032466,
+      "fng_value": 15,
+      "dom_current": 57.0278195243878,
+      "dom_change_7d": 0.0,
+      "pct_of_ma200": 77.433872043143
+    },
+    "lastUpdated": "2026-03-13T13:24:22.627835",
+    "timestamp": 1773408262
+  }
+}

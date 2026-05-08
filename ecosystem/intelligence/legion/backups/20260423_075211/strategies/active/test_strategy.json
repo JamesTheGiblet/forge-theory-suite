@@ -1,0 +1,9 @@
+{
+  "scp_id": "TEST-001",
+  "name": "Test Strategy",
+  "object_class": "Euclid",
+  "conditions": {
+    "rsi_threshold": 30,
+    "volume_spike": 2.5
+  }
+}

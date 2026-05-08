@@ -1,0 +1,20 @@
+{
+  "name": "pharaoh-engine",
+  "version": "1.0.0",
+  "description": "XRP Sentiment Engine — Fund the Egypt trip",
+  "main": "pharaoh.js",
+  "scripts": {
+    "start": "node pharaoh.js",
+    "dry": "DRY_RUN=true node pharaoh.js",
+    "pm2": "pm2 start ecosystem.config.js",
+    "status": "pm2 logs pharaoh --lines 20 --nostream",
+    "stop": "pm2 stop pharaoh"
+  },
+  "dependencies": {
+    "ccxt": "^4.0.0",
+    "dotenv": "^16.0.0",
+    "express": "^5.2.1",
+    "node-telegram-bot-api": "^0.64.0",
+    "sql.js": "^1.10.0"
+  }
+}

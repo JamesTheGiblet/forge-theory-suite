@@ -1,0 +1,11 @@
+{
+  "msg_id": "0e66eb4ca1d4bd5b",
+  "from": "router",
+  "to": "forge_lord",
+  "type": "REGIME_CHANGE",
+  "payload": {
+    "old": "fear",
+    "new": "bull"
+  },
+  "timestamp": "2026-04-23T00:02:02.774Z"
+}

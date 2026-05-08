@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCE • Forensic Layer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #FFFFFF; font-family: 'Inter', sans-serif; color: #0A2540; padding: 20px; max-width: 700px; margin: 0 auto; }
+    .back-btn { background: #F0F2F5; border: none; padding: 8px 16px; border-radius: 40px; cursor: pointer; margin-bottom: 20px; }
+    .back-btn:hover { background: #E4E7EC; }
+    .section { margin-bottom: 24px; }
+    .section h2 { font-family: 'Playfair Display', serif; font-size: 18px; color: #D4AF37; margin-bottom: 12px; border-left: 3px solid #D4AF37; padding-left: 12px; }
+    .card { background: #FFFFFF; border-radius: 20px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 0 0 1px #F0F2F5; }
+    .card-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .doubt-high { color: #ef4444; }
+    .doubt-medium { color: #f59e0b; }
+    .doubt-low { color: #10b981; }
+    .small-text { font-size: 11px; color: #8DA0B0; }
+    .loading { text-align: center; padding: 40px; color: #8DA0B0; }
+  </style>
+</head>
+<body>
+  <button class="back-btn" onclick="window.location.href='/'">← Back to Dashboard</button>
+  <h1 style="font-family: 'Playfair Display', serif; margin-bottom: 24px;">🔍 Forensic Layer</h1>
+
+  <div class="section">
+    <h2>📊 Doubt Patterns</h2>
+    <div id="doubtPatterns" class="loading">Loading patterns...</div>
+  </div>
+
+  <div class="section">
+    <h2>💰 Siphon Events</h2>
+    <div id="siphonEvents" class="loading">Loading siphon events...</div>
+  </div>
+
+  <div class="section">
+    <h2>📋 Recent Lessons</h2>
+    <div id="recentLessons" class="loading">Loading lessons...</div>
+  </div>
+
+  <script>
+    async function loadData() {
+      try {
+        // Load doubt patterns
+        const doubtRes = await fetch('/api/fl/doubt');
+        const doubtData = await doubtRes.json();
+        const patternsDiv = document.getElementById('doubtPatterns');
+        if (doubtData.patterns && doubtData.patterns.length) {
+          patternsDiv.innerHTML = doubtData.patterns.map(p => `
+            <div class="card">
+              <div class="card-header">
+                <strong>${p.engine.toUpperCase()}</strong>
+                <span class="doubt-${p.doubt_score > 0.7 ? 'high' : p.doubt_score > 0.3 ? 'medium' : 'low'}">doubt ${p.doubt_score.toFixed(2)}</span>
+              </div>
+              <div class="small-text" style="margin-bottom: 8px;">${p.context.substring(0, 100)}...</div>
+              <div class="small-text">${p.count} occurrences | Avg regret: $${p.avg_regret.toFixed(2)} | Last seen: ${new Date(p.last_seen).toLocaleDateString()}</div>
+            </div>
+          `).join('');
+        } else {
+          patternsDiv.innerHTML = '<div class="card">No doubt patterns yet. Keep trading!</div>';
+        }
+
+        // Load recent lessons
+        const lessonsRes = await fetch('/api/fl/lessons?limit=20');
+        const lessonsData = await lessonsRes.json();
+        const lessonsDiv = document.getElementById('recentLessons');
+        if (lessonsData.lessons && lessonsData.lessons.length) {
+          lessonsDiv.innerHTML = lessonsData.lessons.map(l => `
+            <div class="card">
+              <div class="card-header">
+                <strong>${l.engine.toUpperCase()}</strong>
+                <span style="color: ${l.actual_pnl >= 0 ? '#10b981' : '#ef4444'};">$${l.actual_pnl.toFixed(2)}</span>
+              </div>
+              <div>${l.trade_id}</div>
+              <div class="small-text">Regret: $${l.regret.toFixed(2)} | Better: ${l.alternative_action}</div>
+              <div class="small-text">${new Date(l.timestamp).toLocaleString()}</div>
+            </div>
+          `).join('');
+        } else {
+          lessonsDiv.innerHTML = '<div class="card">No lessons yet. Keep trading!</div>';
+        }
+      } catch (err) {
+        console.error('Failed to load forensic data:', err);
+        document.getElementById('doubtPatterns').innerHTML = '<div class="card">Error loading patterns</div>';
+        document.getElementById('recentLessons').innerHTML = '<div class="card">Error loading lessons</div>';
+  }
+}
+
+async function loadSiphonEvents() {
+  try {
+    const res = await fetch('/api/css/events?limit=10');
+    const data = await res.json();
+    const container = document.getElementById('siphonEvents');
+    if (data.events && data.events.length) {
+      container.innerHTML = data.events.map(e => `
+        <div class="card">
+          <div class="card-header">
+            <strong>${e.from_engine.toUpperCase()}</strong>
+            <span style="color: #10b981;">+$${e.amount_usd.toFixed(2)}</span>
+          </div>
+          <div>→ ${e.to_fund} Fund</div>
+          <div class="small-text">${e.reason} (trigger: $${e.trigger_value.toFixed(2)})</div>
+          <div class="small-text">${new Date(e.timestamp).toLocaleString()}</div>
+        </div>
+      `).join('');
+    } else {
+      container.innerHTML = '<div class="card">No siphon events yet</div>';
+    }
+  } catch (err) {
+    console.error('Failed to load siphon events:', err);
+    document.getElementById('siphonEvents').innerHTML = '<div class="card">Error loading siphon events</div>';
+  }
+}
+
+    loadSiphonEvents();
+    loadData();
+    setInterval(loadSiphonEvents, 30000);
+    setInterval(loadData, 30000);
+
+  </script>
+</body>
+</html>

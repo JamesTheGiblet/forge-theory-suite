@@ -1,0 +1,35 @@
+{
+  "signal_thresholds": {
+    "fear_greed_threshold": 25,
+    "dom_drop_threshold": -1.5,
+    "max_distance_from_ma200": 0.30,
+    "ma50_period": 50,
+    "ma200_period": 200,
+    "dominance_period_days": 7
+  },
+  "multipliers": {
+    "score_4": 3.0,
+    "score_3": 2.0,
+    "score_2": 1.5,
+    "score_1": 1.0,
+    "score_0": 1.0
+  },
+  "file_paths": {
+    "state_file": "/data/data/com.termux/files/home/cce/state/current_state.json",
+    "log_file": "/data/data/com.termux/files/home/cce/logs/monitor.log",
+    "error_log": "/data/data/com.termux/files/home/cce/logs/errors.log",
+    "cache_dir": "/data/data/com.termux/files/home/cce/cache/",
+    "dominance_history": "/data/data/com.termux/files/home/cce/cache/dominance_history.json",
+    "btc_cache": "/data/data/com.termux/files/home/cce/cache/btc_cache.json"
+  },
+  "api_endpoints": {
+    "fear_greed": "https://api.alternative.me/fng/?limit=1",
+    "coingecko_global": "https://api.coingecko.com/api/v3/global",
+    "coingecko_btc": "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=250&interval=daily"
+  },
+  "telegram": {
+    "enabled": false,
+    "bot_token": "",
+    "chat_id": ""
+  }
+}

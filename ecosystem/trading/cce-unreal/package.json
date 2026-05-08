@@ -1,0 +1,55 @@
+{
+  "name": "cce-production",
+  "version": "2.1.0-stable",
+  "description": "Cascade Compounding Engine - Production",
+  "main": "index.js",
+  "type": "commonjs",
+  "bin": {
+    "cce": "./bin/cce.js",
+    "cce-deploy": "./bin/cce-deploy.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dry-run": "cross-env CCE_DRY_RUN=true node --no-deprecation index.js",
+    "dashboard": "node dashboard-server.js",
+    "start-all": "concurrently \"npm start\" \"npm run dashboard\"",
+    "dry-run-all": "concurrently \"npm run dry-run\" \"npm run dashboard\"",
+    "pm2:dry-run": "pm2 start ecosystem.config.js",
+    "pm2:live": "pm2 start ecosystem.config.js --env production",
+    "pm2:stop": "pm2 stop ecosystem.config.js",
+    "pm2:restart": "pm2 restart ecosystem.config.js",
+    "pm2:logs": "pm2 logs",
+    "pm2:status": "pm2 status",
+    "optimize": "node tests/optimize.js",
+    "build-win": "node scripts/build-win.js",
+    "test": "node tests/test-strategy.js",
+    "postinstall": "node -e \"require('fs').mkdirSync('./logs', { recursive: true }); require('fs').mkdirSync('./data', { recursive: true });\""
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.24.0",
+    "axios": "^1.6.0",
+    "ccxt": "^4.0.0",
+    "concurrently": "^8.2.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.2",
+    "fs": "^0.0.1-security",
+    "http": "^0.0.1-security",
+    "path": "^0.12.7",
+    "sql.js": "^1.14.1",
+    "yahoo-finance2": "^3.13.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "pkg": {
+    "scripts": "src/**/*.js",
+    "assets": [
+      "public/**/*",
+      "node_modules/sqlite3/lib/binding/**/*"
+    ],
+    "targets": [
+      "node18-win-x64"
+    ]
+  }
+}

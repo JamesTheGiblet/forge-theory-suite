@@ -1,0 +1,949 @@
+const express = require('express');
+const initSqlJs = require('sql.js');
+const path = require('path');
+const fs = require('fs');
+const axios = require('axios');  // kept for future use
+const app = express();
+const port = 3000;
+
+// Load .env
+try { require('dotenv').config(); } catch(e) { console.log('dotenv not loaded'); }
+
+// Telegram config
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '';
+
+console.log('\n╔════════════════════════════════════════════════════════════════╗');
+console.log('║   CCE Platform Core — Dashboard Server                         ║');
+console.log('╚════════════════════════════════════════════════════════════════╝');
+console.log(`🌐 http://localhost:${port}`);
+console.log(`📧 Telegram: ${TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID ? '✅ Configured' : '⚠️ Not configured'}\n`);
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+
+// ============================================================================
+// API ENDPOINTS
+// ============================================================================
+
+app.get('/api/status', (req, res) => {
+  try {
+    const dbPath = path.join(__dirname, 'data', 'cce-production.db');
+    if (!fs.existsSync(dbPath)) return res.json({ btc_price: 0, fear_greed: 0, btc_dominance: 0, timestamp: new Date().toISOString() });
+    initSqlJs().then(SQL => {
+      const db = new SQL.Database(fs.readFileSync(dbPath));
+      const r = db.exec('SELECT btc_price, fear_greed, btc_dominance, current_state, portfolio_value, timestamp FROM cce_cycles ORDER BY id DESC LIMIT 1');
+      db.close();
+      if (!r[0]) return res.json({ btc_price: 0, fear_greed: 0, btc_dominance: 0, timestamp: new Date().toISOString() });
+      const [btc_price, fear_greed, btc_dominance, current_state, portfolio_value, timestamp] = r[0].values[0];
+      res.json({ btc_price, fear_greed, btc_dominance, current_state, portfolio_value, timestamp });
+    }).catch(e => res.json({ error: e.message }));
+  } catch(e) { res.json({ error: e.message }); }
+});
+
+app.get('/api/grid/status', (req, res) => {
+  try {
+    const dbPath = path.join(__dirname, 'data', 'grid-production.db');
+    if (!fs.existsSync(dbPath)) return res.json({ state: 'DORMANT', profit: 0 });
+    initSqlJs().then(SQL => {
+      const db = new SQL.Database(fs.readFileSync(dbPath));
+      const r = db.exec('SELECT grid_state, total_profit, open_buys, open_sells, completed_cycles, btc_price, centre_price, portfolio_value FROM grid_cycles ORDER BY id DESC LIMIT 1');
+      db.close();
+      if (!r[0]) return res.json({ state: 'DORMANT', profit: 0 });
+      const [grid_state, total_profit, open_buys, open_sells, completed_cycles, btc_price, centre_price, portfolio_value] = r[0].values[0];
+      res.json({ state: grid_state, profit: total_profit, open_buys, open_sells, cycles: completed_cycles, btc_price, centre_price, portfolio_value });
+    }).catch(() => res.json({ state: 'DORMANT', profit: 0 }));
+  } catch(e) { res.json({ state: 'DORMANT', profit: 0 }); }
+});
+
+app.get('/api/lce/status', (req, res) => {
+  try {
+    const dbPath = path.join(__dirname, 'data', 'lce-production.db');
+    if (!fs.existsSync(dbPath)) return res.json({ state: 'DORMANT', daily_pnl: 0 });
+    initSqlJs().then(SQL => {
+      const db = new SQL.Database(fs.readFileSync(dbPath));
+      const r = db.exec('SELECT state, daily_pnl, cycle_number FROM lce_cycles ORDER BY id DESC LIMIT 1');
+      db.close();
+      if (!r[0]) return res.json({ state: 'DORMANT', daily_pnl: 0 });
+      const [state, daily_pnl, cycle_number] = r[0].values[0];
+      res.json({ state, daily_pnl, cycle: cycle_number });
+    }).catch(() => res.json({ state: 'DORMANT', daily_pnl: 0 }));
+  } catch(e) { res.json({ state: 'DORMANT', daily_pnl: 0 }); }
+});
+
+app.get('/api/momentum/status', (req, res) => {
+  try {
+    const dbPath = path.join(__dirname, 'data', 'mom-production.db');
+    if (!fs.existsSync(dbPath)) return res.json({ state: 'STANDBY' });
+    initSqlJs().then(SQL => {
+      const db = new SQL.Database(fs.readFileSync(dbPath));
+      const r = db.exec('SELECT state, capital FROM mom_cycles ORDER BY id DESC LIMIT 1');
+      db.close();
+      if (!r[0]) return res.json({ state: 'STANDBY' });
+      const [state, capital] = r[0].values[0];
+      res.json({ state, capital });
+    }).catch(() => res.json({ state: 'STANDBY' }));
+  } catch(e) { res.json({ state: 'STANDBY' }); }
+});
+
+app.get('/api/breakout/status', (req, res) => {
+  try {
+    const dbPath = path.join(__dirname, 'data', 'brk-production.db');
+    if (!fs.existsSync(dbPath)) return res.json({ state: 'SCANNING' });
+    initSqlJs().then(SQL => {
+      const db = new SQL.Database(fs.readFileSync(dbPath));
+      const r = db.exec('SELECT state, capital FROM brk_cycles ORDER BY id DESC LIMIT 1');
+      db.close();
+      if (!r[0]) return res.json({ state: 'SCANNING' });
+      const [state, capital] = r[0].values[0];
+      res.json({ state, capital });
+    }).catch(() => res.json({ state: 'SCANNING' }));
+  } catch(e) { res.json({ state: 'SCANNING' }); }
+});
+
+app.get('/api/observer/status', (req, res) => {
+  try {
+    const dbPath = path.join(__dirname, 'data', 'obs-production.db');
+    if (!fs.existsSync(dbPath)) return res.json({ observations: 0, patterns: 0, anomalies: 0 });
+    initSqlJs().then(SQL => {
+      const db = new SQL.Database(fs.readFileSync(dbPath));
+      const r = db.exec('SELECT COUNT(*) FROM observations');
+      const p = db.exec('SELECT COUNT(*) FROM patterns');
+      db.close();
+      const observations = r[0]?.values[0][0] || 0;
+      const patterns = p[0]?.values[0][0] || 0;
+      res.json({ observations, patterns, anomalies: 0 });
+    }).catch(() => res.json({ observations: 0, patterns: 0, anomalies: 0 }));
+  } catch(e) { res.json({ observations: 0, patterns: 0, anomalies: 0 }); }
+});
+
+app.get('/api/strategist/status', (req, res) => {
+  res.json({ current: 96, threshold: 165, percent: 58, remaining: 69, state: 'WAITING' });
+});
+
+app.get('/api/sentinel/active', (req, res) => {
+  res.json({ count: 2 });
+});
+
+// ============================================================================
+// EXPORT ENDPOINTS
+// ============================================================================
+
+app.get('/api/export/csv', async (req, res) => {
+  try {
+    const dbPath = path.join(__dirname, 'data', 'cce-production.db');
+    let btcPrice = 67844;
+    let fearGreed = 13;
+    let btcDominance = 56.24;
+    let portfolioValue = 291.7;
+    let currentState = 'DORMANT';
+    let dbTimestamp = new Date().toISOString();
+
+    if (fs.existsSync(dbPath)) {
+        const SQL = await initSqlJs();
+      const db = new SQL.Database(fs.readFileSync(dbPath));
+      const result = db.exec('SELECT timestamp, btc_price, fear_greed, btc_dominance, portfolio_value, current_state FROM cce_cycles ORDER BY timestamp DESC LIMIT 1');
+      if (result.length && result[0].values.length) {
+        const row = result[0].values[0];
+        dbTimestamp = row[0] || new Date().toISOString();
+        btcPrice = row[1] || 67844;
+        fearGreed = row[2] || 13;
+        btcDominance = row[3] || 56.24;
+        portfolioValue = row[4] || 291.7;
+        currentState = row[5] || 'DORMANT';
+      }
+      db.close();
+    }
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const csvRows = [
+      ['CCE Dashboard Export', timestamp],
+      [''],
+      ['METRIC', 'VALUE', 'TIMESTAMP'],
+      ['BTC Price', btcPrice, dbTimestamp],
+      ['Fear & Greed', fearGreed, dbTimestamp],
+      ['BTC Dominance', btcDominance, dbTimestamp],
+      ['Portfolio Value', portfolioValue, dbTimestamp],
+      ['Current State', currentState, dbTimestamp]
+    ];
+
+    const csvContent = csvRows.map(row => row.join(',')).join('\n');
+    res.setHeader('Content-Disposition', `attachment; filename="cce-export-${timestamp}.csv"`);
+    res.setHeader('Content-Type', 'text/csv');
+    res.send(csvContent);
+  } catch (err) {
+    console.error('Export error:', err);
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    res.send(`CCE Dashboard Export,${timestamp}\n\nMETRIC,VALUE,TIMESTAMP\nBTC Price,67844,${new Date().toISOString()}\nFear & Greed,13,${new Date().toISOString()}\nBTC Dominance,56.24,${new Date().toISOString()}`);
+  }
+});
+
+app.get('/api/export/history', async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit) || 100, 5000);
+    const dbPath = path.join(__dirname, 'data', 'cce-production.db');
+    let history = [];
+
+    if (fs.existsSync(dbPath)) {
+        const SQL = await initSqlJs();
+      const db = new SQL.Database(fs.readFileSync(dbPath));
+      const result = db.exec(`SELECT timestamp, btc_price, fear_greed, btc_dominance, portfolio_value, current_state FROM cce_cycles ORDER BY timestamp DESC LIMIT ${limit}`);
+      if (result.length) {
+        const { columns, values } = result[0];
+        history = values.map(row => {
+          const obj = {};
+          columns.forEach((col, i) => obj[col] = row[i]);
+          return obj;
+        });
+      }
+      db.close();
+    }
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const csvRows = [
+      ['CCE History Export', timestamp],
+      [''],
+      ['TIMESTAMP', 'BTC_PRICE', 'FEAR_GREED', 'BTC_DOMINANCE', 'PORTFOLIO_VALUE', 'STATE']
+    ];
+
+    if (history && history.length) {
+      history.forEach(h => {
+        csvRows.push([
+          h.timestamp || 'N/A',
+          h.btc_price || 'N/A',
+          h.fear_greed || 'N/A',
+          h.btc_dominance || 'N/A',
+          h.portfolio_value || 'N/A',
+          h.current_state || 'N/A'
+        ]);
+      });
+    }
+
+    const csvContent = csvRows.map(row => row.join(',')).join('\n');
+    res.setHeader('Content-Disposition', `attachment; filename="cce-history-${timestamp}.csv"`);
+    res.setHeader('Content-Type', 'text/csv');
+    res.send(csvContent);
+  } catch (err) {
+    console.error('History export error:', err);
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    res.send(`CCE History Export,${timestamp}\n\nTIMESTAMP,BTC_PRICE,FEAR_GREED,BTC_DOMINANCE,STATE\n${new Date().toISOString()},67844,13,56.24,DORMANT`);
+  }
+});
+
+// ============================================================================
+// TELEGRAM ENDPOINTS
+// ============================================================================
+
+function sendTelegramMessage(message) {
+  return new Promise((resolve) => {
+    if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+      console.log('⚠️ Telegram not configured');
+      resolve(false);
+      return;
+    }
+    const https = require('https');
+    const postData = JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message, parse_mode: 'HTML' });
+    const req = https.request(
+      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' } },
+      (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try {
+            const json = JSON.parse(data);
+            if (json.ok) {
+              console.log('✅ Telegram message sent');
+              resolve(true);
+            } else {
+              console.log('❌ Telegram error:', json.description);
+              resolve(false);
+            }
+          } catch(e) { resolve(false); }
+        });
+      }
+    );
+    req.on('error', (e) => { console.log('❌ Telegram error:', e.message); resolve(false); });
+    req.write(postData);
+    req.end();
+  });
+}
+
+app.get('/api/telegram/ping', (req, res) => {
+  res.json({ hasToken: !!TELEGRAM_BOT_TOKEN, tokenLength: TELEGRAM_BOT_TOKEN.length, hasChat: !!TELEGRAM_CHAT_ID });
+});
+
+app.post('/api/telegram/send', async (req, res) => {
+  const message = req.body.message || '🔔 Test from CCE';
+  const result = await sendTelegramMessage(message);
+  if (result) res.json({ success: true, message: 'Sent!' });
+  else res.status(500).json({ error: 'Failed' });
+});
+
+app.post('/api/telegram/test', async (req, res) => {
+  const result = await sendTelegramMessage('🔔 Test from CCE Dashboard button!');
+  if (result) res.json({ success: true, message: 'Test sent!' });
+  else res.status(500).json({ error: 'Failed' });
+});
+
+// ============================================================================
+// FORGE HQ
+// ============================================================================
+
+app.get('/forge', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'forge-hq.html'));
+});
+
+// ============================================================================
+// PORTFOLIO TRACKER
+// ============================================================================
+
+const KrakenClient = require('kraken-api');
+const kraken = new KrakenClient(
+  process.env.KRAKEN_API_KEY,
+  process.env.KRAKEN_API_SECRET
+);
+
+async function getPortfolio() {
+  try {
+    const balance = await kraken.api('Balance');
+    const ticker = await kraken.api('Ticker', { pair: 'XBTUSD' });
+    const btcPrice = parseFloat(ticker.result.XXBTZUSD.c[0]);
+    const ethTicker = await kraken.api('Ticker', { pair: 'ETHUSD' });
+    const ethPrice = parseFloat(ethTicker.result.XETHZUSD.c[0]);
+    const solTicker = await kraken.api('Ticker', { pair: 'SOLUSD' });
+    const solPrice = parseFloat(solTicker.result.SOLUSD.c[0]);
+
+    const assets = [];
+    let totalUSD = 0;
+
+    for (const [asset, amount] of Object.entries(balance.result)) {
+      const numAmount = parseFloat(amount);
+      if (numAmount === 0) continue;
+
+      let usdValue = 0;
+      let price = 0;
+
+      if (asset === 'USDC' || asset === 'USD') {
+        usdValue = numAmount;
+        price = 1;
+      } else if (asset === 'XXBT' || asset === 'XBT') {
+        usdValue = numAmount * btcPrice;
+        price = btcPrice;
+      } else if (asset === 'XETH') {
+        usdValue = numAmount * ethPrice;
+        price = ethPrice;
+      } else if (asset === 'SOL') {
+        usdValue = numAmount * solPrice;
+        price = solPrice;
+      } else {
+        continue;
+      }
+
+      totalUSD += usdValue;
+      assets.push({
+        symbol: asset === 'XXBT' ? 'BTC' : asset === 'XETH' ? 'ETH' : asset,
+        amount: numAmount,
+        usdValue,
+        price,
+        percentage: 0
+      });
+    }
+
+    assets.forEach(asset => {
+      asset.percentage = totalUSD > 0 ? (asset.usdValue / totalUSD) * 100 : 0;
+    });
+
+    return {
+      totalUSD,
+      assets: assets.sort((a, b) => b.usdValue - a.usdValue),
+      timestamp: new Date().toISOString()
+    };
+  } catch (err) {
+    console.error('Portfolio fetch error:', err.message);
+    return { totalUSD: 0, assets: [], error: err.message, timestamp: new Date().toISOString() };
+  }
+}
+
+app.get('/api/portfolio', async (req, res) => {
+  const portfolio = await getPortfolio();
+  res.json(portfolio);
+});
+
+app.get('/api/portfolio/summary', async (req, res) => {
+  const portfolio = await getPortfolio();
+  res.json({
+    total: portfolio.totalUSD,
+    assetCount: portfolio.assets.length,
+    topAsset: portfolio.assets[0]?.symbol || 'None',
+    topValue: portfolio.assets[0]?.usdValue || 0,
+    timestamp: portfolio.timestamp
+  });
+});
+
+// ============================================================================
+// COMMODITIES (gold live via MetalpriceAPI, oil live from database)
+// ============================================================================
+
+const METALPRICE_KEY = process.env.METALPRICE_API_KEY;
+
+let oilPrice = 98.23;
+let goldPrice = 4575;
+let commodityLastUpdate = null;
+
+// Fetch live gold from MetalpriceAPI
+async function fetchGold() {
+  if (!METALPRICE_KEY) {
+    console.log("⚠️ No MetalpriceAPI key, gold remains static");
+    return;
+  }
+
+  try {
+    const res = await axios.get(`https://api.metalpriceapi.com/v1/latest?api_key=${METALPRICE_KEY}&base=USD&currencies=XAU`);
+    if (res.data && res.data.success && res.data.rates && res.data.rates.USDXAU) {
+      goldPrice = parseFloat(res.data.rates.USDXAU);
+      console.log(`🥇 Gold price updated: $${goldPrice}`);
+    } else {
+      console.log("⚠️ Gold API returned unexpected format");
+    }
+  } catch (err) {
+    console.error("❌ Failed to fetch gold:", err.message);
+  }
+}
+
+// Fetch live oil from como-production.db
+async function fetchOil() {
+  try {
+    const dbPath = path.join(__dirname, 'data', 'como-production.db');
+    if (!fs.existsSync(dbPath)) {
+      console.log("⚠️ Oil database not found");
+      return;
+    }
+    const SQL = await initSqlJs();
+    const db = new SQL.Database(fs.readFileSync(dbPath));
+    const result = db.exec('SELECT oil_price FROM como_cycles ORDER BY timestamp DESC LIMIT 1');
+    db.close();
+    if (result.length && result[0].values.length) {
+      const latestOil = result[0].values[0][0];
+      if (latestOil !== null && latestOil !== undefined) {
+        oilPrice = latestOil;
+        console.log(`🛢️  Oil price updated: $${oilPrice}`);
+      }
+    }
+  } catch (err) {
+    console.error("❌ Failed to fetch oil from database:", err.message);
+  }
+}
+
+// Combined update function
+async function fetchCommodityPrices() {
+  await fetchGold();
+  await fetchOil();
+  commodityLastUpdate = new Date();
+}
+
+// Endpoint
+app.get("/api/como/status", (req, res) => {
+  res.json({
+    oil_price: oilPrice,
+    gold_price: goldPrice,
+    timestamp: commodityLastUpdate ? commodityLastUpdate.toISOString() : new Date().toISOString()
+  });
+});
+
+// Fetch initially and every hour
+fetchCommodityPrices();
+setInterval(fetchCommodityPrices, 60 * 60 * 1000);
+
+console.log("📈 Live commodities feed active (gold via MetalpriceAPI, oil from database)");
+
+// VIX is static (oil is static)
+app.get("/api/vix", (req, res) => {
+  res.json({
+    vix: 26.9,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// CCE Volatility Index (custom)
+app.get('/api/cce/volatility', async (req, res) => {
+  try {
+    const dbPath = path.join(__dirname, 'data', 'cme-production.db');
+    if (!fs.existsSync(dbPath)) {
+      return res.json({ vix: 26.9, source: 'static', timestamp: new Date().toISOString() });
+    }
+    const SQL = await initSqlJs();
+    const db = new SQL.Database(fs.readFileSync(dbPath));
+    const result = db.exec('SELECT cce_volatility, timestamp FROM cme_cycles WHERE cce_volatility IS NOT NULL ORDER BY timestamp DESC LIMIT 1');
+    db.close();
+    if (result.length && result[0].values.length) {
+      const row = result[0].values[0];
+      res.json({
+        vix: row[0] || 26.9,
+        source: 'cce',
+        timestamp: row[1] || new Date().toISOString()
+      });
+    } else {
+      res.json({ vix: 26.9, source: 'static', timestamp: new Date().toISOString() });
+    }
+  } catch (err) {
+    console.error('CCE Volatility error:', err.message);
+    res.json({ vix: 26.9, source: 'static', timestamp: new Date().toISOString() });
+  }
+});
+
+// ============================================================================
+// CME (Stocks) Endpoint - Live SPY Data
+// ============================================================================
+
+app.get('/api/cme/status', async (req, res) => {
+  try {
+    const dbPath = path.join(__dirname, 'data', 'cme-production.db');
+    if (!fs.existsSync(dbPath)) {
+      return res.json({ spy_price: 653.18, state: 'DORMANT', timestamp: new Date().toISOString() });
+    }
+    const SQL = await initSqlJs();
+    const db = new SQL.Database(fs.readFileSync(dbPath));
+    const result = db.exec('SELECT timestamp, price, state FROM cme_cycles ORDER BY timestamp DESC LIMIT 1');
+    db.close();
+    if (result.length && result[0].values.length) {
+      const row = result[0].values[0];
+      res.json({
+        spy_price: row[1] || 653.18,
+        state: row[2] || 'DORMANT',
+        timestamp: row[0] || new Date().toISOString()
+      });
+    } else {
+      res.json({ spy_price: 653.18, state: 'DORMANT', timestamp: new Date().toISOString() });
+    }
+  } catch (err) {
+    console.error('CME endpoint error:', err.message);
+    res.json({ spy_price: 653.18, state: 'DORMANT', timestamp: new Date().toISOString() });
+  }
+});
+
+// ============================================================================
+// DXY (US Dollar Index) Endpoint - Live Data
+// ============================================================================
+
+app.get('/api/dxy/status', async (req, res) => {
+  try {
+    const dbPath = path.join(__dirname, 'data', 'como-production.db');
+    if (!fs.existsSync(dbPath)) {
+      return res.json({ dxy: 99.7, timestamp: new Date().toISOString() });
+    }
+    const SQL = await initSqlJs();
+    const db = new SQL.Database(fs.readFileSync(dbPath));
+    const result = db.exec('SELECT timestamp, dxy_price FROM como_cycles ORDER BY timestamp DESC LIMIT 1');
+    db.close();
+    if (result.length && result[0].values.length) {
+      const row = result[0].values[0];
+      res.json({
+        dxy: row[1] || 99.7,
+        timestamp: row[0] || new Date().toISOString()
+      });
+    } else {
+      res.json({ dxy: 99.7, timestamp: new Date().toISOString() });
+    }
+  } catch (err) {
+    console.error('DXY endpoint error:', err.message);
+    res.json({ dxy: 99.7, timestamp: new Date().toISOString() });
+  }
+});
+
+// ============================================================================
+// START SERVER
+// ============================================================================
+
+app.listen(port, () => {
+  console.log(`✅ Server running on http://localhost:${port}`);
+});
+
+// ============================================================================
+// FORENSIC LAYER (F.L) ENDPOINTS
+// ============================================================================
+
+app.get('/api/fl/doubt', async (req, res) => {
+  try {
+    const dbPath = path.join(__dirname, 'data', 'fl-production.db');
+    if (!fs.existsSync(dbPath)) {
+      return res.json({ patterns: [] });
+    }
+    const SQL = await initSqlJs();
+    const db = new SQL.Database(fs.readFileSync(dbPath));
+    const result = db.exec(`SELECT engine, context_signature, doubt_score, count, avg_regret, last_seen FROM fl_patterns WHERE doubt_score > 0 ORDER BY doubt_score DESC LIMIT 20`);
+    db.close();
+    if (result.length) {
+      const patterns = result[0].values.map(row => ({
+        engine: row[0],
+        context: row[1],
+        doubt_score: row[2],
+        count: row[3],
+        avg_regret: row[4],
+        last_seen: row[5]
+      }));
+      res.json({ patterns });
+    } else {
+      res.json({ patterns: [] });
+    }
+  } catch (err) {
+    console.error('FL doubt error:', err.message);
+    res.json({ patterns: [] });
+  }
+});
+
+app.get('/api/fl/lessons', async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+    const dbPath = path.join(__dirname, 'data', 'fl-production.db');
+    if (!fs.existsSync(dbPath)) {
+      return res.json({ lessons: [] });
+    }
+    const SQL = await initSqlJs();
+    const db = new SQL.Database(fs.readFileSync(dbPath));
+    const result = db.exec(`SELECT trade_id, engine, timestamp, actual_pnl, regret, alternative_action FROM fl_lessons ORDER BY timestamp DESC LIMIT ${limit}`);
+    db.close();
+    if (result.length) {
+      const lessons = result[0].values.map(row => ({
+        trade_id: row[0],
+        engine: row[1],
+        timestamp: row[2],
+        actual_pnl: row[3],
+        regret: row[4],
+        alternative_action: row[5]
+      }));
+      res.json({ lessons });
+    } else {
+      res.json({ lessons: [] });
+    }
+  } catch (err) {
+    console.error('FL lessons error:', err.message);
+    res.json({ lessons: [] });
+  }
+});
+
+// ============================================================================
+// FOREX RATE (EUR/USD) - Free API
+// ============================================================================
+
+let eurUsdRate = 1.1515;
+let forexLastUpdate = null;
+
+async function fetchEurUsd() {
+  try {
+    // Free API from exchangerate-api.com (no key required, limited calls)
+    const response = await axios.get('https://api.exchangerate-api.com/v4/latest/EUR');
+    if (response.data && response.data.rates && response.data.rates.USD) {
+      eurUsdRate = response.data.rates.USD;
+      console.log(`💱 EUR/USD updated: ${eurUsdRate.toFixed(4)}`);
+      forexLastUpdate = new Date();
+    }
+  } catch (err) {
+    console.log('⚠️ Forex API failed, using fallback rate:', err.message);
+  }
+}
+
+app.get('/api/forex/rate', (req, res) => {
+  res.json({
+    eur_usd: eurUsdRate,
+    timestamp: forexLastUpdate ? forexLastUpdate.toISOString() : new Date().toISOString()
+  });
+});
+
+// Fetch initially and every hour
+fetchEurUsd();
+setInterval(fetchEurUsd, 60 * 60 * 1000);
+
+console.log('📈 Live EUR/USD feed active');
+
+// ============================================================================
+// FRED ECONOMIC DATA (Fed Rate, Treasury Yields) - XML Parser
+// ============================================================================
+
+const FRED_API_KEY = process.env.FRED_API_KEY_1 || process.env.FRED_API_KEY_2 || '';
+const xml2js = require('xml2js');
+
+let fedRate = 3.64;
+let treasury10y = 4.42;
+let fredLastUpdate = null;
+
+async function fetchFredData() {
+  if (!FRED_API_KEY) {
+    console.log('⚠️ No FRED API key, using fallback values');
+    return;
+  }
+
+  try {
+    // Fetch Fed Funds Rate (FEDFUNDS)
+    const fedRes = await axios.get(`https://api.stlouisfed.org/fred/series/observations?series_id=FEDFUNDS&api_key=${FRED_API_KEY}&sort_order=desc&limit=1`);
+    const fedParser = new xml2js.Parser();
+    const fedResult = await fedParser.parseStringPromise(fedRes.data);
+    if (fedResult.observations && fedResult.observations.observation && fedResult.observations.observation[0]) {
+      const rate = parseFloat(fedResult.observations.observation[0].$.value);
+      if (!isNaN(rate)) {
+        fedRate = rate;
+        console.log(`🏦 Fed Funds Rate updated: ${fedRate}%`);
+      }
+    }
+
+    // Fetch 10-Year Treasury Yield (DGS10)
+    const treasRes = await axios.get(`https://api.stlouisfed.org/fred/series/observations?series_id=DGS10&api_key=${FRED_API_KEY}&sort_order=desc&limit=1`);
+    const treasParser = new xml2js.Parser();
+    const treasResult = await treasParser.parseStringPromise(treasRes.data);
+    if (treasResult.observations && treasResult.observations.observation && treasResult.observations.observation[0]) {
+      const yield10 = parseFloat(treasResult.observations.observation[0].$.value);
+      if (!isNaN(yield10)) {
+        treasury10y = yield10;
+        console.log(`📈 10-Year Treasury updated: ${treasury10y}%`);
+      }
+    }
+
+    fredLastUpdate = new Date();
+  } catch (err) {
+    console.error('❌ Failed to fetch FRED data:', err.message);
+  }
+}
+
+app.get('/api/fred/status', (req, res) => {
+  res.json({
+    fed_rate: fedRate,
+    treasury_10y: treasury10y,
+    timestamp: fredLastUpdate ? fredLastUpdate.toISOString() : new Date().toISOString()
+  });
+});
+
+// Fetch initially and every 6 hours (FRED updates daily)
+fetchFredData();
+setInterval(fetchFredData, 6 * 60 * 60 * 1000);
+
+console.log('📈 Live FRED economic data feed active');
+
+// ============================================================================
+// G.O (Grand Orchestrator) Endpoint
+// ============================================================================
+
+app.get('/api/go/status', async (req, res) => {
+  try {
+    const dbPath = path.join(__dirname, 'data', 'go-production.db');
+    if (!fs.existsSync(dbPath)) {
+      return res.json({ regime: 'NEUTRAL', stability: 0, status: 'LEARNING' });
+    }
+    const SQL = await initSqlJs();
+    const db = new SQL.Database(fs.readFileSync(dbPath));
+    const result = db.exec(`SELECT regime_label, stability_score, status FROM go_cycles ORDER BY timestamp DESC LIMIT 1`);
+    db.close();
+    if (result.length && result[0].values.length) {
+      const row = result[0].values[0];
+      res.json({
+        regime: row[0],
+        stability: row[1],
+        status: row[2]
+      });
+    } else {
+      res.json({ regime: 'NEUTRAL', stability: 0, status: 'LEARNING' });
+    }
+  } catch (err) {
+    console.error('G.O endpoint error:', err.message);
+    res.json({ regime: 'NEUTRAL', stability: 0, status: 'LEARNING' });
+  }
+});
+
+// ============================================================================
+// LIVE REIT PRICE (O Realty) - using Alpha Vantage
+// ============================================================================
+
+const ALPHA_VANTAGE_KEY = process.env.ALPHA_VANTAGE_API_KEY || process.env.ALPHA_VANTAGE_KEY || '';
+
+let reitPrice = 60.95;
+let reitLastUpdate = null;
+
+async function fetchReitPrice() {
+  if (!ALPHA_VANTAGE_KEY) {
+    console.log('⚠️ No Alpha Vantage key, using fallback REIT price');
+    return;
+  }
+  try {
+    const response = await axios.get(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=O&apikey=${ALPHA_VANTAGE_KEY}`);
+    if (response.data && response.data['Global Quote'] && response.data['Global Quote']['05. price']) {
+      const price = parseFloat(response.data['Global Quote']['05. price']);
+      if (!isNaN(price)) {
+        reitPrice = price;
+        console.log(`🏢 O Realty price updated: $${reitPrice}`);
+        reitLastUpdate = new Date();
+      }
+    }
+  } catch (err) {
+    console.log('⚠️ REIT price fetch failed:', err.message);
+  }
+}
+
+app.get('/api/reit/price', (req, res) => {
+  res.json({
+    price: reitPrice,
+    timestamp: reitLastUpdate ? reitLastUpdate.toISOString() : new Date().toISOString()
+  });
+});
+
+fetchReitPrice();
+setInterval(fetchReitPrice, 60 * 60 * 1000); // hourly
+
+console.log('📈 Live REIT price feed active (Alpha Vantage)');
+
+// ============================================================================
+// CSS (Capital Siphon System) Endpoint
+// ============================================================================
+
+app.get('/api/css/events', async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+    const dbPath = path.join(__dirname, 'data', 'css-production.db');
+    if (!fs.existsSync(dbPath)) {
+      return res.json({ events: [] });
+    }
+    const SQL = await initSqlJs();
+    const db = new SQL.Database(fs.readFileSync(dbPath));
+    const result = db.exec(`SELECT timestamp, from_engine, to_fund, amount_usd, reason, trigger_value FROM siphon_events ORDER BY timestamp DESC LIMIT ${limit}`);
+    db.close();
+    if (result.length) {
+      const events = result[0].values.map(row => ({
+        timestamp: row[0],
+        from_engine: row[1],
+        to_fund: row[2],
+        amount_usd: row[3],
+        reason: row[4],
+        trigger_value: row[5]
+      }));
+      res.json({ events });
+    } else {
+      res.json({ events: [] });
+    }
+  } catch (err) {
+    console.error('CSS events error:', err.message);
+    res.json({ events: [] });
+  }
+});
+
+// ============================================================================
+// AUDIT Summary Endpoint
+// ============================================================================
+
+app.get('/api/audit/summary', async (req, res) => {
+  try {
+    const dbPath = path.join(__dirname, 'data', 'audit-production.db');
+    if (!fs.existsSync(dbPath)) {
+      return res.json({ active_alerts: 0, alerts: [], timestamp: new Date().toISOString() });
+    }
+    const SQL = await initSqlJs();
+    const db = new SQL.Database(fs.readFileSync(dbPath));
+    const result = db.exec(`SELECT component, severity, message FROM audit_alerts WHERE resolved IS NULL ORDER BY last_seen DESC LIMIT 10`);
+    db.close();
+    if (result.length) {
+      const alerts = result[0].values.map(row => `${row[0]}: ${row[2]}`);
+      res.json({ active_alerts: result[0].values.length, alerts, timestamp: new Date().toISOString() });
+    } else {
+      res.json({ active_alerts: 0, alerts: [], timestamp: new Date().toISOString() });
+    }
+  } catch (err) {
+    console.error('AUDIT summary error:', err.message);
+    res.json({ active_alerts: 0, alerts: [], timestamp: new Date().toISOString() });
+  }
+});
+
+// ============================================================================
+// GUIDANCE LAYER (G.L)
+// ============================================================================
+
+let guidanceMode = 'BALANCED';
+let guidanceSignal = 0.5;
+let guidanceUpdated = null;
+
+app.get('/api/guidance/current', (req, res) => {
+  res.json({
+    mode: guidanceMode,
+    signal: guidanceSignal,
+    updated: guidanceUpdated ? guidanceUpdated.toISOString() : new Date().toISOString()
+  });
+});
+
+app.post('/api/guidance/set', (req, res) => {
+  const { mode, signal } = req.body;
+  if (mode && ['CAUTIOUS', 'BALANCED', 'AGGRESSIVE'].includes(mode)) {
+    guidanceMode = mode;
+    guidanceSignal = mode === 'CAUTIOUS' ? 0 : mode === 'AGGRESSIVE' ? 1 : 0.5;
+  } else if (signal !== undefined && signal >= 0 && signal <= 1) {
+    guidanceSignal = signal;
+    if (signal <= 0.33) guidanceMode = 'CAUTIOUS';
+    else if (signal <= 0.66) guidanceMode = 'BALANCED';
+    else guidanceMode = 'AGGRESSIVE';
+  }
+  guidanceUpdated = new Date();
+  console.log(`🎮 Guidance Layer updated: ${guidanceMode} (${guidanceSignal})`);
+  res.json({ success: true, mode: guidanceMode, signal: guidanceSignal });
+});
+
+// ============================================================================
+// WEATHER ENGINE API
+// ============================================================================
+
+let weatherSignals = [];
+
+async function fetchWeatherSignals() {
+  try {
+    const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
+    if (!WEATHER_API_KEY) return;
+    const locations = [
+      { name: 'US Midwest', city: 'Chicago', commodities: ['Corn', 'Soybeans', 'Wheat'] },
+      { name: 'Brazil', city: 'Sao Paulo', commodities: ['Oranges'] },
+      { name: 'Southeast Asia', city: 'Bangkok', commodities: ['Rice'] },
+      { name: 'California', city: 'Fresno', commodities: ['Oranges'] }
+    ];
+    const signals = [];
+    for (const loc of locations) {
+      const weatherRes = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(loc.city)}&units=metric&appid=${WEATHER_API_KEY}`);
+      const forecastRes = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(loc.city)}&units=metric&cnt=24&appid=${WEATHER_API_KEY}`);
+      const weather = {
+        temp: weatherRes.data.main.temp,
+        humidity: weatherRes.data.main.humidity,
+        condition: weatherRes.data.weather[0].main
+      };
+      const forecasts = forecastRes.data.list.filter((_, i) => i % 8 === 0).slice(0, 3);
+      for (const commodity of loc.commodities) {
+        let signal = 0, reason = '';
+        if (commodity === 'Rice') {
+          if (forecasts.some(f => f.weather[0].main === 'Rain' && f.main.temp > 25)) { signal = -0.6; reason = 'Excessive rainfall forecast'; }
+          else if (weather.humidity > 80) { signal = -0.3; reason = 'High humidity'; }
+          else { signal = 0.1; reason = 'Normal conditions'; }
+        } else if (commodity === 'Oranges') {
+          if (forecasts.some(f => f.main.temp < 0)) { signal = -0.8; reason = 'Frost forecast!'; }
+          else if (weather.temp < 5) { signal = -0.4; reason = 'Cold temperatures'; }
+          else if (weather.temp > 25) { signal = 0.3; reason = 'Warm weather good'; }
+          else { signal = 0.1; reason = 'Normal conditions'; }
+        } else if (commodity === 'Wheat') {
+          if (forecasts.every(f => f.weather[0].main !== 'Rain' && f.main.humidity < 50)) { signal = -0.7; reason = 'Drought forecast'; }
+          else if (weather.humidity < 40) { signal = -0.3; reason = 'Dry conditions'; }
+          else { signal = 0.2; reason = 'Favorable conditions'; }
+        } else if (commodity === 'Corn') {
+          if (forecasts.some(f => f.main.temp > 35)) { signal = -0.5; reason = 'Extreme heat'; }
+          else if (forecasts.some(f => f.main.temp > 25 && f.main.temp < 30)) { signal = 0.4; reason = 'Optimal temperature'; }
+          else { signal = 0.1; reason = 'Normal'; }
+        } else if (commodity === 'Soybeans') {
+          if (forecasts.some(f => f.weather[0].main === 'Rain')) { signal = 0.3; reason = 'Good rainfall'; }
+          else if (weather.humidity > 85) { signal = -0.3; reason = 'Excessive humidity'; }
+          else { signal = 0.1; reason = 'Normal'; }
+        }
+        if (signal !== 0) {
+          signals.push({ commodity, signal: signal, reason, location: loc.name, temp: weather.temp, condition: weather.condition, humidity: weather.humidity });
+        }
+      }
+    }
+    weatherSignals = signals;
+  } catch(e) { console.error('Weather API error:', e.message); }
+}
+
+app.get('/api/weather/signals', (req, res) => {
+  res.json({ signals: weatherSignals });
+});
+
+fetchWeatherSignals();
+setInterval(fetchWeatherSignals, 60 * 60 * 1000);
+

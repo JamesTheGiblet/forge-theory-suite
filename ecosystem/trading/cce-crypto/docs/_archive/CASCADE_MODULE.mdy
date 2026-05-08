@@ -1,0 +1,176 @@
+Cascade Module (F.L – Forensic Layer)
+
+System‑Level Propagation Model · Lag Detection · Structural Insight
+
+Classification: Internal · Analytical
+Parent: Forensic Layer (F.L)
+Authority: None (read‑only, pattern extraction)
+Status: 🔵 Design – v0.1
+
+---
+
+1. Overview
+
+The Cascade Module formalises the original insight that crypto markets move in waves: a shock in Bitcoin (BTC) propagates to Ethereum (ETH), Solana (SOL), and other assets with measurable lag and decay.
+
+This is not an engine, a signal, or a tactical rule. It is a structural principle of the market. The module detects, measures, and updates these propagation patterns, turning them into a model that higher layers can use.
+
+It sits inside the Forensic Layer (F.L) because it is a form of forensic analysis: observing cause, effect, and timing.
+
+---
+
+2. Placement in the Architecture
+
+```
+F.L – Forensic Layer
+  ├── Loss Analysis (trade post‑mortems)
+  ├── Doubt Mechanism (pattern‑based caution)
+  └── Cascade Module (propagation patterns)
+```
+
+The Cascade Module outputs patterns that are used by:
+
+· G.O (Grand Orchestrator) – to classify regimes and understand whether a move is local or systemic.
+· AUDIT – to verify propagation logic remains valid over time.
+
+It does not influence trades directly. It only extracts and updates the structural model.
+
+---
+
+3. Data Sources
+
+The Cascade Module uses historical price data already stored:
+
+Source Assets
+cce_cycles BTC price
+cme_cycles SPY (for cross‑market correlation)
+data-feed.js internal tickers ETH, SOL, RNDR, FET prices (if stored)
+Optional: crypto_cycles table Additional crypto assets
+
+All data is time‑stamped and aligned to a common interval (e.g., daily or 4‑hour).
+
+---
+
+4. Detection Logic
+
+The module runs periodically (e.g., weekly) and performs:
+
+4.1 Cross‑Correlation Analysis
+
+· For each target asset (ETH, SOL, etc.), compute the cross‑correlation between its returns and BTC returns over a range of lags (e.g., 0–30 days).
+· Identify the lag that maximises correlation (or minimises prediction error).
+· Store the lag and correlation strength.
+
+4.2 Regime‑Aware Segmentation
+
+· Segment data by market regimes (e.g., bull, bear, high volatility) using existing regime labels from G.O (once available).
+· Compute separate propagation lags for each regime.
+
+4.3 Confidence Threshold
+
+· Only accept patterns with correlation above a threshold (e.g., 0.6) and sufficient sample size (e.g., >10 occurrences).
+· Patterns with low confidence are flagged as “unstable”.
+
+4.4 Decay Factor
+
+· Measure how quickly the correlation declines with lag. This gives a sense of propagation persistence.
+
+---
+
+5. Storage
+
+Table fl_cascade_patterns
+
+Column Type Description
+id INTEGER PRIMARY KEY Auto‑increment
+source_asset TEXT e.g., BTC
+target_asset TEXT e.g., ETH
+regime TEXT ALL / BULL / BEAR / VOLATILE
+lag_days INTEGER Optimal lag in days
+correlation REAL Cross‑correlation at that lag
+sample_size INTEGER Number of observations used
+first_seen DATETIME When pattern was first detected
+last_updated DATETIME Last time pattern was confirmed
+confidence TEXT HIGH / MEDIUM / LOW
+
+Optional: fl_cascade_log to record each run’s raw correlation data for debugging.
+
+---
+
+6. Usage by Other Layers
+
+6.1 G.O – Regime Classification
+
+· When a regime shift occurs, G.O checks if the cascade pattern has changed (e.g., lag shortened or lengthened) to infer whether the shift is broad‑based or asset‑specific.
+· During high‑confidence cascade patterns, G.O may adjust its confidence that a trend will persist.
+
+6.2 AUDIT – Health Monitoring
+
+· AUDIT checks that cascade patterns are not stale (last_updated < X days) and that confidence is not persistently low.
+· Alerts when a previously strong pattern breaks down unexpectedly.
+
+6.3 Dashboard (optional)
+
+· A “Cascade View” could display current propagation lags and how they have evolved over time.
+
+---
+
+7. Reporting
+
+The Cascade Module sends a periodic (e.g., weekly) Telegram summary (prefix [CASCADE]):
+
+```
+[CASCADE] Weekly Propagation Update
+BTC → ETH: lag 18 days (corr 0.72) – HIGH
+BTC → SOL: lag 22 days (corr 0.65) – MEDIUM
+BTC → RNDR: lag 25 days (corr 0.48) – LOW
+Regime-specific: BULL lag 15 days, BEAR lag 23 days
+```
+
+If a pattern has shifted significantly:
+
+```
+[CASCADE] Pattern change detected
+BTC → ETH lag changed from 17 to 22 days over 4 weeks.
+```
+
+---
+
+8. Implementation Phases
+
+Phase 1 – Basic Detection (v0.1)
+
+· Run weekly on existing price data (BTC, ETH, SOL).
+· Compute lag using cross‑correlation over the entire history.
+· Store patterns in fl_cascade_patterns with regime = 'ALL'.
+
+Phase 2 – Regime Segmentation (v0.2)
+
+· After G.O is running and producing regime labels, re‑compute patterns segmented by regime.
+· Update patterns as regimes evolve.
+
+Phase 3 – Integration with G.O (v0.3)
+
+· G.O reads cascade patterns when determining regime stability and trend confidence.
+
+Phase 4 – Monitoring & Alerts (v0.4)
+
+· AUDIT monitors pattern stability.
+· Telegram alerts for significant shifts.
+
+---
+
+9. Why It Belongs in F.L
+
+The Cascade Module is a form of forensic analysis. It looks backward at historical data to extract structural relationships. It does not predict; it quantifies what already happened. This is the core function of the Forensic Layer. Placing it here keeps the architecture clean and respects the separation of concerns:
+
+· F.L discovers structural patterns.
+· G.O uses those patterns for forward‑looking decisions.
+· AUDIT ensures the patterns remain valid.
+
+---
+
+Giblets Creations · Internal Documentation
+Cascade Module (F.L) · v0.1 (Design)
+
+---

@@ -1,0 +1,7 @@
+{
+  "scp_id": "test/remote-capsule",
+  "scp_version": "0.1",
+  "behaviours": [],
+  "object_class": "Safe",
+  "intent": "Test remote delivery"
+}

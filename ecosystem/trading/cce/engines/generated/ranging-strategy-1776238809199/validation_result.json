@@ -1,0 +1,20 @@
+
+======================================================================
+🔬 Validating Strategy: Manual Test
+======================================================================
+
+📊 Attempt 1/10
+   Parameters: Target 2% | Stop 1% | Hold 5d
+   Red Count: 4
+
+✅ VALIDATION PASSED on attempt 1!
+
+======================================================================
+✅ STRATEGY VALIDATED
+   Optimal parameters: Target 2% | Stop 1% | Hold 5d
+   Red Count: 4
+   Backtest WR: 73.3% | Return: +15.9%
+   Forward WR: 85.7% | Return: +23.6%
+   Score: 773.7
+
+📄 Result saved to: /data/data/com.termux/files/home/cce/engines/generated/validation_result.json

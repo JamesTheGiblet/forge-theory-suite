@@ -1,0 +1,27 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "legion/market-monitor",
+  "object_class": "Safe",
+  "intent": "Fetch live Binance ticker data every minute and save it for the dashboard.",
+  "containment": {
+    "read_only": false,
+    "audit_log": false,
+    "kill_switch": false
+  },
+  "behaviours": [
+    {
+      "trigger": "cron",
+      "schedule": "* * * * *",
+      "actions": [
+        {
+          "primitive": "http_request",
+          "params": { "url": "https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT" }
+        },
+        {
+          "primitive": "write_file",
+          "params": { "path": "data/legion/market_status.json", "content": "$results.0.body" }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "ubvm/core-identity",
+  "object_class": "Thaumiel",
+  "intent": "Define the semantic identity, purpose, and interpretation rules of the UBVM README as the authoritative conceptual entrypoint for the Universal Behavioural Virtual Machine.",
+  "containment": {
+    "read_only": true,
+    "audit_log": true,
+    "kill_switch": false
+  },
+  "interpretation": {
+    "this_is": "The official README for UBVM — the reference runtime for SCP capsules.",
+    "purpose": [
+      "Establish UBVM's identity and conceptual surface",
+      "Explain core constructs: capsules, primitives, triggers, interpreter",
+      "Define UBVM's role within the Forge Theory ecosystem",
+      "Provide a stable mental model for developers and architects"
+    ],
+    "tone": "Technical, authoritative, implementation-focused, concise.",
+    "audience": [
+      "Developers implementing UBVM",
+      "Engineers writing primitives",
+      "Authors creating capsules",
+      "Architects integrating UBVM into larger systems",
+      "Researchers studying behavioural virtual machines"
+    ],
+    "importance": [
+      "UBVM purpose and identity",
+      "Capsule and primitive definitions",
+      "Interpreter behaviour and contract",
+      "Trigger model",
+      "Event bus architecture",
+      "Relationship to SCP and Forge Theory"
+    ],
+    "ignore": [
+      "Spec-level details duplicated in UBVM_SPEC.md",
+      "Internal TODOs or development notes",
+      "Legacy references from pre-UBVM systems",
+      "Implementation-specific quirks not part of the conceptual model"
+    ],
+    "dont_change": [
+      "Terminology",
+      "Concept definitions",
+      "Architectural framing",
+      "UBVM's role as the reference runtime"
+    ],
+    "trust_score": "reserved",
+    "semantic_contract": {
+      "guarantees": [
+        "Terminology in this README is canonical for UBVM.",
+        "Concept definitions override comments or code-level interpretations.",
+        "UBVM's identity and purpose remain stable across versions.",
+        "This README defines the mental model for all UBVM-compliant runtimes."
+      ],
+      "non_guarantees": [
+        "Implementation details of the reference runtime.",
+        "Experimental primitives or features not yet in UBVM Core.",
+        "Runtime-specific quirks or optimisations."
+      ],
+      "conflict_resolution": "If contradictions arise, prefer this README over code comments, logs, or external documentation."
+    }
+  },
+  "links": {
+    "self":     "ubvm/core-identity",
+    "spec":     "ubvm/spec",
+    "glossary": "ubvm/glossary",
+    "roadmap":  "ubvm/roadmap",
+    "scp_spec": "scp/spec"
+  },
+  "provenance": {
+    "author":       "James / Giblets Creations",
+    "agent":        "Claude Sonnet 4.6",
+    "created_at":   "2026-05-05T08:00:00Z",
+    "version":      "1.1.0",
+    "context":      "Created during UBVM documentation session, May 2026. Revised to move semantic_contract into interpretation, add provenance, correct capture_mode, add daily validation behaviour, and add scp/spec link.",
+    "capture_mode": "conversation",
+    "source_ref":   "",
+    "lineage":      []
+  },
+  "behaviours": [
+    {
+      "trigger": "on_load",
+      "actions": [
+        {
+          "primitive": "log",
+          "params": {
+            "message": "UBVM core-identity capsule loaded — semantic identity and interpretation rules active."
+          }
+        },
+        {
+          "primitive": "validate_self",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "trigger": "cron",
+      "schedule": "0 0 * * *",
+      "actions": [
+        {
+          "primitive": "validate_self",
+          "params": {}
+        },
+        {
+          "primitive": "log",
+          "params": {
+            "message": "ubvm/core-identity daily self-validation passed."
+          }
+        }
+      ]
+    }
+  ]
+}

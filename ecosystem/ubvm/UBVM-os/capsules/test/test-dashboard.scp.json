@@ -1,0 +1,26 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "test/dashboard",
+  "object_class": "Safe",
+  "intent": "Test the new HTML component rendering.",
+  "containment": {
+    "read_only": false,
+    "audit_log": true,
+    "kill_switch": false
+  },
+  "behaviours": [
+    {
+      "trigger": "on_load",
+      "actions": [
+        {
+          "primitive": "render.component",
+          "params": {
+            "title": "BuddAI Cognitive Core",
+            "content": "System Status: Nominal\nData Cube: Connected\nMemory Consolidation: Active\n\n[>] Ready for input.",
+            "path": "logs/dashboard.html"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "ubvm/spec",
+  "object_class": "Thaumiel",
+  "intent": "Define the authoritative technical specification for UBVM — its capsule schema, primitive model, interpreter contract, trigger system, event bus, compliance requirements, and test suite.",
+  "containment": {
+    "read_only": true,
+    "audit_log": true,
+    "kill_switch": false
+  },
+  "interpretation": {
+    "this_is": "The official UBVM 0.2 specification — the implementable technical contract for all UBVM-compliant runtimes.",
+    "purpose": [
+      "Define the capsule schema and minimum valid structure",
+      "Specify the primitive model and DISPATCH contract",
+      "Define the interpreter contract and result object",
+      "Specify the trigger system: on_load, cron, on_event",
+      "Define the event bus architecture and scheduler daemon",
+      "Establish compliance requirements and forbidden behaviours",
+      "Provide a compliance test suite for runtime certification",
+      "Define the versioning policy for UBVM"
+    ],
+    "tone": "Formal, normative, specification-grade, implementable.",
+    "audience": [
+      "Developers implementing UBVM runtimes",
+      "Engineers writing primitives",
+      "Architects integrating UBVM into larger systems",
+      "Researchers studying behavioural virtual machines",
+      "Future maintainers of the reference implementation"
+    ],
+    "importance": [
+      "Capsule schema and required fields",
+      "Primitive signature and DISPATCH table",
+      "Interpreter contract and result object",
+      "Trigger model",
+      "Event bus and scheduler daemon",
+      "Compliance requirements",
+      "Compliance test suite",
+      "Known gaps"
+    ],
+    "ignore": [
+      "Domain-specific primitives outside UBVM Core",
+      "SCP semantic layer details duplicated in SCP_SPEC.md",
+      "Implementation-specific quirks of the reference runtime",
+      "Experimental features not yet in UBVM Core 1.0"
+    ],
+    "dont_change": [
+      "Interpreter contract",
+      "Primitive signature",
+      "DISPATCH convention",
+      "Trigger names",
+      "Result object structure",
+      "Compliance requirements",
+      "UBVM Core 1.0 primitive set",
+      "Versioning policy"
+    ],
+    "trust_score": "reserved",
+    "semantic_contract": {
+      "guarantees": [
+        "This document defines the canonical UBVM technical contract.",
+        "Any runtime implementing this spec is UBVM-compliant.",
+        "The interpreter contract in §3.1 is the authoritative execution model.",
+        "The compliance test suite in §15 is the authoritative certification mechanism.",
+        "Known gaps are tracked as first-class facts, not omissions.",
+        "Version 1.0 is cut only when all gaps are resolved and ubvm test passes in full."
+      ],
+      "non_guarantees": [
+        "SCP semantic layer rules — see scp/spec.",
+        "Domain-specific primitive behaviour.",
+        "Timeline or delivery dates.",
+        "Reference implementation quirks not part of the contract."
+      ],
+      "conflict_resolution": "If contradictions arise between this spec and any README, code comment, or external document, this spec takes precedence. If contradictions arise between this spec and scp/spec, the conflicting layer governs: scp/spec governs semantic and transport rules; ubvm/spec governs execution rules."
+    }
+  },
+  "links": {
+    "self":     "ubvm/spec",
+    "scp_spec": "scp/spec",
+    "readme":   "ubvm/core-identity",
+    "glossary": "ubvm/glossary",
+    "roadmap":  "ubvm/roadmap"
+  },
+  "provenance": {
+    "author":       "James / Giblets Creations",
+    "agent":        "Claude Sonnet 4.6",
+    "created_at":   "2026-05-05T08:00:00Z",
+    "version":      "1.1.0",
+    "context":      "Created as the technical specification capsule for UBVM v0.2 during the UBVM documentation session, May 2026. Revised to move semantic_contract into interpretation, correct capture_mode, and add daily validation behaviour.",
+    "capture_mode": "conversation",
+    "source_ref":   "",
+    "lineage":      []
+  },
+  "behaviours": [
+    {
+      "trigger": "on_load",
+      "actions": [
+        {
+          "primitive": "log",
+          "params": {
+            "message": "UBVM spec capsule loaded — technical contract active."
+          }
+        },
+        {
+          "primitive": "validate_self",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "trigger": "cron",
+      "schedule": "0 0 * * *",
+      "actions": [
+        {
+          "primitive": "validate_self",
+          "params": {}
+        },
+        {
+          "primitive": "log",
+          "params": {
+            "message": "ubvm/spec daily self-validation passed."
+          }
+        }
+      ]
+    }
+  ]
+}

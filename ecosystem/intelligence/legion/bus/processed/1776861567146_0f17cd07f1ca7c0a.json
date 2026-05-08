@@ -1,0 +1,76 @@
+{
+  "msg_id": "0f17cd07f1ca7c0a",
+  "from": "router",
+  "to": "diplomat",
+  "type": "VIX_SUMMARY",
+  "payload": {
+    "readings": [
+      {
+        "asset": "BTC/USD",
+        "vix": "48.2",
+        "level": {
+          "level": "high",
+          "emoji": "🟠",
+          "interpretation": "High volatility, caution"
+        }
+      },
+      {
+        "asset": "ETH/USD",
+        "vix": "56.6",
+        "level": {
+          "level": "high",
+          "emoji": "🟠",
+          "interpretation": "High volatility, caution"
+        }
+      },
+      {
+        "asset": "SOL/USD",
+        "vix": "50.7",
+        "level": {
+          "level": "high",
+          "emoji": "🟠",
+          "interpretation": "High volatility, caution"
+        }
+      },
+      {
+        "asset": "XRP/USD",
+        "vix": "45.0",
+        "level": {
+          "level": "high",
+          "emoji": "🟠",
+          "interpretation": "High volatility, caution"
+        }
+      },
+      {
+        "asset": "LINK/USD",
+        "vix": "45.4",
+        "level": {
+          "level": "high",
+          "emoji": "🟠",
+          "interpretation": "High volatility, caution"
+        }
+      },
+      {
+        "asset": "LTC/USD",
+        "vix": "30.8",
+        "level": {
+          "level": "medium",
+          "emoji": "🟡",
+          "interpretation": "Normal volatility"
+        }
+      },
+      {
+        "asset": "DOGE/USD",
+        "vix": "53.0",
+        "level": {
+          "level": "high",
+          "emoji": "🟠",
+          "interpretation": "High volatility, caution"
+        }
+      }
+    ],
+    "avgVix": "47.1",
+    "timestamp": 1776861567146
+  },
+  "timestamp": "2026-04-22T12:39:27.146Z"
+}

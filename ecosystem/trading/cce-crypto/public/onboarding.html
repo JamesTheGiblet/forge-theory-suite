@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>CCE Onboarding — Full Journey</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: #f0f2f5;
+    font-family: 'Inter', sans-serif;
+    color: #0A2540;
+    min-height: 100vh;
+    padding: 20px 16px 60px;
+  }
+
+  /* Progress Bar */
+  .progress-header {
+    max-width: 700px;
+    margin: 0 auto 24px;
+  }
+
+  .steps {
+    display: flex;
+    justify-content: space-between;
+    background: white;
+    padding: 8px 16px;
+    border-radius: 60px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #9ca3af;
+    transition: all 0.2s;
+  }
+
+  .step.active {
+    color: #0066FF;
+  }
+
+  .step.completed {
+    color: #10b981;
+  }
+
+  .step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 28px;
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #6b7280;
+  }
+
+  .step.active .step-num {
+    background: #0066FF;
+    color: white;
+  }
+
+  .step.completed .step-num {
+    background: #10b981;
+    color: white;
+  }
+
+  /* Main Card */
+  .card {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 28px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 24px 28px 16px;
+    border-bottom: 1px solid #eef2f6;
+  }
+
+  .card-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #0A2540, #0066FF);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 6px;
+  }
+
+  .card-header p {
+    color: #6b7280;
+    font-size: 14px;
+  }
+
+  .card-content {
+    padding: 24px 28px;
+    max-height: 65vh;
+    overflow-y: auto;
+  }
+
+  /* Handbook */
+  .handbook-section {
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eef2f6;
+  }
+
+  .handbook-section:last-child {
+    border-bottom: none;
+  }
+
+  .handbook-section h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0A2540;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .handbook-section h3 .section-badge {
+    background: #eef2ff;
+    color: #0066FF;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .handbook-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #1f2937;
+    margin-bottom: 16px;
+  }
+
+  .handbook-text p {
+    margin-bottom: 12px;
+  }
+
+  .handbook-text ul, .handbook-text ol {
+    margin: 8px 0 12px 20px;
+  }
+
+  .handbook-text li {
+    margin: 4px 0;
+  }
+
+  .handbook-text code {
+    background: #f3f4f6;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: monospace;
+  }
+
+  .confirm-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 0;
+    margin-top: 8px;
+  }
+
+  .confirm-check input {
+    width: 18px;
+    height: 18px;
+    accent-color: #0066FF;
+    cursor: pointer;
+  }
+
+  .confirm-check label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+  }
+
+  /* Quiz */
+  .quiz-question {
+    margin-bottom: 24px;
+  }
+
+  .quiz-question-text {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #0A2540;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .quiz-opt {
+    background: #f8fafc;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+    text-align: left;
+    color: #1f2937;
+  }
+
+  .quiz-opt:hover:not(:disabled) {
+    border-color: #0066FF;
+    background: #eff6ff;
+  }
+
+  .quiz-opt.correct {
+    border-color: #10b981;
+    background: #ecfdf5;
+    color: #065f46;
+  }
+
+  .quiz-opt.wrong {
+    border-color: #ef4444;
+    background: #fef2f2;
+    color: #991b1b;
+  }
+
+  .quiz-opt:disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
+  }
+
+  .quiz-feedback {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    display: none;
+  }
+
+  .quiz-feedback.show {
+    display: block;
+  }
+
+  .quiz-feedback.correct-fb {
+    background: #ecfdf5;
+    color: #065f46;
+  }
+
+  .quiz-feedback.wrong-fb {
+    background: #fef2f2;
+    color: #991b1b;
+  }
+
+  .quiz-retry {
+    text-align: center;
+    margin-top: 20px;
+    padding: 16px;
+    background: #fef3c7;
+    border-radius: 14px;
+    color: #b45309;
+    font-size: 13px;
+  }
+
+  /* Agreement Form */
+  .agreement-box {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 16px;
+    max-height: 200px;
+    overflow-y: auto;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #4b5563;
+    margin-bottom: 20px;
+  }
+
+  .agreement-box strong {
+    color: #0A2540;
+  }
+
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  .form-group input {
+    width: 100%;
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: #0066FF;
+    background: white;
+  }
+
+  .checkbox-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin: 20px 0;
+  }
+
+  .checkbox-row input {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: #0066FF;
+  }
+
+  .checkbox-row label {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #374151;
+  }
+
+  /* Access Code */
+  .access-code-box {
+    text-align: center;
+    background: linear-gradient(135deg, #0A2540, #0066FF);
+    border-radius: 20px;
+    padding: 28px;
+    margin: 20px 0;
+  }
+
+  .access-code-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 8px;
+  }
+
+  .access-code-value {
+    font-family: 'Courier New', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: white;
+  }
+
+  .next-steps {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 20px;
+    text-align: left;
+  }
+
+  .next-steps p {
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  /* Buttons */
+  .card-footer {
+    padding: 20px 28px 28px;
+    border-top: 1px solid #eef2f6;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .btn {
+    padding: 12px 24px;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .btn-primary {
+    background: #0066FF;
+    color: white;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: #0052cc;
+  }
+
+  .btn-secondary {
+    background: #f3f4f6;
+    color: #374151;
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background: #e5e7eb;
+  }
+
+  .btn-success {
+    background: #10b981;
+    color: white;
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Utility */
+  .text-center {
+    text-align: center;
+  }
+
+  .mt-4 {
+    margin-top: 16px;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-header">
+  <div class="steps" id="stepNav">
+    <div class="step" data-step="0">
+      <span class="step-num">1</span>
+      <span>Handbook</span>
+    </div>
+    <div class="step" data-step="1">
+      <span class="step-num">2</span>
+      <span>Confirm</span>
+    </div>
+    <div class="step" data-step="2">
+      <span class="step-num">3</span>
+      <span>Quiz</span>
+    </div>
+    <div class="step" data-step="3">
+      <span class="step-num">4</span>
+      <span>Agreement</span>
+    </div>
+    <div class="step" data-step="4">
+      <span class="step-num">✓</span>
+      <span>Access</span>
+    </div>
+  </div>
+</div>
+
+<div class="card" id="mainCard">
+  <div class="card-header">
+    <h1 id="stepTitle">CCE Handbook</h1>
+    <p id="stepDesc">Read the full documentation to understand how the platform works</p>
+  </div>
+  <div class="card-content" id="stepContent"></div>
+  <div class="card-footer">
+    <button class="btn btn-secondary" id="prevBtn" onclick="changeStep(-1)" disabled>← Back</button>
+    <button class="btn btn-primary" id="nextBtn" onclick="changeStep(1)">Next →</button>
+  </div>
+</div>
+
+<script>
+  // ==================== HANDBOOK SECTIONS ====================
+  const handbookSections = [
+    {
+      title: "The Three Pillars",
+      badge: "Foundation",
+      content: `<p><strong>PILLAR ONE: ENVIRONMENT FIRST, ACTION SECOND</strong><br>
+      Most trading systems ask: "Where is price going?" CCE asks: "What is the environment?" In a hostile environment, the correct action is inaction. In a favourable environment, the correct action is deployment.</p>
+      <p><strong>PILLAR TWO: NO PREDICTION. NO EMOTION. NO EXCEPTIONS.</strong><br>
+      CCE does not predict. It observes, filters, and responds. There is no discretionary override. If the engine wants to be in cash and you believe a rally is coming, you must accept the engine's decision or shut it down.</p>
+      <p><strong>PILLAR THREE: TRANSPARENCY BY DEFAULT</strong><br>
+      Every engine's logic is documented. Every state transition is logged. The architecture is public. Strategy files are the only protected component.</p>`
+    },
+    {
+      title: "The Cascade Principle",
+      badge: "Core Concept",
+      content: `<p>The name "Cascade Compounding Engine" encodes the system's core operational principle: value flows through multiple stages, compounding at each step.</p>
+      <p><strong>Cascade as Structure:</strong> Individual engines generate signals → Observer records patterns → Sentinel detects anomalies → Strategist analyses → G.O adjusts capital ceilings. Intelligence accumulates — the platform gets smarter over time.</p>
+      <p><strong>Cascade as Compounding:</strong> S.E Crypto moves through DORMANT → WATCHING → ACCUMULATING → IGNITION → CASCADE → EXTRACTION. Capital is deployed incrementally as conditions improve, withdrawn incrementally as they deteriorate.</p>`
+    },
+    {
+      title: "Strategic Engines (S.E)",
+      badge: "Weather Vanes",
+      content: `<p>Strategic engines are patient. They wait for macro conditions to align before deploying capital. Timeframes: 4 hours to weekly. Environment-first, multi-condition entry.</p>
+      <p><strong>Active S.E engines on Kraken:</strong><br>
+      • S.E Crypto — BTC/USDC, full market cycle (LIVE)<br>
+      • S.E Fear Fade — BTC/USDC, extreme fear entries (DRY RUN)<br>
+      • S.E GoldForge — XAUT/USDT, gold during crypto fear (DRY RUN)<br>
+      • S.E Alt Season — ETH/SOL, BTC dominance rotation (DRY RUN)<br>
+      • S.E Underdog — ALGO/DOT/ATOM/VET basket (DRY RUN)<br>
+      • S.E Pulse — BTC/USDC, mean reversion (DRY RUN)</p>`
+    },
+    {
+      title: "Tactical & Observer Engines",
+      badge: "Waterwheels + Memory",
+      content: `<p><strong>Tactical Engines (T.E) — Waterwheels:</strong><br>
+      Active, mechanical, pattern-based. Timeframes: 5 minutes to 2 hours. Extract energy from market flow regardless of direction.<br>
+      • T.E Grid — 5min BTC grid<br>
+      • T.E Momentum — 2H EMA crossover<br>
+      • T.E Breakout — 1H Bollinger squeeze<br>
+      • T.E Scalp — 5min RSI + volume</p>
+      <p><strong>Observer Engines (O.E) — Memory:</strong><br>
+      Passive, observational, analytical. Never deploy capital.<br>
+      • O.E Observer — Platform watchdog, takes snapshots every 15min<br>
+      • O.E Sentinel — Cross-engine anomaly detection<br>
+      • O.E Strategist — Pattern analysis & recommendations</p>`
+    },
+    {
+      title: "Intelligence Layer & G.O",
+      badge: "Grand Orchestrator",
+      content: `<p><strong>Four-stage intelligence pipeline:</strong><br>
+      1. Observer — builds dataset<br>
+      2. Sentinel — anomaly detection<br>
+      3. Strategist — pattern analysis<br>
+      4. G.O — Grand Orchestrator adjusts capital ceilings</p>
+      <p><strong>G.O scores each engine 0-1 based on:</strong><br>
+      • Momentum (0.4 weight) — is it active and profitable?<br>
+      • Regime (0.4 weight) — does current market suit this engine?<br>
+      • Drawdown (0.2 weight) — how close to circuit breaker?</p>
+      <p><strong>G.O Golden Rules:</strong> Never places orders. Never modifies exchange state. Never exceeds configured ceiling limits. Never reduces platform capital below 60% floor.</p>`
+    },
+    {
+      title: "Safety Systems",
+      badge: "Risk Management",
+      content: `<p><strong>DRY RUN DEFAULT:</strong> All engines default to dryRun: true. No real trades without explicit config change. S.E Crypto is the only live engine currently.</p>
+      <p><strong>CIRCUIT BREAKERS:</strong> All engines halt if daily loss exceeds configured threshold (typically 3%). No new entries until next day.</p>
+      <p><strong>PRE-FLIGHT TESTS:</strong> Strategy tests run on every boot. Engine refuses to start if tests fail.</p>
+      <p><strong>EMERGENCY STOP:</strong> POST /api/emergency-stop cancels all orders, exits all positions, prevents any new entries.</p>`
+    },
+    {
+      title: "Local-First Sovereignty",
+      badge: "Architecture",
+      content: `<p>CCE runs without cloud dependency. All computation, storage, intelligence runs locally on the device.</p>
+      <p><strong>Original Deployment:</strong> Samsung S24 Ultra via Termux — Node.js v22, sql.js (pure JS SQLite), PM2 process manager. No cloud, no subscription, no third party.</p>
+      <p><strong>VPS Deployment:</strong> Hetzner Cloud, Helsinki — each client gets isolated CCE instance. Dashboard accessible from any phone, anywhere.</p>
+      <p><strong>Your money stays in your exchange account.</strong> CCE has trade-only API access — withdrawal is technically impossible.</p>`
+    },
+    {
+      title: "Client Tiers & Fees",
+      badge: "Commercial",
+      content: `<p><strong>STARTER — £200 setup fee</strong><br>
+      Kraken only, 11 engines, recommended capital £500+</p>
+      <p><strong>ADVANCED — £300 setup fee</strong><br>
+      Kraken + Binance Futures, 12 engines, recommended capital £1,000+</p>
+      <p><strong>FULL PLATFORM — £500 setup fee</strong><br>
+      All exchanges, 17 engines, recommended capital £2,000+</p>
+      <p><strong>SIPHON (all tiers):</strong><br>
+      • 0-50% total return: 10% of profits<br>
+      • 50-100% total return: 12% of profits<br>
+      • 100%+ total return: 15% of profits<br>
+      No siphon on losing trades. No siphon during DORMANT periods.</p>
+      <p>Client funds remain in their own exchange account at all times.</p>`
+    }
+  ];
+
+  // ==================== QUIZ QUESTIONS ====================
+  const quizBank = [
+    {
+      text: "What happens when CCE is in DORMANT state?",
+      options: [
+        "The system has crashed and needs restarting",
+        "CCE is waiting for the right market conditions — this is correct behaviour",
+        "Your money has been withdrawn",
+        "James is manually pausing the engine"
+      ],
+      correct: 1,
+      explanation: "Correct. DORMANT means the engine is watching and waiting. It may stay DORMANT for days or weeks — this is by design."
+    },
+    {
+      text: "Can CCE withdraw your funds from your exchange account?",
+      options: [
+        "Yes, with James's approval",
+        "Yes, during emergency situations",
+        "No — CCE has trade-only API access. Withdrawal is technically impossible.",
+        "Only if the circuit breaker is triggered"
+      ],
+      correct: 2,
+      explanation: "Correct. CCE has trade-only access. Your funds can only be withdrawn by you, via your own exchange account."
+    },
+    {
+      text: "How is the ongoing siphon fee calculated?",
+      options: [
+        "A fixed monthly fee regardless of performance",
+        "10% of your total account balance each month",
+        "A percentage of profits only — never charged on losses",
+        "£50 per trade executed"
+      ],
+      correct: 2,
+      explanation: "Correct. Siphon is only taken from profits. If CCE makes no profit or loses money, you pay nothing."
+    },
+    {
+      text: "Is CCE regulated by the FCA?",
+      options: [
+        "Yes, fully FCA authorised",
+        "No — this is a private technology service between individuals",
+        "It is exempt from regulation as it uses AI",
+        "Yes, under the crypto asset framework"
+      ],
+      correct: 1,
+      explanation: "Correct. CCE is a private technology service, not a regulated investment product. You are responsible for your own tax obligations."
+    },
+    {
+      text: "What should you do if you want to stop using CCE immediately?",
+      options: [
+        "Email Giblets Creations and wait 30 days",
+        "Contact your bank to freeze the account",
+        "Log into your exchange and delete the API key — CCE stops instantly",
+        "Send 7 days written notice only"
+      ],
+      correct: 2,
+      explanation: "Correct. Deleting the API key in your exchange account instantly revokes CCE's access. Your funds remain in your account."
+    }
+  ];
+
+  // ==================== STATE ====================
+  let currentStep = 0; // 0=Handbook, 1=Confirm, 2=Quiz, 3=Agreement, 4=Access
+  let handbookConfirmations = new Array(handbookSections.length).fill(false);
+  let quizQuestions = [];
+  let quizAnswers = new Array(5).fill(null);
+  let quizLocked = false;
+  let quizPassed = false;
+  let agreementData = { name: "", date: "", capital: "" };
+  let agreementSigned = false;
+  let accessCode = null;
+
+  // ==================== INIT ====================
+  function initQuiz() {
+    // Shuffle questions
+    quizQuestions = [...quizBank];
+    for (let i = quizQuestions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [quizQuestions[i], quizQuestions[j]] = [quizQuestions[j], quizQuestions[i]];
+    }
+    quizAnswers.fill(null);
+    quizLocked = false;
+    quizPassed = false;
+  }
+
+  function updateStepNav() {
+    const steps = document.querySelectorAll('.step');
+    steps.forEach((step, idx) => {
+      step.classList.remove('active', 'completed');
+      if (idx < currentStep) {
+        step.classList.add('completed');
+      } else if (idx === currentStep) {
+        step.classList.add('active');
+      }
+    });
+  }
+
+  function canProceed() {
+    if (currentStep === 0) {
+      // Handbook: can proceed after reading all sections? Actually confirm step handles this
+      return true;
+    }
+    if (currentStep === 1) {
+      return handbookConfirmations.every(v => v === true);
+    }
+    if (currentStep === 2) {
+      return quizPassed;
+    }
+    if (currentStep === 3) {
+      return agreementSigned;
+    }
+    if (currentStep === 4) {
+      return true; // access code step has no next
+    }
+    return false;
+  }
+
+  function updateButtons() {
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    
+    prevBtn.disabled = currentStep === 0;
+    
+    if (currentStep === 4) {
+      nextBtn.textContent = 'Completed ✓';
+      nextBtn.disabled = false;
+      nextBtn.classList.add('btn-success');
+      nextBtn.classList.remove('btn-primary');
+    } else {
+      nextBtn.textContent = 'Next →';
+      nextBtn.classList.remove('btn-success');
+      nextBtn.classList.add('btn-primary');
+      nextBtn.disabled = !canProceed();
+    }
+  }
+
+  function renderStep() {
+    const contentDiv = document.getElementById('stepContent');
+    const titleEl = document.getElementById('stepTitle');
+    const descEl = document.getElementById('stepDesc');
+    
+    if (currentStep === 0) {
+      titleEl.textContent = 'CCE Handbook';
+      descEl.textContent = 'Read the full documentation to understand how the platform works';
+      renderHandbook(contentDiv);
+    } else if (currentStep === 1) {
+      titleEl.textContent = 'Confirm Your Understanding';
+      descEl.textContent = 'Please confirm you understand each section before proceeding';
+      renderConfirm(contentDiv);
+    } else if (currentStep === 2) {
+      titleEl.textContent = 'Knowledge Check';
+      descEl.textContent = quizPassed ? '✓ You passed! You can proceed.' : 'Answer all 5 questions correctly to continue';
+      renderQuiz(contentDiv);
+    } else if (currentStep === 3) {
+      titleEl.textContent = 'Service Agreement';
+      descEl.textContent = 'Read and sign to confirm your agreement';
+      renderAgreement(contentDiv);
+    } else if (currentStep === 4) {
+      titleEl.textContent = 'Access Code';
+      descEl.textContent = 'Your onboarding is complete';
+      renderAccess(contentDiv);
+    }
+    updateButtons();
+  }
+
+  function renderHandbook(container) {
+    let html = '';
+    handbookSections.forEach((section, idx) => {
+      html += `
+        <div class="handbook-section">
+          <h3>${section.title} <span class="section-badge">${section.badge}</span></h3>
+          <div class="handbook-text">${section.content}</div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  }
+
+  function renderConfirm(container) {
+    let html = '<div style="margin-bottom: 20px;"><p style="color:#4b5563; margin-bottom: 16px;">Please tick each box to confirm you have read and understood the section.</p></div>';
+    handbookSections.forEach((section, idx) => {
+      const checked = handbookConfirmations[idx] ? 'checked' : '';
+      html += `
+        <div class="handbook-section" style="border-bottom: none; margin-bottom: 8px; padding-bottom: 8px;">
+          <div class="confirm-check">
+            <input type="checkbox" id="confirm_${idx}" ${checked} onchange="toggleConfirm(${idx}, this.checked)">
+            <label for="confirm_${idx}">I understand <strong>${section.title}</strong> (${section.badge})</label>
+          </div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  }
+
+  function toggleConfirm(idx, checked) {
+    handbookConfirmations[idx] = checked;
+    updateButtons();
+  }
+
+  function renderQuiz(container) {
+    if (quizPassed) {
+      container.innerHTML = `
+        <div class="text-center" style="padding: 20px;">
+          <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
+          <h3 style="color: #10b981; margin-bottom: 8px;">Quiz Passed!</h3>
+          <p style="color: #6b7280;">You answered all 5 questions correctly. You can proceed to the agreement.</p>
+        </div>
+      `;
+      return;
+    }
+    
+    let html = '';
+    quizQuestions.forEach((q, idx) => {
+      const answer = quizAnswers[idx];
+      const isAnswered = answer !== null;
+      const isCorrect = isAnswered && answer === q.correct;
+      
+      html += `<div class="quiz-question" data-qidx="${idx}">
+        <div class="quiz-question-text">${idx + 1}. ${q.text}</div>
+        <div class="quiz-options" id="quiz_opts_${idx}">`;
+      
+      q.options.forEach((opt, optIdx) => {
+        let extraClass = '';
+        if (isAnswered) {
+          if (optIdx === q.correct) extraClass = 'correct';
+          else if (optIdx === answer) extraClass = 'wrong';
+        }
+        html += `<button class="quiz-opt ${extraClass}" onclick="answerQuiz(${idx}, ${optIdx})" ${isAnswered ? 'disabled' : ''}>${opt}</button>`;
+      });
+      
+      html += `</div>`;
+      if (isAnswered) {
+        const fbClass = isCorrect ? 'correct-fb' : 'wrong-fb';
+        const fbText = isCorrect ? '✓ ' + q.explanation : '✗ Incorrect. ' + q.explanation;
+        html += `<div class="quiz-feedback show ${fbClass}">${fbText}</div>`;
+      } else {
+        html += `<div class="quiz-feedback"></div>`;
+      }
+      html += `</div>`;
+    });
+    
+    const allAnswered = quizAnswers.every(a => a !== null);
+    const allCorrect = allAnswered && quizAnswers.every((a, i) => a === quizQuestions[i].correct);
+    
+    if (allAnswered && !allCorrect && !quizLocked) {
+      html += `<div class="quiz-retry">
+        <strong>❌ You didn't get all questions correct.</strong><br>
+        Click below to retry with a new set of questions.
+        <button class="btn btn-secondary" style="margin-top: 12px; width: auto; padding: 8px 20px;" onclick="retryQuiz()">Retry Quiz →</button>
+      </div>`;
+    } else if (allCorrect && !quizPassed) {
+      quizPassed = true;
+      html += `<div class="quiz-retry" style="background: #ecfdf5; color: #065f46;">
+        <strong>✓ All correct!</strong> You've passed the knowledge check. Click Next to continue.
+      </div>`;
+      updateButtons();
+    }
+    
+    container.innerHTML = html;
+  }
+
+  function answerQuiz(qIdx, optIdx) {
+    if (quizLocked || quizPassed || quizAnswers[qIdx] !== null) return;
+    
+    quizAnswers[qIdx] = optIdx;
+    renderStep();
+    
+    const allAnswered = quizAnswers.every(a => a !== null);
+    if (allAnswered) {
+      const allCorrect = quizAnswers.every((a, i) => a === quizQuestions[i].correct);
+      if (allCorrect) {
+        quizPassed = true;
+        renderStep();
+        updateButtons();
+      }
+    }
+  }
+
+  function retryQuiz() {
+    initQuiz();
+    renderStep();
+    updateButtons();
+  }
+
+  function renderAgreement(container) {
+    const today = new Date().toISOString().split('T')[0];
+    container.innerHTML = `
+      <div class="agreement-box">
+        <strong>WHAT THIS IS</strong><br>
+        A private technology service. CCE connects to your Kraken account via API and trades on your behalf. This is not FCA regulated investment advice.<br><br>
+        <strong>SETUP FEE</strong><br>
+        £200 one-time, non-refundable once setup is complete.<br><br>
+        <strong>ONGOING FEE (SIPHON)</strong><br>
+        10% of profits on 0-50% return · 12% on 50-100% return · 15% on 100%+ return. No fee on losses or during DORMANT periods.<br><br>
+        <strong>YOUR FUNDS</strong><br>
+        Held entirely in your own exchange account. CCE has trade-only access — withdrawal is technically impossible via the API connection.<br><br>
+        <strong>TERMINATION</strong><br>
+        Either party may terminate with 7 days written notice. You can also instantly revoke access by deleting the API key in your exchange.<br><br>
+        <strong>RISKS</strong><br>
+        Cryptocurrency trading carries significant risk including total loss of capital. Past performance does not guarantee future results. The platform may be DORMANT for extended periods — this is correct behaviour. You are responsible for your own tax obligations on profits.
+      </div>
+      
+      <div class="form-group">
+        <label>FULL NAME</label>
+        <input type="text" id="agreementName" placeholder="Your full legal name" value="${agreementData.name}" oninput="updateAgreement()">
+      </div>
+      <div class="form-group">
+        <label>TODAY'S DATE</label>
+        <input type="date" id="agreementDate" value="${agreementData.date || today}" oninput="updateAgreement()">
+      </div>
+      <div class="form-group">
+        <label>STARTING CAPITAL (£)</label>
+        <input type="number" id="agreementCapital" placeholder="e.g. 1000" value="${agreementData.capital}" oninput="updateAgreement()">
+      </div>
+      
+      <div class="checkbox-row">
+        <input type="checkbox" id="agreementCheck" ${agreementSigned ? 'checked' : ''} onchange="updateAgreement()">
+        <label for="agreementCheck">I confirm I have read and understood the service agreement, the risk warnings, and that this is not regulated financial advice. I agree to the terms above.</label>
+      </div>
+    `;
+  }
+
+  function updateAgreement() {
+    const name = document.getElementById('agreementName')?.value || '';
+    const date = document.getElementById('agreementDate')?.value || '';
+    const capital = document.getElementById('agreementCapital')?.value || '';
+    const checked = document.getElementById('agreementCheck')?.checked || false;
+    
+    agreementData = { name, date, capital };
+    agreementSigned = checked && name.trim() !== '' && date !== '' && capital !== '' && parseFloat(capital) > 0;
+    
+    updateButtons();
+  }
+
+  function generateAccessCode(name) {
+    const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 3);
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let rand = '';
+    for (let i = 0; i < 6; i++) rand += chars[Math.floor(Math.random() * chars.length)];
+    return `CCE-${initials}-${rand}`;
+  }
+
+  function renderAccess(container) {
+    if (!accessCode) {
+      accessCode = generateAccessCode(agreementData.name || 'CLIENT');
+      // Submit to server
+      fetch('/api/onboarding/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: agreementData.name,
+          date: agreementData.date,
+          capital: parseFloat(agreementData.capital),
+          code: accessCode,
+          timestamp: new Date().toISOString()
+        })
+      }).catch(() => console.log('Server endpoint not available — code generated locally'));
+    }
+    
+    container.innerHTML = `
+      <div style="text-align: center;">
+        <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
+        <h3 style="color: #10b981; margin-bottom: 8px;">Onboarding Complete</h3>
+        <p style="color: #6b7280; margin-bottom: 20px;">You've passed the knowledge check and signed the agreement.</p>
+        
+        <div class="access-code-box">
+          <div class="access-code-label">YOUR ACCESS CODE</div>
+          <div class="access-code-value">${accessCode}</div>
+        </div>
+        
+        <div class="next-steps">
+          <p><strong>📋 Next steps:</strong></p>
+          <p>1. Screenshot or copy your access code above<br>
+          2. Send it to James via WhatsApp<br>
+          3. James will set up your CCE instance<br>
+          4. You'll receive your dashboard link and Telegram bot details</p>
+          <p style="margin-top: 12px; font-size: 12px; color: #9ca3af;">Your code is unique to you. It confirms you've completed onboarding and agreed to the terms.</p>
+        </div>
+      </div>
+    `;
+  }
+
+  function changeStep(delta) {
+    const newStep = currentStep + delta;
+    if (newStep < 0 || newStep > 4) return;
+    
+    if (delta === 1 && !canProceed() && currentStep !== 4) {
+      // Show alert if trying to proceed without completing step
+      if (currentStep === 1 && !handbookConfirmations.every(v => v)) {
+        alert('Please confirm you understand all handbook sections before proceeding.');
+      } else if (currentStep === 2 && !quizPassed) {
+        alert('Please answer all 5 quiz questions correctly to proceed.');
+      } else if (currentStep === 3 && !agreementSigned) {
+        alert('Please fill in all fields and agree to the terms to proceed.');
+      }
+      return;
+    }
+    
+    currentStep = newStep;
+    if (currentStep === 2 && quizQuestions.length === 0) {
+      initQuiz();
+    }
+    updateStepNav();
+    renderStep();
+  }
+
+  window.toggleConfirm = toggleConfirm;
+  window.answerQuiz = answerQuiz;
+  window.retryQuiz = retryQuiz;
+  window.updateAgreement = updateAgreement;
+  window.changeStep = changeStep;
+
+  // Initialize
+  initQuiz();
+  updateStepNav();
+  renderStep();
+</script>
+</body>
+</html>

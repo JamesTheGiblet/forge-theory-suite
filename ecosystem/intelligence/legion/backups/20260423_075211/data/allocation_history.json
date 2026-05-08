@@ -1,0 +1,29 @@
+[
+  {
+    "timestamp": "2026-04-21T09:35:30.355Z",
+    "action": "REBALANCE",
+    "details": {
+      "changes": [
+        {
+          "strategyId": "STRAT-021",
+          "oldAllocation": 0,
+          "newAllocation": 3000,
+          "change": 3000
+        },
+        {
+          "strategyId": "STRAT-027",
+          "oldAllocation": 0,
+          "newAllocation": 3000,
+          "change": 3000
+        },
+        {
+          "strategyId": "TEST",
+          "oldAllocation": 0,
+          "newAllocation": 4000,
+          "change": 4000
+        }
+      ],
+      "timestamp": 1776764130354
+    }
+  }
+]

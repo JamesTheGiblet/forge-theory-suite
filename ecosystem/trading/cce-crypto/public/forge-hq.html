@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#060a0f">
+  <title>FORGE HQ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #060a0f;
+      --bg2:      #0a1018;
+      --bg3:      #0f1822;
+      --border:   #162030;
+      --accent:   #00c8f0;
+      --forge:    #ff6a00;
+      --green:    #00ff88;
+      --gold:     #ffb800;
+      --red:      #ff2244;
+      --dim:      #2a4060;
+      --text:     #8ab0cc;
+      --bright:   #d0e8f8;
+      --mono:     'IBM Plex Mono', monospace;
+      --display:  'Orbitron', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,200,240,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,200,240,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(6,10,15,0.8) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      padding: env(safe-area-inset-top, 12px) 12px env(safe-area-inset-bottom, 12px);
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 16px 0 20px;
+    }
+
+    .brand { display: flex; flex-direction: column; gap: 2px; }
+
+    .brand-name {
+      font-family: var(--display);
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 6px;
+      color: var(--forge);
+      line-height: 1;
+      text-shadow: 0 0 30px rgba(255,106,0,0.4);
+    }
+
+    .brand-sub {
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: var(--dim);
+      text-transform: uppercase;
+    }
+
+    .header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .live-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border: 1px solid var(--green);
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--green);
+    }
+
+    .live-dot {
+      width: 5px; height: 5px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: blink 1.8s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+
+    .last-sync { font-size: 9px; color: var(--dim); letter-spacing: 1px; }
+
+    /* ── PORTFOLIO BANNER ── */
+    .portfolio-banner {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--forge);
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .portfolio-label {
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--dim);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .portfolio-total {
+      font-family: var(--display);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--bright);
+      line-height: 1;
+    }
+
+    .portfolio-return { font-size: 11px; margin-top: 4px; }
+
+    .portfolio-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .live-capital { font-size: 9px; letter-spacing: 2px; color: var(--dim); text-transform: uppercase; }
+    .crypto-value { font-family: var(--display); font-size: 18px; color: var(--accent); }
+    .dry-total    { font-size: 11px; color: var(--dim); }
+
+    /* ── ENGINE WIDGETS ── */
+    .section-title {
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: var(--dim);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      padding-left: 4px;
+    }
+
+    .engines-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .engine-widget {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 14px 12px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeIn 0.5s ease both;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .engine-widget:active { border-color: var(--accent); }
+
+    .engine-widget::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+    }
+
+    .engine-widget.crypto::before  { background: var(--accent); }
+    .engine-widget.forex::before   { background: var(--gold); }
+    .engine-widget.reit::before    { background: var(--forge); }
+    .engine-widget.stocks::before  { background: var(--green); }
+    .engine-widget.como::before    { background: #ff4488; }
+
+    .engine-widget.crypto  { animation-delay: 0.1s; }
+    .engine-widget.forex   { animation-delay: 0.15s; }
+    .engine-widget.reit    { animation-delay: 0.2s; }
+    .engine-widget.stocks  { animation-delay: 0.25s; }
+    .engine-widget.como    { animation-delay: 0.3s; }
+
+    .widget-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .widget-name { font-size: 9px; letter-spacing: 2px; color: var(--dim); text-transform: uppercase; }
+
+    .widget-mode {
+      font-size: 8px;
+      letter-spacing: 1px;
+      padding: 1px 5px;
+      border: 1px solid;
+    }
+
+    .mode-live { color: var(--green); border-color: var(--green); }
+    .mode-dry  { color: var(--dim);   border-color: var(--border); }
+
+    .widget-state {
+      font-family: var(--display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .st-DORMANT      { color: var(--dim); }
+    .st-ACCUMULATION { color: var(--accent); }
+    .st-ANCHOR       { color: var(--gold); }
+    .st-IGNITION     { color: var(--green); }
+    .st-CASCADE_1    { color: #a78bfa; }
+    .st-CASCADE_2    { color: #c084fc; }
+    .st-SPILLWAY     { color: var(--gold); }
+    .st-EXTRACTION   { color: var(--red); }
+    .st-WATCHING     { color: var(--accent); }
+    .st-OBSERVE      { color: var(--accent); }
+    .st-PRIMED       { color: var(--gold); }
+    .st-ENTERING     { color: var(--green); }
+    .st-HOLDING      { color: var(--green); }
+    .st-EXITING      { color: var(--red); }
+    .st-ROTATING     { color: var(--forge); }
+    .st-CASCADING    { color: #ff4488; }
+    .st-EXECUTE      { color: var(--green); }
+
+    .widget-value  { font-size: 18px; font-weight: 500; color: var(--bright); line-height: 1; margin-bottom: 2px; }
+    .widget-sub    { font-size: 10px; color: var(--dim); }
+    .widget-return { font-size: 10px; margin-top: 4px; }
+
+    .engine-widget.como-wide {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .como-wide .widget-header { margin-bottom: 4px; }
+
+    .como-prices    { display: flex; gap: 16px; }
+    .como-price-item { display: flex; flex-direction: column; gap: 2px; }
+    .como-price-label { font-size: 9px; color: var(--dim); letter-spacing: 1px; }
+    .como-price-val   { font-size: 14px; color: var(--bright); font-weight: 500; }
+
+    /* ── SENTINEL CARD ── */
+    .sentinel-card {
+      grid-column: 1 / -1;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-top: 2px solid var(--red);
+      position: relative;
+      overflow: hidden;
+      animation: fadeIn 0.5s ease both;
+      animation-delay: 0.35s;
+    }
+
+    .sentinel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+    }
+
+    .sentinel-header:active { background: rgba(255,34,68,0.05); }
+
+    .sentinel-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sentinel-title {
+      font-family: var(--display);
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    .sentinel-counts {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .sen-badge {
+      font-size: 9px;
+      letter-spacing: 1px;
+      padding: 2px 7px;
+      border: 1px solid;
+      font-family: var(--mono);
+    }
+
+    .sen-badge.alert  { color: var(--red);    border-color: var(--red); }
+    .sen-badge.warn   { color: var(--gold);   border-color: var(--gold); }
+    .sen-badge.info   { color: var(--accent); border-color: var(--accent); }
+    .sen-badge.ok     { color: var(--green);  border-color: var(--green); }
+
+    .sentinel-state {
+      font-family: var(--display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .sentinel-chevron {
+      font-size: 10px;
+      color: var(--dim);
+      transition: transform 0.3s ease;
+      margin-left: 4px;
+    }
+
+    .sentinel-chevron.open { transform: rotate(180deg); }
+
+    /* Expandable panel */
+    .sentinel-panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+      border-top: 0px solid var(--border);
+    }
+
+    .sentinel-panel.open {
+      max-height: 600px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sentinel-panel-inner {
+      padding: 12px 14px;
+    }
+
+    .sentinel-section-label {
+      font-size: 8px;
+      letter-spacing: 3px;
+      color: var(--dim);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      margin-top: 12px;
+    }
+
+    .sentinel-section-label:first-child { margin-top: 0; }
+
+    .anomaly-row {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--dim);
+      padding: 8px 10px;
+      margin-bottom: 6px;
+      animation: slideIn 0.2s ease;
+    }
+
+    .anomaly-row.severity-ALERT { border-left-color: var(--red); }
+    .anomaly-row.severity-WARN  { border-left-color: var(--gold); }
+    .anomaly-row.severity-INFO  { border-left-color: var(--accent); }
+
+    .anomaly-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 3px;
+    }
+
+    .anomaly-type {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--bright);
+      letter-spacing: 1px;
+    }
+
+    .anomaly-sev {
+      font-size: 8px;
+      padding: 1px 6px;
+      border: 1px solid;
+      letter-spacing: 1px;
+    }
+
+    .anomaly-sev.ALERT { color: var(--red);    border-color: var(--red); }
+    .anomaly-sev.WARN  { color: var(--gold);   border-color: var(--gold); }
+    .anomaly-sev.INFO  { color: var(--accent); border-color: var(--accent); }
+
+    .anomaly-msg  { font-size: 10px; color: var(--text); line-height: 1.4; }
+    .anomaly-time { font-size: 9px;  color: var(--dim);  margin-top: 3px; }
+
+    .sentinel-empty {
+      font-size: 11px;
+      color: var(--green);
+      text-align: center;
+      padding: 16px 0;
+      letter-spacing: 1px;
+    }
+
+    .sentinel-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+    }
+
+    .sentinel-footer-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .sentinel-footer-val {
+      font-family: var(--display);
+      font-size: 16px;
+      color: var(--bright);
+    }
+
+    .sentinel-footer-label {
+      font-size: 8px;
+      color: var(--dim);
+      letter-spacing: 1px;
+    }
+
+    /* ── ALERTS ── */
+    .alerts-section { margin-bottom: 12px; }
+
+    .alert-item {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--forge);
+      padding: 10px 12px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(-8px); opacity: 0; }
+      to   { transform: translateX(0);    opacity: 1; }
+    }
+
+    .alert-text { color: var(--text); }
+    .alert-time { color: var(--dim); font-size: 10px; }
+
+    .no-alerts {
+      font-size: 11px;
+      color: var(--dim);
+      text-align: center;
+      padding: 12px;
+      letter-spacing: 1px;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0 4px;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-brand { font-family: var(--display); font-size: 8px; letter-spacing: 3px; color: var(--dim); }
+    .footer-link  { font-size: 9px; color: var(--accent); letter-spacing: 1px; text-decoration: none; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .positive { color: var(--green); }
+    .negative { color: var(--red); }
+    .neutral  { color: var(--dim); }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="brand">
+      <div class="brand-name">FORGE</div>
+      <div class="brand-sub">Command HQ · CCE Platform</div>
+    </div>
+    <div class="header-right">
+      <div class="live-pill">
+        <div class="live-dot"></div>
+        <span id="connStatus">SYNC</span>
+      </div>
+      <div class="last-sync" id="lastSync">--:--:--</div>
+    </div>
+  </div>
+
+  <!-- PORTFOLIO BANNER -->
+  <div class="portfolio-banner">
+    <div class="portfolio-left">
+      <div class="portfolio-label">Total Capital Deployed</div>
+      <div class="portfolio-total" id="totalCapital">£--</div>
+      <div class="portfolio-return" id="cryptoReturnBanner">--</div>
+    </div>
+    <div class="portfolio-right">
+      <div class="live-capital">Live</div>
+      <div class="crypto-value" id="cryptoLive">$--</div>
+      <div class="dry-total" id="dryTotal">+ £-- dry run</div>
+    </div>
+  </div>
+
+  <!-- ENGINE WIDGETS -->
+  <div class="section-title">Engine States</div>
+  <div class="engines-grid">
+
+    <!-- CRYPTO -->
+    <div class="engine-widget crypto" onclick="window.location='/'">
+      <div class="widget-header">
+        <div class="widget-name">Crypto</div>
+        <div class="widget-mode mode-live">LIVE</div>
+      </div>
+      <div class="widget-state st-DORMANT" id="w-cryptoState">--</div>
+      <div class="widget-value" id="w-cryptoVal">$--</div>
+      <div class="widget-sub" id="w-cryptoSub">BTC $--</div>
+      <div class="widget-return" id="w-cryptoRet">--</div>
+    </div>
+
+    <!-- FOREX -->
+    <div class="engine-widget forex" onclick="window.location='/'">
+      <div class="widget-header">
+        <div class="widget-name">Forex</div>
+        <div class="widget-mode mode-dry">DRY</div>
+      </div>
+      <div class="widget-state st-DORMANT" id="w-forexState">--</div>
+      <div class="widget-value" id="w-forexVal">£300</div>
+      <div class="widget-sub" id="w-forexSub">EUR/USD --</div>
+      <div class="widget-return neutral">1H cycle</div>
+    </div>
+
+    <!-- REIT -->
+    <div class="engine-widget reit" onclick="window.location='/'">
+      <div class="widget-header">
+        <div class="widget-name">REIT</div>
+        <div class="widget-mode mode-dry">DRY</div>
+      </div>
+      <div class="widget-state st-DORMANT" id="w-reitState">--</div>
+      <div class="widget-value" id="w-reitVal">£300</div>
+      <div class="widget-sub" id="w-reitSub">Fed --% | 10Y --%</div>
+      <div class="widget-return neutral">24H cycle</div>
+    </div>
+
+    <!-- STOCKS -->
+    <div class="engine-widget stocks" onclick="window.location='/'">
+      <div class="widget-header">
+        <div class="widget-name">Stocks</div>
+        <div class="widget-mode mode-dry">DRY</div>
+      </div>
+      <div class="widget-state st-DORMANT" id="w-stocksState">--</div>
+      <div class="widget-value" id="w-stocksVal">£300</div>
+      <div class="widget-sub" id="w-stocksSub">SPY $-- | VIX --</div>
+      <div class="widget-return neutral">24H cycle</div>
+    </div>
+
+    <!-- COMO — full width -->
+    <div class="engine-widget como como-wide" onclick="window.location='/'">
+      <div>
+        <div class="widget-header">
+          <div class="widget-name">Commodities</div>
+          <div class="widget-mode mode-dry">DRY</div>
+        </div>
+        <div class="widget-state st-DORMANT" id="w-comoState">--</div>
+        <div class="widget-return neutral">Oil → Gold → Copper</div>
+      </div>
+      <div class="como-prices">
+        <div class="como-price-item">
+          <div class="como-price-label">🛢 WTI</div>
+          <div class="como-price-val" id="w-comoOil">$--</div>
+        </div>
+        <div class="como-price-item">
+          <div class="como-price-label">🥇 GOLD</div>
+          <div class="como-price-val" id="w-comoGold">$--</div>
+        </div>
+      </div>
+      <div class="como-prices">
+        <div class="como-price-item">
+          <div class="como-price-label">🔴 COPPER</div>
+          <div class="como-price-val" id="w-comoCop">$--</div>
+        </div>
+        <div class="como-price-item">
+          <div class="como-price-label">💵 DXY</div>
+          <div class="como-price-val" id="w-comoDxy">--</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EGP -->
+    <div class="engine-widget" style="border-top:2px solid #10b981;padding-top:8px;" onclick="window.location='/'">
+      <div class="widget-header">
+        <div class="widget-name" style="color:#10b981;">S.E EGP</div>
+        <div class="widget-mode mode-dry" id="w-egpMode">DRY</div>
+      </div>
+      <div class="widget-state" id="w-egpState" style="color:#10b981;font-family:var(--display);font-size:16px;font-weight:700;">CAUTION</div>
+      <div class="widget-return neutral">USD/EGP · Weekly</div>
+      <div style="margin-top:6px;font-size:9px;color:var(--text-dim);">CBE: <span id="w-egpRate">19%</span> | CPI: <span id="w-egpCpi">13.4%</span></div>
+      <div style="font-size:9px;" id="w-egpDiv" class="negative">⚠️ Divergence active</div>
+    </div>
+
+    <!-- GRID -->
+    <div class="engine-widget" style="grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;align-items:center;border-top-color:#a855f7;" onclick="window.location='/'">
+      <div>
+        <div class="widget-header">
+          <div class="widget-name" style="color:#a855f7;">T.E Grid</div>
+          <div class="widget-mode mode-dry" id="w-gridMode">DRY</div>
+        </div>
+        <div class="widget-state" id="w-gridState" style="color:#a855f7;font-family:var(--display);font-size:16px;font-weight:700;">ACTIVE</div>
+        <div class="widget-return neutral">BTC/USDC · 5min</div>
+      </div>
+      <div>
+        <div class="como-price-label">💰 PROFIT</div>
+        <div class="como-price-val positive" id="w-gridProfit">/bin/sh.0000</div>
+      </div>
+      <div>
+        <div class="como-price-label">🔄 CYCLES</div>
+        <div class="como-price-val" id="w-gridCycles">0</div>
+      </div>
+      <div>
+        <div class="como-price-label">📐 CENTRE</div>
+        <div class="como-price-val" id="w-gridCentre">-</div>
+      </div>
+    </div>
+
+    <!-- MOMENTUM -->
+    <div class="engine-widget" style="grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;align-items:center;" onclick="window.location='/'">
+      <div style="border-top:2px solid #f97316;padding-top:8px;">
+        <div class="widget-header">
+          <div class="widget-name" style="color:#f97316;">T.E Momentum</div>
+          <div class="widget-mode mode-dry" id="w-momMode">OFF</div>
+        </div>
+        <div class="widget-state" id="w-momState" style="color:#f97316;font-family:var(--display);font-size:16px;font-weight:700;">STANDBY</div>
+        <div class="widget-return neutral">BTC · ETH · SOL · 2H</div>
+      </div>
+      <div>
+        <div class="como-price-label">💰 TOTAL PnL</div>
+        <div class="como-price-val" id="w-momPnl">+$0.0000</div>
+      </div>
+      <div>
+        <div class="como-price-label">📊 TRADES</div>
+        <div class="como-price-val" id="w-momTrades">0</div>
+      </div>
+      <div>
+        <div class="como-price-label">🎯 WIN RATE</div>
+        <div class="como-price-val" id="w-momWinRate">--</div>
+      </div>
+    </div>
+
+    <!-- BREAKOUT -->
+    <div class="engine-widget" style="grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;align-items:center;" onclick="window.location='/'">
+      <div style="border-top:2px solid #facc15;padding-top:8px;">
+        <div class="widget-header">
+          <div class="widget-name" style="color:#facc15;">T.E Breakout</div>
+          <div class="widget-mode mode-dry" id="w-brkMode">DRY</div>
+        </div>
+        <div class="widget-state" id="w-brkState" style="color:#facc15;font-family:var(--display);font-size:16px;font-weight:700;">SCANNING</div>
+        <div class="widget-return neutral">BTC · ETH · SOL · 1H</div>
+      </div>
+      <div>
+        <div class="como-price-label">💰 TOTAL PnL</div>
+        <div class="como-price-val" id="w-brkPnl">+$0.0000</div>
+      </div>
+      <div>
+        <div class="como-price-label">📊 TRADES</div>
+        <div class="como-price-val" id="w-brkTrades">0</div>
+      </div>
+      <div>
+        <div class="como-price-label">🔵 SQUEEZES</div>
+        <div class="como-price-val" id="w-brkSqueezes">0</div>
+      </div>
+    </div>
+
+    <!-- LCE -->
+    <div class="engine-widget" style="grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;align-items:center;" onclick="window.location='/'">
+      <div style="border-top:2px solid #ef4444;padding-top:8px;">
+        <div class="widget-header">
+          <div class="widget-name" style="color:#ef4444;">T.E LCE</div>
+          <div class="widget-mode mode-dry" id="w-lceMode">DRY</div>
+        </div>
+        <div class="widget-state" id="w-lceState" style="color:#ef4444;font-family:var(--display);font-size:16px;font-weight:700;">DORMANT</div>
+        <div class="widget-return neutral">BTC � ETH � SOL � 5MIN</div>
+      </div>
+      <div>
+        <div class="como-price-label">💧 DAILY PnL</div>
+        <div class="como-price-val" id="w-lcePnl">0.00%</div>
+      </div>
+      <div>
+        <div class="como-price-label">📊 TRADES</div>
+        <div class="como-price-val" id="w-lceTrades">0</div>
+      </div>
+      <div>
+        <div class="como-price-label">🎯 WIN RATE</div>
+        <div class="como-price-val" id="w-lceWin">--%</div>
+      </div>
+    </div>
+
+    <!-- ══ O.E SENTINEL ══ -->
+    <div class="sentinel-card">
+      <div class="sentinel-header" onclick="toggleSentinel()">
+        <div class="sentinel-header-left">
+          <div class="sentinel-title">O.E SENTINEL</div>
+          <div class="sentinel-counts">
+            <span class="sen-badge alert" id="sen-alertBadge" style="display:none">0 ALERT</span>
+            <span class="sen-badge warn"  id="sen-warnBadge"  style="display:none">0 WARN</span>
+            <span class="sen-badge info"  id="sen-infoBadge"  style="display:none">0 INFO</span>
+            <span class="sen-badge ok"    id="sen-okBadge">ALL CLEAR</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="sentinel-state" id="sen-state" style="color:var(--dim);">--</div>
+          <div class="sentinel-chevron" id="sen-chevron">▼</div>
+        </div>
+      </div>
+
+      <div class="sentinel-panel" id="sen-panel">
+        <div class="sentinel-panel-inner">
+
+          <!-- Active anomalies -->
+          <div class="sentinel-section-label">Active Anomalies</div>
+          <div id="sen-activeList">
+            <div class="sentinel-empty">Loading...</div>
+          </div>
+
+          <!-- Recent history -->
+          <div class="sentinel-section-label" style="margin-top:14px;">Recent History</div>
+          <div id="sen-recentList">
+            <div class="sentinel-empty">Loading...</div>
+          </div>
+
+          <!-- Footer stats -->
+          <div class="sentinel-footer">
+            <div class="sentinel-footer-stat">
+              <div class="sentinel-footer-val" id="sen-totalAnom">--</div>
+              <div class="sentinel-footer-label">TOTAL DETECTED</div>
+            </div>
+            <div class="sentinel-footer-stat">
+              <div class="sentinel-footer-val" id="sen-totalCycles">--</div>
+              <div class="sentinel-footer-label">CYCLES RUN</div>
+            </div>
+            <div class="sentinel-footer-stat">
+              <div class="sentinel-footer-val" id="sen-lastRun">--</div>
+              <div class="sentinel-footer-label">LAST RUN</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ALERTS -->
+  <div class="section-title">Recent Activity</div>
+  <div class="alerts-section" id="alertsSection">
+    <div class="no-alerts">No state changes yet</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-brand">GIBLETS CREATIONS</div>
+    <a href="/" class="footer-link">FULL DASHBOARD →</a>
+  </div>
+
+</div>
+
+<script>
+// ============================================================================
+// SENTINEL
+// ============================================================================
+
+let sentinelOpen = false;
+let sentinelData = null;
+
+function toggleSentinel() {
+  sentinelOpen = !sentinelOpen;
+  const panel   = document.getElementById('sen-panel');
+  const chevron = document.getElementById('sen-chevron');
+  panel.classList.toggle('open', sentinelOpen);
+  chevron.classList.toggle('open', sentinelOpen);
+  if (sentinelOpen && !sentinelData) loadSentinel();
+}
+
+function renderAnomalyRow(a) {
+  const time = a.timestamp ? new Date(a.timestamp).toLocaleString() : '--';
+  const sev  = (a.severity || 'INFO').toUpperCase();
+  return `
+    <div class="anomaly-row severity-${sev}">
+      <div class="anomaly-top">
+        <div class="anomaly-type">${a.anomaly_type || a.type || 'UNKNOWN'}</div>
+        <div class="anomaly-sev ${sev}">${sev}</div>
+      </div>
+      <div class="anomaly-msg">${a.message || a.description || 'No details available'}</div>
+      <div class="anomaly-time">${time}${a.resolved ? ' · <span style="color:var(--green)">RESOLVED</span>' : ''}</div>
+    </div>`;
+}
+
+async function loadSentinel() {
+  try {
+    const d = await fetch('/api/sentinel/status').then(r => r.json());
+    sentinelData = d;
+
+    const alertCount = d.alert_count || 0;
+    const warnCount  = d.warn_count  || 0;
+    const infoCount  = d.info_count  || 0;
+    const active     = d.active      || [];
+    const recent     = d.recent      || [];
+
+    // State colour + label
+    const stateEl = document.getElementById('sen-state');
+    if (alertCount > 0) {
+      stateEl.textContent = 'ALERT';
+      stateEl.style.color = 'var(--red)';
+    } else if (warnCount > 0) {
+      stateEl.textContent = 'WARNING';
+      stateEl.style.color = 'var(--gold)';
+    } else if (infoCount > 0) {
+      stateEl.textContent = 'INFO';
+      stateEl.style.color = 'var(--accent)';
+    } else {
+      stateEl.textContent = 'CLEAR';
+      stateEl.style.color = 'var(--green)';
+    }
+
+    // Badges
+    const alertBadge = document.getElementById('sen-alertBadge');
+    const warnBadge  = document.getElementById('sen-warnBadge');
+    const infoBadge  = document.getElementById('sen-infoBadge');
+    const okBadge    = document.getElementById('sen-okBadge');
+
+    if (alertCount > 0) { alertBadge.textContent = alertCount + ' ALERT'; alertBadge.style.display = 'inline'; }
+    if (warnCount  > 0) { warnBadge.textContent  = warnCount  + ' WARN';  warnBadge.style.display  = 'inline'; }
+    if (infoCount  > 0) { infoBadge.textContent  = infoCount  + ' INFO';  infoBadge.style.display  = 'inline'; }
+    okBadge.style.display = (alertCount + warnCount + infoCount === 0) ? 'inline' : 'none';
+
+    // Active list
+    const activeEl = document.getElementById('sen-activeList');
+    if (active.length === 0) {
+      activeEl.innerHTML = '<div class="sentinel-empty">✅ No active anomalies</div>';
+    } else {
+      activeEl.innerHTML = active.map(renderAnomalyRow).join('');
+    }
+
+    // Recent list (exclude already shown active ones by id if present)
+    const recentEl = document.getElementById('sen-recentList');
+    const recentFiltered = recent.filter(r => r.resolved || !active.find(a => a.id === r.id));
+    if (recentFiltered.length === 0) {
+      recentEl.innerHTML = '<div class="sentinel-empty" style="color:var(--dim)">No history yet</div>';
+    } else {
+      recentEl.innerHTML = recentFiltered.slice(0, 10).map(renderAnomalyRow).join('');
+    }
+
+    // Footer stats
+    document.getElementById('sen-totalAnom').textContent   = d.total_anomalies ?? '--';
+    document.getElementById('sen-totalCycles').textContent = d.total_cycles    ?? '--';
+    document.getElementById('sen-lastRun').textContent     = d.last_run
+      ? new Date(d.last_run).toLocaleTimeString() : '--';
+
+  } catch(e) {
+    document.getElementById('sen-activeList').innerHTML =
+      '<div class="sentinel-empty" style="color:var(--red)">⚠️ Failed to load sentinel data</div>';
+  }
+}
+
+// Also update the sentinel header counts on every loadAll without opening
+async function refreshSentinelHeader() {
+  try {
+    const d = await fetch('/api/sentinel/status').then(r => r.json());
+    sentinelData = d;
+    const alertCount = d.alert_count || 0;
+    const warnCount  = d.warn_count  || 0;
+    const infoCount  = d.info_count  || 0;
+
+    const stateEl = document.getElementById('sen-state');
+    if (alertCount > 0)      { stateEl.textContent = 'ALERT';   stateEl.style.color = 'var(--red)'; }
+    else if (warnCount > 0)  { stateEl.textContent = 'WARNING'; stateEl.style.color = 'var(--gold)'; }
+    else if (infoCount > 0)  { stateEl.textContent = 'INFO';    stateEl.style.color = 'var(--accent)'; }
+    else                     { stateEl.textContent = 'CLEAR';   stateEl.style.color = 'var(--green)'; }
+
+    const alertBadge = document.getElementById('sen-alertBadge');
+    const warnBadge  = document.getElementById('sen-warnBadge');
+    const infoBadge  = document.getElementById('sen-infoBadge');
+    const okBadge    = document.getElementById('sen-okBadge');
+
+    alertBadge.style.display = alertCount > 0 ? 'inline' : 'none';
+    warnBadge.style.display  = warnCount  > 0 ? 'inline' : 'none';
+    infoBadge.style.display  = infoCount  > 0 ? 'inline' : 'none';
+    if (alertCount > 0) alertBadge.textContent = alertCount + ' ALERT';
+    if (warnCount  > 0) warnBadge.textContent  = warnCount  + ' WARN';
+    if (infoCount  > 0) infoBadge.textContent  = infoCount  + ' INFO';
+    okBadge.style.display = (alertCount + warnCount + infoCount === 0) ? 'inline' : 'none';
+
+    // If panel is open, refresh the content too
+    if (sentinelOpen) {
+      const active  = d.active  || [];
+      const recent  = d.recent  || [];
+      const activeEl = document.getElementById('sen-activeList');
+      activeEl.innerHTML = active.length === 0
+        ? '<div class="sentinel-empty">✅ No active anomalies</div>'
+        : active.map(renderAnomalyRow).join('');
+      const recentFiltered = recent.filter(r => r.resolved || !active.find(a => a.id === r.id));
+      document.getElementById('sen-recentList').innerHTML = recentFiltered.length === 0
+        ? '<div class="sentinel-empty" style="color:var(--dim)">No history yet</div>'
+        : recentFiltered.slice(0, 10).map(renderAnomalyRow).join('');
+      document.getElementById('sen-totalAnom').textContent   = d.total_anomalies ?? '--';
+      document.getElementById('sen-totalCycles').textContent = d.total_cycles    ?? '--';
+      document.getElementById('sen-lastRun').textContent     = d.last_run
+        ? new Date(d.last_run).toLocaleTimeString() : '--';
+    }
+  } catch(e) {}
+}
+
+// ============================================================================
+// DATA LOADING
+// ============================================================================
+
+async function loadEGP() {
+  try {
+    const d = await fetch('/api/egp/status').then(r => r.json());
+    if (!d || !d.state) return;
+    const colour = d.state === 'ACCUMULATE' ? '#22c55e'
+                 : d.state === 'FADE'       ? '#ef4444'
+                 : d.state === 'CAUTION'    ? '#f97316'
+                 : '#10b981';
+    document.getElementById('w-egpState').textContent = d.state;
+    document.getElementById('w-egpState').style.color = colour;
+    if (d.cbe_rate)   document.getElementById('w-egpRate').textContent = d.cbe_rate + '%';
+    if (d.inflation)  document.getElementById('w-egpCpi').textContent  = d.inflation + '%';
+    const divEl = document.getElementById('w-egpDiv');
+    divEl.textContent = d.divergence_flag ? '⚠️ Divergence active' : '✅ No divergence';
+    divEl.className   = d.divergence_flag ? 'negative' : 'positive';
+  } catch(e) {}
+}
+
+async function loadBRK() {
+  try {
+    const d = await fetch('/api/brk/status').then(r => r.json());
+    if (!d) return;
+    document.getElementById('w-brkSqueezes').textContent = d.active_squeezes || 0;
+    const stats = d.stats;
+    if (stats && stats.total_trades > 0) {
+      const pnl = stats.total_pnl || 0;
+      const pnlEl = document.getElementById('w-brkPnl');
+      pnlEl.textContent = (pnl >= 0 ? '+' : '') + '$' + pnl.toFixed(4);
+      pnlEl.className = 'como-price-val ' + (pnl > 0 ? 'positive' : pnl < 0 ? 'negative' : '');
+      document.getElementById('w-brkTrades').textContent = stats.total_trades;
+    }
+
+async function loadLCE() {
+  try {
+    const d = await fetch("/api/lce/status").then(r => r.json());
+    if (!d) return;
+    const stEl = document.getElementById("w-lceState");
+    if (stEl) { stEl.textContent = d.state || "DORMANT"; }
+    const pnl = d.dailyPnlPct || 0;
+    const pnlEl = document.getElementById("w-lcePnl");
+    if (pnlEl) { pnlEl.textContent = (pnl >= 0 ? "+" : "") + pnl.toFixed(2) + "%"; pnlEl.className = "como-price-val " + (pnl > 0 ? "positive" : pnl < 0 ? "negative" : "neutral"); }
+    const winEl = document.getElementById("w-lceWin");
+    if (winEl) winEl.textContent = d.winRate != null ? d.winRate + "%" : "--%";
+    const trdEl = document.getElementById("w-lceTrades");
+    if (trdEl) trdEl.textContent = d.dailyTrades || 0;
+  } catch(e) {}
+}
+  } catch(e) {}
+}
+
+async function loadMOM() {
+  try {
+    const d = await fetch('/api/mom/status').then(r => r.json());
+    if (!d) return;
+    const stats = d.stats;
+    if (stats && stats.total_trades > 0) {
+      const winRate = (stats.wins / stats.total_trades * 100).toFixed(0);
+      const pnl     = stats.total_pnl || 0;
+      document.getElementById('w-momTrades').textContent  = stats.total_trades;
+      document.getElementById('w-momWinRate').textContent = winRate + '%';
+      const pnlEl = document.getElementById('w-momPnl');
+      pnlEl.textContent = (pnl >= 0 ? '+' : '') + '$' + pnl.toFixed(4);
+      pnlEl.className = 'como-price-val ' + (pnl > 0 ? 'positive' : pnl < 0 ? 'negative' : '');
+    }
+  } catch(e) {}
+}
+
+async function loadGrid() {
+  try {
+    const d = await fetch('/api/grid/status').then(r => r.json());
+    if (!d || !d.grid_state) return;
+    document.getElementById('w-gridState').textContent = d.grid_state || 'ACTIVE';
+    const profit = d.total_profit || 0;
+    const profitEl = document.getElementById('w-gridProfit');
+    profitEl.textContent = (profit >= 0 ? '+' : '') + '$' + profit.toFixed(4);
+    profitEl.className = 'como-price-val ' + (profit > 0 ? 'positive' : profit < 0 ? 'negative' : '');
+    document.getElementById('w-gridCycles').textContent = d.completed_cycles || 0;
+    document.getElementById('w-gridCentre').textContent = '$' + Math.round(d.centre_price || 0).toLocaleString();
+  } catch(e) {}
+}
+
+async function loadAll() {
+  await Promise.allSettled([
+    loadCrypto(),
+    loadRME(),
+    loadCME(),
+    loadEGP(),
+    loadCOMO(),
+    loadGrid(),
+    loadMOM(),
+    loadBRK(),
+    loadLCE(),
+    loadTransitions(),
+    refreshSentinelHeader()
+  ]);
+  document.getElementById('lastSync').textContent = new Date().toLocaleTimeString();
+  updateTotals();
+}
+
+let cryptoPortfolio = 0;
+let rmePortfolio    = 300;
+let cmePortfolio    = 300;
+let comoPortfolio   = 300;
+let forexPortfolio  = 300;
+
+async function loadCrypto() {
+  try {
+    const d = await fetch('/api/status').then(r => r.json());
+    if (!d || !d.current_state) return;
+    setState('w-cryptoState', d.current_state);
+    cryptoPortfolio = d.portfolio_value || 391.70;
+    document.getElementById('w-cryptoVal').textContent = '$' + cryptoPortfolio.toFixed(2);
+    document.getElementById('w-cryptoSub').textContent = 'BTC $' + Math.round(d.btc_price || 0).toLocaleString();
+    const ret = d.total_return || 0;
+    const retEl = document.getElementById('w-cryptoRet');
+    retEl.textContent = (ret >= 0 ? '+' : '') + ret.toFixed(2) + '%';
+    retEl.className = 'widget-return ' + (ret > 0 ? 'positive' : ret < 0 ? 'negative' : 'neutral');
+    const bannerRet = document.getElementById('cryptoReturnBanner');
+    bannerRet.textContent = 'Total return: ' + (ret >= 0 ? '+' : '') + ret.toFixed(2) + '%';
+    bannerRet.className = 'portfolio-return ' + (ret > 0 ? 'positive' : ret < 0 ? 'negative' : 'neutral');
+    document.getElementById('cryptoLive').textContent = '$' + cryptoPortfolio.toFixed(2);
+  } catch(e) {}
+}
+
+async function loadRME() {
+  try {
+    const d = await fetch('/api/rme/status').then(r => r.json());
+    if (!d || !d.state) return;
+    setState('w-reitState', d.state);
+    rmePortfolio = d.portfolio_value || 300;
+    document.getElementById('w-reitVal').textContent = '£' + rmePortfolio.toFixed(2);
+    document.getElementById('w-reitSub').textContent =
+      'Fed ' + (d.fed_rate || '--') + '% | 10Y ' + (d.treasury_yield || '--') + '%';
+  } catch(e) {}
+}
+
+async function loadCME() {
+  try {
+    const d = await fetch('/api/cme/status').then(r => r.json());
+    if (!d || !d.state) return;
+    setState('w-stocksState', d.state);
+    cmePortfolio = d.portfolio_value || 300;
+    document.getElementById('w-stocksVal').textContent = '£' + cmePortfolio.toFixed(2);
+    document.getElementById('w-stocksSub').textContent =
+      'SPY $' + (d.price || '--') + ' | VIX ' + (d.vix || '--');
+  } catch(e) {}
+}
+
+async function loadCOMO() {
+  try {
+    const d = await fetch('/api/como/status').then(r => r.json());
+    if (!d || !d.state) return;
+    setState('w-comoState', d.state);
+    comoPortfolio = d.portfolio_value || 300;
+    document.getElementById('w-comoOil').textContent  = d.oil_price    ? '$' + d.oil_price.toFixed(2)    : '$--';
+    document.getElementById('w-comoGold').textContent = d.gold_price   ? '$' + Math.round(d.gold_price)  : '$--';
+    document.getElementById('w-comoCop').textContent  = d.copper_price ? '$' + d.copper_price.toFixed(3) : '$--';
+    document.getElementById('w-comoDxy').textContent  = d.dxy_price    ? d.dxy_price.toFixed(2)          : '--';
+  } catch(e) {}
+}
+
+async function loadTransitions() {
+  try {
+    const d = await fetch('/api/transitions?limit=5').then(r => r.json());
+    const section = document.getElementById('alertsSection');
+    if (!d || !d.length) return;
+    section.innerHTML = d.map(t => `
+      <div class="alert-item">
+        <span class="alert-text">${t.from_state} → ${t.to_state}</span>
+        <span class="alert-time">${new Date(t.timestamp).toLocaleTimeString()}</span>
+      </div>
+    `).join('');
+  } catch(e) {}
+}
+
+function updateTotals() {
+  const dryTotal = rmePortfolio + cmePortfolio + comoPortfolio + forexPortfolio;
+  const liveGBP  = cryptoPortfolio * 0.79;
+  const total    = liveGBP + dryTotal;
+  document.getElementById('totalCapital').textContent = '£' + Math.round(total);
+  document.getElementById('dryTotal').textContent = '+ £' + dryTotal.toFixed(0) + ' dry run';
+}
+
+// ============================================================================
+// HELPERS
+// ============================================================================
+
+function setState(id, state) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = state || '--';
+  el.className = 'widget-state st-' + (state || 'DORMANT');
+}
+
+// ============================================================================
+// SSE
+// ============================================================================
+
+function setupSSE() {
+  const es = new EventSource('/api/stream');
+  const connEl = document.getElementById('connStatus');
+  es.onmessage = (e) => {
+    connEl.textContent = 'LIVE';
+    try {
+      const d = JSON.parse(e.data);
+      if (d.current_state) {
+        setState('w-cryptoState', d.current_state);
+        cryptoPortfolio = d.portfolio_value || cryptoPortfolio;
+        document.getElementById('w-cryptoVal').textContent = '$' + cryptoPortfolio.toFixed(2);
+        document.getElementById('w-cryptoSub').textContent = 'BTC $' + Math.round(d.btc_price || 0).toLocaleString();
+        document.getElementById('lastSync').textContent = new Date().toLocaleTimeString();
+        updateTotals();
+      }
+    } catch(e) {}
+  };
+  es.onerror = () => {
+    connEl.textContent = 'SYNC';
+    es.close();
+    setTimeout(setupSSE, 15000);
+  };
+}
+
+// ============================================================================
+// INIT
+// ============================================================================
+loadAll();
+setupSSE();
+setInterval(loadAll, 60000);
+</script>
+</body>
+</html>

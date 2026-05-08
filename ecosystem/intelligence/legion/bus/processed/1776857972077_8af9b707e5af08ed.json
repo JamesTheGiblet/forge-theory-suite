@@ -1,0 +1,13 @@
+{
+  "msg_id": "8af9b707e5af08ed",
+  "from": "router",
+  "to": "diplomat",
+  "type": "PORTFOLIO_UPDATE",
+  "payload": {
+    "topStrategy": "STRAT-021",
+    "topAllocation": 3000,
+    "totalStrategies": 2,
+    "totalCapital": 10000
+  },
+  "timestamp": "2026-04-22T11:39:32.077Z"
+}

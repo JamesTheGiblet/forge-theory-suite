@@ -1,0 +1,217 @@
+{
+  "protocol": {
+    "name": "Semantic Capsule Protocol",
+    "version": "1.0.0"
+  },
+  "manifest": {
+    "id": "hyp_h_e_consecutive_red___rsi_mo2sh62m",
+    "name": "H.E Consecutive Red + RSI",
+    "version": "1.0.0",
+    "created": "2026-04-17T10:52:28.799Z",
+    "type": "generated_hypothesis",
+    "symbol": "BTC/USD",
+    "exchange": "kraken",
+    "capital": 1000,
+    "status": "failed_validation",
+    "parameters": {
+      "targetPct": 13,
+      "stopPct": 5,
+      "maxHoldDays": 12
+    },
+    "marketFit": {
+      "bestRegime": "RANGING",
+      "generatedFor": {
+        "regime": "RANGING",
+        "phase": "ACCUMULATION",
+        "sentiment": "NEUTRAL",
+        "volatility": 1.85
+      }
+    },
+    "hash": "376dc773eb5a1513",
+    "validation": {
+      "passed": false,
+      "reason": "Forward: Failed: only 4 trades (min 10)",
+      "validated_at": "2026-04-17T10:52:32.145Z"
+    }
+  },
+  "semantic_context": {
+    "regime": "RANGING",
+    "entry_rules": [
+      "3 consecutive red days",
+      "RSI(14) < 35"
+    ],
+    "exit_rules": [
+      "RSI(14) > 55"
+    ],
+    "risk_management": {
+      "position_size": "3% of capital",
+      "stop_loss": "-5%",
+      "take_profit": "+13%",
+      "max_hold_days": 12
+    },
+    "performance_metrics": {
+      "backtest": {
+        "total_trades": 10,
+        "win_rate": "60%",
+        "backtest_return": "+21.5%",
+        "capital_final": 1214.82,
+        "trade_log": [
+          {
+            "pnl": -5.13,
+            "win": false,
+            "hold_days": 1,
+            "reason": "stop_loss"
+          },
+          {
+            "pnl": 4.15,
+            "win": true,
+            "hold_days": 12,
+            "reason": "timeout"
+          },
+          {
+            "pnl": 4.47,
+            "win": true,
+            "hold_days": 8,
+            "reason": "exit_rule"
+          },
+          {
+            "pnl": 6.07,
+            "win": true,
+            "hold_days": 11,
+            "reason": "exit_rule"
+          },
+          {
+            "pnl": 4.38,
+            "win": true,
+            "hold_days": 12,
+            "reason": "timeout"
+          }
+        ]
+      },
+      "forward": {
+        "total_trades": 4,
+        "win_rate": "75%",
+        "backtest_return": "+15.8%",
+        "capital_final": 1158.09,
+        "trade_log": [
+          {
+            "pnl": -7.16,
+            "win": false,
+            "hold_days": 4,
+            "reason": "stop_loss"
+          },
+          {
+            "pnl": 7.35,
+            "win": true,
+            "hold_days": 12,
+            "reason": "timeout"
+          },
+          {
+            "pnl": 12.47,
+            "win": true,
+            "hold_days": 9,
+            "reason": "exit_rule"
+          },
+          {
+            "pnl": 3.32,
+            "win": true,
+            "hold_days": 10,
+            "reason": "closeout"
+          }
+        ]
+      }
+    }
+  },
+  "cognitive_layer": {
+    "intent": "Exploit RANGING conditions with NEUTRAL sentiment",
+    "philosophy": "Learned from 3 failure(s): Forward: Failed: only 2 trades (min 10), return -0.3% (must be > 0%); Forward: Failed: only 2 trades (min 10), return -0.3% (must be > 0%); Backtest: Failed: WR 45.5% (min 50%), return -26.3% (must be > 0%)",
+    "mantra": "NEUTRAL market. RANGING regime. Act accordingly."
+  },
+  "lineage": {
+    "parent": null,
+    "source": "Forge Reasoning Engine",
+    "failures_considered": 3
+  },
+  "lifecycle": {
+    "status": "failed_validation",
+    "last_updated": "2026-04-17T10:52:32.146Z",
+    "validation": {
+      "passed": false,
+      "reason": "Forward: Failed: only 4 trades (min 10)",
+      "backtest": {
+        "total_trades": 10,
+        "win_rate": "60%",
+        "backtest_return": "+21.5%",
+        "capital_final": 1214.82,
+        "trade_log": [
+          {
+            "pnl": -5.13,
+            "win": false,
+            "hold_days": 1,
+            "reason": "stop_loss"
+          },
+          {
+            "pnl": 4.15,
+            "win": true,
+            "hold_days": 12,
+            "reason": "timeout"
+          },
+          {
+            "pnl": 4.47,
+            "win": true,
+            "hold_days": 8,
+            "reason": "exit_rule"
+          },
+          {
+            "pnl": 6.07,
+            "win": true,
+            "hold_days": 11,
+            "reason": "exit_rule"
+          },
+          {
+            "pnl": 4.38,
+            "win": true,
+            "hold_days": 12,
+            "reason": "timeout"
+          }
+        ]
+      },
+      "forward": {
+        "total_trades": 4,
+        "win_rate": "75%",
+        "backtest_return": "+15.8%",
+        "capital_final": 1158.09,
+        "trade_log": [
+          {
+            "pnl": -7.16,
+            "win": false,
+            "hold_days": 4,
+            "reason": "stop_loss"
+          },
+          {
+            "pnl": 7.35,
+            "win": true,
+            "hold_days": 12,
+            "reason": "timeout"
+          },
+          {
+            "pnl": 12.47,
+            "win": true,
+            "hold_days": 9,
+            "reason": "exit_rule"
+          },
+          {
+            "pnl": 3.32,
+            "win": true,
+            "hold_days": 10,
+            "reason": "closeout"
+          }
+        ]
+      }
+    }
+  },
+  "signature": {
+    "hash": "376dc773eb5a1513",
+    "timestamp": "2026-04-17T10:52:28.799Z"
+  }
+}

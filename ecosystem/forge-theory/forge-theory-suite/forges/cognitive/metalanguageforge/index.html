@@ -1,0 +1,734 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaLanguageForge Simulator</title>
+    <style>
+        .sim-desc {
+            font-size: 1.2em;
+            color: #ffb300;
+            text-shadow: 0 0 8px #ffb300;
+        }
+        .sim-desc .java-emphasis {
+            color: #ff00cc;
+            text-shadow: 0 0 8px #ff00cc;
+        }
+        .sim-desc .arcade-vibes {
+            color: #00ffe7;
+        }
+        .result {
+            display: none;
+        }
+        #actionButtons {
+            display: none;
+            margin-top: 1em;
+        }
+        #actionButtons button {
+            margin-right: 1em;
+        }
+        .evo-btn {
+            margin-left: 1em;
+        }
+        #actionButtons {
+            display: none;
+            margin-top: 1em;
+        }
+        #actionButtons button {
+            margin-right: 1em;
+        }
+        #scoreChart {
+            display: none;
+            margin-top: 2em;
+        }
+        /* Neon animated grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            background:
+                repeating-linear-gradient(90deg, rgba(0,255,231,0.15) 0px, rgba(0,255,231,0.15) 2px, transparent 2px, transparent 40px),
+                repeating-linear-gradient(0deg, rgba(255,0,204,0.12) 0px, rgba(255,0,204,0.12) 2px, transparent 2px, transparent 40px);
+            animation: gridMove 8s linear infinite;
+        }
+        @keyframes gridMove {
+            0% { background-position: 0 0, 0 0; }
+            100% { background-position: 40px 40px, 40px 40px; }
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+        body {
+            font-family: 'Orbitron', Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f2027 0%, #2c5364 100%);
+            color: #fff;
+            overflow-x: hidden;
+        }
+        .container {
+            background: rgba(20, 20, 40, 0.95);
+            padding: 2em;
+            border-radius: 16px;
+            box-shadow: 0 0 32px 8px #00ffe7, 0 0 8px 2px #ff00cc;
+            max-width: 800px;
+            margin: 3em auto;
+            border: 2px solid #00ffe7;
+            position: relative;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 1em;
+                border-radius: 10px;
+                margin: 1em;
+                max-width: 98vw;
+            }
+            h1 {
+                font-size: 1.4em;
+            }
+            label {
+                font-size: 1em;
+            }
+            button {
+                font-size: 1.1em;
+                padding: 0.9em 1.4em;
+                min-width: 44px;
+                min-height: 44px;
+                border-radius: 14px;
+            }
+            select, input[type=checkbox] {
+                min-width: 44px;
+                min-height: 44px;
+                font-size: 1.1em;
+            }
+            label {
+                padding-bottom: 0.7em;
+                padding-top: 0.7em;
+            }
+            #scorePreview {
+                font-size: 1.1em;
+                padding: 0.5em 0;
+            }
+            /* Timeline scroll for mobile */
+            .evo-timeline {
+                overflow-x: auto;
+                display: block !important;
+                white-space: nowrap;
+                padding-bottom: 1em;
+            }
+            .evo-timeline > div {
+                display: inline-block !important;
+                min-width: 80px;
+                vertical-align: bottom;
+            }
+            .result {
+                padding: 1em;
+                border-radius: 8px;
+            }
+            pre {
+                font-size: 0.9em;
+                padding: 0.7em;
+            }
+        }
+        h1 {
+            color: #ff00cc;
+            text-shadow: 0 0 8px #ff00cc, 0 0 24px #00ffe7;
+            font-size: 2.5em;
+            letter-spacing: 2px;
+            animation: neonPulse 2s infinite alternate;
+        }
+        @keyframes neonPulse {
+            0% { text-shadow: 0 0 8px #ff00cc, 0 0 24px #00ffe7; }
+            100% { text-shadow: 0 0 24px #ff00cc, 0 0 48px #00ffe7; }
+        }
+        .java-emoji {
+            font-size: 2em;
+            filter: drop-shadow(0 0 8px #ffb300);
+            animation: emojiSpin 3s linear infinite;
+        }
+        @keyframes emojiSpin {
+            0% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
+            100% { transform: rotate(-10deg); }
+        }
+        label {
+            display: block;
+            margin-top: 1.2em;
+            font-size: 1.1em;
+            color: #00ffe7;
+            text-shadow: 0 0 4px #00ffe7;
+        }
+        select, input[type=checkbox] {
+            margin-right: 1em;
+            accent-color: #ff00cc;
+        }
+        select {
+            background: #222;
+            color: #fff;
+            border: 2px solid #ff00cc;
+            border-radius: 6px;
+            font-size: 1em;
+            padding: 0.3em 1em;
+            box-shadow: 0 0 8px #ff00cc;
+        }
+        button {
+            margin-top: 2em;
+            padding: 0.7em 2em;
+            font-size: 1.2em;
+            background: linear-gradient(90deg, #ff00cc 0%, #00ffe7 100%);
+            color: #222;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 0 16px #ff00cc, 0 0 8px #00ffe7;
+            cursor: pointer;
+            font-family: 'Orbitron', Arial, sans-serif;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 32px #ff00cc, 0 0 16px #00ffe7;
+        }
+        .result {
+            margin-top: 2em;
+            background: rgba(34, 0, 51, 0.95);
+            padding: 1.5em;
+            border-radius: 12px;
+            box-shadow: 0 0 24px #00ffe7, 0 0 8px #ff00cc;
+            border: 2px solid #ff00cc;
+            color: #fff;
+            animation: resultGlow 2s infinite alternate;
+        }
+        @keyframes resultGlow {
+            0% { box-shadow: 0 0 24px #00ffe7, 0 0 8px #ff00cc; }
+            100% { box-shadow: 0 0 48px #00ffe7, 0 0 24px #ff00cc; }
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        ul li {
+            margin-bottom: 0.7em;
+            font-size: 1.1em;
+            color: #ffb300;
+            text-shadow: 0 0 4px #ffb300;
+        }
+        h2, h3 {
+            color: #00ffe7;
+            text-shadow: 0 0 8px #00ffe7;
+        }
+        pre {
+            background: linear-gradient(90deg, #222 60%, #ff00cc 100%);
+            color: #00ffe7;
+            padding: 1.2em;
+            border-radius: 10px;
+            box-shadow: 0 0 16px #ff00cc;
+            font-size: 1.05em;
+            overflow-x: auto;
+            border: 2px solid #00ffe7;
+            position: relative;
+        }
+        .arcade-border {
+            position: absolute;
+            top: -12px; left: -12px; right: -12px; bottom: -12px;
+            border: 4px dashed #ff00cc;
+            border-radius: 20px;
+            pointer-events: none;
+            animation: borderFlash 1.5s infinite alternate;
+        }
+        @keyframes borderFlash {
+            0% { border-color: #ff00cc; }
+            100% { border-color: #00ffe7; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="arcade-border"></div>
+        <h1>☕ MetaLanguageForge <span class="java-emoji">💾</span> Simulator <span class="java-emoji">🕹️</span></h1>
+        <p class="sim-desc">
+            <span class="java-emoji">🌟</span> This simulator creates a foundation for understanding how programming languages evolve and how different design constraints lead to different language characteristics,<br>
+            <span class="java-emoji">💻</span> with a strong emphasis on <span class="java-emphasis">Java-like</span> object-oriented patterns as one foundational style among many.<br>
+            <span class="java-emoji">🎶</span> <span class="arcade-vibes">80s Neon Arcade Vibes!</span>
+        </p>
+        <form id="simForm">
+            <label>Programming Paradigm:
+                <select id="paradigm">
+                    <option value="object_oriented">☕ Object-Oriented</option>
+                    <option value="functional">🧠 Functional</option>
+                    <option value="imperative">⚡ Imperative</option>
+                    <option value="logical">🔎 Logical</option>
+                    <option value="reactive">🔄 Reactive</option>
+                </select>
+            </label>
+            <label><input type="checkbox" id="high_performance"> 🚀 High Performance <span title="Optimized for speed and efficiency">❔</span></label>
+            <label><input type="checkbox" id="memory_safe"> 🛡️ Memory Safety <span title="Prevents memory errors and leaks">❔</span></label>
+            <label><input type="checkbox" id="high_concurrency"> 🤹 Easy Concurrency <span title="Handles multiple tasks simultaneously">❔</span></label>
+            <label><input type="checkbox" id="readable"> 📖 Easy to Read <span title="Code is clear and understandable">❔</span></label>
+            <label><input type="checkbox" id="expressive"> 🎨 Highly Expressive <span title="Allows concise and powerful code">❔</span></label>
+            <label><input type="checkbox" id="secure"> 🔒 Security <span title="Protects against vulnerabilities">❔</span></label>
+            <label><input type="checkbox" id="scalable"> 📈 Scalability <span title="Grows easily with demand">❔</span></label>
+            <label><input type="checkbox" id="easy_learning"> 🧑‍🎓 Easy to Learn <span title="Beginner-friendly syntax and concepts">❔</span></label>
+            <button type="button" onclick="runSimulation()">✨ Simulate Language Design ✨</button>
+                <div id="scorePreview" style="margin-top:1em;display:none;text-align:center;"></div>
+            <button type="button" onclick="runEvolution()" class="evo-btn">🧬 Simulate Evolution</button>
+        </form>
+    <div class="result" id="result"></div>
+    <div id="actionButtons">
+    <button type="button" onclick="saveResult()">💾 Save Result</button>
+    <button type="button" onclick="shareResult()">🔗 Share Result</button>
+    <button type="button" onclick="exportResultJSON()">🗄️ Export as JSON</button>
+    <button type="button" onclick="showCompareModal()">⚖️ Compare Languages</button>
+    </div>
+    <div id="compareModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(20,20,40,0.97);z-index:1000;align-items:center;justify-content:center;">
+        <div class="modal-content">
+            <h2>Compare Languages</h2>
+            <div id="compareSelects"></div>
+            <div id="compareResults"></div>
+            <div class="close-btn"><button onclick="closeCompareModal()">Close</button></div>
+        </div>
+    </div>
+    <canvas id="scoreChart" width="400" height="180"></canvas>
+    </div>
+    <script>
+let savedSpecs = [];
+    let lastSpec = null;
+    function runSimulation() {
+        // Gather requirements
+        const paradigm = document.getElementById('paradigm').value;
+        const requirements = {
+            high_performance: document.getElementById('high_performance').checked,
+            memory_safe: document.getElementById('memory_safe').checked,
+            high_concurrency: document.getElementById('high_concurrency').checked,
+            readable: document.getElementById('readable').checked,
+            expressive: document.getElementById('expressive').checked,
+            secure: document.getElementById('secure').checked,
+            scalable: document.getElementById('scalable').checked,
+            easy_learning: document.getElementById('easy_learning').checked
+        };
+
+        // Simulate language design
+        const spec = designLanguage(paradigm, requirements);
+        updateScorePreview(); // Call to update score preview
+    lastSpec = spec;
+    savedSpecs.push(spec);
+        // Show result
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('result').innerHTML = renderSpec(spec);
+        drawScoreChart(spec.performance_score, spec.safety_score);
+        document.getElementById('actionButtons').style.display = 'block';
+    }
+
+// Real-time score preview logic
+function updateScorePreview() {
+    const paradigm = document.getElementById('paradigm').value;
+    const requirements = {
+        high_performance: document.getElementById('high_performance').checked,
+        memory_safe: document.getElementById('memory_safe').checked,
+        high_concurrency: document.getElementById('high_concurrency').checked,
+        readable: document.getElementById('readable').checked,
+        expressive: document.getElementById('expressive').checked,
+        secure: document.getElementById('secure').checked,
+        scalable: document.getElementById('scalable').checked,
+        easy_learning: document.getElementById('easy_learning').checked
+    };
+    const spec = designLanguage(paradigm, requirements);
+    const previewDiv = document.getElementById('scorePreview');
+    previewDiv.style.display = 'block';
+    previewDiv.innerHTML = `<span style='color:#ff00cc;font-size:1.2em;'>🚀 Performance: ${spec.performance_score.toFixed(2)}</span> &nbsp; <span style='color:#ffb300;font-size:1.2em;'>🛡️ Safety: ${spec.safety_score.toFixed(2)}</span>`;
+}
+
+// Attach listeners for real-time preview
+window.addEventListener('DOMContentLoaded', function() {
+    const inputs = [
+        document.getElementById('paradigm'),
+        document.getElementById('high_performance'),
+        document.getElementById('memory_safe'),
+        document.getElementById('high_concurrency'),
+        document.getElementById('readable'),
+        document.getElementById('expressive'),
+        document.getElementById('secure'),
+        document.getElementById('scalable'),
+        document.getElementById('easy_learning')
+    ];
+    inputs.forEach(input => {
+        input.addEventListener('change', updateScorePreview);
+    });
+    updateScorePreview();
+});
+
+    function runEvolution() {
+        // Simulate 5 generations of language evolution
+        let generations = [];
+        let baseRequirements = {
+            high_performance: true,
+            memory_safe: false,
+            high_concurrency: false,
+            readable: true,
+            expressive: false,
+            secure: false,
+            scalable: false,
+            easy_learning: true
+        };
+        let paradigms = ['object_oriented', 'functional', 'imperative', 'logical', 'reactive'];
+        for (let i = 0; i < 5; i++) {
+            let req = {...baseRequirements};
+            if (i % 2 === 1) req.memory_safe = true;
+            if (i > 2) req.secure = true;
+            let paradigm = paradigms[i % paradigms.length];
+            generations.push(designLanguage(paradigm, req));
+        }
+        let html = '<h2>🧬 Language Evolution</h2>';
+        generations.forEach((spec, idx) => {
+            html += `<h3>Generation ${idx+1}: ${spec.name}</h3>` + renderSpec(spec);
+        });
+        html += `<div style='margin-top:2em;display:flex;gap:1em;'>
+            <button type='button' onclick='saveEvolutionResults()'>💾 Save Evolution Results</button>
+            <button type='button' onclick='exportEvolutionJSON()'>🗄️ Export Evolution as JSON</button>
+        </div>`;
+        html += renderEvolutionTimeline(generations);
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('result').innerHTML = html;
+        drawScoreChart(generations[generations.length-1].performance_score, generations[generations.length-1].safety_score);
+        document.getElementById('actionButtons').style.display = 'none';
+        window._evolutionGenerations = generations;
+        generations.forEach(spec => savedSpecs.push(spec));
+function showCompareModal() {
+    if (savedSpecs.length < 2) {
+        alert('Generate at least two languages to compare!');
+        return;
+    }
+    document.getElementById('compareModal').style.display = 'flex';
+    // Build selects
+    let selectsHtml = '';
+    for (let i = 0; i < 2; i++) {
+        selectsHtml += `<div><label>Select Language ${i+1}:<br><select id='compareSelect${i}'>`;
+        savedSpecs.forEach((spec, idx) => {
+            selectsHtml += `<option value='${idx}'>${spec.name} (${spec.paradigm.replace('_',' ')})</option>`;
+        });
+        selectsHtml += `</select></label></div>`;
+    }
+    document.getElementById('compareSelects').innerHTML = selectsHtml;
+    document.getElementById('compareResults').innerHTML = '';
+    // Add change listeners
+    for (let i = 0; i < 2; i++) {
+        document.getElementById('compareSelect'+i).onchange = updateCompareResults;
+    }
+    updateCompareResults();
+}
+
+function closeCompareModal() {
+    document.getElementById('compareModal').style.display = 'none';
+}
+
+function updateCompareResults() {
+    const idx1 = parseInt(document.getElementById('compareSelect0').value);
+    const idx2 = parseInt(document.getElementById('compareSelect1').value);
+    if (idx1 === idx2) {
+        document.getElementById('compareResults').innerHTML = '<p style="color:#ffb300;text-align:center;">Select two different languages.</p>';
+        return;
+    }
+    const spec1 = savedSpecs[idx1];
+    const spec2 = savedSpecs[idx2];
+    // Compare features
+    function featureDiff(f1, f2) {
+        return f1.filter(x => !f2.includes(x));
+    }
+    let html = `<div style='display:flex;gap:2em;justify-content:center;'>`;
+    html += `<div style='flex:1;background:#2c5364;padding:1em;border-radius:10px;'>`;
+    html += `<h3 style='color:#ff00cc;'>${spec1.name}</h3>`;
+    html += `<ul><li><b>Paradigm:</b> ${spec1.paradigm.replace('_',' ')}</li>`;
+    html += `<li><b>Performance:</b> ${spec1.performance_score.toFixed(2)}</li>`;
+    html += `<li><b>Safety:</b> ${spec1.safety_score.toFixed(2)}</li>`;
+    html += `<li><b>Unique Features:</b> ${featureDiff(spec1.key_features,spec2.key_features).map(f=>`<span style='color:#ffb300'>${f}</span>`).join(', ')||'None'}</li></ul>`;
+    html += `</div>`;
+    html += `<div style='flex:1;background:#222;padding:1em;border-radius:10px;'>`;
+    html += `<h3 style='color:#00ffe7;'>${spec2.name}</h3>`;
+    html += `<ul><li><b>Paradigm:</b> ${spec2.paradigm.replace('_',' ')}</li>`;
+    html += `<li><b>Performance:</b> ${spec2.performance_score.toFixed(2)}</li>`;
+    html += `<li><b>Safety:</b> ${spec2.safety_score.toFixed(2)}</li>`;
+    html += `<li><b>Unique Features:</b> ${featureDiff(spec2.key_features,spec1.key_features).map(f=>`<span style='color:#00ffe7'>${f}</span>`).join(', ')||'None'}</li></ul>`;
+    html += `</div></div>`;
+    document.getElementById('compareResults').innerHTML = html;
+}
+    // No extra closing brace here
+
+function saveEvolutionResults() {
+    const generations = window._evolutionGenerations || [];
+    if (!generations.length) return;
+    let text = generations.map((spec, idx) => {
+        return `Generation ${idx+1}\n` + renderSpecText(spec) + '\n\n';
+    }).join('');
+    const blob = new Blob([text], {type: 'text/plain'});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'LanguageEvolutionResults.txt';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function exportEvolutionJSON() {
+    const generations = window._evolutionGenerations || [];
+    if (!generations.length) return;
+    const json = JSON.stringify(generations, null, 2);
+    const blob = new Blob([json], {type: 'application/json'});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'LanguageEvolutionResults.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+    }
+
+    function saveResult() {
+        if (!lastSpec) return;
+        const text = renderSpecText(lastSpec);
+        const blob = new Blob([text], {type: 'text/plain'});
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${lastSpec.name}_spec.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function exportResultJSON() {
+        if (!lastSpec) return;
+        const json = JSON.stringify(lastSpec, null, 2);
+        const blob = new Blob([json], {type: 'application/json'});
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${lastSpec.name}_spec.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function shareResult() {
+        if (!lastSpec) return;
+        const text = renderSpecText(lastSpec);
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Language spec copied to clipboard!');
+        });
+    }
+
+    function renderSpecText(spec) {
+        return `Language: ${spec.name}\nParadigm: ${spec.paradigm}\nType System: ${spec.type_system}\nConcurrency Model: ${spec.concurrency_model}\nMemory Model: ${spec.memory_model}\nPerformance Score: ${spec.performance_score.toFixed(2)}\nSafety Score: ${spec.safety_score.toFixed(2)}\nKey Features: ${spec.key_features.join(', ')}\n\nCode Example:\n${spec.code_example}`;
+    }
+
+    function designLanguage(paradigm, req) {
+        // Name generation
+        const prefixes = {
+            object_oriented: ['Object', 'Class', 'Type', 'Safe'],
+            functional: ['Pure', 'Func', 'Lambda', 'Flow'],
+            imperative: ['Script', 'Dynamic', 'Quick', 'Easy'],
+            logical: ['Logic', 'Rule', 'Fact', 'Prove'],
+            reactive: ['Event', 'Stream', 'Signal', 'React']
+        };
+        const suffixes = ['Lang', 'Script', 'Code', 'Sharp', 'Plus', 'Flow', 'Logic', 'Rx'];
+        const prefix = prefixes[paradigm][Math.floor(Math.random()*prefixes[paradigm].length)];
+        const suffix = suffixes[Math.floor(Math.random()*suffixes.length)];
+        const name = prefix + suffix;
+
+        // Syntax rules
+        let features = [];
+        if (paradigm === 'object_oriented') {
+            features = ['classes', 'inheritance', 'polymorphism', 'encapsulation', 'access_modifiers', 'interface_declarations', 'package_organization', 'constructor_syntax'];
+        } else if (paradigm === 'functional') {
+            features = ['immutability', 'first_class_functions', 'recursion', 'pure_functions', 'pattern_matching', 'lambda_expressions', 'type_inference'];
+        } else if (paradigm === 'imperative') {
+            features = ['variables', 'loops', 'conditionals', 'state_mutation', 'statement_sequences', 'explicit_control_flow', 'mutable_state'];
+        } else if (paradigm === 'logical') {
+            features = ['facts', 'rules', 'queries', 'unification', 'backtracking', 'pattern_matching'];
+        } else if (paradigm === 'reactive') {
+            features = ['event_streams', 'observers', 'signals', 'async_events', 'dataflow', 'reactive_expressions'];
+        }
+        if (req.readable) features.push('significant_whitespace');
+        if (req.expressive) features.push('pattern_matching', 'extension_methods');
+        if (req.secure) features.push('type_safety', 'input_validation');
+        if (req.scalable) features.push('distributed_computing', 'modular_architecture');
+        if (req.easy_learning) features.push('simple_syntax', 'helpful_errors');
+
+        // Type system
+        let type_system = 'dynamic_duck';
+        if (paradigm === 'object_oriented') type_system = 'nominal_static_strong';
+        else if (paradigm === 'functional') type_system = 'hybrid_inference';
+        else if (paradigm === 'logical') type_system = 'declarative';
+        else if (paradigm === 'reactive') type_system = 'event_driven';
+
+        // Concurrency
+        let concurrency_model = 'threads_locks';
+        if (req.high_concurrency) concurrency_model = 'actor_model';
+        else if (paradigm === 'functional') concurrency_model = 'async_await';
+        else if (paradigm === 'reactive') concurrency_model = 'event_loop';
+        else if (paradigm === 'logical') concurrency_model = 'backtracking';
+
+        // Memory
+        let memory_model = 'reference_counting';
+        if (paradigm === 'object_oriented') memory_model = 'tracing_garbage_collection';
+        if (req.memory_safe) memory_model = 'manual_memory_management';
+        if (paradigm === 'reactive') memory_model = 'stream_buffering';
+        if (paradigm === 'logical') memory_model = 'fact_base';
+
+        // Scores
+        let performance_score = 0.6;
+        let safety_score = 0.7;
+        if (paradigm === 'imperative') performance_score = 0.8;
+        if (paradigm === 'functional') safety_score = 0.9;
+        if (paradigm === 'logical') safety_score = 0.8;
+        if (paradigm === 'reactive') performance_score = 0.7;
+        if (req.high_performance) performance_score += 0.2;
+        if (req.memory_safe) safety_score += 0.2;
+        if (req.secure) safety_score += 0.1;
+        if (req.scalable) performance_score += 0.1;
+        if (req.easy_learning) safety_score += 0.05;
+        performance_score = Math.min(performance_score, 1.0);
+        safety_score = Math.min(safety_score, 1.0);
+
+        // Key features
+        let key_features = features.slice(0, 10);
+
+        // Code example
+        let code_example = '';
+        if (paradigm === 'object_oriented') {
+            code_example = `// ${name} - Object-Oriented Example\npublic class Calculator {\n    private double memory;\n    public Calculator() { this.memory = 0.0; }\n    public double add(double a, double b) {\n        double result = a + b;\n        this.memory = result;\n        return result;\n    }\n    public double getMemory() { return this.memory; }\n}\n// Usage\npublic class Main {\n    public static void main(String[] args) {\n        Calculator calc = new Calculator();\n        double sum = calc.add(5.0, 3.0);\n        System.out.println("Result: " + sum);\n    }\n}`;
+        } else if (paradigm === 'functional') {
+            code_example = `-- ${name} - Functional Example\nmodule Calculator where\n\ntype Calculator = { memory :: Double }\n\nemptyCalculator :: Calculator\nemptyCalculator = { memory = 0.0 }\n\nadd :: Double -> Double -> Calculator -> (Double, Calculator)\nadd a b calc = \n    let result = a + b\n        newCalc = calc { memory = result }\n    in (result, newCalc)\n\n-- Usage\nmain :: IO ()\nmain = do\n    let (result, calc') = add 5.0 3.0 emptyCalculator\n    putStrLn $ "Result: " ++ show result`;
+        } else if (paradigm === 'imperative') {
+            code_example = `# ${name} - Imperative Example\nmemory = 0.0\ndef add(a, b):\n    global memory\n    result = a + b\n    memory = result\n    return result\n\n# Usage\nsum = add(5.0, 3.0)\nprint("Result:", sum)`;
+        } else if (paradigm === 'logical') {
+            code_example = `% ${name} - Logical Example\nfact(memory(0.0)).\nrule(add(A,B,Result), memory(Mem)) :- Result is A+B, Mem = Result.\n% Usage\n?- add(5.0, 3.0, Result).`;
+        } else if (paradigm === 'reactive') {
+            code_example = `// ${name} - Reactive Example\nlet memory = 0.0;\nconst addStream = (a$, b$) => a$.combineLatest(b$, (a, b) => {\n    memory = a + b;\n    return memory;\n});\n// Usage\naddStream(of(5.0), of(3.0)).subscribe(result => console.log("Result:", result));`;
+        }
+
+        return {
+            name,
+            paradigm,
+            type_system,
+            concurrency_model,
+            memory_model,
+            performance_score,
+            safety_score,
+            key_features,
+            code_example
+        };
+    }
+
+    function renderSpec(spec) {
+        // Emoji mapping for paradigms
+        const paradigmEmojis = {
+            object_oriented: '☕',
+            functional: '🧠',
+            imperative: '⚡',
+            logical: '🔎',
+            reactive: '🔄'
+        };
+        // Tooltips for features
+        const featureTips = {
+            'classes': 'Defines reusable blueprints for objects',
+            'inheritance': 'Allows new classes to inherit properties',
+            'polymorphism': 'Objects can take many forms',
+            'encapsulation': 'Restricts direct access to data',
+            'access_modifiers': 'Controls visibility of members',
+            'interface_declarations': 'Defines contracts for classes',
+            'package_organization': 'Organizes code into packages',
+            'constructor_syntax': 'Special method for object creation',
+            'immutability': 'Data cannot be changed after creation',
+            'first_class_functions': 'Functions are treated as values',
+            'recursion': 'Functions call themselves',
+            'pure_functions': 'No side effects',
+            'pattern_matching': 'Matches data structures',
+            'lambda_expressions': 'Anonymous functions',
+            'type_inference': 'Types are deduced automatically',
+            'variables': 'Stores data',
+            'loops': 'Repeats actions',
+            'conditionals': 'Branching logic',
+            'state_mutation': 'Changes data',
+            'statement_sequences': 'Ordered instructions',
+            'explicit_control_flow': 'Directs program execution',
+            'mutable_state': 'Data can be changed',
+            'facts': 'Basic truths in logic',
+            'rules': 'Logical relationships',
+            'queries': 'Questions to the system',
+            'unification': 'Combines logical statements',
+            'backtracking': 'Tries alternatives',
+            'event_streams': 'Continuous data/events',
+            'observers': 'Watch for changes',
+            'signals': 'Notifies changes',
+            'async_events': 'Handles events asynchronously',
+            'dataflow': 'Tracks data movement',
+            'reactive_expressions': 'Responds to changes',
+            'significant_whitespace': 'Whitespace matters',
+            'extension_methods': 'Add methods to types',
+            'type_safety': 'Prevents type errors',
+            'input_validation': 'Checks user input',
+            'distributed_computing': 'Runs on multiple machines',
+            'modular_architecture': 'Organizes code into modules',
+            'simple_syntax': 'Easy to write and read',
+            'helpful_errors': 'Clear error messages'
+        };
+        return `
+            <h2>${paradigmEmojis[spec.paradigm] || ''} Language: <span style="color:#ff00cc;text-shadow:0 0 8px #ff00cc;">${spec.name}</span></h2>
+            <ul>
+                <li><strong>Paradigm:</strong> ${paradigmEmojis[spec.paradigm] || ''} ${spec.paradigm.replace('_', ' ')}</li>
+                <li><strong>Type System:</strong> 🏷️ ${spec.type_system}</li>
+                <li><strong>Concurrency Model:</strong> 🤹 ${spec.concurrency_model}</li>
+                <li><strong>Memory Model:</strong> 🧠 ${spec.memory_model}</li>
+                <li><strong>Performance Score:</strong> 🚀 ${spec.performance_score.toFixed(2)}</li>
+                <li><strong>Safety Score:</strong> 🛡️ ${spec.safety_score.toFixed(2)}</li>
+                <li><strong>Key Features:</strong> ${spec.key_features.map(f => `<span title='${featureTips[f]||''}'>✨ ${f}</span>`).join(', ')}</li>
+            </ul>
+            <h3>👾 Code Example</h3>
+            <pre>${spec.code_example}</pre>
+        `;
+    }
+
+    // Simple chart for scores
+    function drawScoreChart(perf, safe) {
+        const canvas = document.getElementById('scoreChart');
+        const ctx = canvas.getContext('2d');
+        canvas.style.display = 'block';
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.font = '18px Orbitron';
+        ctx.fillStyle = '#fff';
+        ctx.fillText('Performance & Safety Scores', 60, 30);
+        // Axes
+        ctx.strokeStyle = '#00ffe7';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(60,60); ctx.lineTo(60,150); ctx.lineTo(350,150);
+        ctx.stroke();
+        // Bars
+        ctx.fillStyle = '#ff00cc';
+        ctx.fillRect(90,150-perf*80,40,perf*80);
+        ctx.fillStyle = '#ffb300';
+        ctx.fillRect(180,150-safe*80,40,safe*80);
+        // Labels
+        ctx.fillStyle = '#00ffe7';
+        ctx.fillText('Performance', 80, 170);
+        ctx.fillText('Safety', 180, 170);
+        ctx.fillText((perf*100).toFixed(0), 100, 150-perf*80-10);
+        ctx.fillText((safe*100).toFixed(0), 190, 150-safe*80-10);
+    }
+
+    // Timeline rendering for language evolution
+    function renderEvolutionTimeline(generations) {
+        if (!generations || !generations.length) return '';
+        let html = `<h3 style='margin-top:2em;color:#ffb300;text-align:center;'>Evolution Timeline</h3>`;
+        html += `<div class='evo-timeline' style='display:flex;justify-content:center;align-items:flex-end;gap:1em;margin-top:1em;'>`;
+        generations.forEach((spec, idx) => {
+            html += `<div style='flex:1;text-align:center;'>
+                <div style='height:${60+spec.performance_score*60}px;width:32px;margin:auto;background:#ff00cc;border-radius:8px;box-shadow:0 0 8px #ff00cc;'></div>
+                <div style='height:${60+spec.safety_score*60}px;width:32px;margin:auto;background:#ffb300;border-radius:8px;box-shadow:0 0 8px #ffb300;margin-top:4px;'></div>
+                <div style='margin-top:8px;font-size:0.95em;color:#00ffe7;'>Gen ${idx+1}</div>
+                <div style='font-size:0.9em;color:#fff;'>${spec.name}</div>
+            </div>`;
+        });
+        html += `</div>`;
+        return html;
+    }
+    </script>
+</body>
+</html>

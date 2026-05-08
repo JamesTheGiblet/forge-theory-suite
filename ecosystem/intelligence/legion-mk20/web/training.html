@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chameleon LM Training</title>
+  <style>
+    body { background: #0a0e27; color: #e0e0e0; font-family: system-ui; padding: 1rem; }
+    .chat { border: 1px solid #333; border-radius: 8px; height: 400px; overflow-y: auto; padding: 1rem; margin-bottom: 1rem; }
+    .message { margin-bottom: 0.5rem; }
+    .user { color: #a855f7; }
+    .assistant { color: #22c55e; }
+    input, button { padding: 0.5rem; margin: 0.25rem; }
+    input { width: 70%; background: #1a1f4e; border: none; color: white; }
+    button { background: #a855f7; border: none; cursor: pointer; }
+    .feedback { margin-left: 1rem; }
+    .feedback button { background: #333; margin: 0.1rem; }
+  </style>
+</head>
+<body>
+  <h1>🧠 Chameleon LM — Training Interface</h1>
+  <p>I learn from your feedback. Rate each response to train me.</p>
+  
+  <div class="chat" id="chat"></div>
+  
+  <input type="text" id="input" placeholder="Type your message..." />
+  <button onclick="sendMessage()">Send</button>
+  <button onclick="showStatus()">Status</button>
+  
+  <script>
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('input');
+    let lastResponse = null;
+    
+    function addMessage(role, text) {
+      const div = document.createElement('div');
+      div.className = `message ${role}`;
+      div.innerHTML = `<strong>${role === 'user' ? 'You' : 'Chameleon'}:</strong> ${text}`;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
+    
+    async function sendMessage() {
+      const msg = input.value.trim();
+      if (!msg) return;
+      addMessage('user', msg);
+      input.value = '';
+      
+      const res = await fetch('/api/chameleon/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg })
+      });
+      const data = await res.json();
+      addMessage('assistant', data.response);
+      lastResponse = data.response;
+      
+      // Add feedback buttons
+      const feedbackDiv = document.createElement('div');
+      feedbackDiv.className = 'feedback';
+      feedbackDiv.innerHTML = `
+        <button onclick="giveFeedback('positive')">👍 Helpful</button>
+        <button onclick="giveFeedback('negative')">👎 Not helpful</button>
+        <button onclick="giveFeedback('skip')">⏭️ Skip</button>
+      `;
+      chat.appendChild(feedbackDiv);
+      chat.scrollTop = chat.scrollHeight;
+    }
+    
+    async function giveFeedback(type) {
+      if (type !== 'skip') {
+        await fetch('/api/chameleon/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ feedback: type, response: lastResponse })
+        });
+        addMessage('system', `Feedback recorded: ${type}`);
+      }
+      // Remove feedback buttons
+      const feedbacks = document.querySelectorAll('.feedback');
+      feedbacks.forEach(f => f.remove());
+    }
+    
+    async function showStatus() {
+      const res = await fetch('/api/chameleon/status');
+      const data = await res.json();
+      addMessage('system', `Status: ${data.totalInteractions} interactions, Personality: ${data.personality}, Learning rate: ${data.learningRate}`);
+    }
+  </script>
+</body>
+</html>

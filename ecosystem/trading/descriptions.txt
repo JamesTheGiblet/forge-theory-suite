@@ -1,0 +1,87 @@
+UBVM-os;Universal Behavioural Virtual Machine — semantic execution substrate
+SCP;Semantic Contract Protocol — meaning governance and interpretation rules
+BuddAI;Personal cognitive organism — adaptive, reflective, sovereign intelligence
+BuddAI-Lite;Lightweight cognitive capsule for constrained environments
+legion-ev22;Distributed semantic compute organism — multi-agent execution layer
+mind-forge;Cognitive substrate for semantic reasoning and internal simulation
+forge_theory;Mathematical foundation of the Forge ecosystem
+ScriptForge;Behavioural scripting engine for semantic systems
+
+lifeforge;Emergent life simulation engine — evolution, behaviour, complexity
+emergence;General-purpose emergence engine for pattern formation
+cosmic-drive;Cosmic-scale simulation of matter, gravity, and structure
+solarforge;Solar system simulation and orbital mechanics engine
+treeforge;Procedural growth and branching system for living structures
+neuroforge;Neural growth and self-organising intelligence engine
+virusforge;Viral evolution and mutation simulation engine
+ecoforge;Ecosystem simulation — species, resources, interactions
+artforge;Evolutionary art generator — aesthetic emergence engine
+shaderforge;Procedural shader and visual effect generation engine
+
+Project-G.I.S.M.O;Autonomous robotics platform — motion, sensing, control
+Project-E.M.B.E.R;Self-balancing two-wheeled robot — IMU + PID control
+wheelie;Autonomous balancing robot prototype
+robot-mk1;Early robotics platform — motors, sensors, control loops
+actuator-forge;Actuator modelling and control library
+servo-forge;Servo control and calibration toolkit
+motor-forge;Motor control, PWM, and torque modelling engine
+3D_printer;3D printer configuration, tuning, and firmware experiments
+sidewinderx2mod;Sidewinder X2 printer modifications and enhancements
+
+Praxoimous-AI-Gateway-MVP;AI-native gateway layer for multi-agent orchestration
+praximous-portal;User-facing portal for Praximous OS
+inCybe_web;Local AI-native OS layer for Obsidian — semantic workspace
+
+Kraken-Intelligence;Autonomous trading intelligence organism — signals + strategy
+QuantAlgo;Quantitative algorithm suite for market modelling
+Enhanced-Stock-Market-Particle-System;Particle-based market simulation engine
+AlphaFlow-Analytics;Market analytics and flow intelligence toolkit
+RevoPredict-MVP;Predictive modelling engine for market behaviour
+
+moneyforge;Financial modelling and simulation engine
+LinguaForge;Language intelligence engine — semantic transformation
+bodyforge;Human physiology modelling and optimisation engine
+canna-forge;Cannabis strain modelling and knowledge engine
+canna-know;Cannabis knowledge and classification system
+therapeutic-forge;Therapeutic compound modelling and effect prediction
+coffee-forge-suite;Coffee analysis and brewing intelligence suite
+brew-forge;Brew process modelling and optimisation engine
+grind-forge;Coffee grind analysis and particle modelling
+roast-forge;Coffee roasting simulation and profile engine
+tyre-forge;Tyre modelling and wear simulation engine
+fire-forge;Combustion modelling and fire behaviour engine
+carbon-forge;Carbon modelling and emissions analysis engine
+emissions-forge;Emissions tracking and modelling toolkit
+
+blockforge-suite;Blockchain-based supply chain and compliance toolkit
+BlockForge_platform;Core platform for supply chain traceability
+supply-forge;Supply chain modelling and optimisation engine
+compli-forge;Compliance automation and audit intelligence
+CertiScope-forge;Certification and standards verification engine
+O-Licence-guard;O-Licence compliance monitoring and enforcement tool
+scope_guard;Risk and scope compliance engine
+lead_leakage_forge;Lead leakage detection and modelling toolkit
+
+neural-draw;Neural drawing and generative sketch engine
+rubix-solver;Rubik’s cube solving algorithms and heuristics
+partial-playground;Mathematical and algorithmic experimentation sandbox
+holiday-cheer;Festive generative art and animation experiments
+christmas-forge;Seasonal creative engine — procedural holiday content
+the-pre-warriors;Creative narrative and character sandbox
+ScriptArchaeology;Analysis and reconstruction of ancient scripts
+Cleanroom-Recovery-Visualizer;Cleanroom contamination and recovery visualisation
+cyber-forge;Cybersecurity modelling and simulation engine
+trial-forge;Trial and experiment orchestration engine
+Forge-Products;Product catalogue and Forge ecosystem index
+
+JamesTheGiblet.github.io;Personal website and public identity surface
+JamesTheGiblet-website;Website source and content system
+Project-README-Hub;Centralised README and documentation hub
+
+PAT-BuddAI;Early BuddAI prototype — superseded by main BuddAI repo
+morseping;Morse code signalling experiment
+phone-amin;Phone-based automation experiments
+n-boby-problem;N-body physics simulation prototype
+ultimate_hustler;Legacy project — archive candidate
+crypto_hustler;Legacy crypto experiment — archive candidate
+MINOR_SHIFT-;Early experimental repo — archive candidate

@@ -1,0 +1,310 @@
+{
+  "STRAT-022": {
+    "mutations": [
+      {
+        "timestamp": 1776757711358,
+        "mutationPath": "containment_procedures.max_drawdown_pct",
+        "oldValue": 4,
+        "newValue": 5,
+        "passed": false,
+        "winRate": 0.4
+      }
+    ],
+    "winRates": [
+      0.4
+    ],
+    "status": "insufficient_data",
+    "createdAt": 1776757711358,
+    "lastAssessment": {
+      "status": "insufficient_data",
+      "confidence": 0,
+      "reason": "Only 1/3 mutations"
+    }
+  },
+  "STRAT-023": {
+    "mutations": [
+      {
+        "timestamp": 1776757814764,
+        "mutationPath": "conditions.entry.all.0.value",
+        "oldValue": 30,
+        "newValue": 32,
+        "passed": false,
+        "winRate": 0.16666666666666666
+      }
+    ],
+    "winRates": [
+      0.16666666666666666
+    ],
+    "status": "insufficient_data",
+    "createdAt": 1776757814764,
+    "lastAssessment": {
+      "status": "insufficient_data",
+      "confidence": 0,
+      "reason": "Only 1/3 mutations"
+    }
+  },
+  "STRAT-024": {
+    "mutations": [
+      {
+        "timestamp": 1776758504067,
+        "mutationPath": "conditions.exit.any.0.value",
+        "oldValue": 65,
+        "newValue": 64,
+        "passed": false,
+        "winRate": 0.3333333333333333
+      }
+    ],
+    "winRates": [
+      0.3333333333333333
+    ],
+    "status": "insufficient_data",
+    "createdAt": 1776758504067,
+    "lastAssessment": {
+      "status": "insufficient_data",
+      "confidence": 0,
+      "reason": "Only 1/3 mutations"
+    }
+  },
+  "STRAT-025": {
+    "mutations": [
+      {
+        "timestamp": 1776758574698,
+        "mutationPath": "conditions.entry.all.0.value",
+        "oldValue": 26,
+        "newValue": 24,
+        "passed": false,
+        "winRate": 0.5
+      }
+    ],
+    "winRates": [
+      0.5
+    ],
+    "status": "insufficient_data",
+    "createdAt": 1776758574697,
+    "lastAssessment": {
+      "status": "insufficient_data",
+      "confidence": 0,
+      "reason": "Only 1/3 mutations"
+    }
+  },
+  "STRAT-026": {
+    "mutations": [
+      {
+        "timestamp": 1776758672158,
+        "mutationPath": "containment_procedures.max_drawdown_pct",
+        "oldValue": 3,
+        "newValue": 4,
+        "passed": false,
+        "winRate": 0.5
+      }
+    ],
+    "winRates": [
+      0.5
+    ],
+    "status": "insufficient_data",
+    "createdAt": 1776758672158,
+    "lastAssessment": {
+      "status": "insufficient_data",
+      "confidence": 0,
+      "reason": "Only 1/3 mutations"
+    }
+  },
+  "STRAT-027": {
+    "mutations": [
+      {
+        "timestamp": 1776759952725,
+        "mutationPath": "containment_procedures.max_drawdown_pct",
+        "oldValue": 5,
+        "newValue": 6,
+        "passed": true,
+        "winRate": 0.6666666666666666
+      }
+    ],
+    "winRates": [
+      0.6666666666666666
+    ],
+    "status": "insufficient_data",
+    "createdAt": 1776759952725,
+    "lastAssessment": {
+      "status": "insufficient_data",
+      "confidence": 0,
+      "reason": "Only 1/3 mutations"
+    }
+  },
+  "STRAT-028": {
+    "mutations": [
+      {
+        "timestamp": 1776760371980,
+        "mutationPath": "risk.max_spread_percent",
+        "oldValue": 0.15000000000000002,
+        "newValue": 0.2,
+        "passed": false,
+        "winRate": 0.3333333333333333
+      }
+    ],
+    "winRates": [
+      0.3333333333333333
+    ],
+    "status": "insufficient_data",
+    "createdAt": 1776760371980,
+    "lastAssessment": {
+      "status": "insufficient_data",
+      "confidence": 0,
+      "reason": "Only 1/3 mutations"
+    }
+  },
+  "STRAT-029": {
+    "mutations": [
+      {
+        "timestamp": 1776760377271,
+        "mutationPath": "containment_procedures.max_drawdown_pct",
+        "oldValue": 5,
+        "newValue": 4,
+        "passed": true,
+        "winRate": 0.6666666666666666
+      }
+    ],
+    "winRates": [
+      0.6666666666666666
+    ],
+    "status": "insufficient_data",
+    "createdAt": 1776760377271,
+    "lastAssessment": {
+      "status": "insufficient_data",
+      "confidence": 0,
+      "reason": "Only 1/3 mutations"
+    }
+  },
+  "STRAT-030": {
+    "mutations": [
+      {
+        "timestamp": 1776760382803,
+        "mutationPath": "conditions.exit.any.0.value",
+        "oldValue": 65,
+        "newValue": 68,
+        "passed": false,
+        "winRate": 0.5
+      }
+    ],
+    "winRates": [
+      0.5
+    ],
+    "status": "insufficient_data",
+    "createdAt": 1776760382803,
+    "lastAssessment": {
+      "status": "insufficient_data",
+      "confidence": 0,
+      "reason": "Only 1/3 mutations"
+    }
+  },
+  "STRAT-031": {
+    "mutations": [
+      {
+        "timestamp": 1776761247934,
+        "mutationPath": "conditions.exit.any.0.value",
+        "oldValue": 65,
+        "newValue": 68,
+        "passed": false,
+        "winRate": 0
+      }
+    ],
+    "winRates": [
+      0
+    ],
+    "status": "insufficient_data",
+    "createdAt": 1776761247934,
+    "lastAssessment": {
+      "status": "insufficient_data",
+      "confidence": 0,
+      "reason": "Only 1/3 mutations"
+    }
+  },
+  "STRAT-032": {
+    "mutations": [
+      {
+        "timestamp": 1776761303502,
+        "mutationPath": "containment_procedures.max_drawdown_pct",
+        "oldValue": 3,
+        "newValue": 3,
+        "passed": false,
+        "winRate": 0.16666666666666666
+      }
+    ],
+    "winRates": [
+      0.16666666666666666
+    ],
+    "status": "insufficient_data",
+    "createdAt": 1776761303502,
+    "lastAssessment": {
+      "status": "insufficient_data",
+      "confidence": 0,
+      "reason": "Only 1/3 mutations"
+    }
+  },
+  "STRAT-033": {
+    "mutations": [
+      {
+        "timestamp": 1776761383653,
+        "mutationPath": "risk.max_spread_percent",
+        "oldValue": 0.1,
+        "newValue": 0.15000000000000002,
+        "passed": true,
+        "winRate": 1
+      }
+    ],
+    "winRates": [
+      1
+    ],
+    "status": "insufficient_data",
+    "createdAt": 1776761383652,
+    "lastAssessment": {
+      "status": "insufficient_data",
+      "confidence": 0,
+      "reason": "Only 1/3 mutations"
+    }
+  },
+  "STRAT-034": {
+    "mutations": [
+      {
+        "timestamp": 1776809368254,
+        "mutationPath": "conditions.entry.all.0.value",
+        "oldValue": 30,
+        "newValue": 32,
+        "passed": false,
+        "winRate": 0.5
+      }
+    ],
+    "winRates": [
+      0.5
+    ],
+    "status": "insufficient_data",
+    "createdAt": 1776809368254,
+    "lastAssessment": {
+      "status": "insufficient_data",
+      "confidence": 0,
+      "reason": "Only 1/3 mutations"
+    }
+  },
+  "STRAT-035": {
+    "mutations": [
+      {
+        "timestamp": 1776830968403,
+        "mutationPath": "conditions.exit.any.0.value",
+        "oldValue": 64,
+        "newValue": 62,
+        "passed": false,
+        "winRate": 0.2
+      }
+    ],
+    "winRates": [
+      0.2
+    ],
+    "status": "insufficient_data",
+    "createdAt": 1776830968403,
+    "lastAssessment": {
+      "status": "insufficient_data",
+      "confidence": 0,
+      "reason": "Only 1/3 mutations"
+    }
+  }
+}

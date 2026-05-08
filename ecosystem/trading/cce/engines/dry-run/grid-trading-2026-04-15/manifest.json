@@ -1,0 +1,24 @@
+{
+  "id": "grid-trading-2026-04-15",
+  "name": "GRID-TRADING - RANGING Regime",
+  "version": "1.0.0",
+  "type": "adaptive",
+  "timeframe": "1D",
+  "symbol": "BTC/USD",
+  "exchange": "kraken",
+  "capital": 500,
+  "status": "dry_run",
+  "entry": "Price within range, place limit orders at 0.5% intervals",
+  "exit": "+0.5% target / -0.3% stop / 3 day timeout",
+  "marketCondition": {
+    "regime": "RANGING",
+    "phase": "ACCUMULATION",
+    "sentiment": "NEUTRAL",
+    "volatility": 1.8544292584549222
+  },
+  "params": {
+    "targetPct": 0.5,
+    "stopPct": 0.3,
+    "maxHoldDays": 3
+  }
+}

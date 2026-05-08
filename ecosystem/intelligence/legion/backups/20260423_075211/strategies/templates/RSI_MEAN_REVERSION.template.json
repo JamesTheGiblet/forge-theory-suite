@@ -1,0 +1,25 @@
+{
+  "name": "RSI_MEAN_REVERSION",
+  "conditions": {
+    "entry": {
+      "all": [
+        {
+          "indicator": "rsi",
+          "period": 14,
+          "operator": "<",
+          "value": 30
+        }
+      ],
+      "any": []
+    },
+    "exit": {
+      "any": [
+        {
+          "indicator": "rsi",
+          "operator": ">",
+          "value": 70
+        }
+      ]
+    }
+  }
+}

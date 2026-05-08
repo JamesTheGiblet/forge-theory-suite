@@ -1,0 +1,16 @@
+{
+  "id":          "te-grid",
+  "name":        "T.E Grid",
+  "version":     "1.0.0",
+  "type":        "TACTICAL",
+  "ecosystem":   "T.E",
+  "cycle":       "5min",
+  "capitalKey":  "grid",
+  "author":      "James Gilbert — Giblets Creations",
+  "description": "BTC/USDC grid bot. Places buy/sell orders at fixed intervals around a centre price. Profits from volatility.",
+  "requires": {
+    "exchange": true,
+    "notifier": true,
+    "config":   true
+  }
+}

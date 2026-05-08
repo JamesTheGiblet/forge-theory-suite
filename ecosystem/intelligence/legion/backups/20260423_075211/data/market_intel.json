@@ -1,0 +1,78 @@
+{
+  "lastScan": 1776868853892,
+  "whaleDetections": [],
+  "vixReadings": [
+    {
+      "asset": "BTC/USD",
+      "vix": "49.2",
+      "level": {
+        "level": "high",
+        "emoji": "🟠",
+        "interpretation": "High volatility, caution"
+      }
+    },
+    {
+      "asset": "ETH/USD",
+      "vix": "60.1",
+      "level": {
+        "level": "extreme",
+        "emoji": "🔴",
+        "interpretation": "Extreme volatility, high risk"
+      }
+    },
+    {
+      "asset": "SOL/USD",
+      "vix": "50.4",
+      "level": {
+        "level": "high",
+        "emoji": "🟠",
+        "interpretation": "High volatility, caution"
+      }
+    },
+    {
+      "asset": "XRP/USD",
+      "vix": "46.4",
+      "level": {
+        "level": "high",
+        "emoji": "🟠",
+        "interpretation": "High volatility, caution"
+      }
+    },
+    {
+      "asset": "LINK/USD",
+      "vix": "46.3",
+      "level": {
+        "level": "high",
+        "emoji": "🟠",
+        "interpretation": "High volatility, caution"
+      }
+    },
+    {
+      "asset": "LTC/USD",
+      "vix": "30.9",
+      "level": {
+        "level": "medium",
+        "emoji": "🟡",
+        "interpretation": "Normal volatility"
+      }
+    },
+    {
+      "asset": "DOGE/USD",
+      "vix": "52.6",
+      "level": {
+        "level": "high",
+        "emoji": "🟠",
+        "interpretation": "High volatility, caution"
+      }
+    }
+  ],
+  "alerts": {
+    "volume_spike_LINK/USD_493548": 1776772996177,
+    "volume_spike_LTC/USD_493550": 1776781484026,
+    "volume_spike_LTC/USD_493551": 1776784049309,
+    "volume_spike_ETH/USD_493553": 1776793862381,
+    "volume_spike_ETH/USD_493556": 1776801655218,
+    "volume_spike_LINK/USD_493561": 1776821966790,
+    "volume_spike_DOGE/USD_493562": 1776826466793
+  }
+}

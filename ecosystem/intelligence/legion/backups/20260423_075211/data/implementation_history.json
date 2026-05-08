@@ -1,0 +1,13 @@
+[
+  {
+    "timestamp": 1776847236924,
+    "suggestion": {
+      "action": "reduce_position_size",
+      "description": "Test improvement",
+      "type": "risk"
+    },
+    "success": true,
+    "result": "Position size reduced to 0.05 BTC",
+    "applied": true
+  }
+]

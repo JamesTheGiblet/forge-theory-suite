@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>CCE Engine Builder</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Share+Tech+Mono&family=Rajdhani:wght@500;600&display=swap');
+
+:root {
+  --gold:      #c9a84c;
+  --gold2:     #e8c96a;
+  --gold-glow: rgba(201,168,76,0.15);
+  --cyan:      #00d4ff;
+  --red:       #ff4444;
+  --green:     #00ff88;
+  --bg:        #09090c;
+  --bg2:       #0e1014;
+  --bg3:       #131619;
+  --bg4:       #191d24;
+  --border:    rgba(201,168,76,0.2);
+  --dim:       rgba(255,255,255,0.05);
+  --text:      #e4dcc8;
+  --muted:     #5a5448;
+  --mid:       #9a9080;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  touch-action: manipulation;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  height: 48px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 8px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 50;
+}
+.topbar::after {
+  content:'';
+  position:absolute;
+  bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:.4;
+}
+.logo {
+  font-family: 'Oswald', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  flex-shrink: 0;
+}
+.engine-id {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--gold);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  padding: 5px 8px;
+  outline: none;
+  min-width: 0;
+}
+.tb-btn {
+  padding: 6px 10px;
+  border: none;
+  font-family: 'Oswald', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  flex-shrink: 0;
+  border-radius: 2px;
+}
+.tb-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.tb-ghost:active { color: var(--gold); border-color: var(--gold); }
+.tb-forge {
+  background: linear-gradient(135deg, var(--gold), #a07830);
+  color: #000;
+}
+.tb-forge:active { filter: brightness(1.2); }
+
+/* ── CANVAS AREA ── */
+.canvas-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+  touch-action: none;
+}
+.canvas-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--dim) 1px, transparent 1px),
+    linear-gradient(90deg, var(--dim) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+#svg-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 2;
+}
+#canvas-nodes {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+.canvas-hint {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+.canvas-hint.hidden { opacity: 0; }
+.hint-icon { font-size: 28px; opacity: .25; margin-bottom: 8px; }
+.hint-text {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 2;
+  letter-spacing: .5px;
+}
+
+/* ── STATE NODES ── */
+.state-node {
+  position: absolute;
+  width: 130px;
+  border-radius: 3px;
+  user-select: none;
+  touch-action: none;
+  transition: box-shadow .15s;
+  z-index: 10;
+}
+.type-riskoff   { border:1px solid rgba(90,84,72,.5);   background:linear-gradient(160deg,#18191c,#111214); }
+.type-riskon    { border:1px solid rgba(201,168,76,.5);  background:linear-gradient(160deg,#1a180e,#120e06); box-shadow:0 0 16px rgba(201,168,76,.07); }
+.type-transition{ border:1px solid rgba(0,212,255,.4);   background:linear-gradient(160deg,#0c1618,#090e10); box-shadow:0 0 16px rgba(0,212,255,.05); }
+.type-emergency { border:1px solid rgba(255,68,68,.5);   background:linear-gradient(160deg,#180c0c,#0e0808); box-shadow:0 0 16px rgba(255,68,68,.07); }
+.state-node.selected { box-shadow:0 0 0 2px var(--gold), 0 0 24px rgba(201,168,76,.2) !important; }
+
+.node-hd {
+  padding: 6px 8px 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.node-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 7px;
+  letter-spacing: .8px;
+  padding: 1px 4px;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+.badge-riskoff    { background:rgba(90,84,72,.2);   color:var(--muted); }
+.badge-riskon     { background:rgba(201,168,76,.12); color:var(--gold); }
+.badge-transition { background:rgba(0,212,255,.1);  color:var(--cyan); }
+.badge-emergency  { background:rgba(255,68,68,.12); color:var(--red); }
+
+.node-name {
+  flex:1;
+  font-family: 'Oswald', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .8px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.type-riskon     .node-name { color: var(--gold); }
+.type-transition .node-name { color: var(--cyan); }
+.type-emergency  .node-name { color: var(--red); }
+
+.node-body { padding: 6px 8px; }
+.node-cond {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 8px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 3px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.node-alloc-bar {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+  margin-top: 3px;
+}
+.alloc-chip {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 7px;
+  padding: 1px 4px;
+  background: rgba(255,255,255,.04);
+  color: var(--mid);
+  border-radius: 1px;
+}
+
+/* Ports */
+.port {
+  position: absolute;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 1.5px solid var(--border);
+  z-index: 20;
+  touch-action: none;
+}
+.port-out { right: -6px; top: 50%; transform: translateY(-50%); }
+.port-in  { left: -6px;  top: 50%; transform: translateY(-50%); }
+.port:active { background: var(--gold); border-color: var(--gold); }
+
+.node-del {
+  position: absolute;
+  top: -8px; right: -8px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--red);
+  color: #fff;
+  font-size: 11px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 30;
+  border: none;
+  line-height: 1;
+}
+.state-node.selected .node-del { display: flex; }
+
+/* ── BOTTOM TOOLBAR ── */
+.bottom-bar {
+  height: 52px;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  z-index: 50;
+  position: relative;
+}
+.bottom-bar::before {
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:.3;
+}
+
+/* Add state buttons */
+.add-btns {
+  display: flex;
+  flex: 1;
+  height: 100%;
+}
+.add-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--dim);
+  cursor: pointer;
+  padding: 4px 2px;
+  transition: background .12s;
+  touch-action: manipulation;
+}
+.add-btn:active { background: rgba(255,255,255,.04); }
+.add-btn:last-child { border-right: none; }
+.add-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+.add-btn-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 7.5px;
+  letter-spacing: .5px;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* Contract status strip */
+.contract-strip {
+  height: 28px;
+  background: var(--bg3);
+  border-top: 1px solid var(--dim);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 14px;
+  overflow-x: auto;
+  flex-shrink: 0;
+  -webkit-overflow-scrolling: touch;
+}
+.contract-strip::-webkit-scrollbar { display: none; }
+.c-check {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.c-tick { font-size: 10px; }
+
+/* ── INSPECTOR BOTTOM SHEET ── */
+.sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+  backdrop-filter: blur(2px);
+}
+.sheet-overlay.visible { opacity: 1; pointer-events: all; }
+
+.inspector-sheet {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-radius: 12px 12px 0 0;
+  z-index: 101;
+  transform: translateY(100%);
+  transition: transform .25s cubic-bezier(.32,.72,0,1);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+.inspector-sheet.visible { transform: translateY(0); }
+
+.sheet-handle {
+  width: 36px; height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 10px auto 0;
+  flex-shrink: 0;
+}
+.sheet-head {
+  padding: 10px 16px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--dim);
+  flex-shrink: 0;
+}
+.sheet-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--gold);
+}
+.sheet-close {
+  width: 28px; height: 28px;
+  background: var(--bg3);
+  border: 1px solid var(--dim);
+  color: var(--muted);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+.sheet-body {
+  overflow-y: auto;
+  padding: 12px 16px 24px;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Type selector */
+.type-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.type-opt {
+  padding: 8px;
+  border: 1px solid var(--dim);
+  background: transparent;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .5px;
+  cursor: pointer;
+  text-align: center;
+  color: var(--muted);
+  border-radius: 2px;
+  transition: all .12s;
+}
+.type-opt.sel-riskoff    { border-color: var(--muted);  color: var(--text);  background: rgba(90,84,72,.1); }
+.type-opt.sel-riskon     { border-color: var(--gold);   color: var(--gold);  background: var(--gold-glow); }
+.type-opt.sel-transition { border-color: var(--cyan);   color: var(--cyan);  background: rgba(0,212,255,.08); }
+.type-opt.sel-emergency  { border-color: var(--red);    color: var(--red);   background: rgba(255,68,68,.1); }
+
+.field-group { margin-bottom: 12px; }
+.field-label {
+  display: block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+.field-input, .field-textarea {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--dim);
+  padding: 8px 10px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--text);
+  outline: none;
+  border-radius: 2px;
+  -webkit-appearance: none;
+}
+.field-input:focus, .field-textarea:focus { border-color: var(--gold); }
+.field-textarea { resize: vertical; min-height: 56px; line-height: 1.5; }
+
+.alloc-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.alloc-asset {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--dim);
+  padding: 7px 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--text);
+  border-radius: 2px;
+  outline: none;
+}
+.alloc-pct {
+  width: 52px;
+  background: var(--bg3);
+  border: 1px solid var(--dim);
+  padding: 7px 6px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--gold);
+  text-align: right;
+  border-radius: 2px;
+  outline: none;
+}
+.alloc-del {
+  width: 28px; height: 28px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.alloc-del:active { color: var(--red); }
+.add-alloc {
+  width: 100%;
+  padding: 7px;
+  background: transparent;
+  border: 1px dashed var(--dim);
+  color: var(--muted);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  cursor: pointer;
+  border-radius: 2px;
+  margin-top: 4px;
+}
+.add-alloc:active { border-color: var(--gold); color: var(--gold); }
+
+/* ── FORGE MODAL ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.85);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+}
+.modal-overlay.visible { opacity: 1; pointer-events: all; }
+.forge-modal {
+  width: 100%;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-radius: 12px 12px 0 0;
+  padding: 20px 16px 32px;
+  transform: translateY(40px);
+  transition: transform .2s;
+}
+.modal-overlay.visible .forge-modal { transform: translateY(0); }
+.forge-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 4px;
+}
+.forge-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+}
+.forge-steps { margin-bottom: 16px; }
+.fstep {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--dim);
+  font-size: 13px;
+  font-weight: 500;
+}
+.fstep-status {
+  margin-left: auto;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+.s-pending { color: var(--muted); }
+.s-run { color: var(--cyan); animation: blink .7s infinite; }
+.s-done { color: var(--green); }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:.3} }
+.forge-actions { display: flex; gap: 8px; }
+.forge-close {
+  flex: 1;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid var(--dim);
+  color: var(--muted);
+  font-family: 'Oswald', sans-serif;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.forge-deploy {
+  flex: 2;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--gold), #a07830);
+  border: none;
+  color: #000;
+  font-family: 'Oswald', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  border-radius: 2px;
+  display: none;
+}
+</style>
+</head>
+<body style="display:flex;flex-direction:column;height:100vh;">
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <span class="logo">⚡CCE</span>
+  <input class="engine-id" id="engineId" value="se-forex" placeholder="engine-id">
+  <button class="tb-btn tb-ghost" onclick="loadExample()">EG</button>
+  <button class="tb-btn tb-ghost" onclick="clearCanvas()">✕</button>
+  <button class="tb-btn tb-forge" onclick="forgeEngine()">⚡FORGE</button>
+</div>
+
+<!-- CANVAS -->
+<div class="canvas-wrap" id="canvasWrap">
+  <div class="canvas-grid"></div>
+  <svg id="svg-layer">
+    <defs>
+      <marker id="arr" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto">
+        <path d="M0,0 L0,5 L7,2.5z" fill="rgba(201,168,76,0.4)"/>
+      </marker>
+    </defs>
+    <g id="conn-group"></g>
+    <path id="draw-path" fill="none" stroke="var(--cyan)" stroke-width="1.5" stroke-dasharray="4 4" opacity=".7" d=""/>
+  </svg>
+  <div id="canvas-nodes"></div>
+  <div class="canvas-hint" id="hint">
+    <div class="hint-icon">⚡</div>
+    <div class="hint-text">TAP STATE TYPES BELOW<br>TO ADD TO CANVAS<br>DRAG TO REPOSITION</div>
+  </div>
+</div>
+
+<!-- CONTRACT STRIP -->
+<div class="contract-strip" id="contractStrip">
+  <div class="c-check"><span class="c-tick" id="ck1">○</span><span style="color:var(--muted)">RISK_OFF</span></div>
+  <div class="c-check"><span class="c-tick" id="ck2">○</span><span style="color:var(--muted)">EMERGENCY</span></div>
+  <div class="c-check"><span class="c-tick" id="ck3">○</span><span style="color:var(--muted)">≥3 STATES</span></div>
+  <div class="c-check"><span class="c-tick" id="ck4">○</span><span style="color:var(--muted)">WEIGHTS</span></div>
+  <div class="c-check"><span class="c-tick" id="ck5">○</span><span style="color:var(--muted)">ENTRY/EXIT</span></div>
+</div>
+
+<!-- BOTTOM ADD BAR -->
+<div class="bottom-bar">
+  <div class="add-btns">
+    <button class="add-btn" onclick="addNode('riskoff','DORMANT')">
+      <div class="add-dot" style="background:var(--muted)"></div>
+      <span class="add-btn-label" style="color:var(--muted)">RISK<br>OFF</span>
+    </button>
+    <button class="add-btn" onclick="addNode('transition','WATCHING')">
+      <div class="add-dot" style="background:var(--cyan);box-shadow:0 0 5px var(--cyan)"></div>
+      <span class="add-btn-label" style="color:var(--cyan)">TRANS<br>ITION</span>
+    </button>
+    <button class="add-btn" onclick="addNode('riskon','ACTIVE')">
+      <div class="add-dot" style="background:var(--gold);box-shadow:0 0 5px var(--gold)"></div>
+      <span class="add-btn-label" style="color:var(--gold)">RISK<br>ON</span>
+    </button>
+    <button class="add-btn" onclick="addNode('emergency','EXTRACTION')">
+      <div class="add-dot" style="background:var(--red);box-shadow:0 0 5px var(--red)"></div>
+      <span class="add-btn-label" style="color:var(--red)">EMER<br>GENCY</span>
+    </button>
+    <button class="add-btn" style="border-right:none;flex:.7" onclick="validateSpec()">
+      <div style="font-size:14px">✓</div>
+      <span class="add-btn-label" style="color:var(--gold)">VALID<br>ATE</span>
+    </button>
+  </div>
+</div>
+
+<!-- INSPECTOR SHEET -->
+<div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet()"></div>
+<div class="inspector-sheet" id="inspectorSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <span class="sheet-title" id="sheetTitle">CONFIGURE STATE</span>
+    <button class="sheet-close" onclick="closeSheet()">×</button>
+  </div>
+  <div class="sheet-body" id="sheetBody"></div>
+</div>
+
+<!-- FORGE MODAL -->
+<div class="modal-overlay" id="forgeOverlay">
+  <div class="forge-modal">
+    <div class="forge-title">⚡ FORGING ENGINE</div>
+    <div class="forge-sub" id="forgeSub">Generating from spec...</div>
+    <div class="forge-steps" id="forgeSteps"></div>
+    <div class="forge-actions">
+      <button class="forge-close" onclick="closeForge()">CLOSE</button>
+      <button class="forge-deploy" id="forgeDeployBtn" onclick="deployEngine()">🚀 DEPLOY TO CCE</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let nodes = [], conns = [], sel = null, nid = 0;
+let drawFrom = null;
+let panX = 0, panY = 0;
+
+const wrap    = document.getElementById('canvasWrap');
+const nodesEl = document.getElementById('canvas-nodes');
+const connGrp = document.getElementById('conn-group');
+const drawPath = document.getElementById('draw-path');
+
+// ── ADD NODE ─────────────────────────────────────────────────────────────────
+function addNode(type, name) {
+  const wRect = wrap.getBoundingClientRect();
+  // Place in center-ish, staggered
+  const col = nodes.length % 2;
+  const row = Math.floor(nodes.length / 2);
+  const x = 30 + col * 155 + (row % 2 ? 20 : 0);
+  const y = 30 + row * 140;
+  createNode(type, name, x, y);
+}
+
+function createNode(type, name, x, y) {
+  const id = ++nid;
+  const node = { id, type, name, x, y, entry:'', exit:'',
+    allocations: (type==='riskoff'||type==='emergency')
+      ? [{asset:'CASH',pct:100}] : [{asset:'BTC',pct:100}]
+  };
+  nodes.push(node);
+  renderNode(node);
+  updateHint();
+  updateContract();
+}
+
+function renderNode(node) {
+  const old = document.getElementById('nd-'+node.id);
+  if (old) old.remove();
+
+  const el = document.createElement('div');
+  el.className = `state-node type-${node.type}`;
+  el.id = 'nd-' + node.id;
+  el.style.left = node.x + 'px';
+  el.style.top  = node.y + 'px';
+
+  const badges = {riskoff:'RISK_OFF',riskon:'RISK_ON',transition:'TRANS',emergency:'EMERG'};
+  const allocStr = node.allocations.map(a=>`${a.pct}%${a.asset}`).join(' ');
+
+  el.innerHTML = `
+    <button class="node-del" onclick="deleteNode(${node.id})">×</button>
+    <div class="port port-in" id="pi-${node.id}"></div>
+    <div class="port port-out" id="po-${node.id}"></div>
+    <div class="node-hd">
+      <span class="node-badge badge-${node.type}">${badges[node.type]}</span>
+      <span class="node-name">${node.name}</span>
+    </div>
+    <div class="node-body">
+      ${node.entry ? `<div class="node-cond" style="color:rgba(0,212,255,.5)">▶ ${node.entry}</div>` : ''}
+      ${node.exit  ? `<div class="node-cond" style="color:rgba(255,68,68,.5)">◀ ${node.exit}</div>`  : ''}
+      <div class="node-alloc-bar">${node.allocations.map(a=>`<span class="alloc-chip">${a.pct}%${a.asset}</span>`).join('')}</div>
+    </div>`;
+
+  // Touch drag
+  let startX, startY, ox, oy, moved = false;
+  el.addEventListener('touchstart', e => {
+    if (e.target.classList.contains('port') || e.target.classList.contains('node-del')) return;
+    const t = e.touches[0];
+    startX = t.clientX; startY = t.clientY;
+    ox = node.x; oy = node.y;
+    moved = false;
+    selectNode(node);
+    e.stopPropagation();
+  }, {passive:true});
+
+  el.addEventListener('touchmove', e => {
+    const t = e.touches[0];
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+    if (Math.abs(dx)+Math.abs(dy) > 4) moved = true;
+    if (!moved) return;
+    node.x = Math.max(0, Math.round((ox + dx) / 8) * 8);
+    node.y = Math.max(0, Math.round((oy + dy) / 8) * 8);
+    el.style.left = node.x + 'px';
+    el.style.top  = node.y + 'px';
+    renderConns();
+    e.preventDefault();
+  }, {passive:false});
+
+  el.addEventListener('touchend', e => {
+    if (!moved) openSheet(node);
+  });
+
+  // Port touch — start connection
+  const portOut = el.querySelector('.port-out');
+  portOut.addEventListener('touchstart', e => {
+    drawFrom = node.id;
+    e.stopPropagation();
+    e.preventDefault();
+  }, {passive:false});
+
+  nodesEl.appendChild(el);
+}
+
+// ── CANVAS TOUCH — draw connections + pan ────────────────────────────────────
+wrap.addEventListener('touchmove', e => {
+  if (drawFrom) {
+    const t = e.touches[0];
+    const rect = wrap.getBoundingClientRect();
+    const x2 = t.clientX - rect.left;
+    const y2 = t.clientY - rect.top;
+    const fromEl = document.getElementById('po-'+drawFrom);
+    const fr = fromEl?.getBoundingClientRect();
+    if (!fr) return;
+    const x1 = fr.left - rect.left + 6;
+    const y1 = fr.top  - rect.top  + 6;
+    const cp = Math.max(Math.abs(x2-x1)*0.5, 30);
+    drawPath.setAttribute('d', `M${x1},${y1} C${x1+cp},${y1} ${x2-cp},${y2} ${x2},${y2}`);
+    e.preventDefault();
+  }
+}, {passive:false});
+
+wrap.addEventListener('touchend', e => {
+  if (drawFrom) {
+    const t = e.changedTouches[0];
+    const target = document.elementFromPoint(t.clientX, t.clientY);
+    if (target?.classList.contains('port') && target.id.startsWith('pi-')) {
+      const toId = parseInt(target.id.replace('pi-',''));
+      if (toId !== drawFrom && !conns.find(c=>c.from===drawFrom&&c.to===toId)) {
+        conns.push({ from:drawFrom, to:toId });
+        renderConns();
+        updateContract();
+      }
+    }
+    drawFrom = null;
+    drawPath.setAttribute('d','');
+  }
+});
+
+wrap.addEventListener('touchstart', e => {
+  if (e.target === wrap || e.target.classList.contains('canvas-grid')) {
+    deselect();
+  }
+}, {passive:true});
+
+// ── CONNECTIONS ───────────────────────────────────────────────────────────────
+function renderConns() {
+  connGrp.innerHTML = '';
+  const rect = wrap.getBoundingClientRect();
+  conns.forEach((c,i) => {
+    const fEl = document.getElementById('po-'+c.from);
+    const tEl = document.getElementById('pi-'+c.to);
+    if (!fEl||!tEl) return;
+    const fr = fEl.getBoundingClientRect();
+    const tr = tEl.getBoundingClientRect();
+    const x1 = fr.left-rect.left+6, y1 = fr.top-rect.top+6;
+    const x2 = tr.left-rect.left+6, y2 = tr.top-rect.top+6;
+    const cp = Math.max(Math.abs(x2-x1)*0.5, 30);
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke','rgba(201,168,76,0.35)');
+    path.setAttribute('stroke-width','1.5');
+    path.setAttribute('marker-end','url(#arr)');
+    path.setAttribute('d',`M${x1},${y1} C${x1+cp},${y1} ${x2-cp},${y2} ${x2},${y2}`);
+    path.addEventListener('click',()=>{ conns.splice(i,1); renderConns(); updateContract(); });
+    connGrp.appendChild(path);
+  });
+}
+
+// ── SELECTION ─────────────────────────────────────────────────────────────────
+function selectNode(node) {
+  deselect();
+  sel = node;
+  document.getElementById('nd-'+node.id)?.classList.add('selected');
+}
+function deselect() {
+  if (sel) document.getElementById('nd-'+sel.id)?.classList.remove('selected');
+  sel = null;
+}
+function deleteNode(id) {
+  nodes = nodes.filter(n=>n.id!==id);
+  conns = conns.filter(c=>c.from!==id&&c.to!==id);
+  document.getElementById('nd-'+id)?.remove();
+  renderConns();
+  if (sel?.id===id) deselect();
+  updateHint();
+  updateContract();
+  closeSheet();
+}
+
+// ── INSPECTOR SHEET ───────────────────────────────────────────────────────────
+function openSheet(node) {
+  selectNode(node);
+  document.getElementById('sheetTitle').textContent = node.name;
+  renderSheetBody(node);
+  document.getElementById('sheetOverlay').classList.add('visible');
+  document.getElementById('inspectorSheet').classList.add('visible');
+}
+function closeSheet() {
+  document.getElementById('sheetOverlay').classList.remove('visible');
+  document.getElementById('inspectorSheet').classList.remove('visible');
+}
+function renderSheetBody(node) {
+  const body = document.getElementById('sheetBody');
+  const types = [
+    {k:'riskoff',l:'RISK_OFF'}, {k:'riskon',l:'RISK_ON'},
+    {k:'transition',l:'TRANSITION'}, {k:'emergency',l:'EMERGENCY'}
+  ];
+  const typeOpts = types.map(t =>
+    `<button class="type-opt ${node.type===t.k?'sel-'+t.k:''}"
+      onclick="changeType(${node.id},'${t.k}',this)">${t.l}</button>`
+  ).join('');
+
+  const allocRows = node.allocations.map((a,i) => `
+    <div class="alloc-row">
+      <input class="alloc-asset" value="${a.asset}" placeholder="BTC"
+        onchange="updateAlloc(${node.id},${i},'asset',this.value)">
+      <input class="alloc-pct" type="number" value="${a.pct}" min="0" max="100"
+        onchange="updateAlloc(${node.id},${i},'pct',this.value)">%
+      <button class="alloc-del" onclick="removeAlloc(${node.id},${i})">×</button>
+    </div>`
+  ).join('');
+
+  body.innerHTML = `
+    <div class="field-group">
+      <label class="field-label">// NAME</label>
+      <input class="field-input" value="${node.name}"
+        onchange="updateName(${node.id},this.value)">
+    </div>
+    <div class="field-group">
+      <label class="field-label">// TYPE</label>
+      <div class="type-grid">${typeOpts}</div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">// ENTRY CONDITION</label>
+      <textarea class="field-textarea" placeholder="fg() > 40 AND above_sma(20)"
+        onchange="updateField(${node.id},'entry',this.value)">${node.entry}</textarea>
+    </div>
+    <div class="field-group">
+      <label class="field-label">// EXIT CONDITION</label>
+      <textarea class="field-textarea" placeholder="fg() < 25 OR crash()"
+        onchange="updateField(${node.id},'exit',this.value)">${node.exit}</textarea>
+    </div>
+    <div class="field-group">
+      <label class="field-label">// PORTFOLIO ALLOCATION</label>
+      <div id="alloc-list-${node.id}">${allocRows}</div>
+      <button class="add-alloc" onclick="addAlloc(${node.id})">+ ADD ASSET</button>
+    </div>`;
+}
+
+// ── NODE UPDATES ──────────────────────────────────────────────────────────────
+function updateName(id, val) {
+  const n = nodes.find(n=>n.id===id); if(!n) return;
+  n.name = val.toUpperCase();
+  document.getElementById('sheetTitle').textContent = n.name;
+  renderNode(n); renderConns(); updateContract();
+}
+function updateField(id, field, val) {
+  const n = nodes.find(n=>n.id===id); if(!n) return;
+  n[field] = val; renderNode(n); renderConns(); updateContract();
+}
+function changeType(id, type, el) {
+  const n = nodes.find(n=>n.id===id); if(!n) return;
+  n.type = type;
+  // Update type opt styles
+  el.closest('.type-grid').querySelectorAll('.type-opt').forEach(b => {
+    b.className = 'type-opt';
+  });
+  el.className = 'type-opt sel-'+type;
+  renderNode(n); renderConns();
+  selectNode(n); updateContract();
+}
+function updateAlloc(id, idx, field, val) {
+  const n = nodes.find(n=>n.id===id); if(!n||!n.allocations[idx]) return;
+  n.allocations[idx][field] = field==='pct' ? parseFloat(val)||0 : val.toUpperCase();
+  // Refresh alloc row display in node
+  renderNode(n); renderConns(); updateContract();
+}
+function addAlloc(id) {
+  const n = nodes.find(n=>n.id===id); if(!n) return;
+  n.allocations.push({asset:'USDC',pct:0});
+  renderSheetBody(n);
+}
+function removeAlloc(id, idx) {
+  const n = nodes.find(n=>n.id===id); if(!n) return;
+  n.allocations.splice(idx,1);
+  renderSheetBody(n);
+}
+
+// ── CONTRACT ──────────────────────────────────────────────────────────────────
+function updateContract() {
+  const hasRO = nodes.some(n=>n.type==='riskoff');
+  const hasEM = nodes.some(n=>n.type==='emergency');
+  const enough = nodes.length >= 3;
+  const weightsOk = nodes.every(n => Math.abs(n.allocations.reduce((s,a)=>s+(parseFloat(a.pct)||0),0)-100)<1);
+  const condOk = nodes.every(n => n.entry && (n.type==='emergency' || n.exit));
+
+  const tick = v => v ? `<span style="color:var(--green)">✓</span>` : `<span style="color:var(--muted)">○</span>`;
+  document.getElementById('ck1').innerHTML = tick(hasRO);
+  document.getElementById('ck2').innerHTML = tick(hasEM);
+  document.getElementById('ck3').innerHTML = tick(enough);
+  document.getElementById('ck4').innerHTML = tick(weightsOk);
+  document.getElementById('ck5').innerHTML = tick(condOk);
+}
+function getErrors() {
+  const e = [];
+  if (!nodes.some(n=>n.type==='riskoff'))   e.push('Need ≥1 RISK_OFF state');
+  if (!nodes.some(n=>n.type==='emergency'))  e.push('Need ≥1 EMERGENCY state');
+  if (nodes.length < 3)                      e.push('Need ≥3 states');
+  nodes.forEach(n => {
+    const t = n.allocations.reduce((s,a)=>s+(parseFloat(a.pct)||0),0);
+    if (Math.abs(t-100)>1) e.push(`${n.name}: weights sum ${t}%, need 100%`);
+    if (!n.entry)           e.push(`${n.name}: entry condition missing`);
+    if (!n.exit && n.type!=='emergency') e.push(`${n.name}: exit condition missing`);
+  });
+  return e;
+}
+function validateSpec() {
+  const errors = getErrors();
+  if (errors.length===0) {
+    alert('✅ Valid — ready to forge');
+  } else {
+    alert('❌ Fix these:\n\n' + errors.join('\n'));
+  }
+}
+
+// ── FORGE ─────────────────────────────────────────────────────────────────────
+function forgeEngine() {
+  const errs = getErrors();
+  if (errs.length > 0) { alert('Fix errors first:\n\n'+errs.join('\n')); return; }
+  const id = document.getElementById('engineId').value.trim();
+  if (!id) { alert('Set engine ID first'); return; }
+
+  document.getElementById('forgeOverlay').classList.add('visible');
+  document.getElementById('forgeSub').textContent = `Generating ${id}...`;
+  document.getElementById('forgeDeployBtn').style.display = 'none';
+
+  const steps = [
+    {icon:'📋',text:'Validating spec'},
+    {icon:'📁',text:'Creating engine directory'},
+    {icon:'⚙️', text:'Generating manifest.json'},
+    {icon:'🔧',text:'Generating strategy.js'},
+    {icon:'🔧',text:'Generating engine.js'},
+    {icon:'✅',text:'Validating output'},
+  ];
+
+  const el = document.getElementById('forgeSteps');
+  el.innerHTML = steps.map((s,i) =>
+    `<div class="fstep" id="fs-${i}">
+      <span>${s.icon}</span><span>${s.text}</span>
+      <span class="fstep-status s-pending" id="fss-${i}">—</span>
+    </div>`
+  ).join('');
+
+  let delay = 0;
+  steps.forEach((_,i) => {
+    setTimeout(() => {
+      document.getElementById('fss-'+i).className = 'fstep-status s-run';
+      document.getElementById('fss-'+i).textContent = '...';
+    }, delay);
+    delay += 280 + Math.random()*150;
+    setTimeout(() => {
+      document.getElementById('fss-'+i).className = 'fstep-status s-done';
+      document.getElementById('fss-'+i).textContent = '✓';
+    }, delay);
+    delay += 80;
+  });
+
+  setTimeout(() => {
+    document.getElementById('forgeSub').textContent = `✅ ${id} — ${nodes.length} states · ${conns.length} transitions`;
+    document.getElementById('forgeDeployBtn').style.display = 'block';
+    window._spec = buildSpec();
+  }, delay + 200);
+}
+
+function buildSpec() {
+  return {
+    engine_id: document.getElementById('engineId').value.trim(),
+    states: nodes.map(n => ({
+      id: n.name, type: n.type.toUpperCase(),
+      entry: n.entry, exit: n.exit,
+      allocations: n.allocations.map(a=>({asset:a.asset, weight:a.pct/100}))
+    })),
+    transitions: conns.map(c => ({
+      from: nodes.find(n=>n.id===c.from)?.name,
+      to:   nodes.find(n=>n.id===c.to)?.name
+    }))
+  };
+}
+
+function deployEngine() {
+  const spec = window._spec;
+  fetch('/api/builder/forge', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(spec)
+  }).then(r=>r.json()).then(d => {
+    document.getElementById('forgeSub').textContent =
+      d.success ? `🚀 ${spec.engine_id} deployed` : `❌ ${d.error}`;
+  }).catch(() => {
+    document.getElementById('forgeSub').textContent = 'Spec ready — copy from console';
+    console.log('FORGE SPEC:', JSON.stringify(spec, null,2));
+  });
+}
+
+function closeForge() {
+  document.getElementById('forgeOverlay').classList.remove('visible');
+}
+
+// ── EXAMPLE ───────────────────────────────────────────────────────────────────
+function loadExample() {
+  clearCanvas();
+  const placements = [
+    ['riskoff','DORMANT',20,20],
+    ['transition','WATCHING',180,20],
+    ['riskon','IGNITION',20,160],
+    ['riskon','CASCADE',180,160],
+    ['emergency','EXTRACTION',100,300],
+  ];
+  placements.forEach(([t,n,x,y]) => createNode(t,n,x,y));
+
+  // Set conditions
+  const updates = [
+    [1,'entry','fg() < 25','exit','fg() >= 30'],
+    [2,'entry','fg() >= 30','exit','fg() < 25'],
+    [3,'entry','fg() >= 40 AND pct7d > 5','exit','fg() > 90'],
+    [4,'entry','btc_dom > 55','exit','fg() < 25'],
+    [5,'entry','fg() < 20 OR drop > 15','exit','fg() > 30'],
+  ];
+  updates.forEach(([id,ek,ev,xk,xv]) => {
+    const n = nodes.find(n=>n.id===id); if(!n) return;
+    n[ek]=ev; n[xk]=xv;
+  });
+
+  nodes[2].allocations = [{asset:'BTC',pct:100}];
+  nodes[3].allocations = [{asset:'BTC',pct:60},{asset:'ETH',pct:40}];
+  nodes[4].allocations = [{asset:'CASH',pct:100}];
+
+  nodes.forEach(n => renderNode(n));
+
+  conns = [
+    {from:1,to:2},{from:2,to:3},{from:3,to:4},
+    {from:4,to:5},{from:5,to:1},{from:2,to:1},
+  ];
+  setTimeout(() => { renderConns(); updateContract(); }, 50);
+}
+
+function clearCanvas() {
+  if (nodes.length > 0 && !confirm('Clear canvas?')) return;
+  nodes=[]; conns=[]; sel=null; nid=0;
+  nodesEl.innerHTML='';
+  connGrp.innerHTML='';
+  updateHint(); updateContract();
+}
+
+function updateHint() {
+  document.getElementById('hint').classList.toggle('hidden', nodes.length > 0);
+}
+
+updateHint(); updateContract();
+</script>
+</body>
+</html>

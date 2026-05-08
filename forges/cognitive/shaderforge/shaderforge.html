@@ -1,0 +1,2070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ShaderForge - Interactive WebGL shader playground with genetic algorithm evolution">
+    <meta name="keywords" content="WebGL, GLSL, shaders, genetic algorithm, visual effects, creative coding">
+    <meta name="author" content="ShaderForge">
+    <title>ShaderForge - Interactive Shader Playground</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Monaco', 'Courier New', monospace;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        /* Canvas - Full Screen */
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            z-index: 1;
+        }
+
+        /* Editor Panel */
+        #editor-panel {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            width: 550px;
+            max-height: calc(100vh - 40px);
+            background: rgba(10, 10, 10, 0.95);
+            border: 2px solid #4ecdc4;
+            border-radius: 12px;
+            padding: 20px;
+            z-index: 1000;
+            overflow-y: auto;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 50px rgba(78, 205, 196, 0.3);
+        }
+
+        /* Header */
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 2em;
+        }
+
+        h1 {
+            font-size: 1.5em;
+            background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            font-size: 0.8em;
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        /* Buttons */
+        button {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a6f);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #51cf66, #37b24d);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ffd43b, #fab005);
+            color: #000;
+        }
+
+        .btn-purple {
+            background: linear-gradient(45deg, #9775fa, #7950f2);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+
+        .btn-group button {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        /* Code Editor */
+        #shader-editor {
+            width: 100%;
+            height: 350px;
+            background: #0a0a0a;
+            color: #4ecdc4;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            resize: vertical;
+            tab-size: 4;
+            overflow: auto;
+        }
+
+        #shader-editor:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            box-shadow: 0 0 10px rgba(78, 205, 196, 0.3);
+        }
+
+        /* Error Display */
+        #error-display {
+            margin-top: 10px;
+            padding: 12px;
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid #ff6b6b;
+            border-radius: 6px;
+            color: #ff6b6b;
+            font-size: 0.85em;
+            display: none;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        #error-display.show {
+            display: block;
+        }
+
+        /* Section Headers */
+        .section {
+            margin: 20px 0;
+            padding: 15px 0;
+            border-top: 1px solid #333;
+        }
+
+        .section h3 {
+            font-size: 1.1em;
+            margin-bottom: 12px;
+            color: #4ecdc4;
+        }
+
+        /* Preset Buttons */
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .preset-btn {
+            padding: 8px 10px;
+            font-size: 0.75em;
+            min-width: auto;
+        }
+
+        /* Stats Display */
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.85em;
+        }
+
+        .stat-item {
+            background: rgba(78, 205, 196, 0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(78, 205, 196, 0.3);
+        }
+
+        .stat-label {
+            opacity: 0.7;
+            font-size: 0.9em;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #4ecdc4;
+        }
+
+        /* Evolution Controls */
+        .evolution-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .like-skip {
+            display: flex;
+            gap: 8px;
+        }
+
+        .like-skip button {
+            font-size: 1.2em;
+            padding: 12px 20px;
+        }
+
+        /* Gene Controls */
+        #gene-controls {
+            display: grid;
+            grid-template-columns: 110px 1fr 60px;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .gene-label {
+            font-size: 0.9em;
+            text-align: right;
+            opacity: 0.8;
+            text-transform: capitalize;
+        }
+
+        .gene-value {
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #4ecdc4;
+            text-align: left;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #4ecdc4;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* FPS Counter */
+        #fps-counter {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            z-index: 999;
+            border: 1px solid #333;
+        }
+
+        #fps-value {
+            color: #4ecdc4;
+            font-weight: bold;
+        }
+
+        /* Saved Shaders Library */
+        .library {
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        .library-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            margin: 4px 0;
+            background: rgba(78, 205, 196, 0.1);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .library-item:hover {
+            background: rgba(78, 205, 196, 0.2);
+            transform: translateX(5px);
+        }
+
+        .library-item-name {
+            flex: 1;
+            font-size: 0.9em;
+        }
+
+        .library-item-delete {
+            background: transparent;
+            padding: 4px 8px;
+            font-size: 0.8em;
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b;
+        }
+
+        /* Save Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(10, 10, 10, 0.98);
+            border: 2px solid #4ecdc4;
+            border-radius: 12px;
+            padding: 30px;
+            z-index: 2000;
+            min-width: 300px;
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1999;
+        }
+
+        .modal-overlay.show {
+            display: block;
+        }
+
+        .modal h3 {
+            margin-bottom: 15px;
+            color: #4ecdc4;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 10px;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: white;
+            font-family: inherit;
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+
+        .modal input:focus {
+            outline: none;
+            border-color: #4ecdc4;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(78, 205, 196, 0.95);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            z-index: 3000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .notification.show {
+            opacity: 1;
+        }
+
+        .notification.error {
+            background: rgba(255, 107, 107, 0.95);
+            color: white;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4ecdc4;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            #editor-panel {
+                width: calc(100% - 20px);
+                right: 10px;
+                top: 10px;
+                max-height: calc(100vh - 20px);
+            }
+
+            #shader-editor {
+                height: 250px;
+            }
+
+            .preset-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            #fps-counter {
+                top: 10px;
+                left: 10px;
+                font-size: 0.8em;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            animation: pulse 1s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Canvas -->
+    <canvas id="canvas"></canvas>
+
+    <!-- FPS Counter -->
+    <div id="fps-counter">
+        FPS: <span id="fps-value">60</span>
+    </div>
+
+    <!-- Editor Panel -->
+    <div id="editor-panel">
+        <!-- Header -->
+        <div class="editor-header">
+            <div class="logo">
+                <span class="logo-icon">🎨</span>
+                <div>
+                    <h1>ShaderForge</h1>
+                    <div class="tagline">Interactive Shader Evolution</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compile Button -->
+        <button id="compile-btn" class="btn-success">▶ Compile Shader (Ctrl+Enter)</button>
+
+        <!-- Shader Editor -->
+        <textarea id="shader-editor" spellcheck="false" placeholder="Write your GLSL fragment shader here..."></textarea>
+
+        <!-- Error Display -->
+        <div id="error-display"></div>
+
+        <!-- Presets Section -->
+        <div class="section">
+            <h3>🚀 Templates & Starters</h3>
+            <div class="preset-grid" id="preset-buttons">
+                <!-- Presets will be added dynamically -->
+            </div>
+        </div>
+
+        <!-- Evolution Section -->
+        <div class="section">
+            <h3>🧬 Genetic Evolution</h3>
+            <div class="btn-group">
+                <button id="evolve-start-btn" class="btn-purple">Start Evolution</button>
+                <button id="evolve-stop-btn" class="btn-danger" disabled>Stop Evolution</button>
+            </div>
+            <div class="evolution-controls">
+                <div class="like-skip">
+                    <button id="like-btn" class="btn-success" disabled>❤️ Like</button>
+                    <button id="skip-btn" class="btn-warning" disabled>➡️ Skip</button>
+                </div>
+                <button id="random-btn">🎲 Random</button>
+            </div>
+        </div>
+
+        <!-- Gene Controls Section -->
+        <div class="section">
+            <h3>🧬 Shader DNA</h3>
+            <div id="gene-controls">
+                <!-- Gene controls will be added dynamically -->
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="section">
+            <h3>📊 Statistics</h3>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-label">Generation</div>
+                    <div class="stat-value" id="generation-stat">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Shader #</div>
+                    <div class="stat-value" id="shader-stat">0/0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Fitness</div>
+                    <div class="stat-value" id="fitness-stat">0.0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Library</div>
+                    <div class="stat-value" id="library-stat">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inputs Section -->
+        <div class="section">
+            <h3>🎛️ Inputs</h3>
+            <div class="btn-group">
+                <button id="mic-btn">🎤 Enable Mic</button>
+                <button id="upload-texture-btn">🖼️ Upload Texture</button>
+                <input type="file" id="texture-input" accept="image/*" style="display: none;">
+            </div>
+        </div>
+
+        <!-- Save/Export Section -->
+        <div class="section">
+            <h3>💾 Save & Export</h3>
+            <div class="btn-group">
+                <button id="save-btn" class="btn-success">Save Current</button>
+                <button id="export-btn">📋 Copy Code</button>
+                <button id="screenshot-btn">📸 Screenshot</button>
+                <button id="record-btn">📹 Record</button>
+                <button id="share-btn">🔗 Share URL</button>
+            </div>
+        </div>
+
+        <!-- Library Section -->
+        <div class="section">
+            <h3>📂 Saved Shaders</h3>
+            <div class="library" id="library">
+                <div style="text-align: center; opacity: 0.5; padding: 20px;">
+                    No saved shaders yet
+                </div>
+            </div>
+        </div>
+
+        <!-- Info -->
+        <div class="section" style="border-top: none; padding-top: 0;">
+            <div style="font-size: 0.75em; opacity: 0.5; text-align: center;">
+                Part of the Evolution Trilogy: 
+                <a href="https://jamesthegiblet.github.io/Primordial/" style="color: #4ecdc4;">Primordial</a> • 
+                MelodyForge • 
+                ShaderForge
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Modal -->
+    <div class="modal-overlay" id="modal-overlay"></div>
+    <div class="modal" id="save-modal">
+        <h3>Save Shader</h3>
+        <input type="text" id="shader-name-input" placeholder="Enter shader name..." maxlength="50">
+        <div class="modal-buttons">
+            <button id="save-confirm-btn" class="btn-success">Save</button>
+            <button id="save-cancel-btn" class="btn-danger">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // =====================================================================
+        // SHADERFORGE - INTERACTIVE SHADER PLAYGROUND WITH EVOLUTION
+        // =====================================================================
+        
+        class ShaderForge {
+            constructor() {
+                // Gene definitions and their ranges
+                ShaderForge.GENE_RANGES = {
+                    colorSpeed: { min: 0.0, max: 2.0, type: 'float' },
+                    colorShift: { min: 0.0, max: 6.28318, type: 'vec3' }, // 2*PI for phase
+                    timeScale: { min: 0.1, max: 2.0, type: 'float' },
+                    distortion: { min: 0.0, max: 1.0, type: 'float' },
+                    frequency: { min: 1.0, max: 20.0, type: 'float' },
+                    octaves: { min: 1, max: 5, type: 'int' },
+                    symmetry: { min: 0, max: 4, type: 'int' }, // 0: None, 1: X, 2: Y, 3: Both, 4: Radial
+                    blendMode: { min: 0, max: 2, type: 'int' } // 0: Normal, 1: Multiply, 2: Add
+                };
+
+                ShaderForge.DEFAULT_GENES = {
+                    colorSpeed: 1.0,
+                    colorShift: [0.0, 2.0, 4.0],
+                    timeScale: 1.0,
+                    distortion: 0.0,
+                    frequency: 5.0,
+                    octaves: 2,
+                    symmetry: 0,
+                    blendMode: 0
+                };
+                console.log('🎨 Initializing ShaderForge...');
+                
+                // Canvas & WebGL
+                this.canvas = document.getElementById('canvas');
+                this.gl = this.canvas.getContext('webgl2', { preserveDrawingBuffer: true }) || 
+                          this.canvas.getContext('webgl', { preserveDrawingBuffer: true }) ||
+                          this.canvas.getContext('experimental-webgl', { preserveDrawingBuffer: true });
+                
+                if (!this.gl) {
+                    alert('WebGL not supported! Please use a modern browser.');
+                    return;
+                }
+                
+                console.log('✅ WebGL initialized');
+                
+                // DOM Elements
+                this.editor = document.getElementById('shader-editor');
+                this.compileBtn = document.getElementById('compile-btn');
+                this.errorDisplay = document.getElementById('error-display');
+                this.fpsValue = document.getElementById('fps-value');
+                
+                // Evolution Elements
+                this.evolveStartBtn = document.getElementById('evolve-start-btn');
+                this.evolveStopBtn = document.getElementById('evolve-stop-btn');
+                this.likeBtn = document.getElementById('like-btn');
+                this.skipBtn = document.getElementById('skip-btn');
+                this.randomBtn = document.getElementById('random-btn');
+                
+                // Gene Controls
+                this.geneControlsContainer = document.getElementById('gene-controls');
+
+                // Stats Elements
+                this.generationStat = document.getElementById('generation-stat');
+                this.shaderStat = document.getElementById('shader-stat');
+                this.fitnessStat = document.getElementById('fitness-stat');
+                this.libraryStat = document.getElementById('library-stat');
+                
+                // Save/Export Elements
+                this.saveBtn = document.getElementById('save-btn');
+                this.exportBtn = document.getElementById('export-btn');
+                this.screenshotBtn = document.getElementById('screenshot-btn');
+                this.recordBtn = document.getElementById('record-btn');
+                this.shareBtn = document.getElementById('share-btn');
+                this.library = document.getElementById('library');
+                
+                // Inputs
+                this.micBtn = document.getElementById('mic-btn');
+                this.uploadTextureBtn = document.getElementById('upload-texture-btn');
+                this.textureInput = document.getElementById('texture-input');
+
+                // Modal Elements
+                this.saveModal = document.getElementById('save-modal');
+                this.modalOverlay = document.getElementById('modal-overlay');
+                this.shaderNameInput = document.getElementById('shader-name-input');
+                this.saveConfirmBtn = document.getElementById('save-confirm-btn');
+                this.saveCancelBtn = document.getElementById('save-cancel-btn');
+                
+                // Notification
+                this.notification = document.getElementById('notification');
+                
+                // State
+                this.startTime = Date.now();
+                this.frameCount = 0;
+                this.lastFpsUpdate = Date.now();
+                this.mouseX = 0;
+                this.mouseY = 0;
+                this.isEvolving = false;
+                this.currentGenome = null;
+                this.currentGenomeIndex = 0;
+                this.generation = 0;
+                this.population = [];
+                this.populationSize = 20;
+                this.savedShaders = this.loadFromStorage();
+                this.geneUniformLocations = {}; // To store locations of gene-related uniforms
+
+                // Audio State
+                this.audioContext = null;
+                this.analyser = null;
+                this.audioDataArray = null;
+                this.audioTexture = null;
+                this.isAudioEnabled = false;
+                this.audioStream = null;
+                
+                // Recording State
+                this.isRecording = false;
+                this.mediaRecorder = null;
+                this.recordedChunks = [];
+
+                // Texture State
+                this.userTexture = null;
+                this.isTextureLoaded = false;
+                this.textureUniformLocation = null;
+
+                // Initialize currentGenome with default genes. This must be done before any loading.
+                this.currentGenome = {
+                    id: 'default',
+                    fitness: 0,
+                    genes: { ...ShaderForge.DEFAULT_GENES }
+                };
+
+                this.resizeCanvas();
+                this.initPresets();
+                this.initEventListeners();
+
+                // Try loading from URL first, if it fails, load default.
+                if (this.decodeGenesFromURL()) {
+                    console.log('✅ Shader loaded from URL parameters.');
+                } else {
+                    this.loadDefaultShader();
+                }
+                this.updateLibraryDisplay();
+                this.render();
+
+                console.log('✅ ShaderForge ready!'); 
+                this.showNotification('ShaderForge initialized! Press Ctrl+Enter to compile.');
+            }
+            
+            // =====================================================================
+            // WEBGL SETUP
+            // =====================================================================
+            
+            resizeCanvas() {
+                const dpr = window.devicePixelRatio || 1;
+                this.canvas.width = window.innerWidth * dpr;
+                this.canvas.height = window.innerHeight * dpr;
+                this.canvas.style.width = window.innerWidth + 'px';
+                this.canvas.style.height = window.innerHeight + 'px';
+                
+                if (this.gl) {
+                    this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+                }
+            }
+            
+            createShader(source, type) {
+                const shader = this.gl.createShader(type);
+                this.gl.shaderSource(shader, source);
+                this.gl.compileShader(shader);
+                
+                if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+                    const error = this.gl.getShaderInfoLog(shader);
+                    console.error('Shader compilation error:', error);
+                    this.showError(error);
+                    this.gl.deleteShader(shader);
+                    return null;
+                }
+                
+                return shader;
+            }
+            
+            createProgram(vertexSource, fragmentSource) {
+                const vertexShader = this.createShader(vertexSource, this.gl.VERTEX_SHADER);
+                const fragmentShader = this.createShader(fragmentSource, this.gl.FRAGMENT_SHADER);
+                
+                if (!vertexShader || !fragmentShader) {
+                    return null;
+                }
+                
+                const program = this.gl.createProgram();
+                this.gl.attachShader(program, vertexShader);
+                this.gl.attachShader(program, fragmentShader);
+                this.gl.linkProgram(program);
+                
+                if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
+                    const error = this.gl.getProgramInfoLog(program);
+                    console.error('Program linking error:', error);
+                    this.showError(error);
+                    return null;
+                }
+                
+                // Clean up shaders
+                this.gl.deleteShader(vertexShader);
+                this.gl.deleteShader(fragmentShader);
+                
+                return program;
+            }
+            
+            setupGeometry(program) {
+                // Fullscreen quad
+                const vertices = new Float32Array([
+                    -1, -1,
+                     1, -1,
+                    -1,  1,
+                     1,  1
+                ]);
+                
+                const buffer = this.gl.createBuffer();
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
+                this.gl.bufferData(this.gl.ARRAY_BUFFER, vertices, this.gl.STATIC_DRAW);
+                
+                const positionLoc = this.gl.getAttribLocation(program, 'position');
+                this.gl.enableVertexAttribArray(positionLoc);
+                this.gl.vertexAttribPointer(positionLoc, 2, this.gl.FLOAT, false, 0, 0);
+            }
+            
+            compileShader() {
+                const fragmentSource = this.getStandardUniformsGLSL() + this.editor.value;
+                
+                try {
+                    const newProgram = this.createProgram(
+                        this.getVertexShader(),
+                        fragmentSource
+                    );
+                    
+                    if (newProgram) {
+                        if (this.program) {
+                            this.gl.deleteProgram(this.program);
+                        }
+                        this.program = newProgram;
+                        this.setupGeometry(this.program);
+                        this.showError(null);
+
+                        // Get locations for gene uniforms
+                        this.geneUniformLocations = {};
+                        for (const key in ShaderForge.GENE_RANGES) {
+                            this.geneUniformLocations[`u_${key}`] = this.gl.getUniformLocation(this.program, `u_${key}`);
+                        }
+                        this.showNotification('✅ Shader compiled successfully!');
+                        return true;
+                    } else {
+                        this.showNotification('❌ Compilation failed!', true);
+                        return false;
+                    }
+                } catch (error) {
+                    this.showError(error.message);
+                    this.showNotification('❌ Compilation failed!', true);
+                    return false;
+                }
+                
+                return false;
+            }
+            
+            // =====================================================================
+            // RENDERING
+            // =====================================================================
+            
+            render() {
+                requestAnimationFrame(() => this.render());
+                
+                if (!this.program) return;
+                
+                const time = (Date.now() - this.startTime) / 1000.0;
+                
+                this.gl.useProgram(this.program);
+                
+                // Set uniforms
+                const timeLoc = this.gl.getUniformLocation(this.program, 'u_time');
+                const resolutionLoc = this.gl.getUniformLocation(this.program, 'u_resolution');
+                const mouseLoc = this.gl.getUniformLocation(this.program, 'u_mouse');
+                
+                if (timeLoc) this.gl.uniform1f(timeLoc, time);
+                if (resolutionLoc) this.gl.uniform2f(resolutionLoc, this.canvas.width, this.canvas.height);
+                if (mouseLoc) this.gl.uniform2f(mouseLoc, this.mouseX, this.mouseY);
+                
+                // Update and set audio uniforms
+                if (this.isAudioEnabled && this.analyser) {
+                    this.analyser.getByteFrequencyData(this.audioDataArray);
+                    
+                    // Update texture
+                    this.gl.activeTexture(this.gl.TEXTURE0);
+                    this.gl.bindTexture(this.gl.TEXTURE_2D, this.audioTexture);
+                    this.gl.texSubImage2D(this.gl.TEXTURE_2D, 0, 0, 0, this.analyser.frequencyBinCount, 1, this.gl.LUMINANCE, this.gl.UNSIGNED_BYTE, this.audioDataArray);
+                    
+                    // Calculate volume
+                    const volume = this.audioDataArray.reduce((a, b) => a + b, 0) / this.audioDataArray.length / 255.0;
+                    
+                    const volLoc = this.gl.getUniformLocation(this.program, 'u_audio_vol');
+                    const freqLoc = this.gl.getUniformLocation(this.program, 'u_audio_freq');
+                    
+                    if (volLoc) this.gl.uniform1f(volLoc, volume);
+                    if (freqLoc) this.gl.uniform1i(freqLoc, 0); // Texture unit 0
+                }
+
+                // Update and set user texture uniform
+                const texLoadedLoc = this.gl.getUniformLocation(this.program, 'u_texture_loaded');
+                if (this.isTextureLoaded && this.userTexture) {
+                    const texLoc = this.gl.getUniformLocation(this.program, 'u_user_texture');
+                    this.gl.activeTexture(this.gl.TEXTURE1);
+                    this.gl.bindTexture(this.gl.TEXTURE_2D, this.userTexture);
+                    if (texLoc) this.gl.uniform1i(texLoc, 1); // Texture unit 1
+                    if (texLoadedLoc) this.gl.uniform1f(texLoadedLoc, 1.0);
+                } else if (texLoadedLoc) this.gl.uniform1f(texLoadedLoc, 0.0);
+
+                // Set gene uniforms
+                if (this.currentGenome && this.currentGenome.genes) {
+                    const genes = this.currentGenome.genes;
+                    for (const key in genes) {
+                        const uniformName = `u_${key}`;
+                        const loc = this.geneUniformLocations[uniformName];
+                        if (loc) {
+                            const range = ShaderForge.GENE_RANGES[key];
+                            if (range.type === 'float') {
+                                this.gl.uniform1f(loc, genes[key]);
+                            } else if (range.type === 'vec3') {
+                                this.gl.uniform3fv(loc, genes[key]);
+                            } else if (range.type === 'int') {
+                                this.gl.uniform1i(loc, genes[key]);
+                            }
+                        }
+                    }
+                }
+                // Draw
+                this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+                
+                // Update FPS
+                this.updateFPS();
+            }
+            
+            updateFPS() {
+                this.frameCount++;
+                const now = Date.now();
+                const elapsed = now - this.lastFpsUpdate;
+                
+                if (elapsed >= 1000) {
+                    const fps = Math.round((this.frameCount * 1000) / elapsed);
+                    this.fpsValue.textContent = fps;
+                    this.frameCount = 0;
+                    this.lastFpsUpdate = now;
+                }
+            }
+            
+            // =====================================================================
+            // DEFAULT SHADERS
+            // =====================================================================
+            
+            getVertexShader() {
+                return `
+                    attribute vec2 position;
+                    void main() {
+                        gl_Position = vec4(position, 0.0, 1.0);
+                    }
+                `;
+            }
+            
+            getStandardUniformsGLSL() {
+                return `
+precision mediump float;
+uniform vec2 u_resolution;
+uniform float u_time;
+uniform vec2 u_mouse;
+
+// Audio uniforms
+uniform float u_audio_vol;
+uniform sampler2D u_audio_freq;
+
+// User texture uniforms
+uniform sampler2D u_user_texture;
+uniform float u_texture_loaded;
+
+`;
+            }
+
+            generateShaderCode(genes) {
+                const glslHelpers = `
+                float random(vec2 st) {
+                    return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453);
+                }
+                // A simple 2D noise function (can be improved with Perlin/Simplex)
+                float noise(vec2 st) {
+                    vec2 i = floor(st);
+                    vec2 f = fract(st);
+                    vec2 u = f * f * (3.0 - 2.0 * f);
+                    float a = random(i);
+                    float b = random(i + vec2(1.0, 0.0));
+                    float c = random(i + vec2(0.0, 1.0));
+                    float d = random(i + vec2(1.0, 1.0));
+                    return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
+                }
+                // Fractional Brownian Motion (fBm) for more complex noise
+                float fbm(vec2 st, int octaves) {
+                    float value = 0.0;
+                    float amplitude = 0.5;
+                    float frequency = 0.0;
+                    for (int i = 0; i < 5; i++) { // Loop to max octaves
+                        if (i >= octaves) break; // Break if we've reached the desired number
+                        value += amplitude * noise(st);
+                        st *= 2.0;
+                        amplitude *= 0.5;
+                    }
+                    return value;
+                }
+                `;
+
+                // Main shader logic
+                return `// Gene uniforms
+uniform float u_colorSpeed;
+uniform vec3 u_colorShift;
+uniform float u_timeScale;
+uniform float u_distortion;
+uniform float u_frequency;
+uniform int u_octaves;
+uniform int u_symmetry;
+uniform int u_blendMode;
+
+${glslHelpers}
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution;
+    vec2 p = st;
+
+    // Aspect ratio correction
+    p.x *= u_resolution.x / u_resolution.y;
+
+    // Apply symmetry based on u_symmetry
+    if (u_symmetry == 1) { // X-axis symmetry
+        p.x = abs(p.x - 0.5 * (u_resolution.x / u_resolution.y)) + 0.5 * (u_resolution.x / u_resolution.y);
+    } else if (u_symmetry == 2) { // Y-axis symmetry
+        p.y = abs(p.y - 0.5) + 0.5;
+    } else if (u_symmetry == 3) { // Both X and Y
+        p = abs(p - vec2(0.5 * (u_resolution.x / u_resolution.y), 0.5)) + vec2(0.5 * (u_resolution.x / u_resolution.y), 0.5);
+    } else if (u_symmetry == 4) { // Radial symmetry (fold to first quadrant)
+        vec2 center = vec2(0.5 * (u_resolution.x / u_resolution.y), 0.5);
+        vec2 p_centered = p - center;
+        float angle = atan(p_centered.y, p_centered.x);
+        float radius = length(p_centered);
+        angle = mod(angle, 3.1415926535 * 0.5); // Fold to first quadrant
+        p_centered = vec2(cos(angle), sin(angle)) * radius;
+        p = p_centered + center;
+    }
+
+    // Base animation using time and frequency
+    float t = u_time * u_timeScale;
+    vec3 baseColor = 0.5 + 0.5 * cos(t * u_colorSpeed + p.xyx * u_frequency + u_colorShift);
+
+    // Add distortion using fbm
+    float distortion_val = fbm(p * 10.0 + t * 0.1, u_octaves);
+    baseColor += distortion_val * u_distortion * 0.5;
+
+    // Audio reaction
+    float freq_val = texture2D(u_audio_freq, vec2(st.x, 0.5)).r;
+    baseColor.r += u_audio_vol * 0.5; // Red pulses with volume
+    p.y += freq_val * u_audio_vol * 0.2; // Distort y with frequency
+
+    // Mouse interaction (from default shader)
+    vec2 mouse_norm = u_mouse / u_resolution; // Normalize mouse coordinates
+    float dist_to_mouse = distance(st, mouse_norm);
+    baseColor *= 1.0 - smoothstep(0.0, 0.3, dist_to_mouse);
+
+    vec3 finalColor = baseColor;
+
+    // Apply blend mode
+    if (u_blendMode == 1) { // Multiply
+        finalColor *= vec3(0.8, 0.9, 1.0); // Example multiplier
+
+        // Mix with user texture if loaded
+        if (u_texture_loaded > 0.5) {
+            vec4 texColor = texture2D(u_user_texture, st);
+            finalColor = mix(finalColor, texColor.rgb, 0.5);
+        }
+    } else if (u_blendMode == 2) { // Add
+        finalColor += vec3(0.1, 0.05, 0.0); // Example additive
+    }
+
+    gl_FragColor = vec4(finalColor, 1.0);
+}`;
+            }
+            
+            loadDefaultShader() {
+                // Initial load will use the default genes
+                this.loadGenome(this.currentGenome);
+            }
+            
+            // =====================================================================
+            // PRESET SHADERS
+            // =====================================================================
+            
+            initPresets() { // Renamed to reflect templates
+                const container = document.getElementById('preset-buttons');
+                container.innerHTML = ''; // Clear previous content
+
+                const raymarchBtn = document.createElement('button');
+                raymarchBtn.className = 'preset-btn';
+                raymarchBtn.textContent = 'Load 3D Raymarcher';
+                raymarchBtn.style.gridColumn = '1 / -1'; // Make it span the full width
+                raymarchBtn.addEventListener('click', () => {
+                    this.editor.value = this.getRaymarchTemplate();
+                    this.compileShader();
+                    this.showNotification('Loaded 3D Raymarch Template!');
+                });
+                container.appendChild(raymarchBtn);
+
+                const infoText = document.createElement('div');
+                infoText.style.textAlign = 'center';
+                infoText.style.opacity = '0.5';
+                infoText.style.padding = '10px 0 0 0';
+                infoText.style.fontSize = '0.8em';
+                infoText.style.gridColumn = '1 / -1';
+                infoText.textContent = 'The GA evolves 2D shaders. Templates are for manual editing.';
+                container.appendChild(infoText);
+            }
+            
+            loadPreset(name) {
+                // This method is no longer used as shaders are generated dynamically.
+                // The 'loadPreset' functionality is replaced by 'loadGenome' with specific genes.
+                this.showNotification(`Presets are now evolved!`);
+            }
+
+            getRaymarchTemplate() {
+                return `// High-quality 3D Raymarching Template
+ 
+// --- SDF Primitives (Signed Distance Functions) ---
+float sdSphere(vec3 p, float s) { return length(p) - s; }
+float sdBox(vec3 p, vec3 b) { vec3 q = abs(p) - b; return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0); }
+float sdTorus(vec3 p, vec2 t) { vec2 q = vec2(length(p.xz) - t.x, p.y); return length(q) - t.y; }
+
+// --- SDF Operators ---
+float opUnion(float d1, float d2) { return min(d1, d2); }
+float opSubtraction(float d1, float d2) { return max(-d1, d2); }
+float opIntersection(float d1, float d2) { return max(d1, d2); }
+
+// --- Scene Definition ---
+float map(vec3 p) {
+    vec3 p_torus = p;
+    p_torus.xz = mat2(cos(u_time), -sin(u_time), sin(u_time), cos(u_time)) * p_torus.xz; // Rotate torus
+    float torus = sdTorus(p_torus, vec2(1.0, 0.2));
+
+    float sphere = sdSphere(p - vec3(0.0, 0.5 + 0.2 * sin(u_time * 2.0), 0.0), 0.4);
+    float box = sdBox(p - vec3(1.5, 0.2, -1.0), vec3(0.3));
+    
+    float scene = opUnion(torus, sphere);
+    scene = opUnion(scene, box);
+
+    float ground = p.y + 1.0; // Ground plane at y = -1
+    return opUnion(scene, ground);
+}
+
+// --- Lighting & Rendering ---
+vec3 getNormal(vec3 p) {
+    vec2 e = vec2(0.001, 0.0);
+    return normalize(vec3(
+        map(p + e.xyy) - map(p - e.xyy),
+        map(p + e.yxy) - map(p - e.yxy),
+        map(p + e.yyx) - map(p - e.yyx)
+    ));
+}
+
+float getShadow(vec3 p, vec3 lightDir) {
+    float res = 1.0;
+    float t = 0.01;
+    for (int i = 0; i < 50; i++) {
+        float h = map(p + lightDir * t);
+        if (h < 0.001) return 0.0;
+        res = min(res, 8.0 * h / t);
+        t += h;
+    }
+    return res;
+}
+
+void main() {
+    vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / u_resolution.y;
+    
+    // --- Camera ---
+    vec2 mouse = (u_mouse / u_resolution - 0.5) * 3.14;
+    vec3 ro = vec3(3.0 * cos(mouse.x), 1.5 + mouse.y, 3.0 * sin(mouse.x)); // Ray Origin
+    vec3 target = vec3(0.0, 0.0, 0.0);
+    vec3 cam_z = normalize(target - ro);
+    vec3 cam_x = normalize(cross(cam_z, vec3(0.0, 1.0, 0.0)));
+    vec3 cam_y = cross(cam_x, cam_z);
+    vec3 rd = normalize(cam_x * uv.x + cam_y * uv.y + cam_z * 1.5); // Ray Direction
+
+    // --- Raymarching ---
+    float t = 0.0;
+    vec3 col = vec3(0.0);
+    for (int i = 0; i < 100; i++) {
+        vec3 p = ro + rd * t;
+        float d = map(p);
+        if (d < 0.001) {
+            vec3 normal = getNormal(p);
+            vec3 lightPos = vec3(2.0, 3.0, -3.0);
+            vec3 lightDir = normalize(lightPos - p);
+            
+            // --- Lighting ---
+            float diffuse = max(0.0, dot(normal, lightDir));
+            float shadow = getShadow(p + normal * 0.002, lightDir);
+            diffuse *= shadow;
+
+            vec3 skyColor = vec3(0.4, 0.6, 0.9);
+            col = vec3(1.0) * diffuse + skyColor * 0.2; // Simple material + ambient
+            break;
+        }
+        if (t > 100.0) break; // Max distance
+        t += d;
+    }
+
+    gl_FragColor = vec4(col, 1.0);
+}`;
+            }
+            
+            // =====================================================================
+            // GENE UI
+            // =====================================================================
+
+            updateGeneUI() {
+                if (!this.currentGenome || !this.currentGenome.genes || !this.geneControlsContainer) return;
+
+                this.geneControlsContainer.innerHTML = ''; // Clear old controls
+
+                for (const key in this.currentGenome.genes) {
+                    if (!ShaderForge.GENE_RANGES[key]) continue;
+
+                    const gene = this.currentGenome.genes[key];
+                    const range = ShaderForge.GENE_RANGES[key];
+
+                    if (range.type === 'float') {
+                        this.createSlider(key, gene, range);
+                    } else if (range.type === 'int') {
+                        this.createSelect(key, gene, range);
+                    } else if (range.type === 'vec3') {
+                        const components = ['R', 'G', 'B'];
+                        gene.forEach((componentValue, i) => {
+                            this.createSlider(key, componentValue, range, i, components[i]);
+                        });
+                    }
+                }
+            }
+
+            createSlider(key, value, range, index = -1, componentLabel = '') {
+                const label = document.createElement('div');
+                label.className = 'gene-label';
+                label.textContent = `${key.replace(/([A-Z])/g, ' $1')} ${componentLabel}`.trim();
+                this.geneControlsContainer.appendChild(label);
+
+                const slider = document.createElement('input');
+                slider.type = 'range';
+                slider.min = range.min;
+                slider.max = range.max;
+                slider.step = (range.max - range.min) / 100;
+                slider.value = value;
+
+                const valueDisplay = document.createElement('div');
+                valueDisplay.className = 'gene-value';
+                valueDisplay.textContent = parseFloat(value).toFixed(2);
+
+                slider.addEventListener('input', (e) => {
+                    const val = parseFloat(e.target.value);
+                    if (index > -1) {
+                        this.currentGenome.genes[key][index] = val;
+                    } else {
+                        this.currentGenome.genes[key] = val;
+                    }
+                    valueDisplay.textContent = val.toFixed(2);
+                });
+
+                this.geneControlsContainer.appendChild(slider);
+                this.geneControlsContainer.appendChild(valueDisplay);
+            }
+
+            createSelect(key, value, range) {
+                const label = document.createElement('div');
+                label.className = 'gene-label';
+                label.textContent = key.replace(/([A-Z])/g, ' $1');
+                this.geneControlsContainer.appendChild(label);
+
+                const optionMap = {
+                    symmetry: ['None', 'X-Axis', 'Y-Axis', 'Both', 'Radial'],
+                    blendMode: ['Normal', 'Multiply', 'Add']
+                };
+
+                const select = document.createElement('select');
+                for (let i = range.min; i <= range.max; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    if (optionMap[key] && optionMap[key][i]) {
+                        option.textContent = optionMap[key][i];
+                    } else {
+                        option.textContent = i;
+                    }
+                    select.appendChild(option);
+                }
+                select.value = value;
+
+                select.addEventListener('change', (e) => {
+                    this.currentGenome.genes[key] = parseInt(e.target.value, 10);
+                });
+
+                this.geneControlsContainer.appendChild(select);
+                this.geneControlsContainer.appendChild(document.createElement('div')); // Placeholder
+            }
+
+            // =====================================================================
+            // EVENT LISTENERS
+            // =====================================================================
+            
+            initEventListeners() {
+                // Window resize
+                window.addEventListener('resize', () => this.resizeCanvas());
+                
+                // Mouse move
+                this.canvas.addEventListener('mousemove', (e) => {
+                    const rect = this.canvas.getBoundingClientRect();
+                    this.mouseX = e.clientX - rect.left;
+                    this.mouseY = this.canvas.height - (e.clientY - rect.top);
+                });
+                
+                // Compile button
+                this.compileBtn.addEventListener('click', () => this.compileShader());
+                
+                // Keyboard shortcuts
+                this.editor.addEventListener('keydown', (e) => { // Keep editor for manual edits
+                    // Ctrl+Enter to compile
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                        e.preventDefault();
+                        this.compileShader();
+                    }
+                    
+                    // Tab handling
+                    if (e.key === 'Tab') {
+                        e.preventDefault();
+                        const start = this.editor.selectionStart;
+                        const end = this.editor.selectionEnd;
+                        this.editor.value = this.editor.value.substring(0, start) + 
+                                           '    ' + 
+                                           this.editor.value.substring(end);
+                        this.editor.selectionStart = this.editor.selectionEnd = start + 4;
+                    }
+                });
+                
+                // Evolution buttons
+                this.evolveStartBtn.addEventListener('click', () => this.startEvolution());
+                this.evolveStopBtn.addEventListener('click', () => this.stopEvolution());
+                this.likeBtn.addEventListener('click', () => this.likeGenome());
+                this.skipBtn.addEventListener('click', () => this.skipGenome());
+                this.randomBtn.addEventListener('click', () => this.loadRandomGenome());
+                
+                // Save/Export buttons
+                this.saveBtn.addEventListener('click', () => this.showSaveModal());
+                this.exportBtn.addEventListener('click', () => this.exportCode());
+                this.screenshotBtn.addEventListener('click', () => this.takeScreenshot());
+                this.recordBtn.addEventListener('click', () => this.toggleRecording());
+                this.shareBtn.addEventListener('click', () => this.shareByUrl());
+                
+                // Inputs
+                this.uploadTextureBtn.addEventListener('click', () => this.textureInput.click());
+                this.textureInput.addEventListener('change', (e) => this.handleTextureUpload(e));
+                this.micBtn.addEventListener('click', () => this.toggleAudio());
+
+                // Modal buttons
+                this.saveConfirmBtn.addEventListener('click', () => this.confirmSave());
+                this.saveCancelBtn.addEventListener('click', () => this.hideSaveModal());
+                this.modalOverlay.addEventListener('click', () => this.hideSaveModal());
+                
+                // Enter key in save modal
+                this.shaderNameInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.confirmSave();
+                    }
+                });
+
+                // Global keyboard shortcuts
+                window.addEventListener('keydown', (e) => {
+                    // Ignore shortcuts if user is typing in an input field
+                    const activeEl = document.activeElement;
+                    if (activeEl && (activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'INPUT')) {
+                        return;
+                    }
+
+                    // Use a map for clean key-to-action mapping
+                    const keyActionMap = {
+                        'l': () => !this.likeBtn.disabled && this.likeBtn.click(),
+                        'k': () => !this.skipBtn.disabled && this.skipBtn.click(),
+                        'e': () => this.isEvolving ? this.evolveStopBtn.click() : this.evolveStartBtn.click(),
+                        'r': () => this.randomBtn.click(),
+                        's': () => this.saveBtn.click(),
+                        'c': () => this.exportBtn.click()
+                    };
+
+                    const action = keyActionMap[e.key.toLowerCase()];
+                    if (action) {
+                        e.preventDefault(); // Prevent default browser actions (like 's' for save page)
+                        action();
+                    }
+                });
+
+                // Add a visual hint for shortcuts in the UI
+                this.likeBtn.title = "Shortcut: L";
+                this.skipBtn.title = "Shortcut: K";
+                this.evolveStartBtn.title = "Shortcut: E";
+                this.evolveStopBtn.title = "Shortcut: E";
+                this.randomBtn.title = "Shortcut: R";
+                this.saveBtn.title = "Shortcut: S";
+                this.exportBtn.title = "Shortcut: C";
+
+            }
+            
+            // =====================================================================
+            // AUDIO INPUT
+            // =====================================================================
+
+            async toggleAudio() {
+                if (this.isAudioEnabled) {
+                    this.stopAudio();
+                } else {
+                    await this.startAudio();
+                }
+            }
+
+            async startAudio() {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    this.showNotification('getUserMedia not supported on your browser!', true);
+                    return;
+                }
+                try {
+                    this.audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    this.analyser = this.audioContext.createAnalyser();
+                    this.analyser.fftSize = 256;
+                    
+                    const source = this.audioContext.createMediaStreamSource(this.audioStream);
+                    source.connect(this.analyser);
+
+                    this.audioDataArray = new Uint8Array(this.analyser.frequencyBinCount);
+
+                    // Create a texture for the frequency data
+                    this.audioTexture = this.gl.createTexture();
+                    this.gl.bindTexture(this.gl.TEXTURE_2D, this.audioTexture);
+                    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+                    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+                    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+                    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
+                    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.LUMINANCE, this.analyser.frequencyBinCount, 1, 0, this.gl.LUMINANCE, this.gl.UNSIGNED_BYTE, null);
+
+                    this.isAudioEnabled = true;
+                    this.micBtn.textContent = '🎤 Disable Mic';
+                    this.micBtn.classList.add('btn-danger');
+                    this.showNotification('🎤 Microphone enabled!');
+                } catch (err) {
+                    console.error('Error accessing microphone:', err);
+                    this.showNotification('Could not access microphone.', true);
+                }
+            }
+
+            stopAudio() {
+                if (this.audioStream) {
+                    this.audioStream.getTracks().forEach(track => track.stop());
+                }
+                if (this.audioContext) {
+                    this.audioContext.close();
+                }
+                if (this.audioTexture) {
+                    this.gl.deleteTexture(this.audioTexture);
+                }
+                this.isAudioEnabled = false;
+                this.audioStream = null;
+                this.audioContext = null;
+                this.micBtn.textContent = '🎤 Enable Mic';
+                this.micBtn.classList.remove('btn-danger');
+                this.showNotification('Microphone disabled.');
+            }
+
+            // =====================================================================
+            // TEXTURE UPLOAD
+            // =====================================================================
+
+            handleTextureUpload(event) {
+                const file = event.target.files[0];
+                if (!file || !file.type.startsWith('image/')) {
+                    this.showNotification('Please select an image file.', true);
+                    return;
+                }
+
+                const image = new Image();
+                image.src = URL.createObjectURL(file);
+                image.onload = () => {
+                    URL.revokeObjectURL(image.src); // Clean up
+
+                    if (this.userTexture) {
+                        this.gl.deleteTexture(this.userTexture);
+                    }
+
+                    this.userTexture = this.gl.createTexture();
+                    this.gl.bindTexture(this.gl.TEXTURE_2D, this.userTexture);
+
+                    // Set texture parameters
+                    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+                    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+                    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+                    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
+
+                    // Upload the image into the texture
+                    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image);
+
+                    this.isTextureLoaded = true;
+                    this.showNotification('🖼️ Texture loaded successfully!');
+                };
+            }
+
+            // =====================================================================
+            // GENETIC ALGORITHM
+            // =====================================================================
+            
+            startEvolution() {
+                this.isEvolving = true;
+                this.evolveStartBtn.disabled = true;
+                this.evolveStopBtn.disabled = false;
+                this.likeBtn.disabled = false;
+                this.skipBtn.disabled = false;
+                
+                // Initialize population
+                this.initializePopulation();
+                this.loadGenome(this.population[0]);
+                
+                this.showNotification('🧬 Evolution started! Rate shaders with Like/Skip.');
+            }
+            
+            stopEvolution() {
+                this.isEvolving = false;
+                this.evolveStartBtn.disabled = false;
+                this.evolveStopBtn.disabled = true;
+                this.likeBtn.disabled = true;
+                this.skipBtn.disabled = true;
+                
+                this.showNotification('Evolution stopped.');
+            }
+            
+            initializePopulation() {
+                this.population = [];
+                this.generation = 0;
+                this.currentGenomeIndex = 0;
+                
+                // Create initial random genomes
+                for (let i = 0; i < this.populationSize; i++) {
+                    this.population.push(this.createRandomGenome());
+                }
+                
+                this.updateStats();
+            }
+
+            createRandomGenome() {
+                const genes = {};
+                for (const key in ShaderForge.GENE_RANGES) {
+                    const range = ShaderForge.GENE_RANGES[key];
+                    if (range.type === 'float') {
+                        genes[key] = Math.random() * (range.max - range.min) + range.min;
+                    } else if (range.type === 'vec3') {
+                        genes[key] = [
+                            Math.random() * (range.max - range.min) + range.min,
+                            Math.random() * (range.max - range.min) + range.min,
+                            Math.random() * (range.max - range.min) + range.min
+                        ];
+                    } else if (range.type === 'int') {
+                        genes[key] = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+                    }
+                }
+                return {
+                    id: Math.random().toString(36).substr(2, 9),
+                    fitness: 0,
+                    genes: genes
+                };
+            }
+
+            crossover(parent1Genes, parent2Genes) {
+                const childGenes = {};
+                for (const key in ShaderForge.GENE_RANGES) {
+                    if (Math.random() < 0.5) { // 50% chance to inherit from parent1
+                        childGenes[key] = parent1Genes[key];
+                    } else { // 50% chance to inherit from parent2
+                        childGenes[key] = parent2Genes[key];
+                    }
+                }
+                return childGenes;
+            }
+
+            mutate(genes, mutationRate = 0.1, mutationStrength = 0.2) {
+                const mutatedGenes = { ...genes }; // Create a copy
+                for (const key in ShaderForge.GENE_RANGES) {
+                    if (Math.random() < mutationRate) {
+                        const range = ShaderForge.GENE_RANGES[key];
+                        if (range.type === 'float') {
+                            let delta = (Math.random() - 0.5) * mutationStrength * (range.max - range.min);
+                            mutatedGenes[key] = Math.max(range.min, Math.min(range.max, genes[key] + delta));
+                        } else if (range.type === 'vec3') {
+                            mutatedGenes[key] = genes[key].map(val => {
+                                let delta = (Math.random() - 0.5) * mutationStrength * (range.max - range.min);
+                                return Math.max(range.min, Math.min(range.max, val + delta));
+                            });
+                        } else if (range.type === 'int') {
+                            // For int, either increment/decrement or pick a new random valid value
+                            if (Math.random() < 0.5) { // Small step mutation
+                                let step = Math.random() < 0.5 ? 1 : -1;
+                                mutatedGenes[key] = Math.max(range.min, Math.min(range.max, genes[key] + step));
+                            } else { // Jump to random valid value
+                                mutatedGenes[key] = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+                            }
+                        }
+                    }
+                }
+                return mutatedGenes;
+            }
+            
+            loadGenome(genome) {
+                this.currentGenome = genome;
+                // Generate shader code from the genome's genes
+                this.currentGenome.code = this.generateShaderCode(genome.genes);
+                this.editor.value = this.currentGenome.code;
+                
+                if (this.compileShader()) { // compileShader now also gets uniform locations
+                    this.updateStats();
+                    this.updateGeneUI();
+                }
+            }
+            
+            likeGenome() {
+                if (this.currentGenome) {
+                    this.currentGenome.fitness += 1;
+                    this.nextGenome();
+                }
+            }
+            
+            skipGenome() {
+                if (this.currentGenome) {
+                    this.currentGenome.fitness -= 0.5;
+                    this.nextGenome();
+                }
+            }
+            
+            nextGenome() {
+                this.currentGenomeIndex++;
+                
+                if (this.currentGenomeIndex >= this.population.length) {
+                    this.evolvePopulation();
+                    this.currentGenomeIndex = 0;
+                    this.generation++;
+                }
+                
+                this.loadGenome(this.population[this.currentGenomeIndex]);
+            }
+            
+            evolvePopulation() {
+                // Sort by fitness
+                this.population.sort((a, b) => b.fitness - a.fitness);
+                
+                // Keep top 30%
+                const eliteCount = Math.floor(this.populationSize * 0.2); // Keep fewer elites for more crossover
+                const newPopulation = this.population.slice(0, eliteCount);
+                
+                // Fill the rest with crossover and mutation
+                while (newPopulation.length < this.populationSize) {
+                    // Select two parents from the top 50% of the previous generation
+                    const parent1 = this.population[Math.floor(Math.random() * (this.populationSize / 2))];
+                    const parent2 = this.population[Math.floor(Math.random() * (this.populationSize / 2))];
+
+                    let childGenes = this.crossover(parent1.genes, parent2.genes);
+                    childGenes = this.mutate(childGenes, 0.15, 0.2); // 15% mutation rate, 20% strength
+
+                    newPopulation.push({
+                        id: Math.random().toString(36).substr(2, 9),
+                        code: '', // Will be generated on load
+                        fitness: 0,
+                        genes: childGenes
+                    });
+                }
+                
+                this.population = newPopulation;
+                this.showNotification(`🧬 Generation ${this.generation + 1} created!`);
+            }
+
+            loadRandomGenome() {
+                const genome = this.createRandomGenome();
+                this.loadGenome(genome);
+                this.showNotification('🎲 Loaded random shader');
+            }
+            
+            // =====================================================================
+            // SAVE/LOAD SYSTEM
+            // =====================================================================
+            
+            showSaveModal() {
+                this.saveModal.classList.add('show');
+                this.modalOverlay.classList.add('show');
+                this.shaderNameInput.value = '';
+                this.shaderNameInput.focus();
+            }
+            
+            hideSaveModal() {
+                this.saveModal.classList.remove('show');
+                this.modalOverlay.classList.remove('show');
+            }
+            
+            confirmSave() {
+                const name = this.shaderNameInput.value.trim();
+                
+                if (!name) {
+                    this.showNotification('Please enter a name!', true);
+                    return;
+                }
+                
+                const shader = {
+                    id: Date.now().toString(),
+                    name: name,
+                    code: this.editor.value,
+                    timestamp: new Date().toISOString()
+                };
+                
+                this.savedShaders.push(shader);
+                this.saveToStorage();
+                this.updateLibraryDisplay();
+                this.hideSaveModal();
+                
+                this.showNotification(`✅ Saved: ${name}`);
+            }
+            
+            loadFromStorage() {
+                try {
+                    const data = localStorage.getItem('shaderforge-library');
+                    return data ? JSON.parse(data) : [];
+                } catch (e) {
+                    console.error('Error loading from storage:', e);
+                    return [];
+                }
+            }
+            
+            saveToStorage() {
+                try {
+                    localStorage.setItem('shaderforge-library', JSON.stringify(this.savedShaders));
+                } catch (e) {
+                    console.error('Error saving to storage:', e);
+                    this.showNotification('Error saving to storage!', true);
+                }
+            }
+            
+            updateLibraryDisplay() {
+                if (this.savedShaders.length === 0) {
+                    this.library.innerHTML = '<div style="text-align: center; opacity: 0.5; padding: 20px;">No saved shaders yet</div>';
+                    this.libraryStat.textContent = '0';
+                    return;
+                }
+                
+                this.library.innerHTML = '';
+                
+                this.savedShaders.forEach(shader => {
+                    const item = document.createElement('div');
+                    item.className = 'library-item';
+                    
+                    const name = document.createElement('div');
+                    name.className = 'library-item-name';
+                    name.textContent = shader.name;
+                    name.addEventListener('click', () => {
+                        this.editor.value = shader.code;
+                        this.compileShader();
+                        this.showNotification(`Loaded: ${shader.name}`);
+                    });
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'library-item-delete';
+                    deleteBtn.textContent = '✕';
+                    deleteBtn.addEventListener('click', () => {
+                        this.savedShaders = this.savedShaders.filter(s => s.id !== shader.id);
+                        this.saveToStorage();
+                        this.updateLibraryDisplay();
+                        this.showNotification(`Deleted: ${shader.name}`);
+                    });
+                    
+                    item.appendChild(name);
+                    item.appendChild(deleteBtn);
+                    this.library.appendChild(item);
+                });
+                
+                this.libraryStat.textContent = this.savedShaders.length;
+            }
+            
+            // =====================================================================
+            // EXPORT FUNCTIONS
+            // =====================================================================
+            
+            exportCode() {
+                const code = this.editor.value;
+                
+                navigator.clipboard.writeText(code).then(() => {
+                    this.showNotification('📋 Code copied to clipboard!');
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                    this.showNotification('Failed to copy code!', true);
+                });
+            }
+            
+            takeScreenshot() {
+                try {
+                    this.canvas.toBlob(blob => {
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.download = `shaderforge-${Date.now()}.png`;
+                        link.href = url;
+                        link.click();
+                        URL.revokeObjectURL(url);
+                        
+                        this.showNotification('📸 Screenshot saved to your Downloads folder!');
+                    });
+                } catch (err) {
+                    console.error('Screenshot failed:', err);
+                    this.showNotification('Screenshot failed!', true);
+                }
+            }
+            
+            toggleRecording() {
+                if (this.isRecording) {
+                    this.stopRecording();
+                } else {
+                    this.startRecording();
+                }
+            }
+
+            startRecording() {
+                if (!('MediaRecorder' in window)) {
+                    this.showNotification('Video recording not supported in this browser.', true);
+                    return;
+                }
+
+                const stream = this.canvas.captureStream(60); // 60 fps
+                this.recordedChunks = [];
+                
+                const options = { mimeType: 'video/webm; codecs=vp9' };
+                const supportedMimeTypes = [
+                    'video/webm; codecs=vp9',
+                    'video/webm; codecs=vp8',
+                    'video/webm; codecs=h264',
+                    'video/webm'
+                ];
+
+                const supportedType = supportedMimeTypes.find(type => MediaRecorder.isTypeSupported(type));
+
+                if (!supportedType) {
+                    this.showNotification('Video recording format not supported on this browser.', true);
+                    return;
+                }
+
+                try {
+                    this.mediaRecorder = new MediaRecorder(stream, { mimeType: supportedType });
+                } catch (e) {
+                    console.error('MediaRecorder error:', e);
+                    this.showNotification('Failed to create MediaRecorder.', true);
+                    return;
+                }
+
+                this.mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        this.recordedChunks.push(event.data);
+                    }
+                };
+
+                this.mediaRecorder.onstop = () => {
+                    const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `shaderforge-recording-${Date.now()}.webm`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    this.showNotification('📹 Video saved!');
+                };
+
+                this.mediaRecorder.start();
+                this.isRecording = true;
+                this.recordBtn.textContent = '■ Stop Recording';
+                this.recordBtn.classList.add('btn-danger');
+                this.showNotification('🔴 Recording started...');
+            }
+
+            stopRecording() {
+                if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+                    this.mediaRecorder.stop();
+                }
+                this.isRecording = false;
+                this.recordBtn.textContent = '📹 Record';
+                this.recordBtn.classList.remove('btn-danger');
+            }
+
+            // =====================================================================
+            // URL SHARING
+            // =====================================================================
+
+            shareByUrl() {
+                if (!this.currentGenome || !this.currentGenome.genes) {
+                    this.showNotification('No shader genes to share!', true);
+                    return;
+                }
+
+                const encodedGenes = this.encodeGenes(this.currentGenome.genes);
+                const url = `${window.location.origin}${window.location.pathname}#shader=${encodedGenes}`;
+                
+                history.pushState({ genes: encodedGenes }, 'Shared Shader', url);
+
+                navigator.clipboard.writeText(url).then(() => {
+                    this.showNotification('🔗 Shareable URL copied to clipboard!');
+                }).catch(err => {
+                    console.error('Failed to copy URL:', err);
+                    this.showNotification('Failed to copy URL!', true);
+                });
+            }
+
+            encodeGenes(genes) {
+                const keyMap = {
+                    colorSpeed: 'cs', colorShift: 'csh', timeScale: 'ts', distortion: 'd',
+                    frequency: 'f', octaves: 'o', symmetry: 's', blendMode: 'b'
+                };
+                const compactGenes = {};
+                for (const key in genes) {
+                    const shortKey = keyMap[key];
+                    let value = genes[key];
+                    if (typeof value === 'number') {
+                        value = parseFloat(value.toFixed(3));
+                    } else if (Array.isArray(value)) {
+                        value = value.map(v => parseFloat(v.toFixed(3)));
+                    }
+                    compactGenes[shortKey] = value;
+                }
+                return btoa(JSON.stringify(compactGenes));
+            }
+
+            decodeGenesFromURL() {
+                const hash = window.location.hash;
+                if (!hash.startsWith('#shader=')) return false;
+
+                const encodedGenes = hash.substring(8);
+                try {
+                    const compactGenes = JSON.parse(atob(encodedGenes));
+                    const keyMap = {
+                        cs: 'colorSpeed', csh: 'colorShift', ts: 'timeScale', d: 'distortion',
+                        f: 'frequency', o: 'octaves', s: 'symmetry', b: 'blendMode'
+                    };
+                    const genes = { ...ShaderForge.DEFAULT_GENES }; // Start with defaults
+                    let isValid = true;
+
+                    for (const shortKey in compactGenes) {
+                        const longKey = keyMap[shortKey];
+                        if (longKey && ShaderForge.GENE_RANGES[longKey]) {
+                            genes[longKey] = compactGenes[shortKey];
+                        } else {
+                            isValid = false;
+                            break;
+                        }
+                    }
+
+                    if (isValid) {
+                        const genome = {
+                            id: 'from-url-' + Date.now(),
+                            fitness: 0,
+                            genes: genes
+                        };
+                        this.loadGenome(genome);
+                        return true;
+                    } else {
+                        console.error('Invalid gene key found in URL.');
+                        this.showNotification('Invalid shader data in URL!', true);
+                        history.replaceState(null, '', window.location.pathname); // Clear bad hash
+                        return false;
+                    }
+                } catch (e) {
+                    console.error('Failed to decode genes from URL:', e);
+                    this.showNotification('Could not load shader from URL.', true);
+                    history.replaceState(null, '', window.location.pathname); // Clear bad hash
+                    return false;
+                }
+            }
+
+            // =====================================================================
+            // UI HELPERS
+            // =====================================================================
+            
+            showError(message) {
+                if (message) {
+                    this.errorDisplay.textContent = message;
+                    this.errorDisplay.classList.add('show');
+                } else {
+                    this.errorDisplay.classList.remove('show');
+                }
+            }
+            
+            showNotification(message, isError = false) {
+                this.notification.textContent = message;
+                this.notification.classList.add('show');
+                
+                if (isError) {
+                    this.notification.classList.add('error');
+                } else {
+                    this.notification.classList.remove('error');
+                }
+                
+                setTimeout(() => {
+                    this.notification.classList.remove('show');
+                }, 3000);
+            }
+            
+            updateStats() {
+                this.generationStat.textContent = this.generation;
+                this.shaderStat.textContent = `${this.currentGenomeIndex + 1}/${this.populationSize}`;
+                this.fitnessStat.textContent = this.currentGenome ? this.currentGenome.fitness.toFixed(1) : '0.0';
+            }
+        }
+        
+        // Initialize when DOM is ready
+        window.addEventListener('DOMContentLoaded', () => {
+            window.shaderForge = new ShaderForge();
+        });
+    </script>
+</body>
+</html>

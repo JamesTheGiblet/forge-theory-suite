@@ -1,0 +1,90 @@
+{
+  "scp_version":  "0.1",
+  "scp_id":       "legion/stop-trading",
+  "object_class": "Thaumiel",
+  "intent":       "On system error or manual stop signal: halt all trading activity, write a final audit entry, and anchor the last known good strategy.",
+  "containment": {
+    "read_only":   false,
+    "audit_log":   true,
+    "kill_switch": true
+  },
+  "provenance": {
+    "author":       "James / Giblets Creations",
+    "agent":        "Claude Sonnet 4.6",
+    "created_at":   "2026-05-05T13:00:00Z",
+    "version":      "1.0.0",
+    "context":      "Phase 3 trading OS — kill switch capsule.",
+    "capture_mode": "conversation",
+    "lineage":      ["legion/orchestrator"]
+  },
+  "behaviours": [
+    {
+      "trigger": "on_event",
+      "event":   "trading.stop",
+      "actions": [
+        {
+          "primitive": "log",
+          "params":    { "message": "StopTrading: MANUAL STOP received — halting all trading activity." }
+        },
+        {
+          "primitive": "audit_event",
+          "params": {
+            "event_type": "trading.stopped",
+            "data":       { "reason": "manual_stop", "source": "legion/stop-trading" }
+          }
+        },
+        {
+          "primitive": "anchor_strategy",
+          "params": {
+            "note": "Emergency anchor on trading.stop signal"
+          }
+        },
+        {
+          "primitive": "write_file",
+          "params": {
+            "path":    "logs/TRADING_STOPPED",
+            "content": "LEGION trading halted by stop signal. Check logs/audit.csv for details."
+          }
+        },
+        {
+          "primitive": "log",
+          "params":    { "message": "StopTrading: audit written, strategy anchored, TRADING_STOPPED flag set." }
+        }
+      ]
+    },
+    {
+      "trigger": "on_event",
+      "event":   "system.error",
+      "actions": [
+        {
+          "primitive": "log",
+          "params":    { "message": "StopTrading: SYSTEM ERROR received — halting trading for safety." }
+        },
+        {
+          "primitive": "audit_event",
+          "params": {
+            "event_type": "trading.stopped",
+            "data":       { "reason": "system_error", "source": "legion/stop-trading" }
+          }
+        },
+        {
+          "primitive": "anchor_strategy",
+          "params": {
+            "note": "Safety anchor on system.error signal"
+          }
+        },
+        {
+          "primitive": "write_file",
+          "params": {
+            "path":    "logs/TRADING_STOPPED",
+            "content": "LEGION trading halted by system error. Check logs/audit.csv for details."
+          }
+        },
+        {
+          "primitive": "log",
+          "params":    { "message": "StopTrading: system error handled, trading halted safely." }
+        }
+      ]
+    }
+  ]
+}

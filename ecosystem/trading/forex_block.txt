@@ -1,0 +1,16 @@
+const forexCapitalRaw = process.env.FOREX_STARTING_CAPITAL;
+let forexStartingCapital = 300.0;
+if (forexCapitalRaw !== undefined && forexCapitalRaw !== '') {
+  const parsed = parseFloat(forexCapitalRaw);
+  if (!isNaN(parsed) && parsed >= 10) forexStartingCapital = parsed;
+}
+
+const forexConfig = {
+  enabled:         process.env.FOREX_ENABLED !== 'false',
+  pair:            'EURUSD=X',
+  startingCapital: forexStartingCapital,
+  intervalHours:   1,
+  dryRun:          process.env.FOREX_DRY_RUN !== 'false',
+  period:   '5d',
+  interval: '1h',
+  fsm: {

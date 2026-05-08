@@ -1,0 +1,185 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "ubvm/dependency-graph",
+  "object_class": "Thaumiel",
+  "intent": "Define the structural dependency and governance relationships across the UBVM/SCP ecosystem, providing a machine-readable semantic map for humans, agents, and future UBVM tooling.",
+  "containment": {
+    "read_only": true,
+    "audit_log": true,
+    "kill_switch": false
+  },
+  "interpretation": {
+    "this_is": "The official UBVM dependency graph — a governance-adjacent semantic artefact that formalises how meaning, execution, and behaviour flow through the UBVM/SCP ecosystem.",
+    "purpose": [
+      "Codify the dependency structure that governs the UBVM/SCP ecosystem",
+      "Provide a canonical navigational map for developers and AI agents",
+      "Enable future tooling to validate upstream/downstream compliance",
+      "Prevent semantic drift by making governance relationships explicit",
+      "Serve as the backbone for completeness audits and phase-gate enforcement"
+    ],
+    "tone": "Structural, authoritative, machine-readable, governance-focused.",
+    "audience": [
+      "Developers implementing UBVM",
+      "AI agents reasoning about the ecosystem",
+      "Architects designing UBVM organisms",
+      "Future UBVM tooling and validators",
+      "Researchers studying semantic dependency systems"
+    ],
+    "importance": [
+      "Node definitions and types",
+      "Dependency relationships between nodes",
+      "Governance relationships between nodes",
+      "scp/spec as the root of all meaning",
+      "capsules as the behavioural leaf node"
+    ],
+    "ignore": [
+      "Implementation details of individual nodes",
+      "Phase-specific build tasks",
+      "Domain-specific capsule patterns"
+    ],
+    "dont_change": [
+      "Node hierarchy — scp/spec is always root",
+      "Relationship types: governs, supports, executes",
+      "capsules as the only leaf node",
+      "ubvm/glossary as the only pure support node"
+    ],
+    "trust_score": "reserved",
+    "graph": {
+      "nodes": {
+        "scp/spec": {
+          "type": "semantic_law",
+          "governs": [
+            "ubvm/core-identity",
+            "ubvm/glossary",
+            "ubvm/roadmap",
+            "ubvm/spec",
+            "capsules"
+          ]
+        },
+        "ubvm/core-identity": {
+          "type": "identity",
+          "depends_on": ["scp/spec"],
+          "governs": ["ubvm/spec"]
+        },
+        "ubvm/glossary": {
+          "type": "vocabulary",
+          "depends_on": ["scp/spec"],
+          "supports": [
+            "ubvm/core-identity",
+            "ubvm/spec",
+            "ubvm/roadmap",
+            "capsules"
+          ]
+        },
+        "ubvm/roadmap": {
+          "type": "governance",
+          "depends_on": ["scp/spec"],
+          "governs": ["ubvm/spec"]
+        },
+        "ubvm/spec": {
+          "type": "execution_law",
+          "depends_on": [
+            "scp/spec",
+            "ubvm/core-identity",
+            "ubvm/glossary",
+            "ubvm/roadmap"
+          ],
+          "governs": ["ubvm_runtime", "capsules"]
+        },
+        "ubvm_runtime": {
+          "type": "runtime",
+          "depends_on": ["ubvm/spec"],
+          "executes": ["capsules"]
+        },
+        "capsules": {
+          "type": "behavioural_units",
+          "depends_on": [
+            "scp/spec",
+            "ubvm/spec",
+            "ubvm/glossary",
+            "ubvm_runtime"
+          ]
+        }
+      },
+      "relationship_types": {
+        "governs": "The upstream node defines rules the downstream node must obey. Violations produce non-compliance.",
+        "supports": "The upstream node provides vocabulary or context the downstream node relies on, without imposing hard rules.",
+        "executes": "The runtime interprets and runs the capsule's declared behaviours.",
+        "depends_on": "The downstream node cannot be built, interpreted, or trusted without the upstream node being correct."
+      },
+      "properties": {
+        "root": "scp/spec",
+        "leaf": "capsules",
+        "pure_support_node": "ubvm/glossary",
+        "structure": "DAG"
+      }
+    },
+    "semantic_contract": {
+      "guarantees": [
+        "scp/spec is always the root of the dependency graph.",
+        "capsules is always the leaf — it governs nothing and depends on everything above it.",
+        "ubvm/glossary supports but never governs — vocabulary anchors language, not law.",
+        "ubvm/roadmap governs ubvm/spec — phase gates are law for the 1.0 cut.",
+        "Any new artefact added to the ecosystem must declare its position in this graph.",
+        "This graph reduces ambiguity and prevents semantic drift across the suite."
+      ],
+      "non_guarantees": [
+        "Implementation details of any individual node.",
+        "Runtime-specific behaviour of the UBVM interpreter.",
+        "Domain-specific capsule dependency patterns."
+      ],
+      "conflict_resolution": "If contradictions arise about ecosystem structure, this dependency graph takes precedence over informal descriptions in README or code comments. For semantic rule conflicts, defer to scp/spec. For execution rule conflicts, defer to ubvm/spec."
+    }
+  },
+  "links": {
+    "self":          "ubvm/dependency-graph",
+    "scp_spec":      "scp/spec",
+    "ubvm_spec":     "ubvm/spec",
+    "readme":        "ubvm/core-identity",
+    "glossary":      "ubvm/glossary",
+    "roadmap":       "ubvm/roadmap"
+  },
+  "provenance": {
+    "author":       "James / Giblets Creations",
+    "agent":        "Claude Sonnet 4.6",
+    "created_at":   "2026-05-05T09:00:00Z",
+    "version":      "1.0.0",
+    "context":      "Created during UBVM documentation session, May 2026. Formalises the dependency graph as a Thaumiel-class governance capsule after the semantic mesh reached full parity.",
+    "capture_mode": "conversation",
+    "source_ref":   "",
+    "lineage":      []
+  },
+  "behaviours": [
+    {
+      "trigger": "on_load",
+      "actions": [
+        {
+          "primitive": "log",
+          "params": {
+            "message": "UBVM dependency-graph capsule loaded — ecosystem structural law active."
+          }
+        },
+        {
+          "primitive": "validate_self",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "trigger": "cron",
+      "schedule": "0 0 * * *",
+      "actions": [
+        {
+          "primitive": "validate_self",
+          "params": {}
+        },
+        {
+          "primitive": "log",
+          "params": {
+            "message": "ubvm/dependency-graph daily self-validation passed."
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "_comment": "CCE Pipeline Target Spec — copy this file and fill in your market details",
+
+  "hypothesis": "Large-cap altcoins (ETH, SOL) lag BTC by 3-7 days during crypto bull markets.",
+
+  "asset_universe": [
+    {
+      "symbol":     "BTC",
+      "name":       "Bitcoin",
+      "role":       "lead",
+      "rationale":  "Bitcoin moves first in crypto market cycles — capital flows in before rotating to alts",
+      "data_source": "kraken",
+      "pair":       "BTC/USD"
+    },
+    {
+      "symbol":     "ETH",
+      "name":       "Ethereum",
+      "role":       "follower",
+      "rationale":  "Large-cap alt — historically follows BTC with 3-5 day lag",
+      "data_source": "kraken",
+      "pair":       "ETH/USD"
+    },
+    {
+      "symbol":     "SOL",
+      "name":       "Solana",
+      "role":       "follower",
+      "rationale":  "Large-cap alt — follows BTC with 4-7 day lag",
+      "data_source": "kraken",
+      "pair":       "SOL/USD"
+    }
+  ],
+
+  "market_scope": {
+    "exchanges":       ["kraken"],
+    "quote_currency":  "USD",
+    "data_resolution": ["1d", "4H"]
+  },
+
+  "time_window": {
+    "history_years": 10,
+    "start_date":    "2016-01-01",
+    "end_date":      "2026-01-01"
+  },
+
+  "state_map_draft": [
+    {
+      "state_name":      "DORMANT",
+      "description":     "Bear market or hostile conditions — 100% cash",
+      "expected_assets": ["USDC"],
+      "allocation":      "CASH"
+    },
+    {
+      "state_name":      "ACCUMULATION",
+      "description":     "Early bull signals — small BTC position, monitoring",
+      "expected_assets": ["BTC", "USDC"],
+      "allocation":      "PARTIAL"
+    },
+    {
+      "state_name":      "IGNITION",
+      "description":     "Bull confirmed — full BTC deployment",
+      "expected_assets": ["BTC"],
+      "allocation":      "RISK_ON"
+    },
+    {
+      "state_name":      "CASCADE",
+      "description":     "Altcoin rotation — BTC dominance topping, alts activating",
+      "expected_assets": ["BTC", "ETH", "SOL"],
+      "allocation":      "RISK_ON"
+    },
+    {
+      "state_name":      "EXTRACTION",
+      "description":     "Emergency exit — crash detected, back to cash immediately",
+      "expected_assets": ["USDC"],
+      "allocation":      "CASH"
+    }
+  ],
+
+  "success_criteria": {
+    "min_cagr_oos":          0.30,
+    "min_sharpe_oos":        1.5,
+    "max_drawdown_oos":      0.30,
+    "min_calmar_oos":        1.0,
+    "min_oos_is_cagr_ratio": 0.6
+  },
+
+  "data_sources": {
+    "price":      "kraken_ohlcv",
+    "sentiment":  "alternative_me_fng",
+    "dominance":  "coingecko_global",
+    "macro":      "yahoo_finance"
+  },
+
+  "initial_capital": 300,
+  "base_currency":   "USD"
+}

@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://legion/schema/strategy_v1",
+  "title": "LEGION Strategy SCP Artefact",
+  "type": "object",
+  "required": ["scp_id", "name", "object_class", "asset", "timeframe", "active_regimes", "containment_procedures", "conditions", "risk", "backtest", "lineage", "addendum_log"],
+  "properties": {
+    "scp_id": { "type": "string", "pattern": "^STRAT-\\d{3}$" },
+    "name": { "type": "string", "maxLength": 32 },
+    "object_class": { "enum": ["Safe", "Euclid", "Keter", "Thaumiel", "Apollyon"] },
+    "asset": { "type": "string", "pattern": "^[A-Z]+/[A-Z]+$" },
+    "timeframe": { "enum": ["1m","5m","15m","1h","4h","1d"] },
+    "active_regimes": { "type": "array", "items": { "type": "string" } },
+    "containment_procedures": {
+      "type": "object",
+      "required": ["max_drawdown_pct", "daily_loss_limit_pct", "on_breach"],
+      "properties": {
+        "max_drawdown_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+        "daily_loss_limit_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+        "active_hours_utc": { "type": "array", "items": { "type": "number", "minimum": 0, "maximum": 23 }, "minItems": 0, "maxItems": 2 },
+        "on_breach": { "enum": ["move_to_contained", "apollyon"] },
+        "human_review_required": { "type": "boolean" },
+        "keter_votes_required": { "type": "number", "minimum": 0, "maximum": 3 }
+      }
+    },
+    "conditions": {
+      "type": "object",
+      "properties": {
+        "entry": { "$ref": "#/definitions/conditionGroup" },
+        "exit": { "$ref": "#/definitions/conditionGroup" }
+      }
+    },
+    "risk": {
+      "type": "object",
+      "properties": {
+        "position_size": { "type": "string" },
+        "max_spread_percent": { "type": "number", "minimum": 0 },
+        "leverage": { "type": "number", "minimum": 1 }
+      }
+    },
+    "backtest": {
+      "type": "object",
+      "properties": {
+        "win_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "sharpe": { "type": "number" },
+        "max_drawdown": { "type": "number" },
+        "candles_tested": { "type": "integer", "minimum": 1 },
+        "fee_adjusted": { "type": "boolean" },
+        "last_validated": { "type": "string" }
+      }
+    },
+    "lineage": {
+      "type": "object",
+      "properties": {
+        "parent": { "type": "string", "pattern": "^STRAT-\\d{3}$" },
+        "mutated_by": { "type": "string" },
+        "generation": { "type": "integer", "minimum": 0 },
+        "mutation_date": { "type": "string" }
+      }
+    },
+    "addendum_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": { "type": "string" },
+          "type": { "enum": ["VOTE", "BREACH", "MUTATION", "CONTAINMENT"] },
+          "result": { "type": "string" },
+          "agents": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "conditionGroup": {
+      "type": "object",
+      "properties": {
+        "all": { "type": "array", "items": { "$ref": "#/definitions/condition" } },
+        "any": { "type": "array", "items": { "$ref": "#/definitions/condition" } }
+      }
+    },
+    "condition": {
+      "type": "object",
+      "required": ["indicator"],
+      "allOf": [
+        {
+          "if": {
+            "properties": { "indicator": { "enum": ["trailing_stop", "time_in_trade", "drawdown_from_entry"] } }
+          },
+          "then": {
+            "properties": {
+              "operator": { "type": "string" }
+            },
+            "required": []
+          },
+          "else": {
+            "required": ["operator"]
+          }
+        }
+      ],
+      "properties": {
+        "indicator": { "enum": ["rsi", "ema", "sma", "volume", "bollinger", "macd", "trailing_stop", "time_in_trade", "drawdown_from_entry", "regime_check"] },
+        "period": { "type": "integer" },
+        "operator": { "type": "string" },
+        "value": { "type": "number" },
+        "multiplier": { "type": "number" },
+        "lookback": { "type": "integer" },
+        "percent": { "type": "number" },
+        "max_hours": { "type": "integer" },
+        "required_regime": { "type": "string" }
+      }
+    }
+  }
+}

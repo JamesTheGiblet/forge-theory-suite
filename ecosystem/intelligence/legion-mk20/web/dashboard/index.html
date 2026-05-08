@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>LEGION MK20 - Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0e27;
+      color: #e0e0e0;
+    }
+
+    /* Layout */
+    .app {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: #0f122e;
+      border-right: 1px solid #1a1f4e;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .logo {
+      padding: 1.5rem;
+      font-size: 1.25rem;
+      font-weight: bold;
+      background: linear-gradient(135deg, #a855f7, #7c3aed);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      border-bottom: 1px solid #1a1f4e;
+    }
+
+    .nav-item {
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .nav-item:hover {
+      background: #1a1f4e;
+    }
+
+    .nav-item.active {
+      border-left-color: #a855f7;
+      background: #1a1f4e;
+    }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 1rem 1.5rem;
+      background: #0f122e;
+      border-bottom: 1px solid #1a1f4e;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+
+    /* Chatbot specific */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .message {
+      display: flex;
+      gap: 0.75rem;
+      max-width: 80%;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .message.assistant {
+      align-self: flex-start;
+    }
+
+    .message-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #1a1f4e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .message.user .message-avatar {
+      background: #a855f7;
+    }
+
+    .message-bubble {
+      background: #1a1f4e;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      line-height: 1.4;
+    }
+
+    .message.user .message-bubble {
+      background: #a855f7;
+    }
+
+    .chat-input {
+      padding: 1rem;
+      border-top: 1px solid #1a1f4e;
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 0.75rem;
+      background: #1a1f4e;
+      border: 1px solid #2a2f6e;
+      border-radius: 12px;
+      color: #e0e0e0;
+      font-size: 1rem;
+    }
+
+    .chat-input button {
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, #a855f7, #7c3aed);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      cursor: pointer;
+    }
+
+    /* Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: #0f122e;
+      border-radius: 12px;
+      padding: 1rem;
+      border: 1px solid #1a1f4e;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #a855f7;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #1a1f4e;
+    }
+
+    th {
+      color: #9ca3af;
+      font-weight: 500;
+    }
+
+    .status-online {
+      color: #22c55e;
+    }
+
+    .entropy-meter {
+      background: #1a1f4e;
+      border-radius: 10px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .entropy-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #22c55e, #f59e0b, #ef4444);
+      transition: width 0.3s;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: -260px;
+        transition: left 0.3s;
+        z-index: 100;
+        height: 100%;
+      }
+      .sidebar.open {
+        left: 0;
+      }
+      .menu-toggle {
+        display: block;
+        cursor: pointer;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar" id="sidebar">
+    <div class="logo">🔮 LEGION MK20</div>
+    <div class="nav-item active" data-page="dashboard">📊 Dashboard</div>
+    <div class="nav-item" data-page="chatbot">💬 Legion Chatbot</div>
+    <div class="nav-item" data-page="agents">🤖 Agents</div>
+    <div class="nav-item" data-page="strategies">📈 Strategies</div>
+    <div class="nav-item" data-page="arbitrage">🔄 Arbitrage</div>
+    <div class="nav-item" data-page="reports">📄 Reports</div>
+  </div>
+
+  <div class="main">
+    <div class="header">
+      <div class="menu-toggle" style="font-size: 1.5rem; cursor: pointer;">☰</div>
+      <h2 id="pageTitle">Dashboard</h2>
+      <div id="statusBadge" style="font-size: 0.75rem;">🟢 Online</div>
+    </div>
+    <div class="content" id="content">
+      <!-- Dynamic content -->
+    </div>
+  </div>
+</div>
+
+<script>
+  // API base URL
+  const API_URL = 'http://localhost:3011';
+  let currentPage = 'dashboard';
+  let systemStatus = {};
+
+  // Navigation
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const page = item.dataset.page;
+      currentPage = page;
+      document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById('pageTitle').innerText = item.innerText;
+      loadPage(page);
+      // Close sidebar on mobile
+      document.getElementById('sidebar').classList.remove('open');
+    });
+  });
+
+  // Menu toggle
+  document.querySelector('.menu-toggle').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+  });
+
+  async function loadPage(page) {
+    const content = document.getElementById('content');
+    if (page === 'dashboard') {
+      await loadDashboard(content);
+    } else if (page === 'chatbot') {
+      loadChatbot(content);
+    } else if (page === 'agents') {
+      await loadAgents(content);
+    } else if (page === 'strategies') {
+      await loadStrategies(content);
+    } else if (page === 'arbitrage') {
+      await loadArbitrage(content);
+    } else if (page === 'reports') {
+      await loadReports(content);
+    }
+  }
+
+  async function loadDashboard(container) {
+    try {
+      const status = await fetch(`${API_URL}/api/status`).then(r => r.json());
+      const agents = await fetch(`${API_URL}/api/agents`).then(r => r.json());
+      const entropy = await fetch(`${API_URL}/api/entropy`).then(r => r.json());
+      
+      const entropyPercent = (entropy.entropy / entropy.threshold) * 100;
+      
+      container.innerHTML = `
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value">${status.agents || 0}</div>
+            <div class="stat-label">Agents Running</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${status.entropy || 0}</div>
+            <div class="stat-label">Entropy</div>
+            <div class="entropy-meter"><div class="entropy-fill" style="width: ${entropyPercent}%"></div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${status.paper_mode || 'RUNNING'}</div>
+            <div class="stat-label">Paper Mode</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${agents.length}</div>
+            <div class="stat-label">Total Agents</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <h3>📊 System Info</h3>
+          <p><strong>SCP ID:</strong> ${status.scp_id}</p>
+          <p><strong>Version:</strong> ${status.version}</p>
+          <p><strong>Class:</strong> ${status.object_class}</p>
+          <p><strong>Threshold:</strong> ${status.threshold}</p>
+        </div>
+      `;
+    } catch (err) {
+      container.innerHTML = `<div class="stat-card">⚠️ API unavailable: ${err.message}</div>`;
+    }
+  }
+
+  function loadChatbot(container) {
+    container.innerHTML = `
+      <div class="chat-container" style="height: calc(100vh - 120px);">
+        <div class="chat-messages" id="chatMessages">
+          <div class="message assistant">
+            <div class="message-avatar">🤖</div>
+            <div class="message-bubble">Hello! I'm Legion, your AI assistant. Ask me about system status, agents, strategies, or anything about LEGION MK20!</div>
+          </div>
+        </div>
+        <div class="chat-input">
+          <input type="text" id="chatInput" placeholder="Ask me anything..." onkeypress="if(event.key==='Enter') sendMessage()">
+          <button onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+    `;
+    
+    // Make sendMessage globally available
+    window.sendMessage = async () => {
+      const input = document.getElementById('chatInput');
+      const message = input.value.trim();
+      if (!message) return;
+      
+      const messagesDiv = document.getElementById('chatMessages');
+      
+      // Add user message
+      messagesDiv.innerHTML += `
+        <div class="message user">
+          <div class="message-avatar">👤</div>
+          <div class="message-bubble">${escapeHtml(message)}</div>
+        </div>
+      `;
+      
+      input.value = '';
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      
+      // Show typing indicator
+      messagesDiv.innerHTML += `<div class="message assistant" id="typing"><div class="message-avatar">🤖</div><div class="message-bubble">Typing...</div></div>`;
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      
+      // Process command
+      const response = await processCommand(message);
+      
+      // Remove typing indicator
+      document.getElementById('typing')?.remove();
+      
+      // Add response
+      messagesDiv.innerHTML += `
+        <div class="message assistant">
+          <div class="message-avatar">🤖</div>
+          <div class="message-bubble">${escapeHtml(response)}</div>
+        </div>
+      `;
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    };
+  }
+
+  async function processCommand(command) {
+    const cmd = command.toLowerCase();
+    
+    try {
+      if (cmd.includes('status') || cmd.includes('health')) {
+        const status = await fetch(`${API_URL}/api/status`).then(r => r.json());
+        return `System status: ${status.object_class} class, ${status.agents} agents running, entropy ${status.entropy}/${status.threshold}, paper mode ${status.paper_mode}`;
+      }
+      
+      if (cmd.includes('agent') || cmd.includes('agents')) {
+        const agents = await fetch(`${API_URL}/api/agents`).then(r => r.json());
+        const agentList = agents.map(a => `${a.name} (${a.class})`).join(', ');
+        return `I see ${agents.length} agents: ${agentList}`;
+      }
+      
+      if (cmd.includes('entropy')) {
+        const entropy = await fetch(`${API_URL}/api/entropy`).then(r => r.json());
+        return `Current entropy is ${entropy.entropy}/${entropy.threshold} (${entropy.status}). ${entropy.entropy > 0.7 ? '⚠️ Critical!' : entropy.entropy > 0.3 ? '📈 Elevated' : '✅ Normal'}`;
+      }
+      
+      if (cmd.includes('price') || cmd.includes('btc') || cmd.includes('eth')) {
+        const prices = await fetch(`${API_URL}/api/arbitrage/prices`).then(r => r.json());
+        const priceText = Object.entries(prices.prices || {}).map(([k,v]) => `${k}: $${v.toFixed(2)}`).join(', ');
+        return `Current prices: ${priceText || 'Unavailable'}`;
+      }
+      
+      if (cmd.includes('help')) {
+        return `I can help with: status, agents, entropy, prices, strategies, arbitrage, reports. Try "show me the leaderboard" or "what's the best strategy?"`;
+      }
+      
+      if (cmd.includes('leaderboard') || cmd.includes('best strategy')) {
+        const rankings = await fetch(`${API_URL}/api/rankings`).catch(() => null);
+        if (rankings) {
+          const data = await rankings.json();
+          return `Top strategy: ${data[0]?.scp_id} with score ${data[0]?.score}`;
+        }
+        return "Leaderboard data not available yet. Strategies are being evaluated.";
+      }
+      
+      return `I understand you're asking about "${command}". Try asking about status, agents, entropy, prices, or type "help" for more options.`;
+      
+    } catch (err) {
+      return `API error: ${err.message}. Make sure LEGION is running (./start.sh)`;
+    }
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  async function loadAgents(container) {
+    try {
+      const agents = await fetch(`${API_URL}/api/agents`).then(r => r.json());
+      container.innerHTML = `
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Name</th><th>Class</th><th>Type</th><th>Status</th></tr></thead>
+            <tbody>
+              ${agents.map(a => `<tr><td>${a.name}</td><td>${a.class}</td><td>${a.type || '-'}</td><td class="status-online">● Online</td></tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    } catch (err) {
+      container.innerHTML = `<div>Failed to load agents: ${err.message}</div>`;
+    }
+  }
+
+  async function loadStrategies(container) {
+    container.innerHTML = `<div class="stat-card">Loading strategies...</div>`;
+    // Add strategy loading logic
+    container.innerHTML = `<div class="stat-card">📈 Strategy management coming soon. Check data/strategies/ for JSON files.</div>`;
+  }
+
+  async function loadArbitrage(container) {
+    try {
+      const prices = await fetch(`${API_URL}/api/arbitrage/prices`).then(r => r.json());
+      container.innerHTML = `
+        <div class="stats-grid">
+          ${Object.entries(prices.prices || {}).map(([pair, price]) => `
+            <div class="stat-card"><div class="stat-value">$${price.toFixed(2)}</div><div class="stat-label">${pair}</div></div>
+          `).join('')}
+        </div>
+      `;
+    } catch (err) {
+      container.innerHTML = `<div>Arbitrage data unavailable: ${err.message}</div>`;
+    }
+  }
+
+  async function loadReports(container) {
+    try {
+      const reports = await fetch(`${API_URL}/api/reports`).then(r => r.json());
+      container.innerHTML = `
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Report</th><th>Timestamp</th></tr></thead>
+            <tbody>
+              ${(reports.reports || []).slice(0, 10).map(r => `<tr><td>${r.filename}</td><td>${r.timestamp}</td></tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    } catch (err) {
+      container.innerHTML = `<div>Reports unavailable: ${err.message}</div>';
+    }
+  }
+
+  // Load initial dashboard
+  loadPage('dashboard');
+
+  // Refresh status badge
+  setInterval(async () => {
+    try {
+      const status = await fetch(`${API_URL}/api/status`).then(r => r.json());
+      document.getElementById('statusBadge').innerHTML = status.entropy > 0.7 ? '🔴 Critical' : status.entropy > 0.3 ? '🟡 Elevated' : '🟢 Online';
+    } catch(e) {
+      document.getElementById('statusBadge').innerHTML = '🔴 Offline';
+    }
+  }, 5000);
+</script>
+</body>
+</html>

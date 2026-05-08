@@ -1,0 +1,60 @@
+<div class="card">
+    <h3>🏆 Strategy Gallery</h3>
+    <div id="galleryList">Loading strategies...</div>
+</div>
+<div class="card">
+    <h3>📊 Class Distribution</h3>
+    <div id="patternList">Loading patterns...</div>
+</div>
+
+<script>
+const API = 'http://localhost:3011';
+
+async function loadGallery() {
+    try {
+        const res = await fetch(API + '/api/strategies/gallery');
+        const data = await res.json();
+        if (data && data.length) {
+            document.getElementById('galleryList').innerHTML = data.slice(0,15).map(s => 
+                '<div class="strategy-item">' +
+                '<strong>' + (s.name || s.id) + '</strong> — ' + (s.class || 'Euclid') +
+                '<div class="fitness-bar"><div class="fitness-fill" style="width:' + ((s.fitness || 0.5) * 100) + '%"></div></div>' +
+                '<div style="font-size:12px; margin-top:5px;">Fitness: ' + Math.round((s.fitness || 0.5) * 100) + '% | Rating: ' + (s.userRating || '-') + '</div>' +
+                '<button class="rating-btn" onclick="rateStrategy(\'' + s.id + '\',5)">👍 Good</button>' +
+                '<button class="rating-btn" onclick="rateStrategy(\'' + s.id + '\',1)">👎 Bad</button>' +
+                '</div>'
+            ).join('');
+        } else {
+            document.getElementById('galleryList').innerHTML = 'No strategies yet';
+        }
+    } catch(e) {
+        document.getElementById('galleryList').innerHTML = 'Gallery error';
+    }
+}
+
+async function loadPatterns() {
+    try {
+        const res = await fetch(API + '/api/strategies/patterns');
+        const data = await res.json();
+        const patterns = data.patterns || {};
+        document.getElementById('patternList').innerHTML = Object.entries(patterns).map(([k,v]) => 
+            '<span class="badge">' + k + ': ' + Math.round((v.ratio||0) * 100) + '% (' + v.count + ')</span>'
+        ).join('') || 'No patterns yet';
+        document.getElementById('patternList').innerHTML += '<div style="margin-top:10px; font-size:12px;">Sample: ' + (data.sampleSize || 0) + ' strategies</div>';
+    } catch(e) {
+        document.getElementById('patternList').innerHTML = 'Patterns unavailable';
+    }
+}
+
+window.rateStrategy = async (id, rating) => {
+    await fetch(API + '/api/strategies/rate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ strategyId: id, rating })
+    });
+    loadGallery();
+};
+
+loadGallery();
+loadPatterns();
+</script>

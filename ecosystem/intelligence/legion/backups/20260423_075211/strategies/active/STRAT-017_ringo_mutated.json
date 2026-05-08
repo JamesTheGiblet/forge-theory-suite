@@ -1,0 +1,78 @@
+{
+  "scp_id": "STRAT-017",
+  "name": "RINGO",
+  "object_class": "Keter",
+  "asset": "BTC/USD",
+  "timeframe": "1h",
+  "active_regimes": ["any"],
+  "containment_procedures": {
+    "max_drawdown_pct": 4,
+    "daily_loss_limit_pct": 1,
+    "active_hours_utc": [],
+    "on_breach": "move_to_contained",
+    "human_review_required": false,
+    "keter_votes_required": 0
+  },
+  "conditions": {
+    "entry": {
+      "all": [
+        {
+          "indicator": "rsi",
+          "period": 14,
+          "operator": "<",
+          "value": 30
+        },
+        {
+          "indicator": "volume",
+          "operator": ">",
+          "multiplier": 1.4,
+          "lookback": 20
+        }
+      ],
+      "any": []
+    },
+    "exit": {
+      "any": [
+        {
+          "indicator": "rsi",
+          "operator": ">",
+          "value": 65
+        },
+        {
+          "indicator": "trailing_stop",
+          "percent": 1.5
+        },
+        {
+          "indicator": "time_in_trade",
+          "max_hours": 48
+        }
+      ]
+    }
+  },
+  "risk": {
+    "position_size": "0.01",
+    "max_spread_percent": 0.15000000000000002,
+    "leverage": 1
+  },
+  "backtest": {
+    "win_rate": 0,
+    "sharpe": -24.811878789579232,
+    "max_drawdown": -0.05,
+    "candles_tested": 100,
+    "fee_adjusted": true,
+    "last_validated": "2026-04-20"
+  },
+  "lineage": {
+    "parent": "STRAT-014",
+    "mutated_by": "Mutator_937",
+    "generation": 7,
+    "mutation_date": "2026-04-20"
+  },
+  "addendum_log": [
+    {
+      "date": "2026-04-20T17:26:21.048Z",
+      "type": "VALIDATION",
+      "result": "Classified as Keter (Sharpe: -24.81, WR: 0.0%)"
+    }
+  ]
+}

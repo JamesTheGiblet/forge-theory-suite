@@ -1,0 +1,123 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "scp/spec",
+  "object_class": "Thaumiel",
+  "intent": "Define the Semantic Capsule Protocol, its meaning layer, transport layer, and cross-AI consistency rules as the authoritative foundation for all SCP-compliant capsules.",
+  "containment": {
+    "read_only": true,
+    "audit_log": true,
+    "kill_switch": false
+  },
+  "interpretation": {
+    "this_is": "The official SCP 0.1 specification — the semantic and transport law governing all capsules in the UBVM and Forge Theory ecosystems.",
+    "purpose": [
+      "Define the meaning-bearing fields of an SCP capsule",
+      "Establish Meaning Sovereignty as a foundational principle",
+      "Specify the interpretation block and fidelity rules",
+      "Define provenance, lineage, and capsule identity",
+      "Define the transport envelope and node-to-node rules",
+      "Define cross-AI consistency requirements",
+      "Provide a reference capsule for authors and agents"
+    ],
+    "tone": "Formal, normative, specification-grade, unambiguous.",
+    "audience": [
+      "Runtime implementors",
+      "Capsule authors",
+      "AI agents interpreting capsules",
+      "Researchers studying semantic protocols",
+      "Forge Theory architects"
+    ],
+    "importance": [
+      "Meaning Sovereignty",
+      "Immutable fields",
+      "Interpretation fidelity rules",
+      "Transport envelope",
+      "Cross-AI consistency contract",
+      "Provenance and lineage",
+      "Compliance requirements"
+    ],
+    "ignore": [
+      "Implementation details of UBVM",
+      "Domain-specific capsule patterns",
+      "Experimental features not in SCP 0.1"
+    ],
+    "dont_change": [
+      "Meaning Sovereignty definition",
+      "Immutable field list",
+      "Interpretation fidelity rules",
+      "Transport envelope structure",
+      "Cross-AI consistency contract",
+      "Provenance schema",
+      "Versioning policy"
+    ],
+    "trust_score": "reserved",
+    "semantic_contract": {
+      "guarantees": [
+        "This document defines the canonical SCP protocol.",
+        "All SCP-compliant capsules must follow the rules defined here.",
+        "Meaning Sovereignty is a non-negotiable foundational principle.",
+        "Immutable fields must never be altered by any system or agent.",
+        "Interpretation fidelity rules override all agent inference.",
+        "Transport envelope structure is authoritative for SCP 0.1.",
+        "Cross-AI consistency rules must be enforced by all compliant agents."
+      ],
+      "non_guarantees": [
+        "Implementation details of UBVM or other runtimes.",
+        "Cryptographic signing or integrity verification (deferred to SCP 0.2).",
+        "Binary transport formats (JSON only in 0.1).",
+        "Cluster discovery or distributed coordination."
+      ],
+      "conflict_resolution": "If contradictions arise, this specification overrides all other documents, capsules, or interpretations."
+    }
+  },
+  "links": {
+    "self":         "scp/spec",
+    "ubvm_spec":    "ubvm/spec",
+    "ubvm_readme":  "ubvm/core-identity",
+    "ubvm_glossary":"ubvm/glossary",
+    "ubvm_roadmap": "ubvm/roadmap"
+  },
+  "provenance": {
+    "author":       "James / Giblets Creations",
+    "agent":        "Claude Sonnet 4.6",
+    "created_at":   "2026-05-05T08:00:00Z",
+    "version":      "1.1.0",
+    "context":      "Created as the foundational semantic and transport protocol for UBVM and Forge Theory. Revised to move semantic_contract into interpretation, correct capture_mode, and add daily validation behaviour.",
+    "capture_mode": "conversation",
+    "source_ref":   "",
+    "lineage":      []
+  },
+  "behaviours": [
+    {
+      "trigger": "on_load",
+      "actions": [
+        {
+          "primitive": "log",
+          "params": {
+            "message": "SCP specification capsule loaded — semantic law active."
+          }
+        },
+        {
+          "primitive": "validate_self",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "trigger": "cron",
+      "schedule": "0 0 * * *",
+      "actions": [
+        {
+          "primitive": "validate_self",
+          "params": {}
+        },
+        {
+          "primitive": "log",
+          "params": {
+            "message": "scp/spec daily self-validation passed."
+          }
+        }
+      ]
+    }
+  ]
+}

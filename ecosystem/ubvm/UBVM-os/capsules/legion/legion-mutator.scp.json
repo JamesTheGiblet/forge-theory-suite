@@ -1,0 +1,44 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "legion/mutator",
+  "object_class": "Keter",
+  "intent": "Generate mutated offspring from the current best trading strategy on a weekly schedule to explore new parameter spaces.",
+  "containment": {
+    "read_only": false,
+    "audit_log": true,
+    "kill_switch": true
+  },
+  "provenance": {
+    "author": "James / Giblets Creations",
+    "created_at": "2026-05-05T20:00:00Z",
+    "version": "1.0.0",
+    "context": "Initiates the Phase 2 evolution loop by introducing genetic variance to successful strategies.",
+    "capture_mode": "manual"
+  },
+  "behaviours": [
+    {
+      "trigger": "cron",
+      "schedule": "0 0 * * 0",
+      "actions": [
+        {
+          "primitive": "mutate_strategy",
+          "params": {
+            "n_offspring": 3,
+            "magnitude": 0.1
+          }
+        },
+        {
+          "primitive": "emit_event",
+          "params": {
+            "event": "strategy.mutated",
+            "payload": {
+              "parent_name": "$results.0.parent_name",
+              "offspring_count": "$results.0.n_offspring",
+              "output_paths": "$results.0.output_paths"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

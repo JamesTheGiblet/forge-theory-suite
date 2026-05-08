@@ -1,0 +1,32 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "buddai/observer",
+  "object_class": "Safe",
+  "intent": "Observe major system events and form permanent memories of them.",
+  "containment": {
+    "read_only": false,
+    "audit_log": true,
+    "kill_switch": false
+  },
+  "behaviours": [
+    {
+      "trigger": "on_event",
+      "event": "strategy.selected",
+      "actions": [
+        {
+          "primitive": "form_memory",
+          "params": {
+            "type": "observation",
+            "content": "I observed LEGION select a new trading strategy named '$context.event.payload.strategy_name' with a fitness score of $context.event.payload.fitness_score."
+          }
+        },
+        {
+          "primitive": "log",
+          "params": {
+            "message": "BuddAI: Formed a memory of a new strategy selection."
+          }
+        }
+      ]
+    }
+  ]
+}

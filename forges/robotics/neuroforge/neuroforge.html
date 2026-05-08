@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuroforge v1.2 - Balanced Evolutionary Ecosystem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: #e0f2fe;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #8b5cf6 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            color: #a5b4fc;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+        
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .mode-btn {
+            padding: 12px 20px;
+            border: 2px solid #8b5cf6;
+            background: rgba(139, 92, 246, 0.1);
+            color: #a5b4fc;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mode-btn.active {
+            background: #8b5cf6;
+            color: white;
+        }
+        
+        .instructions {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #8b5cf6;
+            margin-bottom: 20px;
+        }
+        
+        .instructions h3 {
+            color: #8b5cf6;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+            line-height: 1.6;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .simulation-area {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        @media (min-width: 768px) {
+            .simulation-area {
+                grid-template-columns: 1fr 300px;
+            }
+        }
+        
+        .canvas-container {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            position: relative;
+        }
+        
+        #neuroCanvas {
+            width: 100%;
+            height: 500px;
+            background: #0a0f1a;
+            border-radius: 10px;
+            display: block;
+            cursor: pointer;
+        }
+        
+        .controls-panel {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+        }
+        
+        .panel-title {
+            color: #8b5cf6;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .stats {
+            margin-bottom: 25px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            border-left: 3px solid #06b6d4;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            color: #06b6d4;
+            font-size: 1.1rem;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #8b5cf6 0%, #06b6d4 100%);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.secondary {
+            background: rgba(139, 92, 246, 0.2);
+            color: #a5b4fc;
+        }
+        
+        button.danger {
+            background: linear-gradient(90deg, #ef4444 0%, #f97316 100%);
+        }
+        
+        .connection-strength {
+            height: 8px;
+            background: rgba(139, 92, 246, 0.2);
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .strength-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #10b981 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 10%;
+        }
+        
+        .learning-status {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        
+        .neuron-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(139, 92, 246, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        
+        .neuron-info h4 {
+            color: #8b5cf6;
+            margin-bottom: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #64748b;
+            border-top: 1px solid rgba(139, 92, 246, 0.2);
+        }
+        
+        .pulse {
+            animation: pulse 0.5s ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .new-neuron {
+            animation: newNeuronGlow 2s ease-in-out;
+        }
+        
+        @keyframes newNeuronGlow {
+            0% { transform: scale(0.8); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .dying-neuron {
+            animation: dyingNeuron 1s ease-out;
+        }
+        
+        @keyframes dyingNeuron {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧠 Neuroforge v1.2</h1>
+            <div class="tagline">Balanced Evolutionary Ecosystem - Fixed Learning/Decay Balance</div>
+            
+            <div class="mode-selector">
+                <div class="mode-btn active" data-mode="evolution">🌱 Evolutionary Mode</div>
+                <div class="mode-btn" data-mode="static">🎯 Static Learning</div>
+            </div>
+        </header>
+        
+        <div class="instructions">
+            <h3>🎯 Fixed Evolutionary Neurogenesis</h3>
+            <ol>
+                <li><strong>Click neurons</strong> to create strong associations (watch connections turn green)</li>
+                <li><strong>Balanced decay</strong> - Learning now outpaces forgetting</li>
+                <li><strong>Active pruning</strong> - Idle neurons will actually die off</li>
+                <li><strong>Real fitness scores</strong> - Network optimization is now measurable</li>
+            </ol>
+        </div>
+        
+        <div class="simulation-area">
+            <div class="canvas-container">
+                <canvas id="neuroCanvas"></canvas>
+            </div>
+            
+            <div class="controls-panel">
+                <h3 class="panel-title">Balanced Neural Ecosystem</h3>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <span>Living Neurons:</span>
+                        <span class="stat-value" id="livingNeurons">0/25</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Active Connections:</span>
+                        <span class="stat-value" id="activeConnections">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Network Fitness:</span>
+                        <span class="stat-value" id="networkFitness">0.000</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Learning Rate:</span>
+                        <span class="stat-value" id="learningRate">0.080</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Born/Died:</span>
+                        <span class="stat-value" id="birthDeath">0/0</span>
+                    </div>
+                </div>
+                
+                <div class="connection-strength">
+                    <div class="strength-fill" id="strengthFill"></div>
+                </div>
+                
+                <button id="resetBtn" class="secondary">🔄 Reset Ecosystem</button>
+                <button id="addNeuronBtn">➕ Force New Neuron</button>
+                <button id="exportBtn" class="secondary">💾 Export Network</button>
+                <button id="demoBtn">🎮 Run Evolution Demo</button>
+                
+                <div class="learning-status" id="learningStatus">
+                    Balanced Evolution Ready - Click to stimulate!
+                </div>
+                
+                <div class="neuron-info">
+                    <h4>🧬 Fixed Evolutionary Balance</h4>
+                    <p><strong>Learning (0.08)</strong> now outpaces <strong>Decay (0.998)</strong></p>
+                    <p><strong>Duplicate connections prevented</strong> - Clean network topology</p>
+                    <p><strong>Active pruning</strong> - Weak neurons removed efficiently</p>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            Neuroforge v1.2 - Balanced Evolutionary System
+            <br>Based on experimental data analysis
+        </footer>
+    </div>
+
+    <script>
+        // ============================================
+        // NEUROFORGE v1.2 - BALANCED EVOLUTIONARY ECOSYSTEM
+        // ============================================
+        // FIXED BASED ON EXPERIMENTAL DATA ANALYSIS
+        // ============================================
+        
+        const canvas = document.getElementById('neuroCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // BALANCED Configuration - CRITICAL FIXES APPLIED
+        const Config = {
+            neuronRadius: 18,
+            fireDuration: 25,
+            
+            // 🛠️ CRITICAL FIX: Balanced learning vs decay
+            learningRate: 0.08,          // Was 0.15 - more sustainable
+            decayRate: 0.998,            // Was 0.992 - much slower decay
+            minStrength: 0.08,           // Was 0.03 - higher minimum
+            
+            maxStrength: 1.0,
+            
+            // Evolutionary parameters - OPTIMIZED
+            evolutionRate: 0.003,
+            growthThreshold: 0.12,       // Higher threshold for meaningful growth
+            decayThreshold: 0.05,        // Was 0.015 - more aggressive pruning
+            neuronLifespan: 600,         // Was 900 - faster pruning
+            maxNeurons: 25,
+            activityDecay: 0.995
+        };
+        
+        // Enhanced Neuron class with DUPLICATE CONNECTION PREVENTION
+        class Neuron {
+            constructor(x, y, id) {
+                this.x = x;
+                this.y = y;
+                this.id = id;
+                this.voltage = 0;
+                this.firing = false;
+                this.fireCounter = 0;
+                this.connections = [];
+                this.color = '#3b82f6';
+                this.activity = 0.1;
+                this.age = 0;
+                this.idleFrames = 0;
+                this.isNew = true;
+                this.isDying = false;
+            }
+            
+            fire() {
+                this.voltage = 1.0;
+                this.firing = true;
+                this.fireCounter = Config.fireDuration;
+                this.color = '#fbbf24';
+                this.activity = Math.min(1.0, this.activity + 0.3); // Increased activity gain
+                this.idleFrames = 0;
+                this.isNew = false;
+                
+                // Hebbian learning: strengthen connections to firing partners
+                this.connections.forEach(conn => {
+                    const targetNeuron = neurons[conn.targetId];
+                    if (targetNeuron && targetNeuron.firing) {
+                        // 🛠️ FIX: Learning now meaningful due to balanced decay
+                        conn.strength = Math.min(Config.maxStrength, conn.strength + Config.learningRate);
+                        conn.justStrengthened = true;
+                        targetNeuron.activity += 0.1; // Increased reward
+                    }
+                });
+            }
+            
+            update() {
+                this.age++;
+                
+                if (this.firing) {
+                    this.fireCounter--;
+                    this.voltage = this.fireCounter / Config.fireDuration;
+                    
+                    if (this.fireCounter <= 0) {
+                        this.firing = false;
+                        this.voltage = 0;
+                        this.color = this.isDying ? '#ef4444' : '#3b82f6';
+                    }
+                } else {
+                    this.idleFrames++;
+                }
+                
+                // Decay activity over time
+                this.activity *= Config.activityDecay;
+                
+                // 🛠️ CRITICAL FIX: Balanced connection decay
+                this.connections.forEach(conn => {
+                    if (!conn.justStrengthened) {
+                        // Much slower decay that preserves learning
+                        conn.strength = Math.max(Config.minStrength, conn.strength * Config.decayRate);
+                    }
+                    conn.justStrengthened = false;
+                });
+                
+                // 🛠️ FIX: More aggressive pruning of weak connections
+                this.connections = this.connections.filter(conn => 
+                    conn.strength > Config.decayThreshold
+                );
+                
+                // Remove new flag after a while
+                if (this.isNew && this.age > 60) {
+                    this.isNew = false;
+                }
+            }
+            
+            // 🛠️ CRITICAL FIX: Prevent duplicate connections
+            addConnection(targetId, strength = 0.1) {
+                // Check if connection already exists
+                const existing = this.connections.find(conn => conn.targetId === targetId);
+                if (existing) {
+                    // Strengthen existing connection instead of creating duplicate
+                    existing.strength = Math.max(existing.strength, strength);
+                    return;
+                }
+                
+                this.connections.push({
+                    targetId: targetId,
+                    strength: strength,
+                    justStrengthened: false
+                });
+            }
+            
+            isPointInside(x, y) {
+                const distance = Math.sqrt((x - this.x) ** 2 + (y - this.y) ** 2);
+                return distance <= Config.neuronRadius;
+            }
+        }
+        
+        // Global state
+        let neurons = [];
+        let nextNeuronId = 0;
+        let isDemoRunning = false;
+        let demoStep = 0;
+        let currentMode = 'evolution';
+        let neuronsBorn = 0;
+        let neuronsDied = 0;
+        
+        // Initialize the neural ecosystem
+        function initializeNetwork() {
+            neurons = [];
+            nextNeuronId = 0;
+            neuronsBorn = 0;
+            neuronsDied = 0;
+            
+            // Create initial neurons in a balanced pattern
+            const positions = [
+                {x: canvas.width * 0.3, y: canvas.height * 0.3},
+                {x: canvas.width * 0.7, y: canvas.height * 0.3},
+                {x: canvas.width * 0.3, y: canvas.height * 0.7},
+                {x: canvas.width * 0.7, y: canvas.height * 0.7}
+            ];
+            
+            positions.forEach(pos => {
+                createNeuron(pos.x, pos.y);
+            });
+            
+            // Connect neurons to create initial network - NO DUPLICATES
+            for (let i = 0; i < neurons.length; i++) {
+                for (let j = i + 1; j < neurons.length; j++) {
+                    const strength = 0.15 + Math.random() * 0.2; // Higher initial strength
+                    neurons[i].addConnection(j, strength);
+                    neurons[j].addConnection(i, strength);
+                }
+            }
+            
+            updateStats();
+        }
+        
+        // Create a new neuron with evolutionary properties
+        function createNeuron(x, y) {
+            const neuron = new Neuron(x, y, nextNeuronId++);
+            neurons.push(neuron);
+            neuronsBorn++;
+            
+            // Connect to 2-3 existing neurons (no duplicates)
+            const connectionCount = 2 + Math.floor(Math.random() * 2);
+            const connectedIds = new Set();
+            
+            for (let i = 0; i < connectionCount; i++) {
+                if (neurons.length > 1) {
+                    let target;
+                    let attempts = 0;
+                    do {
+                        target = neurons[Math.floor(Math.random() * (neurons.length - 1))];
+                        attempts++;
+                    } while ((target.id === neuron.id || connectedIds.has(target.id)) && attempts < 10);
+                    
+                    if (target && target.id !== neuron.id) {
+                        const strength = 0.12 + Math.random() * 0.15;
+                        neuron.addConnection(target.id, strength);
+                        target.addConnection(neuron.id, strength);
+                        connectedIds.add(target.id);
+                    }
+                }
+            }
+            
+            return neuron;
+        }
+        
+        // Evolutionary network updates - OPTIMIZED
+        function evolveNetwork() {
+            if (currentMode !== 'evolution') return;
+            
+            // Calculate network metrics
+            const totalConnections = neurons.reduce((sum, neuron) => sum + neuron.connections.length, 0);
+            const totalStrength = neurons.reduce((sum, neuron) => 
+                sum + neuron.connections.reduce((s, conn) => s + conn.strength, 0), 0);
+            const avgStrength = totalConnections > 0 ? totalStrength / totalConnections : 0;
+            
+            const totalActivity = neurons.reduce((sum, neuron) => sum + neuron.activity, 0);
+            const avgActivity = neurons.length > 0 ? totalActivity / neurons.length : 0;
+            
+            const networkFitness = avgStrength * avgActivity;
+            
+            // 🧠 OPTIMIZED GROWTH: Grow when network is active but inefficient
+            if (avgActivity > 0.05 && 
+                avgStrength < Config.growthThreshold && 
+                neurons.length < Config.maxNeurons &&
+                Math.random() < 0.015) {
+                
+                const x = Math.random() * (canvas.width - 100) + 50;
+                const y = Math.random() * (canvas.height - 100) + 50;
+                createNeuron(x, y);
+            }
+            
+            // ☠️ OPTIMIZED PRUNING: More aggressive removal of idle neurons
+            const initialCount = neurons.length;
+            neurons = neurons.filter(neuron => {
+                const shouldDie = (
+                    (neuron.idleFrames > Config.neuronLifespan && neuron.connections.length < 2) ||
+                    (neuron.activity < 0.005 && Math.random() < 0.02) ||
+                    (neuron.connections.length === 0 && neuron.idleFrames > 300)
+                );
+                
+                if (shouldDie && neurons.length > 4) { // Keep at least 4 neurons
+                    neuron.isDying = true;
+                    neuronsDied++;
+                    return false;
+                }
+                return true;
+            });
+            
+            // 🧬 EVOLUTION: Mutate learning parameters
+            if (Math.random() < 0.01) {
+                Config.learningRate = Math.max(0.06, Math.min(0.12,
+                    Config.learningRate + (Math.random() - 0.5) * Config.evolutionRate
+                ));
+            }
+            
+            return networkFitness;
+        }
+        
+        // Find neuron at coordinates
+        function getNeuronAt(x, y) {
+            return neurons.find(neuron => neuron.isPointInside(x, y));
+        }
+        
+        // Update statistics display
+        function updateStats() {
+            const activeCount = neurons.filter(n => n.firing).length;
+            const totalConnections = neurons.reduce((sum, neuron) => sum + neuron.connections.length, 0);
+            const totalStrength = neurons.reduce((sum, neuron) => 
+                sum + neuron.connections.reduce((s, conn) => s + conn.strength, 0), 0);
+            const avgStrength = totalConnections > 0 ? (totalStrength / totalConnections).toFixed(3) : '0.000';
+            
+            const totalActivity = neurons.reduce((sum, neuron) => sum + neuron.activity, 0);
+            const avgActivity = neurons.length > 0 ? totalActivity / neurons.length : 0;
+            const networkFitness = (avgStrength * avgActivity).toFixed(3);
+            
+            document.getElementById('livingNeurons').textContent = `${neurons.length}/${Config.maxNeurons}`;
+            document.getElementById('activeConnections').textContent = totalConnections;
+            document.getElementById('networkFitness').textContent = networkFitness;
+            document.getElementById('learningRate').textContent = Config.learningRate.toFixed(3);
+            document.getElementById('birthDeath').textContent = `${neuronsBorn}/${neuronsDied}`;
+            
+            // Update strength visualization
+            const strengthFill = document.getElementById('strengthFill');
+            strengthFill.style.width = `${(avgStrength / Config.maxStrength) * 100}%`;
+            
+            // Update learning status with meaningful feedback
+            const learningStatus = document.getElementById('learningStatus');
+            if (networkFitness > 0.02) {
+                learningStatus.textContent = '🎉 High Fitness - Strong Learning!';
+                learningStatus.style.background = 'rgba(16, 185, 129, 0.2)';
+                learningStatus.style.border = '1px solid rgba(16, 185, 129, 0.5)';
+                learningStatus.style.color = '#10b981';
+            } else if (networkFitness > 0.005) {
+                learningStatus.textContent = '📈 Learning - Connections Strengthening';
+                learningStatus.style.background = 'rgba(245, 158, 11, 0.2)';
+                learningStatus.style.border = '1px solid rgba(245, 158, 11, 0.5)';
+                learningStatus.style.color = '#f59e0b';
+            } else if (neuronsDied > neuronsBorn) {
+                learningStatus.textContent = '🍂 Pruning - Removing Inefficient Neurons';
+                learningStatus.style.background = 'rgba(239, 68, 68, 0.2)';
+                learningStatus.style.border = '1px solid rgba(239, 68, 68, 0.5)';
+                learningStatus.style.color = '#ef4444';
+            } else {
+                learningStatus.textContent = '⚖️ Balanced - Click Neurons to Stimulate';
+                learningStatus.style.background = 'rgba(59, 130, 246, 0.2)';
+                learningStatus.style.border = '1px solid rgba(59, 130, 246, 0.5)';
+                learningStatus.style.color = '#3b82f6';
+            }
+        }
+        
+        // Draw the neural ecosystem
+        function draw() {
+            // Clear canvas with dark background
+            ctx.fillStyle = '#0a0f1a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw connections first
+            neurons.forEach(neuron => {
+                neuron.connections.forEach(conn => {
+                    const targetNeuron = neurons[conn.targetId];
+                    if (targetNeuron && !targetNeuron.isDying) {
+                        drawConnection(neuron, targetNeuron, conn.strength);
+                    }
+                });
+            });
+            
+            // Draw neurons on top
+            neurons.forEach(neuron => {
+                drawNeuron(neuron);
+            });
+            
+            // Draw info text
+            ctx.fillStyle = '#64748b';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Balanced Evolution: Learning outpaces forgetting', canvas.width / 2, 25);
+            
+            // Draw stats overlay
+            ctx.fillStyle = 'rgba(30, 41, 59, 0.9)';
+            ctx.fillRect(10, 40, 220, 80);
+            ctx.fillStyle = '#e0f2fe';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText(`Neurons: ${neurons.length}/${Config.maxNeurons}`, 20, 60);
+            ctx.fillText(`Born: ${neuronsBorn}  Died: ${neuronsDied}`, 20, 80);
+            ctx.fillText(`Fitness: ${document.getElementById('networkFitness').textContent}`, 20, 100);
+            ctx.fillText(`Avg Strength: ${document.getElementById('activeConnections').textContent > 0 ? 
+                (neurons.reduce((sum, n) => sum + n.connections.reduce((s, c) => s + c.strength, 0), 0) / 
+                 neurons.reduce((sum, n) => sum + n.connections.length, 0)).toFixed(3) : '0.000'}`, 20, 120);
+        }
+        
+        // Draw a single neuron with evolutionary states
+        function drawNeuron(neuron) {
+            if (neuron.isDying && neuron.voltage === 0) return;
+            
+            // Neuron body with state-based coloring
+            ctx.beginPath();
+            ctx.arc(neuron.x, neuron.y, Config.neuronRadius, 0, Math.PI * 2);
+            
+            if (neuron.isDying) {
+                ctx.fillStyle = '#ef4444';
+            } else if (neuron.isNew) {
+                ctx.fillStyle = '#10b981';
+            } else if (neuron.firing) {
+                ctx.fillStyle = '#fbbf24';
+            } else {
+                ctx.fillStyle = neuron.color;
+            }
+            
+            // Glow effects
+            if (neuron.firing) {
+                ctx.shadowColor = '#fbbf24';
+                ctx.shadowBlur = 20;
+            } else if (neuron.isNew) {
+                ctx.shadowColor = '#10b981';
+                ctx.shadowBlur = 25;
+            }
+            
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            // Neuron border
+            ctx.strokeStyle = neuron.isDying ? '#ef4444' : '#e2e8f0';
+            ctx.lineWidth = neuron.isNew ? 3 : 2;
+            ctx.stroke();
+            
+            // Neuron label
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(neuron.id + 1, neuron.x, neuron.y);
+            
+            // Activity indicator (inner circle)
+            if (neuron.activity > 0.1) {
+                ctx.beginPath();
+                ctx.arc(neuron.x, neuron.y, Config.neuronRadius * neuron.activity * 0.7, 0, Math.PI * 2);
+                ctx.fillStyle = neuron.isDying ? 
+                    `rgba(239, 68, 68, ${neuron.activity * 0.4})` :
+                    `rgba(251, 191, 36, ${neuron.activity * 0.5})`;
+                ctx.fill();
+            }
+        }
+        
+        // Draw connection between neurons
+        function drawConnection(fromNeuron, toNeuron, strength) {
+            if (fromNeuron.isDying || toNeuron.isDying) return;
+            
+            ctx.beginPath();
+            ctx.moveTo(fromNeuron.x, fromNeuron.y);
+            ctx.lineTo(toNeuron.x, toNeuron.y);
+            
+            // Line style based on strength - MORE VISIBLE VARIATION
+            const lineWidth = 1 + (strength * 10); // More dramatic thickness variation
+            ctx.lineWidth = lineWidth;
+            
+            // Color gradient from red (weak) to green (strong)
+            const r = Math.floor(255 * (1 - strength));
+            const g = Math.floor(255 * strength);
+            const b = 100;
+            ctx.strokeStyle = `rgb(${r}, ${g}, ${b})`;
+            
+            // Add glow to strong connections
+            if (strength > 0.3) {
+                ctx.shadowColor = `rgb(${r}, ${g}, ${b})`;
+                ctx.shadowBlur = 10;
+            }
+            
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+        
+        // Main animation loop
+        function update() {
+            neurons.forEach(neuron => neuron.update());
+            evolveNetwork();
+            draw();
+            updateStats();
+            requestAnimationFrame(update);
+        }
+        
+        // Demo sequence to show evolution
+        function runDemo() {
+            if (isDemoRunning) return;
+            
+            isDemoRunning = true;
+            demoStep = 0;
+            document.getElementById('demoBtn').textContent = '⏸ Evolution Demo Running...';
+            
+            const demoInterval = setInterval(() => {
+                if (demoStep >= 20 || neurons.length >= Config.maxNeurons) {
+                    clearInterval(demoInterval);
+                    isDemoRunning = false;
+                    document.getElementById('demoBtn').textContent = '🎮 Run Evolution Demo';
+                    return;
+                }
+                
+                // Stimulate random neurons to drive evolution
+                if (neurons.length > 0) {
+                    const randomNeuron = neurons[Math.floor(Math.random() * neurons.length)];
+                    randomNeuron.fire();
+                    
+                    // Often fire a connected neuron to create strong associations
+                    if (Math.random() < 0.6 && randomNeuron.connections.length > 0) {
+                        setTimeout(() => {
+                            const connectedId = randomNeuron.connections[
+                                Math.floor(Math.random() * randomNeuron.connections.length)
+                            ].targetId;
+                            if (neurons[connectedId]) {
+                                neurons[connectedId].fire();
+                            }
+                        }, 80 + Math.random() * 100);
+                    }
+                }
+                
+                demoStep++;
+            }, 400);
+        }
+        
+        // Export network data
+        function exportNetworkData() {
+            const networkData = {
+                neurons: neurons.map(neuron => ({
+                    id: neuron.id,
+                    x: neuron.x,
+                    y: neuron.y,
+                    activity: neuron.activity,
+                    age: neuron.age,
+                    connections: neuron.connections.map(conn => ({
+                        targetId: conn.targetId,
+                        strength: parseFloat(conn.strength.toFixed(3))
+                    }))
+                })),
+                timestamp: new Date().toISOString(),
+                evolutionaryStats: {
+                    totalConnections: neurons.reduce((sum, n) => sum + n.connections.length, 0),
+                    neuronsBorn: neuronsBorn,
+                    neuronsDied: neuronsDied,
+                    currentLearningRate: parseFloat(Config.learningRate.toFixed(4)),
+                    networkFitness: document.getElementById('networkFitness').textContent,
+                    averageStrength: neurons.reduce((sum, n) => sum + n.connections.reduce((s, c) => s + c.strength, 0), 0) / 
+                                   neurons.reduce((sum, n) => sum + n.connections.length, 0) || 0
+                },
+                config: {
+                    learningRate: Config.learningRate,
+                    decayRate: Config.decayRate,
+                    minStrength: Config.minStrength
+                }
+            };
+            
+            const dataStr = JSON.stringify(networkData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `neuroforge-balanced-${Date.now()}.json`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+        
+        // Event Listeners
+        canvas.addEventListener('click', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            const neuron = getNeuronAt(x, y);
+            if (neuron) {
+                neuron.fire();
+                canvas.classList.add('pulse');
+                setTimeout(() => canvas.classList.remove('pulse'), 200);
+            }
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', initializeNetwork);
+        document.getElementById('addNeuronBtn').addEventListener('click', () => {
+            if (neurons.length < Config.maxNeurons) {
+                const x = Math.random() * (canvas.width - 80) + 40;
+                const y = Math.random() * (canvas.height - 80) + 40;
+                createNeuron(x, y);
+            }
+        });
+        document.getElementById('exportBtn').addEventListener('click', exportNetworkData);
+        document.getElementById('demoBtn').addEventListener('click', runDemo);
+        
+        // Mode switching
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentMode = this.dataset.mode;
+            });
+        });
+        
+        // Initialize canvas size
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 500;
+            initializeNetwork();
+            draw();
+        }
+        
+        // Start everything
+        window.addEventListener('load', () => {
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            update();
+        });
+    </script>
+</body>
+</html>

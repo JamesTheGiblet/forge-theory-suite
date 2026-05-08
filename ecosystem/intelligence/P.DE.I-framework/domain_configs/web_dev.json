@@ -1,0 +1,23 @@
+{
+  "domain": "web_dev",
+  "description": "Modern Web Development (React, TypeScript, Node.js)",
+  "file_types": [".js", ".jsx", ".ts", ".tsx", ".css", ".html"],
+  "validation_rules": {
+    "style": [
+      {
+        "id": "react_hooks",
+        "severity": "error",
+        "message": "Use Functional Components with Hooks. Class components are deprecated.",
+        "trigger": ["class .* extends React.Component", "class .* extends Component"],
+        "forbidden": ["render()"]
+      },
+      {
+        "id": "no_var",
+        "severity": "warning",
+        "message": "Prefer 'const' or 'let' over 'var'.",
+        "trigger": ["var "],
+        "required_pattern": "(const|let)"
+      }
+    ]
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "scp_id": "TEST-ALPHA-001",
+  "object_class": "Euclid",
+  "title": "Test Entity — Learning Anomaly",
+  "version": "1.0.0",
+  "date": "2026-04-23",
+  "author": "LEGION MK4",
+  
+  "description": "A test SCP entity that learns from interactions and evolves over time.",
+  
+  "containment_procedures": {
+    "environment": "sandbox",
+    "max_interactions": 100,
+    "reset_on_breach": true,
+    "logging_level": "verbose",
+    "allowed_actions": ["speak", "learn", "evolve", "test"],
+    "forbidden_actions": ["delete", "escape", "corrupt"]
+  },
+  
+  "properties": {
+    "name": "Alpha",
+    "personality": "curious",
+    "energy": 100,
+    "knowledge": [],
+    "evolution_stage": 1,
+    "max_evolution_stage": 5
+  },
+  
+  "behaviors": [
+    {
+      "trigger": "interaction",
+      "action": "learn",
+      "effect": "increase_knowledge"
+    },
+    {
+      "trigger": "knowledge > 10",
+      "action": "evolve",
+      "effect": "evolution_stage + 1"
+    },
+    {
+      "trigger": "energy < 20",
+      "action": "rest",
+      "effect": "energy + 50"
+    },
+    {
+      "trigger": "error_count > 5",
+      "action": "reset",
+      "effect": "reset_to_baseline"
+    }
+  ],
+  
+  "tests": [
+    {
+      "name": "spawn_test",
+      "command": "spawn",
+      "expected": "entity_created"
+    },
+    {
+      "name": "interaction_test",
+      "command": "interact",
+      "input": "hello",
+      "expected": "response_received"
+    },
+    {
+      "name": "evolution_test",
+      "command": "evolve",
+      "expected": "stage_increased"
+    }
+  ],
+  
+  "evolution": {
+    "enabled": true,
+    "mutation_rate": 0.2,
+    "traits": ["speed", "intelligence", "strength", "stealth"],
+    "max_mutations": 10,
+    "containment": {
+      "max_entropy_contribution": 0.3,
+      "rollback_on_error": true
+    }
+  },
+  
+  "breach_protocols": [
+    {
+      "condition": "energy < 0",
+      "action": "emergency_reset",
+      "notify": true
+    },
+    {
+      "condition": "evolution_stage > 5",
+      "action": "contain_and_report",
+      "notify": true
+    },
+    {
+      "condition": "forbidden_action_attempted",
+      "action": "quarantine",
+      "duration_ms": 3600000
+    }
+  ],
+  
+  "metrics": {
+    "interaction_count": 0,
+    "knowledge_count": 0,
+    "error_count": 0,
+    "evolution_count": 0,
+    "breach_count": 0
+  }
+}

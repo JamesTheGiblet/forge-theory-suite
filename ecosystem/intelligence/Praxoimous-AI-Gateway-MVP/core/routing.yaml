@@ -1,0 +1,20 @@
+# config/routing.yaml
+# Defines the rules-based routing engine for the ModelRouter.
+# Maps a task_type to an ordered list of provider names, defining the
+# preferred provider and the failover sequence for each task.
+
+routing_rules:
+  # For general LLM tasks, try the high-capability external model first, then failover to local.
+  default_llm_tasks:
+    - "gemini-primary"
+    - "ollama-failover"
+
+  # For internal summarization, prefer the fast, cheap, local model first.
+  internal_summary:
+    - "ollama-failover"
+    - "gemini-primary"
+
+  # This is the default sequence if a task_type isn't in the rules above.
+  __default__:
+    - "gemini-primary"
+    - "ollama-failover"

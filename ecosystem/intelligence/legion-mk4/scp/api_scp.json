@@ -1,0 +1,32 @@
+{
+  "scp_id": "API-LEGION-001",
+  "object_class": "Thaumiel",
+  "title": "LEGION MK4 REST API",
+  "version": "1.0.0",
+  
+  "containment_procedures": {
+    "port": 3011,
+    "rate_limit": 100,
+    "rate_window_ms": 60000,
+    "max_payload_mb": 10,
+    "require_auth": false,
+    "allowed_origins": ["*"]
+  },
+  
+  "endpoints": [
+    { "path": "/api/scp/registry", "method": "GET", "description": "Get full SCP registry" },
+    { "path": "/api/scp/agents", "method": "GET", "description": "List all agents" },
+    { "path": "/api/scp/agents/:scp_id", "method": "GET", "description": "Get specific agent" },
+    { "path": "/api/scp/entropy", "method": "GET", "description": "Get current entropy" },
+    { "path": "/api/scp/entropy", "method": "POST", "description": "Update entropy" },
+    { "path": "/api/scp/apollyon", "method": "GET", "description": "Get Apollyon events" },
+    { "path": "/api/scp/status", "method": "GET", "description": "Get system status" },
+    { "path": "/api/scp/behaviors", "method": "GET", "description": "List behaviors" },
+    { "path": "/api/scp/rules", "method": "GET", "description": "List rules" }
+  ],
+  
+  "breach_protocols": [
+    { "condition": "rate_limit_exceeded", "action": "throttle", "duration_ms": 300000 },
+    { "condition": "entropy_spike", "action": "readonly_mode", "threshold": 0.85 }
+  ]
+}

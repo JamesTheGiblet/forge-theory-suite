@@ -1,0 +1,219 @@
+{
+  "AUTO_1776777755450_3bi8wp": {
+    "file": "AUTO_1776777755649.json",
+    "name": "Auto Generated",
+    "class": "Euclid",
+    "fingerprint": "ed0373230a574173",
+    "last_seen": "2026-04-23T05:34:05.677Z"
+  },
+  "AUTO_1776777868597_3tt1xq": {
+    "file": "AUTO_1776777868708.json",
+    "name": "Auto Generated",
+    "class": "Euclid",
+    "fingerprint": "7dc9051b7c8f10e1",
+    "last_seen": "2026-04-23T05:34:05.678Z"
+  },
+  "AUTO_1776781955301_oew3ma": {
+    "file": "AUTO_1776781955424.json",
+    "name": "Auto Generated",
+    "class": "Euclid",
+    "fingerprint": "9c452a8b66a56544",
+    "last_seen": "2026-04-23T05:34:05.678Z"
+  },
+  "STRAT-013": {
+    "file": "STRAT-013_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Safe",
+    "fingerprint": "da095c34eba283c4",
+    "last_seen": "2026-04-23T05:34:05.678Z"
+  },
+  "STRAT-014": {
+    "file": "STRAT-014_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Safe",
+    "fingerprint": "d054fef9e54512bc",
+    "last_seen": "2026-04-23T05:34:05.678Z"
+  },
+  "STRAT-015": {
+    "file": "STRAT-015_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Safe",
+    "fingerprint": "51f82f6bb3a4430c",
+    "last_seen": "2026-04-23T05:34:05.679Z"
+  },
+  "STRAT-016": {
+    "file": "STRAT-016_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "7a0c84e9626a22db",
+    "last_seen": "2026-04-23T05:34:05.679Z"
+  },
+  "STRAT-017": {
+    "file": "STRAT-017_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "52d6d75a0f51492a",
+    "last_seen": "2026-04-23T05:34:05.679Z"
+  },
+  "STRAT-018": {
+    "file": "STRAT-018_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "08e947375852dda5",
+    "last_seen": "2026-04-23T05:34:05.679Z"
+  },
+  "STRAT-019": {
+    "file": "STRAT-019_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "ddacac831a34f36a",
+    "last_seen": "2026-04-23T05:34:05.679Z"
+  },
+  "STRAT-020": {
+    "file": "STRAT-020_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "e5592f3e1e1e93fa",
+    "last_seen": "2026-04-23T05:34:05.680Z"
+  },
+  "STRAT-021": {
+    "file": "STRAT-021_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "753810326f9919e4",
+    "last_seen": "2026-04-23T05:34:05.680Z"
+  },
+  "STRAT-022": {
+    "file": "STRAT-022_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "b685720bbd1035a5",
+    "last_seen": "2026-04-23T05:34:05.680Z"
+  },
+  "STRAT-023": {
+    "file": "STRAT-023_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "24c6bb87e10c760e",
+    "last_seen": "2026-04-23T05:34:05.680Z"
+  },
+  "STRAT-024": {
+    "file": "STRAT-024_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "94ca4b8b972ef7e2",
+    "last_seen": "2026-04-23T05:34:05.680Z"
+  },
+  "STRAT-025": {
+    "file": "STRAT-025_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "a1b6b75e75882759",
+    "last_seen": "2026-04-23T05:34:05.681Z"
+  },
+  "STRAT-026": {
+    "file": "STRAT-026_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "fae2e5a05ff403ca",
+    "last_seen": "2026-04-23T05:34:05.681Z"
+  },
+  "STRAT-027": {
+    "file": "STRAT-027_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Safe",
+    "fingerprint": "546282460aa03055",
+    "last_seen": "2026-04-23T05:34:05.681Z"
+  },
+  "STRAT-028": {
+    "file": "STRAT-028_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "47bc4941b8fdaffc",
+    "last_seen": "2026-04-23T05:34:05.681Z"
+  },
+  "STRAT-029": {
+    "file": "STRAT-029_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Safe",
+    "fingerprint": "27d66f27fbe4aab4",
+    "last_seen": "2026-04-23T05:34:05.681Z"
+  },
+  "STRAT-030": {
+    "file": "STRAT-030_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "7d518d3e4e6de186",
+    "last_seen": "2026-04-23T05:34:05.682Z"
+  },
+  "STRAT-031": {
+    "file": "STRAT-031_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "66ec6cccc29cbe8b",
+    "last_seen": "2026-04-23T05:34:05.682Z"
+  },
+  "STRAT-032": {
+    "file": "STRAT-032_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "5bfd8761645ece08",
+    "last_seen": "2026-04-23T05:34:05.682Z"
+  },
+  "STRAT-033": {
+    "file": "STRAT-033_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Safe",
+    "fingerprint": "061fea9b55ab82c5",
+    "last_seen": "2026-04-23T05:34:05.682Z"
+  },
+  "STRAT-034": {
+    "file": "STRAT-034_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "227292bfb1bd01bc",
+    "last_seen": "2026-04-23T05:34:05.682Z"
+  },
+  "STRAT-035": {
+    "file": "STRAT-035_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "fea962f57608ef41",
+    "last_seen": "2026-04-23T05:34:05.682Z"
+  },
+  "STRAT-036": {
+    "file": "STRAT-036_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "caf63f8b9d3f3689",
+    "last_seen": "2026-04-23T05:34:05.683Z"
+  },
+  "STRAT-037": {
+    "file": "STRAT-037_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "b1a7a36dc54ab627",
+    "last_seen": "2026-04-23T05:34:05.684Z"
+  },
+  "STRAT-038": {
+    "file": "STRAT-038_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Safe",
+    "fingerprint": "1bddaea023f33eb1",
+    "last_seen": "2026-04-23T05:34:05.684Z"
+  },
+  "STRAT-039": {
+    "file": "STRAT-039_ringo_mutated.json",
+    "name": "RINGO",
+    "class": "Keter",
+    "fingerprint": "79688e2cbdcdfea8",
+    "last_seen": "2026-04-23T05:34:05.684Z"
+  },
+  "TEST-001": {
+    "file": "test_strategy.json",
+    "name": "Test Strategy",
+    "class": "Euclid",
+    "fingerprint": "2604fd805daa4254",
+    "last_seen": "2026-04-23T05:34:05.684Z"
+  }
+}

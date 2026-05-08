@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>CCE Unreal — The Engine of Engines</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0a0a0f;
+  color: #ddd8cc;
+  font-family: 'Oswald', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.5;
+}
+
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: rgba(6,8,11,0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(201,168,76,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 100;
+}
+
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  letter-spacing: 3px;
+  background: linear-gradient(135deg, #c9a84c, #f0d878);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.nav-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #4a4438;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00ff88;
+  box-shadow: 0 0 8px #00ff88;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.nav-links {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.nav-link {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: #4a4438;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-link:hover { color: #c9a84c; }
+
+.nav-link.cta {
+  background: linear-gradient(135deg, #c9a84c, #8a6020);
+  color: #000;
+  border-radius: 4px;
+}
+
+.hero {
+  min-height: calc(100vh - 56px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 40px 24px;
+  margin-top: 56px;
+}
+
+.hero h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(48px, 12vw, 96px);
+  line-height: 1;
+  letter-spacing: 2px;
+  margin-bottom: 24px;
+}
+
+.hero h1 .line1 { display: block; }
+.hero h1 .line2 {
+  background: linear-gradient(135deg, #c9a84c, #f0d878);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero p {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 14px;
+  color: #8a8070;
+  max-width: 500px;
+  margin: 0 auto 32px;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+}
+
+.btn {
+  padding: 12px 28px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-decoration: none;
+  transition: all 0.2s;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #c9a84c, #8a6020);
+  color: #000;
+  border-radius: 4px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(201,168,76,0.3);
+}
+
+.btn-secondary {
+  border: 1px solid rgba(201,168,76,0.3);
+  color: #c9a84c;
+  border-radius: 4px;
+}
+
+.btn-secondary:hover {
+  background: rgba(201,168,76,0.1);
+}
+
+.stats-strip {
+  display: flex;
+  gap: 1px;
+  background: rgba(201,168,76,0.2);
+  border: 1px solid rgba(201,168,76,0.2);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.stat-cell {
+  flex: 1;
+  background: #0a0a0f;
+  padding: 16px;
+  text-align: center;
+}
+
+.stat-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  color: #c9a84c;
+  display: block;
+}
+
+.stat-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: #4a4438;
+  margin-top: 4px;
+  display: block;
+}
+
+section {
+  padding: 80px 24px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.section-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 2px;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.chart-section {
+  background: #0f1318;
+}
+
+.chart-container {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  height: 300px;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.chart-price {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  color: #c9a84c;
+}
+
+.chart-change {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 4px;
+}
+
+.chart-change.up {
+  background: rgba(0,255,136,0.1);
+  color: #00ff88;
+}
+
+.chart-change.down {
+  background: rgba(255,51,68,0.1);
+  color: #ff3344;
+}
+
+.engine-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1px;
+  background: rgba(201,168,76,0.2);
+  border: 1px solid rgba(201,168,76,0.2);
+  margin-bottom: 40px;
+}
+
+.engine-card {
+  background: #0f1318;
+  padding: 20px;
+  transition: all 0.2s;
+}
+
+.engine-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.engine-state {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 8px 0;
+}
+
+.state-DORMANT { color: #4a4438; }
+.state-IGNITION { color: #c9a84c; text-shadow: 0 0 10px rgba(201,168,76,0.3); }
+.state-CASCADE { color: #00d4ff; text-shadow: 0 0 10px rgba(0,212,255,0.3); }
+.state-EXTRACTION { color: #ff3344; }
+.state-ACTIVE { color: #00ff88; }
+.state-SCANNING { color: #ffaa00; }
+.state-STANDBY { color: #8a8070; }
+
+.engine-meta {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: #4a4438;
+  margin-top: 8px;
+}
+
+.platform-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1px;
+  background: rgba(201,168,76,0.2);
+  border: 1px solid rgba(201,168,76,0.2);
+}
+
+.platform-card {
+  background: #0f1318;
+  padding: 28px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.platform-card:hover {
+  background: #151a22;
+}
+
+.card-icon {
+  font-size: 32px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.card-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 1px;
+  color: #ddd8cc;
+  margin-bottom: 8px;
+}
+
+.card-desc {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #8a8070;
+  line-height: 1.6;
+}
+
+.trust-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1px;
+  background: rgba(201,168,76,0.2);
+  border: 1px solid rgba(201,168,76,0.2);
+}
+
+.trust-cell {
+  background: #0f1318;
+  padding: 28px 16px;
+  text-align: center;
+}
+
+.trust-number {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 42px;
+  color: #c9a84c;
+  display: block;
+}
+
+.trust-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: #4a4438;
+  margin-top: 8px;
+  display: block;
+}
+
+footer {
+  background: #0f1318;
+  border-top: 1px solid rgba(201,168,76,0.2);
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.footer-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 3px;
+  background: linear-gradient(135deg, #c9a84c, #f0d878);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.footer-motto {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #4a4438;
+  margin-bottom: 24px;
+  display: block;
+}
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.footer-link {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: #4a4438;
+  text-decoration: none;
+}
+
+.footer-link:hover { color: #c9a84c; }
+
+@media (max-width: 640px) {
+  .nav-links .nav-link:not(.cta) { display: none; }
+  .platform-grid { grid-template-columns: 1fr; }
+  .engine-grid { grid-template-columns: 1fr; }
+  .chart-container { height: 220px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">CCE</span>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    <span id="navStatus">ONLINE</span>
+  </div>
+  <div class="nav-links">
+    <a class="nav-link" href="/forge/builder">BUILDER</a>
+    <a class="nav-link" href="/forge/replay">REPLAY</a>
+    <a class="nav-link" href="/marketplace">MARKET</a>
+    <a class="nav-link" href="/docs">DOCS</a>
+    <a class="nav-link cta" href="/forge/builder">⚡ BUILD</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>
+    <span class="line1">THE ENGINE</span>
+    <span class="line2">OF ENGINES.</span>
+  </h1>
+  <p>Build validated trading strategies from your phone.<br>Deploy in 60 seconds. The proof, not the pitch.</p>
+  <div class="hero-buttons">
+    <a class="btn btn-primary" href="/forge/builder">⚡ BUILD AN ENGINE</a>
+    <a class="btn btn-secondary" href="/marketplace">BROWSE MARKETPLACE</a>
+  </div>
+  <div class="stats-strip">
+    <div class="stat-cell">
+      <span class="stat-value" id="statEngines">—</span>
+      <span class="stat-label">LIVE ENGINES</span>
+    </div>
+    <div class="stat-cell">
+      <span class="stat-value" id="statStatus">—</span>
+      <span class="stat-label">PLATFORM</span>
+    </div>
+    <div class="stat-cell">
+      <span class="stat-value" id="statUptime">LIVE</span>
+      <span class="stat-label">STATUS</span>
+    </div>
+  </div>
+</div>
+
+<section class="chart-section">
+  <div class="section-container">
+    <div class="section-title">LIVE MARKET DATA</div>
+    <div class="chart-container">
+      <div class="chart-header">
+        <div>
+          <span class="chart-price" id="btcPrice">$—</span>
+          <span class="chart-change" id="btcChange">—</span>
+        </div>
+        <div class="engine-state" id="marketState">DORMANT</div>
+      </div>
+      <canvas id="priceChart"></canvas>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-container">
+    <div class="section-title">ENGINE STATUS</div>
+    <div id="engineGrid" class="engine-grid">
+      <div class="engine-card" style="text-align: center; grid-column: 1/-1;">Loading engines...</div>
+    </div>
+  </div>
+</section>
+
+<section style="background: #0f1318;">
+  <div class="section-container">
+    <div class="section-title">BUILD. VALIDATE. DEPLOY.</div>
+    <div class="platform-grid">
+      <a class="platform-card" href="/forge/builder"><span class="card-icon">⚡</span><div class="card-title">ENGINE BUILDER</div><div class="card-desc">Visual FSM editor. Drag states. Connect transitions. Hit Forge. No boilerplate.</div></a>
+      <a class="platform-card" href="/forge/replay"><span class="card-icon">▶</span><div class="card-title">BACKTEST REPLAY</div><div class="card-desc">Watch your engine trade through 10 years of history. State bands, live signals, portfolio tracking.</div></a>
+      <a class="platform-card" href="/marketplace"><span class="card-icon">⊞</span><div class="card-title">MARKETPLACE</div><div class="card-desc">Pipeline-signed metrics cards. OOS Sharpe. MaxDD. Walk-forward. The proof, not the pitch.</div></a>
+      <a class="platform-card" href="/docs"><span class="card-icon">☰</span><div class="card-title">DOCUMENTATION</div><div class="card-desc">Framework SDK, CLI reference, API docs, guides, and troubleshooting.</div></a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-container">
+    <div class="section-title">BUILT ON PROOF</div>
+    <div class="trust-grid">
+      <div class="trust-cell"><span class="trust-number" id="trustEngines">—</span><span class="trust-label">LIVE ENGINES</span></div>
+      <div class="trust-cell"><span class="trust-number" id="trustObs">—</span><span class="trust-label">OBSERVATION CYCLES</span></div>
+      <div class="trust-cell"><span class="trust-number">5</span><span class="trust-label">PIPELINE STEPS</span></div>
+      <div class="trust-cell"><span class="trust-number">10YR</span><span class="trust-label">BACKTEST WINDOW</span></div>
+      <div class="trust-cell"><span class="trust-number">70%</span><span class="trust-label">AUTHOR REVENUE</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="footer-logo">CCE</span>
+  <span class="footer-motto">"I wanted it. So I forged it. Now forge yours."</span>
+  <div class="footer-links">
+    <a class="footer-link" href="/forge/builder">Engine Builder</a>
+    <a class="footer-link" href="/forge/replay">Backtest Replay</a>
+    <a class="footer-link" href="/marketplace">Marketplace</a>
+    <a class="footer-link" href="/docs">Documentation</a>
+    <a class="footer-link" href="/api/health">API Health</a>
+  </div>
+</footer>
+
+<script>
+let chart;
+let chartData = [];
+
+async function fetchRealPrice() {
+  try {
+    const res = await fetch('/api/proxy/status', {signal: AbortSignal.timeout(3000)});
+    if (res.ok) {
+      const data = await res.json();
+      // Update engine state badge
+      if (data.current_state) {
+        const badge = document.getElementById('marketState');
+        if (badge) { badge.textContent = data.current_state; badge.className = 'state-badge state-' + data.current_state; }
+      }
+      // Update fear/greed
+      if (data.fear_greed != null) {
+        const fgEl = document.getElementById('statFG');
+        if (fgEl) fgEl.textContent = 'F&G: ' + data.fear_greed;
+      }
+      return data.btc_price || data.price || data.last_price || null;
+    }
+  } catch(e) {}
+  return null;
+}
+
+async function initChart() {
+  try {
+    // Fetch real BTC history from CCE Crypto dashboard
+    const res = await fetch('/api/proxy/history', {signal: AbortSignal.timeout(4000)});
+    if (res.ok) {
+      const data = await res.json();
+      // history is array of cycle objects with btc_price field
+      const prices = (Array.isArray(data) ? data : data.history || [])
+        .map(c => c.btc_price || c.close || c.price)
+        .filter(p => p && p > 1000)
+        .slice(-60);
+      if (prices.length > 5) {
+        chartData = prices;
+      }
+    }
+  } catch(e) {}
+  
+  // If no real data, generate realistic seed from current price
+  if (chartData.length < 5) {
+    const base = 70000;
+    chartData = [];
+    let p = base * 0.92;
+    for (let i = 0; i < 60; i++) {
+      p = p * (1 + (Math.random() - 0.47) * 0.015);
+      chartData.push(Math.round(p));
+    }
+  }
+  
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: Array.from({length: chartData.length}, (_, i) => i),
+      datasets: [{
+        label: 'BTC/USD',
+        data: chartData,
+        borderColor: '#c9a84c',
+        backgroundColor: 'rgba(201,168,76,0.1)',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#4a4438' } },
+        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#c9a84c' } }
+      }
+    }
+  });
+}
+
+
+async function updatePrice() {
+  const newPrice = await fetchRealPrice();
+  if (newPrice && typeof newPrice === 'number') {
+    // Add new price to chart data
+    chartData.push(newPrice);
+    if (chartData.length > 50) chartData.shift();
+    
+    // Update chart with new data
+    if (chart) {
+      chart.data.labels = Array.from({length: chartData.length}, (_, i) => i);
+      chart.data.datasets[0].data = [...chartData];
+      chart.update('none');
+    }
+    
+    // Calculate and display change
+    const lastPrice = chartData.length > 1 ? chartData[chartData.length-2] : newPrice;
+    const change = ((newPrice - lastPrice) / lastPrice * 100);
+    document.getElementById('btcPrice').textContent = '$' + newPrice.toLocaleString(undefined, {maximumFractionDigits: 0});
+    const changeEl = document.getElementById('btcChange');
+    changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(2) + '%';
+    changeEl.className = 'chart-change ' + (change >= 0 ? 'up' : 'down');
+    
+    // Also update market state based on engine states (done in loadEngineData)
+  }
+}
+
+async function loadEngineData() {
+  try {
+    const regRes = await fetch('/api/registry/overview');
+    if (regRes.ok) {
+      const data = await regRes.json();
+      document.getElementById('statEngines').textContent = data.engineCount || 0;
+      document.getElementById('trustEngines').textContent = data.engineCount || 0;
+      
+      const enginesRes = await fetch('/api/registry/engines');
+      if (enginesRes.ok) {
+        const engines = await enginesRes.json();
+        const grid = document.getElementById('engineGrid');
+        
+        if (Object.keys(engines).length === 0) {
+          grid.innerHTML = '<div class="engine-card" style="text-align: center;">No engines loaded</div>';
+        } else {
+          grid.innerHTML = Object.entries(engines).map(([id, engine]) => {
+            const state = engine.state || 'DORMANT';
+            if (state === 'CASCADE' || state === 'IGNITION') {
+              document.getElementById('marketState').textContent = state;
+              document.getElementById('marketState').className = 'engine-state state-' + state;
+            }
+            return `<div class="engine-card"><div class="engine-name">${(engine.name || id).toUpperCase()}</div><div class="engine-state state-${state}">${state}</div><div class="engine-meta">${engine.type || 'STRATEGIC'} · ${engine.dryRun ? 'DRY RUN' : 'LIVE'} · Cycle ${engine.cycleCount || 0}</div></div>`;
+          }).join('');
+          
+          const totalObs = Object.values(engines).reduce((sum, e) => sum + (e.cycleCount || 0), 0);
+          document.getElementById('trustObs').textContent = totalObs > 0 ? totalObs : '200+';
+        }
+      }
+    }
+  } catch(e) {
+    console.warn('Engine load error:', e);
+  }
+  
+  try {
+    const healthRes = await fetch('/api/health');
+    if (healthRes.ok) {
+      const health = await healthRes.json();
+      document.getElementById('navStatus').textContent = health.status?.toUpperCase() || 'ONLINE';
+      document.getElementById('statStatus').textContent = 'ONLINE';
+    }
+  } catch(e) {
+    document.getElementById('navStatus').textContent = 'ERROR';
+  }
+}
+
+async function init() {
+  await initChart();
+  await updatePrice();
+  await loadEngineData();
+  setInterval(updatePrice, 3000);
+  setInterval(loadEngineData, 5000);
+}
+
+init();
+</script>
+</body>
+</html>

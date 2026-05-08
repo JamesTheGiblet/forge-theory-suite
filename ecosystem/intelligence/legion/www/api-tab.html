@@ -1,0 +1,46 @@
+<div class="card">
+  <div class="card-header">🔑 Kraken API</div>
+  <div class="card-body">
+    <div class="settings-group">
+      <div class="settings-label"><span id="krakenStatus" style="display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;background:#e84040"></span> Kraken API Key</div>
+      <input type="password" id="krakenKey" class="settings-input" placeholder="Enter Kraken API Key" style="width:100%;padding:12px;margin-top:8px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary)">
+      <div class="settings-hint" style="font-size:11px;color:var(--text-secondary);margin-top:8px">Required for live trading. Get from <a href="https://www.kraken.com/settings/api" target="_blank" style="color:var(--accent)">Kraken API Settings</a></div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-label">🔐 Kraken API Secret</div>
+      <input type="password" id="krakenSecret" class="settings-input" placeholder="Enter Kraken API Secret" style="width:100%;padding:12px;margin-top:8px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary)">
+      <div class="settings-hint" style="font-size:11px;color:var(--text-secondary);margin-top:8px">Keep this secret. Never share it.</div>
+    </div>
+    <button class="btn" onclick="saveKrakenKeys()" style="margin-top:16px">💾 Save Kraken Keys</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">📱 Telegram Bot</div>
+  <div class="card-body">
+    <div class="settings-group">
+      <div class="settings-label"><span id="telegramStatus" style="display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;background:#e84040"></span> Bot Token</div>
+      <input type="password" id="telegramToken" class="settings-input" placeholder="Enter Telegram Bot Token" style="width:100%;padding:12px;margin-top:8px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary)">
+      <div class="settings-hint" style="font-size:11px;color:var(--text-secondary);margin-top:8px">Get from <a href="https://t.me/BotFather" target="_blank" style="color:var(--accent)">@BotFather</a> on Telegram</div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-label">💬 Chat ID</div>
+      <input type="text" id="telegramChatId" class="settings-input" placeholder="Enter Telegram Chat ID" style="width:100%;padding:12px;margin-top:8px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary)">
+      <div class="settings-hint" style="font-size:11px;color:var(--text-secondary);margin-top:8px">Your personal chat ID. Get from <a href="https://t.me/userinfobot" target="_blank" style="color:var(--accent)">@userinfobot</a></div>
+    </div>
+    <button class="btn" onclick="saveTelegramKeys()" style="margin-right:12px">💾 Save Telegram Keys</button>
+    <button class="btn btn-secondary" onclick="testTelegram()">📨 Test Alert</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">🐋 Whale Alert API (Optional)</div>
+  <div class="card-body">
+    <div class="settings-group">
+      <div class="settings-label"><span id="whaleStatus" style="display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;background:#e84040"></span> API Key</div>
+      <input type="password" id="whaleKey" class="settings-input" placeholder="Enter Whale Alert API Key" style="width:100%;padding:12px;margin-top:8px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary)">
+      <div class="settings-hint" style="font-size:11px;color:var(--text-secondary);margin-top:8px">Optional. Get from <a href="https://whale-alert.io" target="_blank" style="color:var(--accent)">whale-alert.io</a></div>
+    </div>
+    <button class="btn" onclick="saveWhaleKey()">💾 Save Whale Key</button>
+  </div>
+</div>

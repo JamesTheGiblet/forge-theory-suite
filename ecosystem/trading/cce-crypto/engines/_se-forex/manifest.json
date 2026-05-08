@@ -1,0 +1,16 @@
+{
+  "id": "se-forex",
+  "name": "Se Forex",
+  "version": "1.0.0",
+  "type": "STRATEGIC",
+  "ecosystem": "S.E",
+  "cycle": "4H",
+  "capitalKey": "seForex",
+  "author": "James Gilbert — Giblets Creations",
+  "description": "Se Forex engine — describe what this engine does.",
+  "requires": {
+    "exchange": true,
+    "notifier": true,
+    "config": true
+  }
+}

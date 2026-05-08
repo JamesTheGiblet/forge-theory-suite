@@ -1,0 +1,3 @@
+id,timestamp,cycle_number,state,previous_state,oil_price,gold_price,copper_price,dxy_price,oil_mom_5d,oil_mom_20d,gold_mom_5d,copper_mom_5d,dxy_mom_5d,oil_above_sma20,gold_following,copper_following,dxy_strong,oil_gold_corr,days_in_state,portfolio_value,daily_return,total_return
+1,"2026-03-16T13:26:49.874Z",1,"DORMANT","DORMANT",95.35,5035.2998,5.807,100.3,0.61,51.61,-1.1,0.11,1.14,1,0,1,1,-0.005,0.0004238773148148148,300,0,0
+2,"2026-03-17T08:13:28.645Z",1,"DORMANT","DORMANT",96.15,5027.5,5.771,99.835,15.22,54.26,-3.87,-2.25,0.67,1,0,0,1,-0.271,0.0004239351851851852,300,0,0

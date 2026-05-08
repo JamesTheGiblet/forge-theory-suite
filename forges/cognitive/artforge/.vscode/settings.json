@@ -1,0 +1,17 @@
+{
+    "html.validate.styles": false,
+    "html.validate.scripts": false,
+    "html.customData": [],
+    "html.format.enable": true,
+    "html.format.wrapAttributes": "auto",
+    "html.format.maxPreserveNewLines": 2,
+    "htmlhint.enable": false,
+    "html-validate.enable": false,
+    "css.validate": false,
+    "problems.decorations.enabled": false,
+    "editor.validate": false,
+    "html.completion.attributeDefaultValue": "doublequotes",
+    "emmet.includeLanguages": {
+        "html": "html"
+    }
+}

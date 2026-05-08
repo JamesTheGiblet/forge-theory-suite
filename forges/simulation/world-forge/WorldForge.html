@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorldForge - Everything is an Agent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            overflow: hidden;
+        }
+        
+        #canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            cursor: crosshair;
+        }
+        
+        #controls {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            min-width: 250px;
+            z-index: 1000;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff00;
+        }
+        
+        .subtitle {
+            font-size: 12px;
+            color: #00aa00;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background: #001100;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #003300;
+            box-shadow: 0 0 10px #00ff00;
+        }
+        
+        button.active {
+            background: #00ff00;
+            color: #000;
+        }
+        
+        .stats {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            font-size: 11px;
+            min-width: 200px;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            padding: 3px 0;
+            border-bottom: 1px solid #003300;
+        }
+        
+        .layer-toggle {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            font-size: 11px;
+        }
+        
+        .layer-toggle input {
+            margin-right: 8px;
+        }
+        
+        .impact-mode {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .impact-mode button {
+            padding: 8px;
+            font-size: 10px;
+        }
+        
+        .value {
+            color: #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+        }
+        
+        #info {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            font-size: 11px;
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div id="controls">
+        <h1>WorldForge</h1>
+        <div class="subtitle">Everything is an Agent</div>
+        
+        <div class="control-group">
+            <label>Time Speed: <span id="speedVal">1.0x</span></label>
+            <input type="range" id="timeSpeed" min="0.1" max="5" step="0.1" value="1">
+        </div>
+        
+        <div class="control-group">
+            <label>Agent Density: <span id="densityVal">50</span></label>
+            <input type="range" id="density" min="10" max="100" step="5" value="50">
+        </div>
+        
+        <div class="control-group">
+            <label style="margin-bottom: 10px;">Active Layers:</label>
+            <div class="layer-toggle">
+                <input type="checkbox" id="layer-atomic" checked>
+                <label for="layer-atomic">Atomic (heat/water/carbon)</label>
+            </div>
+            <div class="layer-toggle">
+                <input type="checkbox" id="layer-geological" checked>
+                <label for="layer-geological">Geological (pressure/volcanic)</label>
+            </div>
+            <div class="layer-toggle">
+                <input type="checkbox" id="layer-atmospheric" checked>
+                <label for="layer-atmospheric">Atmospheric (wind/storms)</label>
+            </div>
+            <div class="layer-toggle">
+                <input type="checkbox" id="layer-biological" checked>
+                <label for="layer-biological">Biological (growth/decay)</label>
+            </div>
+            <div class="layer-toggle">
+                <input type="checkbox" id="layer-systemic" checked>
+                <label for="layer-systemic">Systemic (currents/climate)</label>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label>Click to Add:</label>
+            <div class="impact-mode">
+                <button id="mode-heat" class="active">Heat</button>
+                <button id="mode-water">Water</button>
+                <button id="mode-pressure">Pressure</button>
+                <button id="mode-life">Life</button>
+                <button id="mode-carbon">Carbon</button>
+                <button id="mode-destroy">Destroy</button>
+            </div>
+        </div>
+        
+        <button id="reset">Reset World</button>
+    </div>
+    
+    <div class="stats">
+        <div class="stat-row">
+            <span>Global Heat:</span>
+            <span class="value" id="stat-heat">0</span>
+        </div>
+        <div class="stat-row">
+            <span>Water Cycle:</span>
+            <span class="value" id="stat-water">0</span>
+        </div>
+        <div class="stat-row">
+            <span>Carbon Level:</span>
+            <span class="value" id="stat-carbon">0</span>
+        </div>
+        <div class="stat-row">
+            <span>Tectonic Pressure:</span>
+            <span class="value" id="stat-pressure">0</span>
+        </div>
+        <div class="stat-row">
+            <span>Biomass:</span>
+            <span class="value" id="stat-biomass">0</span>
+        </div>
+        <div class="stat-row">
+            <span>Storm Activity:</span>
+            <span class="value" id="stat-storms">0</span>
+        </div>
+        <div class="stat-row">
+            <span>Active Agents:</span>
+            <span class="value" id="stat-agents">0</span>
+        </div>
+    </div>
+    
+    <div id="info">
+        <strong>The Grand System</strong><br><br>
+        Every particle, every storm, every volcano - all agents following simple rules.<br><br>
+        Click to stress the system. Watch how everything responds to everything else.<br><br>
+        There is no "environment" - only agents at different scales, all emerging together.
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // Agent types at different scales
+        class Agent {
+            constructor(x, y, type, energy = 1) {
+                this.x = x;
+                this.y = y;
+                this.type = type;
+                this.energy = energy;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
+                this.life = 1;
+                this.age = 0;
+                this.maxAge = 300 + Math.random() * 200;
+            }
+            
+            update(agents, world) {
+                this.age++;
+                
+                // Each agent type has different behavior
+                switch(this.type) {
+                    case 'heat':
+                        this.updateHeat(agents, world);
+                        break;
+                    case 'water':
+                        this.updateWater(agents, world);
+                        break;
+                    case 'carbon':
+                        this.updateCarbon(agents, world);
+                        break;
+                    case 'pressure':
+                        this.updatePressure(agents, world);
+                        break;
+                    case 'life':
+                        this.updateLife(agents, world);
+                        break;
+                    case 'wind':
+                        this.updateWind(agents, world);
+                        break;
+                    case 'volcano':
+                        this.updateVolcano(agents, world);
+                        break;
+                    case 'storm':
+                        this.updateStorm(agents, world);
+                        break;
+                }
+                
+                // Universal aging and movement
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                // Wrap around world
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+                
+                // Natural decay
+                this.life -= 0.001;
+                
+                return this.life > 0 && this.age < this.maxAge;
+            }
+            
+            updateHeat(agents, world) {
+                // Heat rises and spreads
+                this.vy -= 0.1;
+                this.vx *= 0.99;
+                this.vy *= 0.99;
+                
+                // Heat creates water vapor
+                const nearby = this.findNearby(agents, 'water', 50);
+                if (nearby.length > 0 && Math.random() < 0.01) {
+                    const vapor = nearby[0];
+                    vapor.vy -= 1; // Make it rise
+                    vapor.energy += 0.5;
+                }
+                
+                // Heat can trigger pressure release
+                const pressure = this.findNearby(agents, 'pressure', 30);
+                if (pressure.length > 2 && Math.random() < 0.005) {
+                    world.createVolcano(this.x, this.y);
+                }
+            }
+            
+            updateWater(agents, world) {
+                // Water flows down, creates life
+                this.vy += 0.05;
+                this.vx *= 0.98;
+                
+                // Evaporation with heat
+                const heat = this.findNearby(agents, 'heat', 40);
+                if (heat.length > 0) {
+                    this.vy -= 0.3; // Rise as vapor
+                }
+                
+                // Condensation at height
+                if (this.y < canvas.height * 0.3 && this.vy < 0) {
+                    this.vy = 0.5; // Start falling as rain
+                }
+                
+                // Create life where water pools
+                if (Math.abs(this.vy) < 0.1 && Math.random() < 0.001) {
+                    agents.push(new Agent(this.x, this.y, 'life', 1));
+                }
+            }
+            
+            updateCarbon(agents, world) {
+                // Carbon cycles through system
+                this.vx += (Math.random() - 0.5) * 0.1;
+                this.vy += (Math.random() - 0.5) * 0.1;
+                
+                // Absorbed by life
+                const life = this.findNearby(agents, 'life', 30);
+                if (life.length > 0 && Math.random() < 0.02) {
+                    life[0].energy += 0.1;
+                    this.life -= 0.3;
+                }
+                
+                // Released by heat
+                const heat = this.findNearby(agents, 'heat', 40);
+                if (heat.length > 0) {
+                    this.energy += 0.05;
+                }
+            }
+            
+            updatePressure(agents, world) {
+                // Pressure builds and releases
+                this.vx *= 0.95;
+                this.vy *= 0.95;
+                this.energy += 0.01;
+                
+                // Critical pressure creates volcanoes
+                if (this.energy > 3 && Math.random() < 0.01) {
+                    world.createVolcano(this.x, this.y);
+                    this.energy = 0.5;
+                    this.life = 0; // Pressure released
+                }
+                
+                // Pressure attracts more pressure
+                const nearby = this.findNearby(agents, 'pressure', 60);
+                nearby.forEach(p => {
+                    const dx = p.x - this.x;
+                    const dy = p.y - this.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist > 0) {
+                        this.vx += dx / dist * 0.01;
+                        this.vy += dy / dist * 0.01;
+                    }
+                });
+            }
+            
+            updateLife(agents, world) {
+                // Life needs water and releases carbon
+                const water = this.findNearby(agents, 'water', 40);
+                const carbon = this.findNearby(agents, 'carbon', 50);
+                
+                if (water.length > 0 && carbon.length > 0) {
+                    this.energy += 0.02;
+                    this.life += 0.01;
+                    
+                    // Life creates more life
+                    if (this.energy > 2 && Math.random() < 0.005) {
+                        agents.push(new Agent(
+                            this.x + (Math.random() - 0.5) * 20,
+                            this.y + (Math.random() - 0.5) * 20,
+                            'life',
+                            1
+                        ));
+                        this.energy = 1;
+                    }
+                } else {
+                    this.energy -= 0.01;
+                }
+                
+                // Death releases carbon
+                if (this.energy < 0.3 && Math.random() < 0.02) {
+                    agents.push(new Agent(this.x, this.y, 'carbon', 0.5));
+                }
+                
+                // Life moderates heat
+                const heat = this.findNearby(agents, 'heat', 30);
+                heat.forEach(h => h.energy *= 0.98);
+            }
+            
+            updateWind(agents, world) {
+                // Wind driven by heat differentials
+                this.vx *= 1.01;
+                this.vy *= 1.01;
+                
+                const heat = this.findNearby(agents, 'heat', 60);
+                if (heat.length > 0) {
+                    const avgHeat = heat.reduce((sum, h) => sum + h.energy, 0) / heat.length;
+                    this.vx += avgHeat * 0.1;
+                }
+                
+                // Strong winds create storms
+                const speed = Math.sqrt(this.vx*this.vx + this.vy*this.vy);
+                if (speed > 3 && Math.random() < 0.005) {
+                    agents.push(new Agent(this.x, this.y, 'storm', speed));
+                }
+                
+                // Wind carries water
+                const water = this.findNearby(agents, 'water', 40);
+                water.forEach(w => {
+                    w.vx += this.vx * 0.1;
+                    w.vy += this.vy * 0.1;
+                });
+            }
+            
+            updateVolcano(agents, world) {
+                // Volcanic eruption
+                this.energy -= 0.05;
+                
+                // Spew heat, carbon, pressure
+                if (Math.random() < 0.3) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = 2 + Math.random() * 3;
+                    agents.push(new Agent(
+                        this.x,
+                        this.y,
+                        Math.random() < 0.5 ? 'heat' : 'carbon',
+                        2
+                    ));
+                    agents[agents.length - 1].vx = Math.cos(angle) * speed;
+                    agents[agents.length - 1].vy = Math.sin(angle) * speed;
+                }
+                
+                if (this.energy < 0.5) {
+                    this.life = 0;
+                }
+            }
+            
+            updateStorm(agents, world) {
+                // Storms are energy redistributors
+                this.vx += (Math.random() - 0.5) * 0.5;
+                this.vy += (Math.random() - 0.5) * 0.5;
+                
+                // Pull in water and heat
+                const water = this.findNearby(agents, 'water', 80);
+                const heat = this.findNearby(agents, 'heat', 80);
+                
+                water.forEach(w => {
+                    const dx = this.x - w.x;
+                    const dy = this.y - w.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist > 0) {
+                        w.vx += dx / dist * 0.2;
+                        w.vy += dy / dist * 0.2;
+                    }
+                });
+                
+                heat.forEach(h => {
+                    const dx = this.x - h.x;
+                    const dy = this.y - h.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist > 0) {
+                        h.vx += dx / dist * 0.15;
+                        h.vy += dy / dist * 0.15;
+                    }
+                });
+                
+                this.energy -= 0.02;
+                if (this.energy < 0.5) {
+                    this.life = 0;
+                }
+            }
+            
+            findNearby(agents, type, radius) {
+                return agents.filter(a => {
+                    if (a === this || a.type !== type) return false;
+                    const dx = a.x - this.x;
+                    const dy = a.y - this.y;
+                    return dx*dx + dy*dy < radius*radius;
+                });
+            }
+            
+            draw() {
+                const colors = {
+                    heat: { r: 255, g: 100, b: 0, size: 3 },
+                    water: { r: 50, g: 150, b: 255, size: 2 },
+                    carbon: { r: 150, g: 150, b: 150, size: 2 },
+                    pressure: { r: 200, g: 0, b: 0, size: 4 },
+                    life: { r: 0, g: 255, b: 100, size: 3 },
+                    wind: { r: 200, g: 200, b: 255, size: 2 },
+                    volcano: { r: 255, g: 50, b: 0, size: 8 },
+                    storm: { r: 100, g: 100, b: 200, size: 12 }
+                };
+                
+                const col = colors[this.type];
+                const alpha = this.life * (1 - this.age / this.maxAge);
+                
+                ctx.fillStyle = `rgba(${col.r}, ${col.g}, ${col.b}, ${alpha})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, col.size * this.energy, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Glow effect
+                const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, col.size * this.energy * 2);
+                gradient.addColorStop(0, `rgba(${col.r}, ${col.g}, ${col.b}, ${alpha * 0.3})`);
+                gradient.addColorStop(1, 'transparent');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, col.size * this.energy * 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        // World system
+        class World {
+            constructor() {
+                this.agents = [];
+                this.timeSpeed = 1;
+                this.layers = {
+                    atomic: true,
+                    geological: true,
+                    atmospheric: true,
+                    biological: true,
+                    systemic: true
+                };
+                this.currentMode = 'heat';
+                this.initialize();
+            }
+            
+            initialize() {
+                // Seed the world with initial agents
+                const density = parseInt(document.getElementById('density').value);
+                
+                for (let i = 0; i < density; i++) {
+                    const x = Math.random() * canvas.width;
+                    const y = Math.random() * canvas.height;
+                    
+                    // Mix of agent types
+                    const types = ['heat', 'water', 'carbon', 'pressure', 'life'];
+                    const type = types[Math.floor(Math.random() * types.length)];
+                    
+                    this.agents.push(new Agent(x, y, type));
+                }
+                
+                // Add some initial wind
+                for (let i = 0; i < 10; i++) {
+                    this.agents.push(new Agent(
+                        Math.random() * canvas.width,
+                        Math.random() * canvas.height,
+                        'wind',
+                        1
+                    ));
+                }
+            }
+            
+            createVolcano(x, y) {
+                this.agents.push(new Agent(x, y, 'volcano', 3));
+            }
+            
+            addImpact(x, y, mode, intensity = 1) {
+                // Add agents based on current mode
+                const count = Math.floor(10 * intensity);
+                
+                for (let i = 0; i < count; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const radius = Math.random() * 30;
+                    const agent = new Agent(
+                        x + Math.cos(angle) * radius,
+                        y + Math.sin(angle) * radius,
+                        mode === 'destroy' ? 'heat' : mode,
+                        intensity
+                    );
+                    
+                    if (mode === 'destroy') {
+                        agent.energy = 5;
+                        agent.vx = (Math.random() - 0.5) * 5;
+                        agent.vy = (Math.random() - 0.5) * 5;
+                    }
+                    
+                    this.agents.push(agent);
+                }
+                
+                // Special case: pressure creates immediate effects
+                if (mode === 'pressure') {
+                    this.createVolcano(x, y);
+                }
+                
+                // Water creates storms in atmosphere
+                if (mode === 'water' && y < canvas.height * 0.4) {
+                    this.agents.push(new Agent(x, y, 'storm', 2));
+                }
+            }
+            
+            update() {
+                // Update all agents
+                this.agents = this.agents.filter(agent => agent.update(this.agents, this));
+                
+                // Spontaneous emergence of new patterns
+                if (Math.random() < 0.01) {
+                    const x = Math.random() * canvas.width;
+                    const y = Math.random() * canvas.height;
+                    
+                    // Wind emerges from heat differentials
+                    if (this.layers.atmospheric && Math.random() < 0.3) {
+                        this.agents.push(new Agent(x, y, 'wind', 1));
+                    }
+                    
+                    // Pressure builds in geological zones
+                    if (this.layers.geological && Math.random() < 0.2) {
+                        this.agents.push(new Agent(x, y, 'pressure', 0.5));
+                    }
+                }
+                
+                // Limit agent count
+                if (this.agents.length > 5000) {
+                    this.agents = this.agents.slice(-4000);
+                }
+            }
+            
+            draw() {
+                // Fade effect
+                ctx.fillStyle = 'rgba(10, 10, 10, 0.1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw agents by layer
+                this.agents.forEach(agent => {
+                    const shouldDraw = (
+                        (this.layers.atomic && ['heat', 'water', 'carbon'].includes(agent.type)) ||
+                        (this.layers.geological && ['pressure', 'volcano'].includes(agent.type)) ||
+                        (this.layers.atmospheric && ['wind', 'storm'].includes(agent.type)) ||
+                        (this.layers.biological && agent.type === 'life') ||
+                        (this.layers.systemic)
+                    );
+                    
+                    if (shouldDraw) {
+                        agent.draw();
+                    }
+                });
+            }
+            
+            getStats() {
+                const stats = {
+                    heat: 0,
+                    water: 0,
+                    carbon: 0,
+                    pressure: 0,
+                    biomass: 0,
+                    storms: 0
+                };
+                
+                this.agents.forEach(agent => {
+                    switch(agent.type) {
+                        case 'heat': stats.heat += agent.energy; break;
+                        case 'water': stats.water += agent.energy; break;
+                        case 'carbon': stats.carbon += agent.energy; break;
+                        case 'pressure': stats.pressure += agent.energy; break;
+                        case 'life': stats.biomass += agent.energy; break;
+                        case 'storm': stats.storms += agent.energy; break;
+                    }
+                });
+                
+                return stats;
+            }
+        }
+        
+        // Initialize world
+        let world = new World();
+        
+        // Controls
+        document.getElementById('timeSpeed').addEventListener('input', (e) => {
+            world.timeSpeed = parseFloat(e.target.value);
+            document.getElementById('speedVal').textContent = world.timeSpeed.toFixed(1) + 'x';
+        });
+        
+        document.getElementById('density').addEventListener('input', (e) => {
+            document.getElementById('densityVal').textContent = e.target.value;
+        });
+        
+        document.getElementById('reset').addEventListener('click', () => {
+            world = new World();
+        });
+        
+        // Layer toggles
+        ['atomic', 'geological', 'atmospheric', 'biological', 'systemic'].forEach(layer => {
+            document.getElementById(`layer-${layer}`).addEventListener('change', (e) => {
+                world.layers[layer] = e.target.checked;
+            });
+        });
+        
+        // Mode selection
+        ['heat', 'water', 'pressure', 'life', 'carbon', 'destroy'].forEach(mode => {
+            document.getElementById(`mode-${mode}`).addEventListener('click', (e) => {
+                document.querySelectorAll('.impact-mode button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                e.target.classList.add('active');
+                world.currentMode = mode;
+            });
+        });
+        
+        // Canvas interaction
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            world.addImpact(x, y, world.currentMode, 2);
+        });
+        
+        // Continuous impact on hold
+        let isMouseDown = false;
+        canvas.addEventListener('mousedown', () => isMouseDown = true);
+        canvas.addEventListener('mouseup', () => isMouseDown = false);
+        canvas.addEventListener('mousemove', (e) => {
+            if (isMouseDown) {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                world.addImpact(x, y, world.currentMode, 0.5);
+            }
+        });
+        
+        // Animation loop
+        function animate() {
+            for (let i = 0; i < world.timeSpeed; i++) {
+                world.update();
+            }
+            
+            world.draw();
+            
+            // Update stats
+            const stats = world.getStats();
+            document.getElementById('stat-heat').textContent = Math.round(stats.heat);
+            document.getElementById('stat-water').textContent = Math.round(stats.water);
+            document.getElementById('stat-carbon').textContent = Math.round(stats.carbon);
+            document.getElementById('stat-pressure').textContent = Math.round(stats.pressure);
+            document.getElementById('stat-biomass').textContent = Math.round(stats.biomass);
+            document.getElementById('stat-storms').textContent = Math.round(stats.storms);
+            document.getElementById('stat-agents').textContent = world.agents.length;
+            
+            requestAnimationFrame(animate);
+        }
+        
+        animate();
+    </script>
+</body>
+</html>

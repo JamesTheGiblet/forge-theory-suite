@@ -1,0 +1,69 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "buddai/forge-python",
+  "object_class": "Thaumiel",
+  "intent": "Draft a new Python primitive based on James's request, save it to a staging folder, and notify him for review.",
+  "containment": {
+    "read_only": false,
+    "audit_log": true,
+    "kill_switch": false
+  },
+  "interpretation": {
+    "this_is": "The Python architectural capability for BuddAI. It allows drafting of UBVM primitive extensions.",
+    "template": "def primitive_name(params: dict, context: dict) -> dict:\n    return {\"status\": \"ok\"}\n\ndef register() -> dict:\n    return {\"name\": primitive_name}"
+  },
+  "behaviours": [
+    {
+      "trigger": "on_event",
+      "event": "buddai.request.build_python",
+      "actions": [
+        {
+          "primitive": "render_template",
+          "params": {
+            "template": "James has requested a new Python primitive for UBVM. Request details: ${request}\n\nDraft the Python code. The primitive must use the signature `def primitive_<name>(params: dict, context: dict) -> dict:`. It must return a dict with a 'status' key. Include the `def register() -> dict:` function at the bottom mapping the primitive name to the function. Output ONLY the raw Python text. Do not use markdown blocks.",
+            "variables": {
+              "request": "$context.event.payload.request"
+            }
+          }
+        },
+        {
+          "primitive": "llm_reason",
+          "params": {
+            "prompt": "$results.0.output",
+            "system_instruction": "You are BuddAI Architect. You write flawless UBVM Python extension primitives. You output raw code only. No conversational text."
+          }
+        },
+        {
+          "primitive": "write_file",
+          "params": {
+            "path": "results/draft_primitive.py",
+            "content": "$results.1.thought"
+          }
+        },
+        {
+          "primitive": "render_template",
+          "params": {
+            "template": "I have successfully drafted a new Python primitive for '${request}'. It is saved in 'results/draft_primitive.py' and awaits your review before deployment.",
+            "variables": {
+              "request": "$context.event.payload.request"
+            }
+          }
+        },
+        {
+          "primitive": "form_memory",
+          "params": {
+            "thought": "$results.3.output",
+            "tags": ["conversation", "buddai", "architect", "python"]
+          }
+        },
+        {
+          "primitive": "map_to_cube",
+          "params": {
+            "dimensions": ["buddai", "architect", "python", "draft"],
+            "core_memory_path": "results/draft_primitive.py"
+          }
+        }
+      ]
+    }
+  ]
+}

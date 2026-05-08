@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bodyforge MVP - Evolutionary Body Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2f1a 0%, #2d4a2d 100%);
+            color: #f0f7f0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #10b981 0%, #84cc16 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .tagline {
+            font-size: 1.3rem;
+            color: #a7f3a7;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+        
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .simulation-area {
+            background: rgba(26, 47, 26, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            border: 3px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .environment-display {
+            background: rgba(45, 74, 45, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 2px solid rgba(132, 204, 22, 0.3);
+        }
+        
+        .environment-title {
+            color: #84cc16;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .environment-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+        
+        .env-stat {
+            background: rgba(26, 47, 26, 0.6);
+            padding: 12px;
+            border-radius: 10px;
+            border-left: 3px solid #10b981;
+        }
+        
+        .env-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #84cc16;
+            margin-top: 5px;
+        }
+        
+        .animal-canvas-container {
+            background: #1a2f1a;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 25px 0;
+            position: relative;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #animalCanvas {
+            max-width: 100%;
+            max-height: 350px;
+        }
+        
+        .controls-panel {
+            background: rgba(26, 47, 26, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            border: 3px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .panel-title {
+            color: #84cc16;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            text-align: center;
+            border-bottom: 2px solid rgba(132, 204, 22, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .control-group {
+            margin-bottom: 25px;
+        }
+        
+        .control-label {
+            display: block;
+            margin-bottom: 12px;
+            color: #a7f3a7;
+            font-weight: 600;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .slider {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(132, 204, 22, 0.2);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #84cc16;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(132, 204, 22, 0.7);
+        }
+        
+        .slider-value {
+            min-width: 50px;
+            text-align: center;
+            font-weight: bold;
+            color: #84cc16;
+            font-size: 1.1rem;
+        }
+        
+        button {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #10b981 0%, #84cc16 100%);
+            color: #1a2f1a;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.secondary {
+            background: rgba(16, 185, 129, 0.2);
+            color: #84cc16;
+        }
+        
+        .traits-display {
+            background: rgba(45, 74, 45, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+        
+        .trait-bar {
+            margin-bottom: 15px;
+        }
+        
+        .trait-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #a7f3a7;
+        }
+        
+        .trait-progress {
+            height: 12px;
+            background: rgba(26, 47, 26, 0.6);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .trait-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444, #f59e0b, #84cc16);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .stat-card {
+            background: rgba(26, 47, 26, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #84cc16;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #a7f3a7;
+            font-size: 0.9rem;
+        }
+        
+        .evolution-log {
+            background: rgba(45, 74, 45, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 25px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            background: rgba(26, 47, 26, 0.6);
+            border-radius: 8px;
+            border-left: 3px solid #84cc16;
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 25px;
+            color: #84cc16;
+            border-top: 2px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .pulse {
+            animation: pulse 0.6s ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🦴 Bodyforge MVP</h1>
+            <div class="tagline">Watch animal bodies evolve in real-time through natural selection</div>
+        </header>
+        
+        <div class="main-layout">
+            <div class="simulation-area">
+                <div class="environment-display">
+                    <div class="environment-title">🌍 Current Environment</div>
+                    <div class="environment-stats">
+                        <div class="env-stat">
+                            <div>Temperature</div>
+                            <div class="env-value" id="tempValue">Moderate</div>
+                        </div>
+                        <div class="env-stat">
+                            <div>Food Height</div>
+                            <div class="env-value" id="foodValue">Medium</div>
+                        </div>
+                        <div class="env-stat">
+                            <div>Predators</div>
+                            <div class="env-value" id="predatorValue">Some</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="animal-canvas-container">
+                    <canvas id="animalCanvas" width="500" height="350"></canvas>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="generationCount">1</div>
+                        <div class="stat-label">Generation</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="fitnessScore">0.00</div>
+                        <div class="stat-label">Fitness Score</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls-panel">
+                <h3 class="panel-title">Evolution Controls</h3>
+                
+                <div class="control-group">
+                    <label class="control-label">🌡️ Environment Temperature</label>
+                    <div class="slider-container">
+                        <input type="range" class="slider" id="tempSlider" min="0" max="100" value="50">
+                        <span class="slider-value" id="tempSliderValue">50</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #a7f3a7;">
+                        <span>❄️ Arctic</span>
+                        <span>🌡️ Moderate</span>
+                        <span>🔥 Desert</span>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label class="control-label">🌿 Food Source Height</label>
+                    <div class="slider-container">
+                        <input type="range" class="slider" id="foodSlider" min="0" max="100" value="50">
+                        <span class="slider-value" id="foodSliderValue">50</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #a7f3a7;">
+                        <span>🌱 Ground</span>
+                        <span>🪵 Bushes</span>
+                        <span>🌳 Trees</span>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label class="control-label">🐆 Predator Pressure</label>
+                    <div class="slider-container">
+                        <input type="range" class="slider" id="predatorSlider" min="0" max="100" value="50">
+                        <span class="slider-value" id="predatorSliderValue">50</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #a7f3a7;">
+                        <span>😴 None</span>
+                        <span>🐺 Some</span>
+                        <span>👹 Many</span>
+                    </div>
+                </div>
+                
+                <button id="evolveBtn">🔄 Evolve Next Generation</button>
+                <button id="autoEvolveBtn" class="secondary">⚡ Auto-Evolve (10 gens)</button>
+                <button id="resetBtn" class="secondary">🔄 Reset Population</button>
+                
+                <div class="traits-display">
+                    <h4 style="color: #84cc16; margin-bottom: 15px; text-align: center;">Current Traits</h4>
+                    
+                    <div class="trait-bar">
+                        <div class="trait-label">
+                            <span>Body Size</span>
+                            <span id="sizeValue">0.50</span>
+                        </div>
+                        <div class="trait-progress">
+                            <div class="trait-fill" id="sizeFill" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="trait-bar">
+                        <div class="trait-label">
+                            <span>Leg Length</span>
+                            <span id="legsValue">0.50</span>
+                        </div>
+                        <div class="trait-progress">
+                            <div class="trait-fill" id="legsFill" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="trait-bar">
+                        <div class="trait-label">
+                            <span>Neck Length</span>
+                            <span id="neckValue">0.50</span>
+                        </div>
+                        <div class="trait-progress">
+                            <div class="trait-fill" id="neckFill" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="trait-bar">
+                        <div class="trait-label">
+                            <span>Ear Size</span>
+                            <span id="earsValue">0.50</span>
+                        </div>
+                        <div class="trait-progress">
+                            <div class="trait-fill" id="earsFill" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="trait-bar">
+                        <div class="trait-label">
+                            <span>Coat Thickness</span>
+                            <span id="coatValue">0.50</span>
+                        </div>
+                        <div class="trait-progress">
+                            <div class="trait-fill" id="coatFill" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="evolution-log">
+                    <h4 style="color: #84cc16; margin-bottom: 15px; text-align: center;">Evolution Log</h4>
+                    <div id="logContainer">
+                        <div class="log-entry">🚀 Population initialized with random traits</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            Bodyforge MVP - Where environment shapes evolution
+            <br>Watch natural selection sculpt perfect adaptations
+        </footer>
+    </div>
+
+    <script>
+        // ============================================
+        // BODYFORGE MVP - Evolutionary Body Simulator
+        // ============================================
+        
+        const canvas = document.getElementById('animalCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Configuration
+        const Config = {
+            mutationRate: 0.1,
+            selectionPressure: 0.7,
+            populationSize: 1, // Single individual for MVP simplicity
+            autoEvolveSpeed: 500 // ms between generations in auto-mode
+        };
+        
+        // Animal class representing a single individual
+        class Animal {
+            constructor(generation = 0, inheritedTraits = null) {
+                this.generation = generation;
+                
+                // Core traits (0-1 scale)
+                this.traits = inheritedTraits || {
+                    size: 0.3 + Math.random() * 0.4,        // Body size
+                    legLength: 0.3 + Math.random() * 0.4,   // Leg length
+                    neckLength: 0.3 + Math.random() * 0.4,  // Neck length
+                    earSize: 0.3 + Math.random() * 0.4,     // Ear size
+                    coatThickness: 0.3 + Math.random() * 0.4 // Fur/coat
+                };
+                
+                this.fitness = 0;
+            }
+            
+            // Calculate fitness based on environment
+            calculateFitness(environment) {
+                let fitness = 1.0;
+                
+                // Temperature adaptation (Bergmann's & Allen's Rules)
+                if (environment.temperature < 0.3) {
+                    // Cold: favor larger size, thicker coat, smaller ears
+                    fitness *= this.traits.size * this.traits.coatThickness * (1 - this.traits.earSize);
+                } else if (environment.temperature > 0.7) {
+                    // Hot: favor smaller size, larger ears, thinner coat
+                    fitness *= (1 - this.traits.size) * this.traits.earSize * (1 - this.traits.coatThickness);
+                } else {
+                    // Moderate: balanced traits
+                    fitness *= 0.8 + (0.2 * (1 - Math.abs(0.5 - this.traits.size)));
+                }
+                
+                // Food height adaptation (neck length)
+                if (environment.foodHeight > 0.6) {
+                    // High food: favor long necks
+                    fitness *= this.traits.neckLength;
+                } else if (environment.foodHeight < 0.4) {
+                    // Low food: favor short necks (energy conservation)
+                    fitness *= (1 - this.traits.neckLength);
+                }
+                
+                // Predation adaptation (speed and awareness)
+                if (environment.predation > 0.5) {
+                    // High predation: favor long legs (speed) and large ears (awareness)
+                    fitness *= this.traits.legLength * this.traits.earSize;
+                }
+                
+                // Trade-off: larger animals need more food
+                fitness *= (1 - (this.traits.size * 0.2));
+                
+                this.fitness = Math.max(0.01, fitness);
+                return this.fitness;
+            }
+            
+            // Create offspring with mutation
+            createOffspring() {
+                const childTraits = {};
+                
+                Object.keys(this.traits).forEach(trait => {
+                    // Inheritance with random mutation
+                    let newValue = this.traits[trait];
+                    
+                    // Apply mutation
+                    if (Math.random() < Config.mutationRate) {
+                        newValue += (Math.random() - 0.5) * 0.2;
+                        newValue = Math.max(0.1, Math.min(0.9, newValue));
+                    }
+                    
+                    childTraits[trait] = newValue;
+                });
+                
+                return new Animal(this.generation + 1, childTraits);
+            }
+        }
+        
+        // Main simulation
+        class BodyforgeSim {
+            constructor() {
+                this.environment = {
+                    temperature: 0.5,
+                    foodHeight: 0.5,
+                    predation: 0.5
+                };
+                this.population = [new Animal(1)];
+                this.generation = 1;
+                this.isAutoEvolving = false;
+                this.autoEvolveInterval = null;
+                this.evolutionLog = ["🚀 Population initialized with random traits"];
+            }
+            
+            // Evolve one generation
+            evolveGeneration() {
+                const currentAnimal = this.population[0];
+                
+                // Calculate fitness
+                currentAnimal.calculateFitness(this.environment);
+                
+                // Selection and reproduction
+                if (Math.random() < Config.selectionPressure * currentAnimal.fitness) {
+                    // Successful reproduction
+                    const offspring = currentAnimal.createOffspring();
+                    this.population = [offspring];
+                    this.generation++;
+                    
+                    // Log significant changes
+                    this.logEvolution(currentAnimal, offspring);
+                }
+                
+                this.updateDisplay();
+            }
+            
+            // Log evolutionary changes
+            logEvolution(parent, offspring) {
+                let changes = [];
+                
+                Object.keys(parent.traits).forEach(trait => {
+                    const diff = offspring.traits[trait] - parent.traits[trait];
+                    if (Math.abs(diff) > 0.05) {
+                        const direction = diff > 0 ? "increased" : "decreased";
+                        changes.push(`${trait} ${direction}`);
+                    }
+                });
+                
+                if (changes.length > 0) {
+                    this.evolutionLog.unshift(
+                        `Gen ${offspring.generation}: ${changes.join(", ")}`
+                    );
+                }
+                
+                // Keep log manageable
+                if (this.evolutionLog.length > 8) {
+                    this.evolutionLog.pop();
+                }
+            }
+            
+            // Reset population
+            resetPopulation() {
+                this.population = [new Animal(1)];
+                this.generation = 1;
+                this.evolutionLog = ["🔄 Population reset with random traits"];
+                this.updateDisplay();
+            }
+            
+            // Update all displays
+            updateDisplay() {
+                const animal = this.population[0];
+                
+                // Update trait displays
+                document.getElementById('sizeValue').textContent = animal.traits.size.toFixed(2);
+                document.getElementById('legsValue').textContent = animal.traits.legLength.toFixed(2);
+                document.getElementById('neckValue').textContent = animal.traits.neckLength.toFixed(2);
+                document.getElementById('earsValue').textContent = animal.traits.earSize.toFixed(2);
+                document.getElementById('coatValue').textContent = animal.traits.coatThickness.toFixed(2);
+                
+                document.getElementById('sizeFill').style.width = `${animal.traits.size * 100}%`;
+                document.getElementById('legsFill').style.width = `${animal.traits.legLength * 100}%`;
+                document.getElementById('neckFill').style.width = `${animal.traits.neckLength * 100}%`;
+                document.getElementById('earsFill').style.width = `${animal.traits.earSize * 100}%`;
+                document.getElementById('coatFill').style.width = `${animal.traits.coatThickness * 100}%`;
+                
+                // Update stats
+                document.getElementById('generationCount').textContent = this.generation;
+                document.getElementById('fitnessScore').textContent = animal.fitness.toFixed(2);
+                
+                // Update log
+                const logContainer = document.getElementById('logContainer');
+                logContainer.innerHTML = this.evolutionLog.map(entry => 
+                    `<div class="log-entry">${entry}</div>`
+                ).join('');
+                
+                // Redraw animal
+                this.drawAnimal();
+            }
+            
+            // Draw the current animal
+            drawAnimal() {
+                const animal = this.population[0];
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Base positions
+                const centerX = canvas.width / 2;
+                const groundY = canvas.height - 50;
+                
+                // Calculate body parts based on traits
+                const bodySize = 30 + (animal.traits.size * 60);
+                const legLength = 20 + (animal.traits.legLength * 60);
+                const neckLength = 10 + (animal.traits.neckLength * 40);
+                const earSize = 5 + (animal.traits.earSize * 15);
+                const headSize = 15 + (animal.traits.size * 10);
+                
+                // Body color based on temperature adaptation
+                const coatColor = this.environment.temperature < 0.3 ? 
+                    `rgb(200, 200, 255)` : // Cold - lighter color
+                    `rgb(100, 70, 40)`;    // Warm - darker color
+                
+                // Draw legs
+                ctx.fillStyle = '#8B4513';
+                const legWidth = 8 + (animal.traits.size * 4);
+                
+                // Front legs
+                ctx.fillRect(centerX - bodySize/2 - 10, groundY - legLength, legWidth, legLength);
+                ctx.fillRect(centerX + bodySize/2 + 10 - legWidth, groundY - legLength, legWidth, legLength);
+                
+                // Back legs
+                ctx.fillRect(centerX - bodySize/2 - 25, groundY - legLength, legWidth, legLength);
+                ctx.fillRect(centerX + bodySize/2 + 25 - legWidth, groundY - legLength, legWidth, legLength);
+                
+                // Draw body
+                ctx.fillStyle = coatColor;
+                ctx.fillRect(centerX - bodySize/2, groundY - legLength - bodySize/2, bodySize, bodySize/2);
+                
+                // Draw neck and head
+                const neckBaseY = groundY - legLength - bodySize/2;
+                const headY = neckBaseY - neckLength;
+                
+                // Neck
+                ctx.fillStyle = coatColor;
+                ctx.fillRect(centerX - 8, headY, 16, neckLength);
+                
+                // Head
+                ctx.fillStyle = coatColor;
+                ctx.fillRect(centerX - headSize/2, headY - headSize, headSize, headSize);
+                
+                // Draw ears
+                ctx.fillStyle = '#8B4513';
+                ctx.fillRect(centerX - headSize/2 - earSize/2, headY - headSize - 5, earSize, earSize * 1.5);
+                ctx.fillRect(centerX + headSize/2 - earSize/2, headY - headSize - 5, earSize, earSize * 1.5);
+                
+                // Draw eyes
+                ctx.fillStyle = '#000';
+                ctx.fillRect(centerX - 6, headY - headSize/2, 4, 4);
+                ctx.fillRect(centerX + 2, headY - headSize/2, 4, 4);
+                
+                // Draw environment context
+                this.drawEnvironment(centerX, groundY);
+            }
+            
+            // Draw environmental context
+            drawEnvironment(centerX, groundY) {
+                // Draw ground
+                ctx.fillStyle = '#5d4037';
+                ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
+                
+                // Draw food sources based on height
+                const foodHeight = this.environment.foodHeight;
+                
+                if (foodHeight < 0.4) {
+                    // Ground-level food (grass)
+                    ctx.fillStyle = '#388e3c';
+                    for (let i = 0; i < 10; i++) {
+                        const x = (canvas.width / 10) * i;
+                        ctx.fillRect(x, groundY - 5, 3, 8 + Math.random() * 10);
+                    }
+                } else if (foodHeight > 0.6) {
+                    // Tree-level food
+                    ctx.fillStyle = '#5d4037';
+                    ctx.fillRect(centerX - 100, groundY - 120, 20, 120);
+                    ctx.fillStyle = '#2e7d32';
+                    ctx.beginPath();
+                    ctx.arc(centerX - 90, groundY - 150, 40, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    // Bush-level food
+                    ctx.fillStyle = '#2e7d32';
+                    ctx.beginPath();
+                    ctx.arc(centerX + 80, groundY - 30, 25, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // Draw temperature indicator
+                const tempColor = this.environment.temperature < 0.3 ? '#64b5f6' : 
+                                this.environment.temperature > 0.7 ? '#ff8a65' : '#fff176';
+                ctx.fillStyle = tempColor;
+                ctx.fillRect(20, 20, 10, 10);
+                
+                // Draw predator indicator
+                if (this.environment.predation > 0.6) {
+                    ctx.fillStyle = '#f44336';
+                    ctx.font = '16px Arial';
+                    ctx.fillText('⚠️ Predators Nearby', 40, 30);
+                }
+            }
+        }
+
+        // Initialize simulation
+        const simulation = new BodyforgeSim();
+        
+        // Event Listeners
+        document.getElementById('evolveBtn').addEventListener('click', () => {
+            simulation.evolveGeneration();
+            document.getElementById('animalCanvas').classList.add('pulse');
+            setTimeout(() => document.getElementById('animalCanvas').classList.remove('pulse'), 600);
+        });
+        
+        document.getElementById('autoEvolveBtn').addEventListener('click', () => {
+            if (!simulation.isAutoEvolving) {
+                simulation.isAutoEvolving = true;
+                document.getElementById('autoEvolveBtn').textContent = '⏹️ Stop Auto-Evolve';
+                
+                let generations = 0;
+                simulation.autoEvolveInterval = setInterval(() => {
+                    simulation.evolveGeneration();
+                    generations++;
+                    
+                    if (generations >= 10) {
+                        clearInterval(simulation.autoEvolveInterval);
+                        simulation.isAutoEvolving = false;
+                        document.getElementById('autoEvolveBtn').textContent = '⚡ Auto-Evolve (10 gens)';
+                    }
+                }, Config.autoEvolveSpeed);
+            } else {
+                clearInterval(simulation.autoEvolveInterval);
+                simulation.isAutoEvolving = false;
+                document.getElementById('autoEvolveBtn').textContent = '⚡ Auto-Evolve (10 gens)';
+            }
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            simulation.resetPopulation();
+        });
+        
+        // Environment slider handlers
+        function updateEnvironment() {
+            simulation.environment.temperature = document.getElementById('tempSlider').value / 100;
+            simulation.environment.foodHeight = document.getElementById('foodSlider').value / 100;
+            simulation.environment.predation = document.getElementById('predatorSlider').value / 100;
+            
+            // Update environment displays
+            const tempValue = document.getElementById('tempValue');
+            tempValue.textContent = simulation.environment.temperature < 0.3 ? 'Cold' : 
+                                  simulation.environment.temperature > 0.7 ? 'Hot' : 'Moderate';
+            tempValue.style.color = simulation.environment.temperature < 0.3 ? '#64b5f6' : 
+                                  simulation.environment.temperature > 0.7 ? '#ff8a65' : '#fff176';
+            
+            const foodValue = document.getElementById('foodValue');
+            foodValue.textContent = simulation.environment.foodHeight < 0.4 ? 'Low' : 
+                                  simulation.environment.foodHeight > 0.6 ? 'High' : 'Medium';
+            
+            const predatorValue = document.getElementById('predatorValue');
+            predatorValue.textContent = simulation.environment.predation < 0.4 ? 'Few' : 
+                                      simulation.environment.predation > 0.6 ? 'Many' : 'Some';
+            
+            // Recalculate fitness and redraw
+            simulation.population[0].calculateFitness(simulation.environment);
+            simulation.updateDisplay();
+        }
+        
+        document.getElementById('tempSlider').addEventListener('input', function() {
+            document.getElementById('tempSliderValue').textContent = this.value;
+            updateEnvironment();
+        });
+        
+        document.getElementById('foodSlider').addEventListener('input', function() {
+            document.getElementById('foodSliderValue').textContent = this.value;
+            updateEnvironment();
+        });
+        
+        document.getElementById('predatorSlider').addEventListener('input', function() {
+            document.getElementById('predatorSliderValue').textContent = this.value;
+            updateEnvironment();
+        });
+        
+        // Initialize
+        window.addEventListener('load', () => {
+            simulation.updateDisplay();
+        });
+    </script>
+</body>
+</html>

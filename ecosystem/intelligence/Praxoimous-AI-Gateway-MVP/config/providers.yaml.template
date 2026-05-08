@@ -1,0 +1,25 @@
+# config/providers.yaml.template
+# This is a template file. Copy it to 'providers.yaml' and customize it.
+# This file defines the Large Language Model (LLM) providers that Praximous can use.
+# The 'provider_manager' will load these configurations on startup.
+
+providers:
+  # --- Primary Provider (External, High-Capability) ---
+  - name: "gemini-primary"
+    type: "gemini"
+    model: "gemini-1.5-flash-latest"
+    # The environment variable that holds the API key for this provider.
+    api_key_env: "GEMINI_API_KEY"
+    # Priority determines the order of preference. Lower numbers are tried first.
+    priority: 10
+    # Set to 'false' to disable this provider without removing its configuration.
+    enabled: true
+
+  # --- Secondary/Failover Provider (Local, On-Premise) ---
+  - name: "ollama-failover"
+    type: "ollama"
+    model: "llama3" # The model name as configured in your Ollama instance.
+    # The environment variable that holds the full URL to your Ollama API.
+    base_url_env: "OLLAMA_API_URL"
+    priority: 20 # Higher number means lower priority (used for failover).
+    enabled: true

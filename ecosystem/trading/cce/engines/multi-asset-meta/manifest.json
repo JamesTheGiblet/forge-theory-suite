@@ -1,0 +1,19 @@
+{
+  "id": "multi-asset-meta",
+  "name": "Multi-Asset Meta Strategy",
+  "version": "1.0.0",
+  "author": "Giblets Creations",
+  "type": "strategy",
+  "timeframe": "1D",
+  "assets": ["BTC/USD", "ETH/USD", "SOL/USD", "DOGE/USD"],
+  "capital": 250,
+  "status": "dry_run",
+  "description": "Trades BTC, ETH, SOL, DOGE simultaneously using best patterns per asset",
+  "allocations": {
+    "BTC/USD": 0.40,
+    "ETH/USD": 0.30,
+    "SOL/USD": 0.15,
+    "DOGE/USD": 0.15
+  },
+  "created": "2026-04-09"
+}

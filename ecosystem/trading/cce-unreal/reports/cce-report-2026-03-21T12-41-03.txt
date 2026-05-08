@@ -1,0 +1,165 @@
+======================================================================
+CCE PLATFORM CORE — FULL ANALYTICS REPORT
+Generated: 3/21/2026, 12:41:00 PM
+======================================================================
+1. CCE CRYPTO — LIVE ENGINE
+----------------------------------------------------------------------
+Period:          3/12/2026, 9:05:18 AM → 3/21/2026, 6:19:32 AM
+Total cycles:    45
+Current state:   DORMANT (1.7 days)
+
+Portfolio start: $391.70
+Portfolio now:   $291.70
+Total return:    +0.00%
+
+BTC at launch:   $69896.20
+BTC current:     $70780.50
+BTC change:      +1.27%
+BTC high/low:    $74069.40 / $69264.80
+
+Fear & Greed avg: 21.9 | Current: 12
+BTC Dominance:   56.5%
+
+State distribution:
+  DORMANT          45 cycles (100.0%)
+State transitions: 0
+Trades executed:   0
+
+2. CCE REIT (RME) — DRY RUN
+----------------------------------------------------------------------
+Period:          3/16/2026, 11:45:47 AM → 3/19/2026, 1:46:46 PM
+Total cycles:    10
+Current state:   WATCHING
+Portfolio value: £300.00
+
+Fed Funds Rate:  3.64% (was 3.64% at launch)
+10Y Treasury:    4.20%
+Yield Spread:    -0.200% (avg: -0.214%)
+
+Fed cutting:     0% of cycles
+Spread favourable: 0% of cycles
+
+State distribution:
+  WATCHING         10 cycles (100.0%)
+
+3. CCE STOCKS (CME) — DRY RUN
+----------------------------------------------------------------------
+Period:          3/16/2026, 12:16:02 PM → 3/19/2026, 1:46:44 PM
+Total cycles:    36
+Current state:   DORMANT
+Portfolio value: £300.00
+
+SPY at launch:   $662.29
+SPY current:     $657.26
+SPY change:      -0.76%
+SMA50 / SMA200:  $684.66 / $678.86
+
+VIX current:     27.36
+VIX average:     25.30
+VIX high:        27.36
+RSI current:     28.8 (avg: 30.7)
+
+Golden cross:    100% of cycles
+Above SMA200:    0% of cycles
+
+State distribution:
+  DORMANT          36 cycles (100.0%)
+
+4. CCE COMMODITIES (COMO) — DRY RUN
+----------------------------------------------------------------------
+Period:          3/18/2026, 8:31:57 AM → 3/19/2026, 1:46:50 PM
+Total cycles:    32
+Current state:   DORMANT
+Portfolio value: £300.00
+
+WTI Crude:       $96.69 | Mom5d: +1.00% | Mom20d: +45.55%
+Gold:            $4565.50 | Mom5d: -10.76%
+Copper:          $5.362 | Mom5d: -7.95%
+DXY:             99.87 | Mom5d: +0.65%
+
+Oil bullish:     0% of cycles
+DXY strong:      100% of cycles (blocks entry)
+Gold following:  0% of cycles
+
+State distribution:
+  DORMANT          32 cycles (100.0%)
+
+5. T.E GRID — DRY RUN
+----------------------------------------------------------------------
+Period:          3/17/2026, 12:07:06 PM → 3/21/2026, 12:39:43 PM
+Total cycles:    389
+Grid state:      ACTIVE
+Centre price:    $69616.01
+BTC current:     $70735.00
+Portfolio:       $125.00
+
+Completed cycles: 0
+Total profit:    $0
+Avg per cycle:   $0
+Win rate:        0% (0W / 0L)
+
+Open buys:       5
+Open sells:      3
+Recentres:       0
+Stop events:     0
+BTC range:       $69052.91 — $74292.97
+
+======================================================================
+
+
+6. T.E MOMENTUM — DRY RUN
+----------------------------------------------------------------------
+Period:          3/19/2026, 6:00:27 AM → 3/21/2026, 11:35:35 AM
+Total cycles:    105
+Pairs:           BTC/ETH/SOL
+Portfolio:       $125.00
+
+Total trades:    0
+Win rate:        0% (0W / 0L)
+Total PnL:       +$0
+Avg per trade:   $0
+Best trade:      +$0
+
+7. T.E BREAKOUT — DRY RUN
+----------------------------------------------------------------------
+Period:          3/18/2026, 1:31:39 PM → 3/21/2026, 11:35:59 AM
+Total cycles:    159
+Portfolio:       $100.00
+Squeezes detected: 2
+
+Total trades:    0
+Win rate:        0% (0W / 0L)
+Total PnL:       +$0
+8. S.E EGP — DRY RUN
+----------------------------------------------------------------------
+Period:          3/19/2026, 6:47:58 AM → 3/19/2026, 1:46:14 PM
+Total cycles:    21
+Current state:   CAUTION
+Composite score: 0
+Divergence flag: YES ⚠️
+
+CBE Rate:        19% (delta: -1%)
+Inflation:       13.4% (delta: +1.4%)
+Reserves:        $52.7bn
+Brent:           $106.34
+USD/EGP:         52.1900
+Next CBE mtg:    2026-04-02
+
+State distribution:
+  CAUTION          21 cycles (100.0%)
+
+PLATFORM SUMMARY
+----------------------------------------------------------------------
+CCE Crypto:      LIVE    | State: DORMANT | Return: +0.00%
+CCE Forex:       DRY RUN | Monitoring EUR/USD
+CCE REIT:        DRY RUN | State: WATCHING
+CCE Stocks:      DRY RUN | State: DORMANT
+CCE Commodities: DRY RUN | State: DORMANT
+T.E Grid:        DRY RUN | State: ACTIVE | Profit: $0.000000
+T.E Momentum:    DRY RUN | Trades: 0 | PnL: +$0.0000
+T.E Breakout:    DRY RUN | Squeezes: 2 | Trades: 0
+S.E EGP:         DRY RUN | State: CAUTION | Divergence: YES
+
+"I wanted it. So I forged it. Now forge yours."
+— Giblets Creations
+======================================================================

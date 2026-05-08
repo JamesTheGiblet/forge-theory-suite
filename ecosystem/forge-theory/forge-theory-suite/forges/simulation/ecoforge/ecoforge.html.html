@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoForge - Ecosystem Simulation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c2c4a, #1a5a7a);
+            color: #e0f0ff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 20, 40, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #4cd964, #5ac8fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            color: #a0d0ff;
+            margin-bottom: 20px;
+        }
+        
+        .main-content {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .simulation-area {
+            flex: 1;
+            min-width: 700px;
+            background: rgba(0, 15, 30, 0.8);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .controls-panel {
+            flex: 0 0 300px;
+            background: rgba(0, 20, 40, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .canvas-container {
+            flex: 1;
+            background: #0a1e2f;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        #simulationCanvas {
+            display: block;
+            background: #0a1e2f;
+        }
+        
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-box {
+            background: rgba(10, 40, 70, 0.6);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #4cd964;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #a0d0ff;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            margin: 15px 0;
+            color: #5ac8fa;
+            border-bottom: 1px solid #2a5a7a;
+            padding-bottom: 8px;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        .slider-container {
+            margin: 10px 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #a0d0ff;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #0a2c4a;
+            outline: none;
+        }
+        
+        .button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: linear-gradient(90deg, #007aff, #5ac8fa);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .button:active {
+            transform: translateY(0);
+        }
+        
+        .species-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(10, 30, 50, 0.6);
+            border-radius: 8px;
+            padding: 10px;
+        }
+        
+        .species-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: rgba(20, 50, 80, 0.5);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .species-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .food-web {
+            margin-top: 20px;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 0 10px;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .environment-factors {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .factor {
+            background: rgba(10, 40, 70, 0.6);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #0a2c4a;
+            border-radius: 4px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+        
+        .temperature .progress-fill {
+            background: linear-gradient(90deg, #5ac8fa, #ff3b30);
+        }
+        
+        .resources .progress-fill {
+            background: linear-gradient(90deg, #ffcc00, #4cd964);
+        }
+        
+        @media (max-width: 1100px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .simulation-area {
+                min-width: 100%;
+            }
+            
+            .controls-panel {
+                flex: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>EcoForge</h1>
+            <p class="tagline">Evolve complex ecosystems with dynamic species interactions</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="simulation-area">
+                <div class="canvas-container">
+                    <canvas id="simulationCanvas"></canvas>
+                </div>
+                
+                <div class="stats-panel">
+                    <div class="stat-box">
+                        <div class="stat-value" id="populationCount">0</div>
+                        <div class="stat-label">Total Population</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="speciesCount">0</div>
+                        <div class="stat-label">Species Count</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="generationCount">0</div>
+                        <div class="stat-label">Generation</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls-panel">
+                <h2>Simulation Controls</h2>
+                
+                <div class="control-group">
+                    <button id="startBtn" class="button">Start Simulation</button>
+                    <button id="resetBtn" class="button">Reset Simulation</button>
+                    <button id="addSpeciesBtn" class="button">Add New Species</button>
+                </div>
+                
+                <div class="control-group">
+                    <div class="slider-container">
+                        <label for="speedControl">Simulation Speed</label>
+                        <input type="range" id="speedControl" min="1" max="10" value="5">
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label for="mutationRate">Mutation Rate</label>
+                        <input type="range" id="mutationRate" min="1" max="100" value="20">
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label for="resourceAbundance">Resource Abundance</label>
+                        <input type="range" id="resourceAbundance" min="1" max="100" value="50">
+                    </div>
+                </div>
+                
+                <h2>Active Species</h2>
+                <div class="species-list" id="speciesList">
+                    <!-- Species will be dynamically added here -->
+                </div>
+                
+                <h2>Environment</h2>
+                <div class="environment-factors">
+                    <div class="factor temperature">
+                        <div>Temperature</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="temperatureFill" style="width: 65%"></div>
+                        </div>
+                    </div>
+                    <div class="factor resources">
+                        <div>Resources</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="resourcesFill" style="width: 50%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="food-web">
+                    <h2>Food Web</h2>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #4cd964;"></div>
+                            <span>Producers</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #ff9500;"></div>
+                            <span>Herbivores</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #ff3b30;"></div>
+                            <span>Carnivores</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Canvas setup
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas dimensions
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        
+        // Simulation state
+        let simulationRunning = false;
+        let animationId = null;
+        let species = [];
+        let plants = [];
+        let particles = [];
+        let generation = 0;
+        let population = 0;
+        
+        // DOM elements
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const addSpeciesBtn = document.getElementById('addSpeciesBtn');
+        const populationCount = document.getElementById('populationCount');
+        const speciesCount = document.getElementById('speciesCount');
+        const generationCount = document.getElementById('generationCount');
+        const speciesList = document.getElementById('speciesList');
+        const speedControl = document.getElementById('speedControl');
+        const mutationRate = document.getElementById('mutationRate');
+        const resourceAbundance = document.getElementById('resourceAbundance');
+        const temperatureFill = document.getElementById('temperatureFill');
+        const resourcesFill = document.getElementById('resourcesFill');
+        
+        // Species class
+        class Species {
+            constructor(id, type, color, x, y) {
+                this.id = id;
+                this.type = type; // 'producer', 'herbivore', 'carnivore'
+                this.color = color;
+                this.x = x || Math.random() * canvas.width;
+                this.y = y || Math.random() * canvas.height;
+                this.size = type === 'producer' ? 4 : 6;
+                this.speed = type === 'producer' ? 0.5 : (type === 'herbivore' ? 1.5 : 2);
+                this.energy = 100;
+                this.age = 0;
+                this.maxAge = type === 'producer' ? 500 : 300;
+                this.reproductionRate = type === 'producer' ? 0.02 : 0.01;
+                this.diet = type === 'producer' ? null : (type === 'herbivore' ? 'producer' : 'herbivore');
+                this.vision = type === 'producer' ? 0 : 80;
+                this.offspring = 0;
+            }
+            
+            update() {
+                this.age++;
+                this.energy -= 0.2;
+                
+                // Movement based on type
+                if (this.type !== 'producer') {
+                    this.move();
+                } else {
+                    // Plants grow slowly
+                    if (Math.random() < 0.01 && this.size < 8) {
+                        this.size += 0.1;
+                    }
+                }
+                
+                // Check for death
+                if (this.energy <= 0 || this.age > this.maxAge) {
+                    return false; // Dead
+                }
+                
+                // Reproduction
+                if (this.energy > 80 && Math.random() < this.reproductionRate) {
+                    this.reproduce();
+                }
+                
+                return true; // Alive
+            }
+            
+            move() {
+                // Simple movement logic - more complex in a real simulation
+                if (this.type === 'herbivore') {
+                    // Look for plants
+                    let closestPlant = null;
+                    let minDist = this.vision;
+                    
+                    for (let plant of plants) {
+                        const dx = plant.x - this.x;
+                        const dy = plant.y - this.y;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        
+                        if (dist < minDist) {
+                            minDist = dist;
+                            closestPlant = plant;
+                        }
+                    }
+                    
+                    if (closestPlant) {
+                        // Move toward plant
+                        const dx = closestPlant.x - this.x;
+                        const dy = closestPlant.y - this.y;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        
+                        this.x += (dx / dist) * this.speed;
+                        this.y += (dy / dist) * this.speed;
+                        
+                        // Eat if close enough
+                        if (dist < this.size + closestPlant.size) {
+                            this.energy += 20;
+                            plants.splice(plants.indexOf(closestPlant), 1);
+                        }
+                    } else {
+                        // Random movement
+                        this.x += (Math.random() - 0.5) * this.speed;
+                        this.y += (Math.random() - 0.5) * this.speed;
+                    }
+                } else if (this.type === 'carnivore') {
+                    // Look for herbivores
+                    let closestHerbivore = null;
+                    let minDist = this.vision;
+                    
+                    for (let organism of species) {
+                        if (organism.type === 'herbivore') {
+                            const dx = organism.x - this.x;
+                            const dy = organism.y - this.y;
+                            const dist = Math.sqrt(dx*dx + dy*dy);
+                            
+                            if (dist < minDist) {
+                                minDist = dist;
+                                closestHerbivore = organism;
+                            }
+                        }
+                    }
+                    
+                    if (closestHerbivore) {
+                        // Move toward herbivore
+                        const dx = closestHerbivore.x - this.x;
+                        const dy = closestHerbivore.y - this.y;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        
+                        this.x += (dx / dist) * this.speed;
+                        this.y += (dy / dist) * this.speed;
+                        
+                        // Eat if close enough
+                        if (dist < this.size + closestHerbivore.size) {
+                            this.energy += 30;
+                            species.splice(species.indexOf(closestHerbivore), 1);
+                        }
+                    } else {
+                        // Random movement
+                        this.x += (Math.random() - 0.5) * this.speed;
+                        this.y += (Math.random() - 0.5) * this.speed;
+                    }
+                }
+                
+                // Keep within bounds
+                this.x = Math.max(this.size, Math.min(canvas.width - this.size, this.x));
+                this.y = Math.max(this.size, Math.min(canvas.height - this.size, this.y));
+            }
+            
+            reproduce() {
+                this.energy -= 40;
+                this.offspring++;
+                
+                // Create offspring with possible mutation
+                const mutationChance = mutationRate.value / 1000;
+                let newColor = this.color;
+                
+                if (Math.random() < mutationChance) {
+                    // Slightly alter color
+                    const r = parseInt(this.color.slice(1, 3), 16);
+                    const g = parseInt(this.color.slice(3, 5), 16);
+                    const b = parseInt(this.color.slice(5, 7), 16);
+                    
+                    const newR = Math.max(0, Math.min(255, r + (Math.random() - 0.5) * 50)).toString(16).padStart(2, '0');
+                    const newG = Math.max(0, Math.min(255, g + (Math.random() - 0.5) * 50)).toString(16).padStart(2, '0');
+                    const newB = Math.max(0, Math.min(255, b + (Math.random() - 0.5) * 50)).toString(16).padStart(2, '0');
+                    
+                    newColor = `#${newR}${newG}${newB}`;
+                }
+                
+                let newSpeed = this.speed;
+                if (Math.random() < mutationChance) {
+                    newSpeed = Math.max(0.5, this.speed + (Math.random() - 0.5) * 0.5);
+                }
+                
+                let newVision = this.vision;
+                if (this.type !== 'producer' && Math.random() < mutationChance) {
+                    newVision = Math.max(20, this.vision + (Math.random() - 0.5) * 20);
+                }
+                
+                const offspring = new Species(
+                    species.length,
+                    this.type,
+                    newColor,
+                    this.x + (Math.random() - 0.5) * 30,
+                    this.y + (Math.random() - 0.5) * 30
+                );
+                
+                offspring.speed = newSpeed;
+                offspring.vision = newVision;
+                
+                species.push(offspring);
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                
+                // Draw a subtle outline for better visibility
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+            }
+        }
+        
+        // Plant class (producers)
+        class Plant {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = 3 + Math.random() * 3;
+                this.color = '#4cd964';
+                this.energy = 50;
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+        
+        // Initialize simulation
+        function initSimulation() {
+            species = [];
+            plants = [];
+            particles = [];
+            generation = 0;
+            population = 0;
+            
+            // Create initial plants
+            for (let i = 0; i < 50; i++) {
+                plants.push(new Plant());
+            }
+            
+            // Create initial species
+            species.push(new Species(0, 'producer', '#4cd964'));
+            species.push(new Species(1, 'herbivore', '#ff9500'));
+            species.push(new Species(2, 'carnivore', '#ff3b30'));
+            
+            updateStats();
+            updateSpeciesList();
+        }
+        
+        // Update statistics display
+        function updateStats() {
+            populationCount.textContent = species.length + plants.length;
+            speciesCount.textContent = species.filter(s => s.type !== 'producer').length;
+            generationCount.textContent = generation;
+        }
+        
+        // Update species list in UI
+        function updateSpeciesList() {
+            speciesList.innerHTML = '';
+            
+            const speciesByType = {};
+            species.forEach(s => {
+                if (!speciesByType[s.type]) {
+                    speciesByType[s.type] = [];
+                }
+                speciesByType[s.type].push(s);
+            });
+            
+            for (let type in speciesByType) {
+                const typeCount = speciesByType[type].length;
+                const firstOfType = speciesByType[type][0];
+                
+                const speciesItem = document.createElement('div');
+                speciesItem.className = 'species-item';
+                
+                speciesItem.innerHTML = `
+                    <div class="species-color" style="background-color: ${firstOfType.color};"></div>
+                    <div>${type.charAt(0).toUpperCase() + type.slice(1)} (${typeCount})</div>
+                `;
+                
+                speciesList.appendChild(speciesItem);
+            }
+        }
+        
+        // Main simulation loop
+        function simulate() {
+            if (!simulationRunning) return;
+            
+            // Clear canvas with a slight fade effect for trails
+            ctx.fillStyle = 'rgba(10, 30, 50, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Update environment factors
+            updateEnvironment();
+            
+            // Update and draw plants
+            for (let i = plants.length - 1; i >= 0; i--) {
+                plants[i].draw();
+            }
+            
+            // Add new plants based on resource abundance
+            if (Math.random() < resourceAbundance.value / 2000 && plants.length < 200) {
+                plants.push(new Plant());
+            }
+            
+            // Update and draw species
+            for (let i = species.length - 1; i >= 0; i--) {
+                const organism = species[i];
+                
+                if (!organism.update()) {
+                    // Organism died
+                    species.splice(i, 1);
+                    continue;
+                }
+                
+                organism.draw();
+            }
+            
+            // Update statistics
+            updateStats();
+            updateSpeciesList();
+            
+            // Increment generation occasionally
+            if (Math.random() < 0.001) {
+                generation++;
+            }
+            
+            // Continue simulation
+            const speed = speedControl.value / 5;
+            animationId = setTimeout(simulate, 100 / speed);
+        }
+        
+        // Update environmental factors
+        function updateEnvironment() {
+            // Simulate changing temperature and resources
+            const tempVariation = Math.sin(Date.now() / 20000) * 0.3 + 0.7;
+            const resourceVariation = Math.sin(Date.now() / 30000) * 0.2 + 0.8;
+            
+            const tempValue = Math.floor(tempVariation * 100);
+            const resourceValue = Math.floor((resourceAbundance.value / 100) * resourceVariation * 100);
+            
+            temperatureFill.style.width = `${tempValue}%`;
+            resourcesFill.style.width = `${resourceValue}%`;
+        }
+        
+        // Event listeners
+        startBtn.addEventListener('click', function() {
+            if (!simulationRunning) {
+                simulationRunning = true;
+                startBtn.textContent = 'Pause Simulation';
+                simulate();
+            } else {
+                simulationRunning = false;
+                startBtn.textContent = 'Resume Simulation';
+                clearTimeout(animationId);
+            }
+        });
+        
+        resetBtn.addEventListener('click', function() {
+            simulationRunning = false;
+            clearTimeout(animationId);
+            startBtn.textContent = 'Start Simulation';
+            initSimulation();
+        });
+        
+        addSpeciesBtn.addEventListener('click', function() {
+            if (species.length < 20) { // Limit to prevent overpopulation
+                const types = ['herbivore', 'carnivore'];
+                const type = types[Math.floor(Math.random() * types.length)];
+                const colors = ['#ff9500', '#ff3b30', '#ff2d55', '#bf5af2', '#ffcc00'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                species.push(new Species(
+                    species.length,
+                    type,
+                    color,
+                    Math.random() * canvas.width,
+                    Math.random() * canvas.height
+                ));
+                
+                updateSpeciesList();
+            }
+        });
+        
+        // Initialize the simulation
+        initSimulation();
+        
+        // Draw initial state
+        plants.forEach(plant => plant.draw());
+        species.forEach(organism => organism.draw());
+    </script>
+</body>
+</html>

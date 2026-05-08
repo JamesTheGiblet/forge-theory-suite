@@ -1,0 +1,76 @@
+{
+  "scp_version":  "0.1",
+  "scp_id":       "legion/auditor-anchor",
+  "object_class": "Thaumiel",
+  "intent":       "On strategy selection and daily: write an audit trail entry and snapshot the current best strategy as an immutable anchor.",
+  "containment": {
+    "read_only":   false,
+    "audit_log":   true,
+    "kill_switch": true
+  },
+  "provenance": {
+    "author":       "James / Giblets Creations",
+    "agent":        "Claude Sonnet 4.6",
+    "created_at":   "2026-05-05T13:00:00Z",
+    "version":      "1.0.0",
+    "context":      "Phase 2 trading OS — audit and anchoring capsule. Thaumiel because it maintains the immutable record of all decisions.",
+    "capture_mode": "conversation",
+    "lineage":      ["legion/strategy-selector"]
+  },
+  "behaviours": [
+    {
+      "trigger": "on_event",
+      "event":   "strategy.selected",
+      "actions": [
+        {
+          "primitive": "log",
+          "params":    { "message": "AuditorAnchor: recording strategy selection..." }
+        },
+        {
+          "primitive": "audit_event",
+          "params": {
+            "event_type": "strategy.selected",
+            "data":       { "trigger": "strategy.selected", "source": "legion/auditor-anchor" }
+          }
+        },
+        {
+          "primitive": "anchor_strategy",
+          "params": {
+            "note": "Anchored on strategy.selected event"
+          }
+        },
+        {
+          "primitive": "log",
+          "params":    { "message": "AuditorAnchor: audit entry written and strategy anchored." }
+        }
+      ]
+    },
+    {
+      "trigger":  "cron",
+      "schedule": "0 0 * * *",
+      "actions": [
+        {
+          "primitive": "log",
+          "params":    { "message": "AuditorAnchor: daily snapshot..." }
+        },
+        {
+          "primitive": "audit_event",
+          "params": {
+            "event_type": "daily.snapshot",
+            "data":       { "trigger": "cron_daily", "source": "legion/auditor-anchor" }
+          }
+        },
+        {
+          "primitive": "anchor_strategy",
+          "params": {
+            "note": "Daily scheduled anchor"
+          }
+        },
+        {
+          "primitive": "log",
+          "params":    { "message": "AuditorAnchor: daily snapshot complete." }
+        }
+      ]
+    }
+  ]
+}

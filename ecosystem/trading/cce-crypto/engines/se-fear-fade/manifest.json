@@ -1,0 +1,16 @@
+{
+  "id": "se-fear-fade",
+  "name": "S.E Fear Fade",
+  "version": "1.0.0",
+  "type": "STRATEGIC",
+  "ecosystem": "S.E",
+  "cycle": "4H",
+  "capitalKey": "fearFade",
+  "author": "James Gilbert — Giblets Creations",
+  "description": "Buys BTC during Extreme Fear (F&G < 20), holds, sells when Greed returns (F&G > 60). Counter-cyclical to S.E Crypto.",
+  "requires": {
+    "exchange": true,
+    "notifier": true,
+    "config": true
+  }
+}

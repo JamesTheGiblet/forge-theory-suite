@@ -1,0 +1,11 @@
+{
+  "msg_id": "e7673864fb123b6b",
+  "from": "router",
+  "to": "diplomat",
+  "type": "REGIME_CHANGE",
+  "payload": {
+    "old": "fear",
+    "new": "bull"
+  },
+  "timestamp": "2026-04-23T00:02:02.778Z"
+}

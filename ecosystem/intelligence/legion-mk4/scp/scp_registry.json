@@ -1,0 +1,169 @@
+{
+  "scp_id": "LEGION-MK4-001",
+  "object_class": "Thaumiel",
+  "title": "LEGION MK4 — SCP-Native Framework",
+  "version": "MK4.0",
+  "date": "2026-04-23",
+  "author": "James Gilbert",
+  "containment": {
+    "global_entropy": 0,
+    "threshold": 0.7,
+    "apollyon_events": [],
+    "max_agents": 50,
+    "auto_heal": true
+  },
+  "agents": [
+    {
+      "scp_id": "AGENT-CORE-000",
+      "name": "SCP_Controller",
+      "object_class": "Thaumiel",
+      "mandatory": true,
+      "containment_procedures": {
+        "heartbeat_interval": 30000,
+        "auto_restart_on_crash": true,
+        "max_restarts": 5
+      }
+    },
+    {
+      "scp_id": "AGENT-FORGE-001",
+      "name": "ForgeLord",
+      "object_class": "Thaumiel",
+      "enabled": true,
+      "containment_procedures": {
+        "max_concurrent_mutators": 3,
+        "mutation_rate": 0.3,
+        "strategy_dir": "./strategies"
+      },
+      "dependencies": [
+        "AGENT-LIBRARIAN-003"
+      ]
+    },
+    {
+      "scp_id": "AGENT-REAPER-002",
+      "name": "Reaper",
+      "object_class": "Euclid",
+      "enabled": true,
+      "containment_procedures": {
+        "check_interval": 15000,
+        "cpu_threshold": 70,
+        "memory_threshold_mb": 500,
+        "kill_on_violation": true
+      }
+    },
+    {
+      "scp_id": "AGENT-LIBRARIAN-003",
+      "name": "Librarian",
+      "object_class": "Safe",
+      "enabled": true,
+      "containment_procedures": {
+        "storage_path": "./data",
+        "index_refresh": 3600000,
+        "max_records": 100000
+      }
+    },
+    {
+      "scp_id": "AGENT-CHAMELEON-004",
+      "name": "Chameleon",
+      "object_class": "Euclid",
+      "enabled": true,
+      "containment_procedures": {
+        "learning_rate": 0.3,
+        "memory_retention_days": 30,
+        "personality": "adaptive"
+      }
+    },
+    {
+      "scp_id": "AGENT-AUDITOR-005",
+      "name": "Auditor",
+      "object_class": "Safe",
+      "enabled": true,
+      "containment_procedures": {
+        "validation_timeout": 10000,
+        "max_attempts": 3,
+        "test_dir": "./tests"
+      }
+    },
+    {
+      "scp_id": "AGENT-DIPLOMAT-006",
+      "name": "Diplomat",
+      "object_class": "Safe",
+      "enabled": true,
+      "containment_procedures": {
+        "channels": [
+          "observability_api",
+          "telegram",
+          "log"
+        ],
+        "rate_limit_ms": 1000
+      }
+    },
+    {
+      "scp_id": "TEST-ALPHA-001",
+      "name": "TestEntity",
+      "object_class": "Euclid",
+      "enabled": true,
+      "file": "test_entity.js",
+      "containment_procedures": {
+        "environment": "sandbox",
+        "max_interactions": 100,
+        "reset_on_breach": true
+      }
+    }
+  ],
+  "behaviors": [
+    {
+      "scp_id": "BEHAVIOR-LEARN-001",
+      "name": "AdaptiveLearning",
+      "trigger": "user_interaction",
+      "action": "update_model",
+      "containment": "monitor_drift"
+    },
+    {
+      "scp_id": "BEHAVIOR-MUTATE-002",
+      "name": "StrategyEvolution",
+      "trigger": "time_interval",
+      "interval": 60000,
+      "action": "mutate_strategies",
+      "containment": "entropy_check"
+    },
+    {
+      "scp_id": "BEHAVIOR-BREACH-003",
+      "name": "BreachResponse",
+      "trigger": "entropy_threshold",
+      "threshold": 0.7,
+      "action": "activate_containment"
+    }
+  ],
+  "rules": [
+    {
+      "scp_id": "RULE-001",
+      "name": "AgentCrashRecovery",
+      "condition": "agent_status == 'crashed'",
+      "action": "auto_restart",
+      "max_attempts": 3
+    },
+    {
+      "scp_id": "RULE-002",
+      "name": "EntropyContainment",
+      "condition": "entropy > 0.7",
+      "action": "reset_entropy",
+      "notify": true
+    },
+    {
+      "scp_id": "RULE-003",
+      "name": "ResourceLimit",
+      "condition": "memory_mb > 500",
+      "action": "reaper_intervention"
+    }
+  ],
+  "evolution": {
+    "enabled": true,
+    "mutation_rate": 0.2,
+    "fitness_function": "success_rate",
+    "max_generations": 100,
+    "containment": {
+      "max_entropy": 0.7,
+      "rollback_on_breach": true
+    }
+  }
+}

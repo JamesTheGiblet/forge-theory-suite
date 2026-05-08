@@ -1,0 +1,2606 @@
+        // Compound structure for multi-symbol words
+        class Compound {
+            constructor(symbols, meaning, cultureName = null) {
+                this.symbols = symbols; // Array of Symbol objects
+                this.meaning = meaning; // New meaning for the compound
+                this.cultureName = cultureName;
+                this.id = symbols.map(s => s.id).join('-') + '-' + meaning;
+                this.birthGeneration = simulation ? simulation.generation : 0;
+            }
+        }
+
+        // =====================
+        // Grammar Class (Step 3)
+        // =====================
+        class Grammar {
+            constructor({wordOrder, adjNounOrder, useParticles, particles}) {
+                this.wordOrder = wordOrder || 'SVO';
+                this.adjNounOrder = adjNounOrder || 'AdjNoun';
+                this.useParticles = useParticles || false;
+                this.particles = particles || {subject: '', object: '', verb: '', modifier: ''};
+            }
+            innovate() {
+                let newOrder = this.wordOrder;
+                let newAdjNoun = this.adjNounOrder;
+                let newParticles = {...this.particles};
+                let newUseParticles = this.useParticles;
+                let r = Math.random();
+                if (r < 0.25) {
+                    const orders = ['SVO','SOV','VSO','VOS','OSV','OVS'];
+                    newOrder = orders[Math.floor(Math.random()*orders.length)];
+                } else if (r < 0.5) {
+                    newAdjNoun = (this.adjNounOrder === 'AdjNoun') ? 'NounAdj' : 'AdjNoun';
+                } else if (r < 0.75) {
+                    newUseParticles = !this.useParticles;
+                } else {
+                    const particleSet = ['-ka','-no','-te','-li','-zu','-ra','-mi','-po','-sa','-tu',''];
+                    for (let key of Object.keys(newParticles)) {
+                        if (Math.random() < 0.5) newParticles[key] = particleSet[Math.floor(Math.random()*particleSet.length)];
+                    }
+                }
+                return new Grammar({wordOrder: newOrder, adjNounOrder: newAdjNoun, useParticles: newUseParticles, particles: newParticles});
+            }
+            clone() {
+                return new Grammar({
+                    wordOrder: this.wordOrder,
+                    adjNounOrder: this.adjNounOrder,
+                    useParticles: this.useParticles,
+                    particles: {...this.particles}
+                });
+            }
+            describe() {
+                let desc = `${this.wordOrder}, ${this.adjNounOrder}`;
+                if (this.useParticles) {
+                    desc += `, Particles: S[${this.particles.subject}] O[${this.particles.object}] V[${this.particles.verb}] Mod[${this.particles.modifier}]`;
+                }
+                return desc;
+            }
+        }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScriptForge - Written Language Evolution</title>
+    <!-- Chart.js CDN for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #ffd700;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .subtitle {
+            color: #a0a0a0;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .controls-panel {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            height: fit-content;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+            padding-bottom: 5px;
+        }
+
+        .control-item {
+            margin-bottom: 15px;
+        }
+
+        .control-item label {
+            display: block;
+            color: #a0a0a0;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #ffd700;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #ffd700;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .value-display {
+            display: inline-block;
+            color: #ffd700;
+            font-weight: bold;
+            min-width: 40px;
+            text-align: right;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #1a1a2e;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .visualization-area {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            padding: 20px;
+            min-height: 600px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #a0a0a0;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            color: #ffd700;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .symbol-display {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .symbol-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .symbol-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .symbol-card:hover {
+            border-color: #ffd700;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .symbol-canvas {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        .symbol-glyph {
+            font-size: 2em;
+            margin-bottom: 5px;
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3));
+        }
+
+        .symbol-meaning {
+            color: #a0a0a0;
+            font-size: 0.8em;
+            margin-bottom: 5px;
+        }
+
+        .symbol-complexity {
+            color: #ffd700;
+            font-size: 0.7em;
+        }
+
+        .evolution-timeline {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 200px;
+        }
+
+        @media (max-width: 968px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            .controls-panel {
+                margin-bottom: 20px;
+                width: 100%;
+                padding: 12px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .visualization-area {
+                min-height: 350px;
+                padding: 10px;
+            }
+            .symbol-display, .evolution-timeline, .info-panel {
+                padding: 10px;
+                margin-top: 10px;
+            }
+            .symbol-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            .control-group h3 {
+                font-size: 1em;
+            }
+            .control-item label {
+                font-size: 0.95em;
+            }
+            button, .btn-primary, .btn-secondary {
+                font-size: 0.95em;
+                padding: 10px;
+            }
+            .container {
+                padding: 5px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.1em;
+            }
+            .subtitle {
+                font-size: 0.95em;
+            }
+            .controls-panel {
+                padding: 6px;
+            }
+            .visualization-area {
+                min-height: 200px;
+            }
+            .symbol-grid {
+                grid-template-columns: 1fr;
+            }
+            .stat-card {
+                padding: 10px;
+            }
+            .info-panel, .symbol-display, .evolution-timeline {
+                padding: 6px;
+            }
+            .container {
+                padding: 2px;
+            }
+            .control-group h3 {
+                font-size: 0.95em;
+            }
+            .control-item label {
+                font-size: 0.9em;
+            }
+            button, .btn-primary, .btn-secondary {
+                font-size: 0.9em;
+                padding: 8px;
+            }
+        }
+
+        .info-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .info-panel h4 {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .communication-log {
+            max-height: 150px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 0.85em;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-left: 3px solid rgba(255, 215, 0, 0.5);
+            padding-left: 10px;
+        }
+
+        .log-success {
+            border-left-color: #4ade80;
+        }
+
+        .log-innovation {
+            border-left-color: #fbbf24;
+        }
+
+        .log-evolution {
+            border-left-color: #818cf8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⌘ ScriptForge ⌘</h1>
+            <p class="subtitle">Watch written language emerge and evolve from pictographs to complex scripts</p>
+            <p style="color: #666; font-size: 0.9em; margin-top: 10px;">
+                <em>Forge Theory: Complex writing systems emerge from the simple need to communicate</em>
+            </p>
+        </header>
+
+        <div class="main-grid">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <h3>⚙️ Simulation</h3>
+                    <button class="btn-primary" id="startBtn">Start Evolution</button>
+                    <button class="btn-secondary" id="pauseBtn">Pause</button>
+                    <button class="btn-secondary" id="resetBtn">Reset</button>
+                    <button class="btn-secondary" id="stepBtn">Step</button>
+                    <div class="control-item" style="margin-top:10px;">
+                        <label>Simulation Speed: <span class="value-display" id="speedValue">1x</span></label>
+                        <input type="range" id="speedSlider" min="0.1" max="3" value="1" step="0.1" title="Simulation Speed">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>📤 Export Script</h3>
+                    <button class="btn-secondary" id="exportPngBtn">Export as PNG</button>
+                    <button class="btn-secondary" id="exportSvgBtn">Export as SVG</button>
+                    <button class="btn-secondary" id="exportJsonBtn">Export Data (JSON)</button>
+                    <button class="btn-secondary" id="exportManuscriptBtn">Export Manuscript</button>
+                    <input type="file" id="importJsonInput" accept="application/json" style="display:none">
+                    <button class="btn-secondary" id="importJsonBtn">Import Data (JSON)</button>
+                    <hr style="margin: 15px 0; border: none; border-top: 1px solid rgba(255,215,0,0.1);">
+                    <button class="btn-secondary" id="savePresetBtn">Save Parameter Preset</button>
+                    <input type="file" id="loadPresetInput" accept="application/json" style="display:none">
+                    <button class="btn-secondary" id="loadPresetBtn">Load Parameter Preset</button>
+                    <button class="btn-secondary" id="sharePresetBtn">Copy Shareable Config Link</button>
+                </div>
+
+                <div class="control-group">
+                    <h3>🌍 Population</h3>
+                    <div class="control-item">
+                        <label>Cultures: <span class="value-display" id="culturesValue">3</span></label>
+                        <input type="range" id="culturesSlider" min="1" max="5" value="3" title="Number of Cultures">
+                    </div>
+                    <div class="control-item">
+                        <label>Agents per Culture: <span class="value-display" id="agentsValue">8</span></label>
+                        <input type="range" id="agentsSlider" min="4" max="20" value="8" title="Agents per Culture">
+                    </div>
+                    <div class="control-item">
+                        <label>Cultural Isolation: <span class="value-display" id="isolationValue">30%</span></label>
+                        <input type="range" id="isolationSlider" min="0" max="100" value="30" title="Cultural Isolation">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>✏️ Evolution</h3>
+                    <div class="control-item">
+                        <label>Simplification Rate: <span class="value-display" id="simplificationValue">50%</span></label>
+                        <input type="range" id="simplificationSlider" min="0" max="100" value="50" title="Simplification Rate">
+                    </div>
+                    <div class="control-item">
+                        <label>Innovation Rate: <span class="value-display" id="innovationValue">30%</span></label>
+                        <input type="range" id="innovationSlider" min="0" max="100" value="30" title="Innovation Rate">
+                    </div>
+                    <div class="control-item">
+                        <label>Abstraction Pressure: <span class="value-display" id="abstractionValue">40%</span></label>
+                        <input type="range" id="abstractionSlider" min="0" max="100" value="40" title="Abstraction Pressure">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>📚 Communication</h3>
+                    <div class="control-item">
+                        <label>Vocabulary Size: <span class="value-display" id="vocabValue">12</span></label>
+                        <input type="range" id="vocabSlider" min="6" max="30" value="12" title="Vocabulary Size">
+                    </div>
+                    <div class="control-item">
+                        <label>Communication Frequency: <span class="value-display" id="commFreqValue">50%</span></label>
+                        <input type="range" id="commFreqSlider" min="10" max="100" value="50" title="Communication Frequency">
+                    </div>
+                </div>
+
+                <div class="info-panel">
+                    <h4>📖 Current Phase</h4>
+                    <div id="phaseInfo" style="color: #a0a0a0;">Ready to begin...</div>
+                </div>
+            </div>
+
+            <div>
+                <div class="visualization-area">
+                    <canvas id="mainCanvas"></canvas>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Generation</div>
+                        <div class="stat-value" id="generationStat">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Active Symbols</div>
+                        <div class="stat-value" id="symbolsStat">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Avg Complexity</div>
+                        <div class="stat-value" id="complexityStat">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Script Dialects</div>
+                        <div class="stat-value" id="dialectsStat">0</div>
+                    </div>
+                </div>
+
+                <div class="symbol-display">
+                    <h3 style="color: #ffd700; margin-bottom: 15px;">Active Symbols by Culture</h3>
+                    <div id="symbolContainer"></div>
+                </div>
+
+                <div class="evolution-timeline">
+                                    <!-- Analytics Panel -->
+                                    <div class="info-panel" style="margin-top: 25px;">
+                                        <h4>📊 Analytics</h4>
+                                        <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                                            <div style="flex:1; min-width: 300px;">
+                                                <canvas id="complexityChart" height="180"></canvas>
+                                            </div>
+                                            <div style="flex:1; min-width: 300px;">
+                                                <canvas id="vocabChart" height="180"></canvas>
+                                            </div>
+                                            <div style="flex:1; min-width: 300px;">
+                                                <canvas id="divergenceChart" height="180"></canvas>
+                                            </div>
+                                        </div>
+                                        <div style="margin-top: 20px;">
+                                            <canvas id="eventTimelineChart" height="100"></canvas>
+                                        </div>
+                        <h3 style="color: #ffd700; margin-bottom: 0;">Communication Log</h3>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <input type="text" id="commLogSearch" placeholder="Search log..." style="padding:2px 8px; border-radius:5px; border:1px solid #ffd700; font-size:0.9em; width:120px;">
+                            <label for="commLogFilter" style="position:absolute;left:-9999px;">Filter communication log</label>
+                            <select id="commLogFilter" title="Filter communication log" style="padding:2px 8px; border-radius:5px; border:1px solid #ffd700; font-size:0.9em;">
+                                <option value="">All</option>
+                                <option value="success">Success</option>
+                                <option value="innovation">Innovation</option>
+                                <option value="evolution">Evolution</option>
+                                <option value="system">System</option>
+                            </select>
+                            <button class="btn-secondary" id="exportCommLogBtn" style="padding:2px 10px; font-size:0.9em;">Export Log</button>
+                        </div>
+                    </div>
+                    <div class="communication-log" id="commLog"></div>
+                    <div id="agentInteractionViz" style="margin-top:10px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+                                        // --- Communication Log Filtering, Searching, Export, and Agent Viz ---
+                                        function filterAndRenderCommLog() {
+                                            const search = (document.getElementById('commLogSearch')?.value || '').toLowerCase();
+                                            const filter = document.getElementById('commLogFilter')?.value || '';
+                                            let entries = simulation.communicationLog;
+                                            if (filter) entries = entries.filter(e => e.type === filter);
+                                            if (search) entries = entries.filter(e => e.message.toLowerCase().includes(search));
+                                            const logContainer = document.getElementById('commLog');
+                                            logContainer.innerHTML = entries.slice(0, 20).map(entry => {
+                                                const className = entry.type === 'success' ? 'log-success' :
+                                                                entry.type === 'innovation' ? 'log-innovation' :
+                                                                entry.type === 'evolution' ? 'log-evolution' : '';
+                                                return `<div class="log-entry ${className}">[Gen ${entry.generation}] ${entry.message}</div>`;
+                                            }).join('');
+                                        }
+
+                                        function exportCommLog() {
+                                            const data = simulation.communicationLog.map(e =>
+                                                `[Gen ${e.generation}] (${e.type}) ${e.message}`
+                                            ).join('\n');
+                                            const blob = new Blob([data], {type:'text/plain'});
+                                            const a = document.createElement('a');
+                                            a.href = URL.createObjectURL(blob);
+                                            a.download = 'scriptforge-comm-log.txt';
+                                            a.click();
+                                            URL.revokeObjectURL(a.href);
+                                        }
+
+                                        function renderAgentInteractionViz() {
+                                            // Simple placeholder: show a count of unique agent interactions (future: draw a network)
+                                            const container = document.getElementById('agentInteractionViz');
+                                            if (!container) return;
+                                            // Parse log for agent-to-agent events
+                                            const pattern = /([A-Za-z]+): Symbol for "(.*?)" learned/;
+                                            const pairs = new Set();
+                                            simulation.communicationLog.forEach(e => {
+                                                const m = e.message.match(pattern);
+                                                if (m) pairs.add(m[1]+':'+m[2]);
+                                            });
+                                            container.innerHTML = `<div style='color:#ffd700;font-size:0.95em;'>Unique agent-concept learning events: <b>${pairs.size}</b></div>`;
+                                        }
+                                // --- Simulation Speed & Step Control ---
+                                let simulationInterval = null;
+                                let simulationSpeed = 1.0;
+
+                                function startSimulationLoop() {
+                                    if (simulationInterval) clearInterval(simulationInterval);
+                                    simulationInterval = setInterval(() => {
+                                        if (simulation.isRunning) {
+                                            simulation.step();
+                                        }
+                                    }, Math.max(50, 500 / simulationSpeed));
+                                }
+
+                                function stopSimulationLoop() {
+                                    if (simulationInterval) clearInterval(simulationInterval);
+                                    simulationInterval = null;
+                                }
+                        // --- Analytics Data ---
+                        const analytics = {
+                            generations: [],
+                            avgComplexity: [],
+                            vocabSizes: [],
+                            divergence: [],
+                            eventTimeline: [] // {gen, type}
+                        };
+
+                        // --- Chart.js Chart Instances ---
+                        let complexityChart, vocabChart, divergenceChart, eventTimelineChart;
+
+                        function setupCharts() {
+                            const genLabels = analytics.generations;
+                            // Complexity
+                            complexityChart = new Chart(document.getElementById('complexityChart').getContext('2d'), {
+                                type: 'line',
+                                data: {
+                                    labels: genLabels,
+                                    datasets: [{
+                                        label: 'Avg Symbol Complexity',
+                                        data: analytics.avgComplexity,
+                                        borderColor: '#ffd700',
+                                        backgroundColor: 'rgba(255,215,0,0.1)',
+                                        tension: 0.2,
+                                        pointRadius: 0
+                                    }]
+                                },
+                                options: {responsive:true, plugins:{legend:{display:false}}, scales:{x:{title:{display:true,text:'Generation'}},y:{title:{display:true,text:'Complexity'}}}}
+                            });
+                            // Vocabulary
+                            vocabChart = new Chart(document.getElementById('vocabChart').getContext('2d'), {
+                                type: 'line',
+                                data: {
+                                    labels: genLabels,
+                                    datasets: [{
+                                        label: 'Vocabulary Size',
+                                        data: analytics.vocabSizes,
+                                        borderColor: '#4ecdc4',
+                                        backgroundColor: 'rgba(78,205,196,0.1)',
+                                        tension: 0.2,
+                                        pointRadius: 0
+                                    }]
+                                },
+                                options: {responsive:true, plugins:{legend:{display:false}}, scales:{x:{title:{display:true,text:'Generation'}},y:{title:{display:true,text:'Vocabulary'}}}}
+                            });
+                            // Divergence
+                            divergenceChart = new Chart(document.getElementById('divergenceChart').getContext('2d'), {
+                                type: 'line',
+                                data: {
+                                    labels: genLabels,
+                                    datasets: [{
+                                        label: 'Cultural Divergence',
+                                        data: analytics.divergence,
+                                        borderColor: '#a29bfe',
+                                        backgroundColor: 'rgba(162,155,254,0.1)',
+                                        tension: 0.2,
+                                        pointRadius: 0
+                                    }]
+                                },
+                                options: {responsive:true, plugins:{legend:{display:false}}, scales:{x:{title:{display:true,text:'Generation'}},y:{title:{display:true,text:'Divergence'}}}}
+                            });
+                            // Event Timeline
+                            eventTimelineChart = new Chart(document.getElementById('eventTimelineChart').getContext('2d'), {
+                                type: 'scatter',
+                                data: {
+                                    datasets: [
+                                        {label:'Innovation',data:[],backgroundColor:'#fbbf24'},
+                                        {label:'Simplification',data:[],backgroundColor:'#818cf8'},
+                                        {label:'Communication',data:[],backgroundColor:'#4ade80'}
+                                    ]
+                                },
+                                options: {responsive:true, plugins:{legend:{display:true}}, scales:{x:{title:{display:true,text:'Generation'}},y:{display:false,min:0,max:1}}}
+                            });
+                        }
+
+                        function updateAnalytics() {
+                            // Track per generation
+                            const gen = simulation.generation;
+                            if (analytics.generations.length === 0 || analytics.generations[analytics.generations.length-1] !== gen) {
+                                analytics.generations.push(gen);
+                                // Avg complexity
+                                const stats = simulation.getStats();
+                                analytics.avgComplexity.push(Number(stats.avgComplexity));
+                                // Vocab size (total unique symbols)
+                                analytics.vocabSizes.push(stats.activeSymbols);
+                                // Divergence: count of unique shared symbols across cultures
+                                let divergence = 0;
+                                if (simulation.cultures.length > 1) {
+                                    const sets = simulation.cultures.map(c => new Set([...c.sharedSymbols.keys()]));
+                                    // Jaccard index for first two cultures
+                                    const a = sets[0], b = sets[1];
+                                    const intersection = new Set([...a].filter(x => b.has(x)));
+                                    const union = new Set([...a, ...b]);
+                                    divergence = 1 - (intersection.size / (union.size || 1));
+                                }
+                                analytics.divergence.push(divergence);
+                            }
+                            // Update event timeline
+                            const lastGen = analytics.eventTimeline.length > 0 ? analytics.eventTimeline[analytics.eventTimeline.length-1].gen : -1;
+                            simulation.communicationLog.forEach(e => {
+                                if (e.generation > lastGen) {
+                                    if (e.type === 'innovation' || e.type === 'evolution' || e.type === 'success') {
+                                        analytics.eventTimeline.push({gen: e.generation, type: e.type});
+                                    }
+                                }
+                            });
+                            // Update charts
+                            if (complexityChart && vocabChart && divergenceChart && eventTimelineChart) {
+                                complexityChart.data.labels = analytics.generations;
+                                complexityChart.data.datasets[0].data = analytics.avgComplexity;
+                                complexityChart.update();
+                                vocabChart.data.labels = analytics.generations;
+                                vocabChart.data.datasets[0].data = analytics.vocabSizes;
+                                vocabChart.update();
+                                divergenceChart.data.labels = analytics.generations;
+                                divergenceChart.data.datasets[0].data = analytics.divergence;
+                                divergenceChart.update();
+                                // Timeline
+                                const eventData = {innovation:[],evolution:[],success:[]};
+                                analytics.eventTimeline.forEach(ev => {
+                                    if (eventData[ev.type]) eventData[ev.type].push({x:ev.gen,y:0.5+Math.random()*0.2});
+                                });
+                                eventTimelineChart.data.datasets[0].data = eventData.innovation;
+                                eventTimelineChart.data.datasets[1].data = eventData.evolution;
+                                eventTimelineChart.data.datasets[2].data = eventData.success;
+                                eventTimelineChart.update();
+                            }
+                        }
+                // --- Parameter Preset & Sharing Functionality ---
+                function saveParameterPreset() {
+                    const preset = JSON.stringify(simulation.params, null, 2);
+                    const blob = new Blob([preset], { type: 'application/json' });
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = 'scriptforge-params.json';
+                    a.click();
+                    URL.revokeObjectURL(a.href);
+                }
+
+                function loadParameterPresetFromJSON(json) {
+                    try {
+                        const params = typeof json === 'string' ? JSON.parse(json) : json;
+                        // Validate keys
+                        const keys = [
+                            'numCultures','agentsPerCulture','culturalIsolation',
+                            'simplificationRate','innovationRate','abstractionPressure',
+                            'vocabularySize','communicationFrequency'
+                        ];
+                        for (const k of keys) {
+                            if (!(k in params)) throw new Error('Missing parameter: ' + k);
+                        }
+                        Object.assign(simulation.params, params);
+                        simulation.initialize();
+                        simulation.updateDisplay();
+                        renderer.render();
+                        alert('Parameter preset loaded!');
+                    } catch (e) {
+                        alert('Failed to load preset: ' + e.message);
+                    }
+                }
+
+                function getShareableConfigURL() {
+                    const base = window.location.origin + window.location.pathname;
+                    const params = encodeURIComponent(btoa(JSON.stringify(simulation.params)));
+                    return `${base}?config=${params}`;
+                }
+
+                function applyConfigFromURL() {
+                    const url = new URL(window.location.href);
+                    const config = url.searchParams.get('config');
+                    if (config) {
+                        try {
+                            const decoded = JSON.parse(atob(decodeURIComponent(config)));
+                            loadParameterPresetFromJSON(decoded);
+                        } catch (e) {
+                            alert('Invalid config in URL.');
+                        }
+                    }
+                }
+                // --- Preset Button Handlers ---
+                document.addEventListener('DOMContentLoaded', function() {
+                                // Speed slider
+                                const speedSlider = document.getElementById('speedSlider');
+                                const speedValue = document.getElementById('speedValue');
+                                if (speedSlider && speedValue) {
+                                    speedSlider.addEventListener('input', function() {
+                                        simulationSpeed = parseFloat(speedSlider.value);
+                                        speedValue.textContent = simulationSpeed.toFixed(1) + 'x';
+                                        if (simulation.isRunning) startSimulationLoop();
+                                    });
+                                }
+
+                                // Step button
+                                const stepBtn = document.getElementById('stepBtn');
+                                if (stepBtn) {
+                                    stepBtn.addEventListener('click', function() {
+                                        simulation.step();
+                                    });
+                                }
+
+                                // Start/Pause/Reset buttons (override default handlers)
+                                const startBtn = document.getElementById('startBtn');
+                                const pauseBtn = document.getElementById('pauseBtn');
+                                const resetBtn = document.getElementById('resetBtn');
+                                if (startBtn) {
+                                    startBtn.addEventListener('click', function() {
+                                        simulation.start();
+                                        startSimulationLoop();
+                                    });
+                                }
+                                if (pauseBtn) {
+                                    pauseBtn.addEventListener('click', function() {
+                                        simulation.pause();
+                                        stopSimulationLoop();
+                                    });
+                                }
+                                if (resetBtn) {
+                                    resetBtn.addEventListener('click', function() {
+                                        simulation.reset();
+                                        stopSimulationLoop();
+                                    });
+                                }
+                    // ...existing code...
+                    // Preset save
+                    const savePresetBtn = document.getElementById('savePresetBtn');
+                    if (savePresetBtn) {
+                        savePresetBtn.addEventListener('click', saveParameterPreset);
+                    }
+                    // Preset load
+                    const loadPresetBtn = document.getElementById('loadPresetBtn');
+                    const loadPresetInput = document.getElementById('loadPresetInput');
+                    if (loadPresetBtn && loadPresetInput) {
+                        loadPresetBtn.addEventListener('click', () => loadPresetInput.click());
+                        loadPresetInput.addEventListener('change', function(e) {
+                            const file = e.target.files[0];
+                            if (!file) return;
+                            const reader = new FileReader();
+                            reader.onload = function(evt) {
+                                loadParameterPresetFromJSON(evt.target.result);
+                            };
+                            reader.readAsText(file);
+                        });
+                    }
+                    // Shareable link
+                    const sharePresetBtn = document.getElementById('sharePresetBtn');
+                    if (sharePresetBtn) {
+                        sharePresetBtn.addEventListener('click', function() {
+                            const url = getShareableConfigURL();
+                            navigator.clipboard.writeText(url).then(() => {
+                                alert('Shareable config link copied to clipboard!');
+                            }, () => {
+                                prompt('Copy this link:', url);
+                            });
+                        });
+                    }
+                    // Apply config from URL on load
+                    applyConfigFromURL();
+
+                    // Comm log filter/search/export
+                    var commLogSearch = document.getElementById('commLogSearch');
+                    var commLogFilter = document.getElementById('commLogFilter');
+                    var exportCommLogBtn = document.getElementById('exportCommLogBtn');
+                    if (commLogSearch) { commLogSearch.addEventListener('input', filterAndRenderCommLog); }
+                    if (commLogFilter) { commLogFilter.addEventListener('change', filterAndRenderCommLog); }
+                    if (exportCommLogBtn) { exportCommLogBtn.addEventListener('click', exportCommLog); }
+
+
+                });
+        // Core Data Structures
+                // --- Import Functionality ---
+                function importSimulationFromJSON(json) {
+                    try {
+                        // Parse and validate
+                        const data = typeof json === 'string' ? JSON.parse(json) : json;
+                        if (!data || !data.parameters || !data.cultures || !data.symbols) {
+                            alert('Invalid simulation file.');
+                            return;
+                        }
+
+                        // Set parameters
+                        Object.assign(simulation.params, data.parameters);
+
+                        // Re-initialize simulation with new params
+                        simulation.initialize();
+
+                        // Restore generation
+                        simulation.generation = data.generation || 0;
+
+                        // Restore symbols
+                        simulation.allSymbols = [];
+                        const symbolMap = new Map();
+                        data.symbols.forEach(s => {
+                            const sym = new Symbol(s.meaning, s.complexity, s.isAbstract, s.cultureName);
+                            sym.id = s.id;
+                            sym.usageCount = s.usageCount;
+                            sym.generation = s.generation;
+                            sym.ancestors = s.ancestors || [];
+                            sym.strokes = s.strokes;
+                            sym.birthGeneration = s.birthGeneration || 0;
+                            symbolMap.set(sym.id, sym);
+                            simulation.allSymbols.push(sym);
+                        });
+
+                        // Restore cultures and agents
+                        simulation.cultures.forEach((culture, i) => {
+                            const cData = data.cultures[i];
+                            if (!cData) return;
+                            culture.name = cData.name;
+                            culture.color = cData.color;
+                            culture.generation = cData.generation;
+                            // Agents
+                            culture.agents.forEach((agent, j) => {
+                                const aData = cData.agents[j];
+                                if (!aData) return;
+                                agent.vocabulary = new Map();
+                                (aData.vocabulary || []).forEach(v => {
+                                    if (symbolMap.has(v.id)) {
+                                        agent.vocabulary.set(v.meaning, symbolMap.get(v.id));
+                                    }
+                                });
+                            });
+                            // Shared symbols
+                            culture.sharedSymbols = new Map();
+                            (cData.sharedSymbols || []).forEach(v => {
+                                if (symbolMap.has(v.id)) {
+                                    culture.sharedSymbols.set(v.meaning, symbolMap.get(v.id));
+                                }
+                            });
+                        });
+
+                        // Restore communication log
+                        simulation.communicationLog = data.communicationLog || [];
+
+                        simulation.updateDisplay();
+                        renderer.render();
+                        alert('Simulation imported successfully!');
+                    } catch (e) {
+                        alert('Failed to import simulation: ' + e.message);
+                    }
+                }
+        class Symbol {
+            constructor(meaning, complexity = 10, isAbstract = false, cultureName = null) {
+                this.id = Math.random().toString(36).substr(2, 9);
+                this.meaning = meaning;
+                this.complexity = complexity; // Stroke count
+                this.usageCount = 0;
+                this.generation = 0;
+                this.isAbstract = isAbstract; // Phonetic vs pictographic
+                this.ancestors = [];
+                this.cultureName = cultureName;
+                this.strokes = this.generateStrokes(meaning, complexity, isAbstract);
+                this.birthGeneration = 0;
+            }
+
+            generateStrokes(meaning, complexity, isAbstract) {
+                // Generate actual stroke data for drawing
+                const strokes = [];
+                const seed = this.stringToSeed(meaning);
+                
+                if (isAbstract) {
+                    // Abstract symbols are simpler, more geometric
+                    const numStrokes = Math.max(3, Math.floor(complexity / 2));
+                    for (let i = 0; i < numStrokes; i++) {
+                        const angle = (i / numStrokes) * Math.PI * 2;
+                        strokes.push({
+                            type: Math.random() > 0.5 ? 'line' : 'curve',
+                            points: this.generateStrokePoints(angle, seed + i),
+                            width: 2
+                        });
+                    }
+                } else {
+                    // Pictographic symbols are more detailed
+                    const baseShape = this.getPictographicBase(meaning, seed);
+                    const numStrokes = Math.max(complexity, 5);
+                    
+                    for (let i = 0; i < numStrokes; i++) {
+                        strokes.push({
+                            type: baseShape.strokeTypes[i % baseShape.strokeTypes.length],
+                            points: this.generateStrokePoints(
+                                (i / numStrokes) * Math.PI * 2 + baseShape.rotation,
+                                seed + i,
+                                baseShape.scale
+                            ),
+                            width: 3
+                        });
+                    }
+                }
+                
+                return strokes;
+            }
+
+            stringToSeed(str) {
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                    hash = hash & hash;
+                }
+                return Math.abs(hash);
+            }
+
+            getPictographicBase(meaning, seed) {
+                const bases = {
+                    'sun': { strokeTypes: ['curve', 'line', 'line'], rotation: 0, scale: 1.2 },
+                    'moon': { strokeTypes: ['curve', 'curve'], rotation: 0.5, scale: 1.1 },
+                    'water': { strokeTypes: ['curve', 'curve', 'curve'], rotation: 0, scale: 0.8 },
+                    'fire': { strokeTypes: ['line', 'curve', 'line'], rotation: Math.PI/4, scale: 1.3 },
+                    'tree': { strokeTypes: ['line', 'curve', 'curve', 'line'], rotation: Math.PI/2, scale: 1.4 },
+                    'house': { strokeTypes: ['line', 'line', 'line', 'line'], rotation: 0, scale: 1.0 },
+                    'person': { strokeTypes: ['curve', 'line', 'line'], rotation: 0, scale: 1.0 },
+                    'animal': { strokeTypes: ['curve', 'curve', 'line'], rotation: 0.3, scale: 1.1 },
+                    'food': { strokeTypes: ['curve', 'curve'], rotation: 0, scale: 0.9 },
+                    'tool': { strokeTypes: ['line', 'line', 'curve'], rotation: Math.PI/3, scale: 1.0 }
+                };
+                
+                return bases[meaning] || { strokeTypes: ['line', 'curve'], rotation: 0, scale: 1.0 };
+            }
+
+            generateStrokePoints(baseAngle, seed, scale = 1.0) {
+                const random = this.seededRandom(seed);
+                const points = [];
+                const numPoints = 3 + Math.floor(random() * 3);
+                
+                for (let i = 0; i < numPoints; i++) {
+                    const angle = baseAngle + (random() - 0.5) * Math.PI / 2;
+                    const distance = (20 + random() * 30) * scale;
+                    points.push({
+                        x: Math.cos(angle) * distance,
+                        y: Math.sin(angle) * distance
+                    });
+                }
+                
+                return points;
+            }
+
+            seededRandom(seed) {
+                let current = seed;
+                return function() {
+                    current = (current * 9301 + 49297) % 233280;
+                    return current / 233280;
+                };
+            }
+
+            simplify() {
+                if (this.complexity > 3 && this.strokes.length > 3) {
+                    this.complexity -= 1;
+                    // Remove a random stroke
+                    const removeIdx = Math.floor(Math.random() * this.strokes.length);
+                    this.strokes.splice(removeIdx, 1);
+                    
+                    // Simplify remaining strokes
+                    this.strokes.forEach(stroke => {
+                        if (stroke.points.length > 2) {
+                            stroke.points.pop();
+                        }
+                    });
+                    
+                    this.usageCount = 0;
+                    return true;
+                }
+                return false;
+            }
+
+            abstract() {
+                if (!this.isAbstract) {
+                    this.isAbstract = true;
+                    // Regenerate with abstract style
+                    this.strokes = this.generateStrokes(this.meaning, this.complexity, true);
+                    return true;
+                }
+                return false;
+            }
+
+            clone() {
+                const cloned = new Symbol(this.meaning, this.complexity, this.isAbstract, this.cultureName);
+                cloned.strokes = JSON.parse(JSON.stringify(this.strokes));
+                cloned.usageCount = this.usageCount;
+                cloned.generation = this.generation;
+                cloned.birthGeneration = this.birthGeneration;
+                return cloned;
+            }
+
+            mutate() {
+                // Slight variation in strokes for cultural drift
+                this.strokes.forEach(stroke => {
+                    stroke.points.forEach(point => {
+                        point.x += (Math.random() - 0.5) * 5;
+                        point.y += (Math.random() - 0.5) * 5;
+                    });
+                });
+            }
+        }
+
+        class Agent {
+                                                // Track utterances (sentences generated by this agent)
+                                                utteranceHistory = [];
+
+                                    generateSentence({subject, verb, object, modifier}) {
+                                        let g = this.grammar || new Grammar({});
+                                        let words = {
+                                            subject: subject ? subject.meaning : '',
+                                            verb: verb ? verb.meaning : '',
+                                            object: object ? object.meaning : '',
+                                            modifier: modifier ? modifier.meaning : ''
+                                        };
+                                        if (g.useParticles) {
+                                            if (words.subject) words.subject += g.particles.subject;
+                                            if (words.object) words.object += g.particles.object;
+                                            if (words.verb) words.verb += g.particles.verb;
+                                            if (words.modifier) words.modifier += g.particles.modifier;
+                                        }
+                                        let phrase = '';
+                                        if (words.modifier && (g.adjNounOrder==='AdjNoun')) {
+                                            phrase = words.modifier + ' ' + words.subject;
+                                        } else if (words.modifier && (g.adjNounOrder==='NounAdj')) {
+                                            phrase = words.subject + ' ' + words.modifier;
+                                        } else {
+                                            phrase = words.subject;
+                                        }
+                                        let order = g.wordOrder;
+                                        let sent = '';
+                                        switch(order) {
+                                            case 'SVO':
+                                                sent = [phrase, words.verb, words.object].filter(Boolean).join(' ');
+                                                break;
+                                            case 'SOV':
+                                                sent = [phrase, words.object, words.verb].filter(Boolean).join(' ');
+                                                break;
+                                            case 'VSO':
+                                                sent = [words.verb, phrase, words.object].filter(Boolean).join(' ');
+                                                break;
+                                            case 'VOS':
+                                                sent = [words.verb, words.object, phrase].filter(Boolean).join(' ');
+                                                break;
+                                            case 'OSV':
+                                                sent = [words.object, phrase, words.verb].filter(Boolean).join(' ');
+                                                break;
+                                            case 'OVS':
+                                                sent = [words.object, words.verb, phrase].filter(Boolean).join(' ');
+                                                break;
+                                            default:
+                                                sent = [phrase, words.verb, words.object].filter(Boolean).join(' ');
+                                        }
+                                        let sentence = sent.trim();
+                                        // Track utterance in agent and globally
+                                        let utterance = {
+                                            sentence,
+                                            agent: this,
+                                            culture: this.culture,
+                                            grammar: g,
+                                            generation: (typeof simulation !== 'undefined' && simulation.generation !== undefined) ? simulation.generation : 0
+                                        };
+                                        this.utteranceHistory.push(utterance);
+                                        if (this.utteranceHistory.length > 20) this.utteranceHistory.shift();
+                                        if (typeof simulation !== 'undefined' && simulation.logUtterance) simulation.logUtterance(utterance);
+                                        return sentence;
+                                    }
+                        // Learn a compound
+                        learnCompound(compound) {
+                            if (!this.vocabulary.has(compound.meaning)) {
+                                this.vocabulary.set(compound.meaning, compound);
+                                return true;
+                            }
+                            return false;
+                        }
+                        // Create a compound from known symbols
+                        createCompound(meaning, knownSymbols, cultureName) {
+                            // Only create if agent knows at least 2 symbols
+                            if (knownSymbols.length < 2) return null;
+                            const compound = new Compound(knownSymbols, meaning, cultureName);
+                            this.vocabulary.set(meaning, compound);
+                            return compound;
+                        }
+            constructor(culture, x, y) {
+                this.culture = culture;
+                this.x = x;
+                this.y = y;
+                this.vocabulary = new Map(); // meaning -> Symbol
+                this.communicationHistory = [];
+                // Each agent starts with a copy of their culture's grammar
+                this.grammar = culture.grammar.clone();
+            }
+
+            maybeInnovateGrammar() {
+                if (this.grammar && Math.random() < 0.05) {
+                    this.grammar = this.grammar.innovate();
+                }
+            }
+
+            learnGrammarFrom(other) {
+                if (!this.grammar || !other.grammar) return;
+                if (Math.random() < 0.1) {
+                    let features = ['wordOrder','adjNounOrder','useParticles'];
+                    let f = features[Math.floor(Math.random()*features.length)];
+                    this.grammar[f] = other.grammar[f];
+                    if (f==='useParticles' && this.grammar.useParticles) {
+                        let keys = Object.keys(this.grammar.particles);
+                        let k = keys[Math.floor(Math.random()*keys.length)];
+                        this.grammar.particles[k] = other.grammar.particles[k];
+                    }
+                }
+            }
+
+            learn(symbol) {
+                if (!this.vocabulary.has(symbol.meaning)) {
+                    this.vocabulary.set(symbol.meaning, symbol);
+                    return true;
+                }
+                return false;
+            }
+
+            learnFrom(other) {
+                // Learn symbols and compounds
+                other.vocabulary.forEach((symbol, meaning) => {
+                    if (Math.random() < 0.5) this.learn(symbol);
+                });
+                // Learn grammar features
+                this.learnGrammarFrom(other);
+            }
+
+            communicate(other, meaning) {
+                if (this.vocabulary.has(meaning)) {
+                    const symbol = this.vocabulary.get(meaning);
+                    symbol.usageCount++;
+                    
+                    // Teaching
+                    if (!other.vocabulary.has(meaning)) {
+                        other.learn(symbol);
+                        return { success: true, type: 'teach' };
+                    }
+                    return { success: true, type: 'communicate' };
+                }
+                return { success: false, type: 'fail' };
+            }
+
+            innovate(meaning, complexity, cultureName) {
+                const newSymbol = new Symbol(meaning, complexity, false, cultureName);
+                this.vocabulary.set(meaning, newSymbol);
+                return newSymbol;
+            }
+        }
+
+        class Culture {
+            constructor(name, color, x, y) {
+                this.name = name;
+                this.color = color;
+                this.x = x;
+                this.y = y;
+                this.agents = [];
+                this.sharedSymbols = new Map();
+                this.generation = 0;
+                // Each culture starts with a random grammar
+                this.grammar = new Grammar({
+                    wordOrder: ['SVO','SOV','VSO','VOS','OSV','OVS'][Math.floor(Math.random()*6)],
+                    adjNounOrder: Math.random()<0.5 ? 'AdjNoun' : 'NounAdj',
+                    useParticles: Math.random()<0.5,
+                    particles: {
+                        subject: ['-ka','-no','-te','-li','-zu','-ra','-mi','-po','-sa','-tu',''][Math.floor(Math.random()*11)],
+                        object: ['-ka','-no','-te','-li','-zu','-ra','-mi','-po','-sa','-tu',''][Math.floor(Math.random()*11)],
+                        verb: ['-ka','-no','-te','-li','-zu','-ra','-mi','-po','-sa','-tu',''][Math.floor(Math.random()*11)],
+                        modifier: ['-ka','-no','-te','-li','-zu','-ra','-mi','-po','-sa','-tu',''][Math.floor(Math.random()*11)]
+                    }
+                });
+            }
+
+            addAgent(agent) {
+                this.agents.push(agent);
+            }
+
+            updateSharedSymbols() {
+                // Track which symbols are widely used in this culture
+                const symbolCounts = new Map();
+                
+                this.agents.forEach(agent => {
+                    agent.vocabulary.forEach((symbol, meaning) => {
+                        const key = meaning;
+                        symbolCounts.set(key, (symbolCounts.get(key) || 0) + 1);
+                    });
+                });
+
+                // Symbols used by majority become "shared"
+                const threshold = this.agents.length * 0.5;
+                symbolCounts.forEach((count, meaning) => {
+                    if (count >= threshold) {
+                        const symbol = this.agents[0].vocabulary.get(meaning);
+                        if (symbol) {
+                            this.sharedSymbols.set(meaning, symbol);
+                        }
+                    }
+                });
+            }
+        }
+
+        // Simulation Engine
+        class ScriptForgeSimulation {
+                                                // Render recent utterances/expressions
+                                                renderUtteranceLog() {
+                                                    let utterDiv = document.getElementById('utterance-log');
+                                                    if (!utterDiv) {
+                                                        utterDiv = document.createElement('div');
+                                                        utterDiv.id = 'utterance-log';
+                                                        document.body.insertBefore(utterDiv, document.body.firstChild.nextSibling.nextSibling);
+                                                    }
+                                                    let html = '<h3>Recent Utterances</h3>';
+                                                    html += '<div style="max-height:220px;overflow-y:auto;font-size:1em;background:rgba(0,0,0,0.15);padding:8px;border-radius:8px;">';
+                                                    for (let utt of this.utteranceLog.slice(0, 20)) {
+                                                        html += `<span style=\"color:${utt.culture.color};font-weight:bold;\">${utt.culture.name}</span> <span style=\"font-size:0.9em;color:#aaa;\">[Gen ${utt.generation}]</span>:`;
+                                                        html += ` <span style=\"font-family:monospace;\">${utt.sentence}</span> <span style=\"font-size:0.8em;color:#888;\">(${utt.grammar.describe()})</span><br>`;
+                                                    }
+                                                    html += '</div>';
+                                                    utterDiv.innerHTML = html;
+                                                }
+                                    utteranceLog = [];
+
+                                    logUtterance(utterance) {
+                                        this.utteranceLog.unshift(utterance);
+                                        if (this.utteranceLog.length > 50) this.utteranceLog.pop();
+                                    }
+                        // Render grammar info for each culture
+                        renderGrammarInfo() {
+                            let grammarDiv = document.getElementById('grammar-info');
+                            if (!grammarDiv) {
+                                grammarDiv = document.createElement('div');
+                                grammarDiv.id = 'grammar-info';
+                                document.body.insertBefore(grammarDiv, document.body.firstChild);
+                            }
+                            grammarDiv.innerHTML = '<h3>Culture Grammars</h3>' + this.cultures.map(c=>`<b style=\"color:${c.color}\">${c.name}</b>: ${c.grammar ? c.grammar.describe() : ''}`).join('<br>');
+                        }
+
+                        // Render example sentences for each culture
+                        renderExampleSentences() {
+                            let exDiv = document.getElementById('example-sentences');
+                            if (!exDiv) {
+                                exDiv = document.createElement('div');
+                                exDiv.id = 'example-sentences';
+                                document.body.insertBefore(exDiv, document.body.firstChild.nextSibling);
+                            }
+                            let html = '<h3>Example Sentences</h3>';
+                            for (let culture of this.cultures) {
+                                let agent = culture.agents[Math.floor(Math.random()*culture.agents.length)];
+                                let known = Array.from(agent.vocabulary.values());
+                                let pick = arr => arr.length ? arr[Math.floor(Math.random()*arr.length)] : null;
+                                let subject = pick(known);
+                                let verb = pick(known);
+                                let object = pick(known);
+                                let modifier = pick(known);
+                                let sentence = agent.generateSentence({subject, verb, object, modifier});
+                                html += `<b style=\"color:${culture.color}\">${culture.name}</b>: <span style=\"font-family:monospace\">${sentence}</span> <span style=\"font-size:smaller;color:#888\">(${agent.grammar ? agent.grammar.describe() : ''})</span><br>`;
+                            }
+                            exDiv.innerHTML = html;
+                        }
+            constructor() {
+                this.cultures = [];
+                this.allSymbols = [];
+                this.generation = 0;
+                this.isRunning = false;
+                this.conceptPool = [
+                    // Nouns
+                    'sun', 'moon', 'water', 'fire', 'tree', 'house', 'person', 'animal', 'food', 'tool', 'mountain', 'river', 'sky', 'star', 'rock', 'child', 'parent', 'friend', 'enemy', 'village', 'city', 'road', 'field', 'rain', 'wind', 'cloud', 'bird', 'fish', 'fruit', 'seed',
+                    // Verbs
+                    'speak', 'think', 'see', 'hear', 'eat', 'drink', 'run', 'walk', 'sleep', 'wake', 'build', 'destroy', 'give', 'take', 'find', 'lose', 'come', 'go', 'make', 'break', 'grow', 'fall', 'rise', 'swim', 'fly', 'hunt', 'gather', 'teach', 'learn', 'write', 'read',
+                    // Adjectives
+                    'big', 'small', 'fast', 'slow', 'hot', 'cold', 'old', 'new', 'good', 'bad', 'bright', 'dark', 'strong', 'weak', 'happy', 'sad', 'full', 'empty', 'high', 'low',
+                    // Function words / pronouns / particles
+                    'and', 'or', 'not', 'if', 'with', 'without', 'for', 'from', 'to', 'in', 'on', 'by', 'of', 'at', 'as', 'is', 'was', 'will', 'can', 'must', 'I', 'you', 'he', 'she', 'we', 'they', 'it', 'this', 'that', 'who', 'what', 'when', 'where', 'how', 'why'
+                ];
+                this.communicationLog = [];
+                
+                // Parameters
+                this.params = {
+                    numCultures: 3,
+                    agentsPerCulture: 8,
+                    culturalIsolation: 0.3,
+                    simplificationRate: 0.5,
+                    innovationRate: 0.3,
+                    abstractionPressure: 0.4,
+                    vocabularySize: 12,
+                    communicationFrequency: 0.5
+                };
+            }
+
+            initialize(importedData) {
+                this.cultures = [];
+                this.allSymbols = [];
+                this.generation = 0;
+                this.communicationLog = [];
+                this.utteranceLog = [];
+
+                if (importedData && importedData.cultures) {
+                    // Import mode
+                    for (let cData of importedData.cultures) {
+                        // Use default positions/colors if not present
+                        const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#a29bfe'];
+                        const idx = this.cultures.length;
+                        const x = 400 + Math.cos(idx / 5 * Math.PI * 2) * 300;
+                        const y = 300 + Math.sin(idx / 5 * Math.PI * 2) * 300;
+                        const culture = new Culture(cData.name, cData.color || colors[idx], x, y);
+                        // Restore grammar if present
+                        if (cData.grammar) {
+                            culture.grammar = new Grammar({
+                                wordOrder: cData.grammar.wordOrder,
+                                adjNounOrder: cData.grammar.adjNounOrder,
+                                useParticles: cData.grammar.useParticles,
+                                particles: cData.grammar.particles
+                            });
+                        }
+                        // Create agents
+                        for (let j = 0; j < (this.params.agentsPerCulture || 8); j++) {
+                            const agentAngle = (j / (this.params.agentsPerCulture || 8)) * Math.PI * 2;
+                            const agentRadius = 50;
+                            const agentX = x + Math.cos(agentAngle) * agentRadius;
+                            const agentY = y + Math.sin(agentAngle) * agentRadius;
+                            const agent = new Agent(culture, agentX, agentY);
+                            // Restore example sentences to agent utteranceHistory if present
+                            if (cData.exampleSentences && cData.exampleSentences[j]) {
+                                agent.utteranceHistory = [cData.exampleSentences[j]];
+                            }
+                            culture.addAgent(agent);
+                        }
+                        // Restore symbols (sharedSymbols)
+                        if (cData.symbols) {
+                            for (let s of cData.symbols) {
+                                // Recreate as Symbol (minimal)
+                                let symbol = Object.assign({}, s);
+                                culture.sharedSymbols.set(symbol.meaning, symbol);
+                                this.allSymbols.push(symbol);
+                            }
+                        }
+                        this.cultures.push(culture);
+                    }
+                    this.generation = importedData.metadata && importedData.metadata.generation ? importedData.metadata.generation : 0;
+                    this.log('Simulation imported', 'system');
+                } else {
+                    // Normal mode
+                    const cultureNames = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon'];
+                    const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#a29bfe'];
+                    // Create cultures
+                    for (let i = 0; i < this.params.numCultures; i++) {
+                        const angle = (i / this.params.numCultures) * Math.PI * 2;
+                        const radius = 300;
+                        const x = 400 + Math.cos(angle) * radius;
+                        const y = 300 + Math.sin(angle) * radius;
+                        const culture = new Culture(cultureNames[i], colors[i], x, y);
+                        // Create agents for this culture
+                        for (let j = 0; j < this.params.agentsPerCulture; j++) {
+                            const agentAngle = (j / this.params.agentsPerCulture) * Math.PI * 2;
+                            const agentRadius = 50;
+                            const agentX = x + Math.cos(agentAngle) * agentRadius;
+                            const agentY = y + Math.sin(agentAngle) * agentRadius;
+                            const agent = new Agent(culture, agentX, agentY);
+                            culture.addAgent(agent);
+                        }
+                        this.cultures.push(culture);
+                    }
+                    // Initialize with basic pictographs
+                    this.seedInitialSymbols();
+                    this.log('Simulation initialized', 'system');
+                }
+            }
+
+            seedInitialSymbols() {
+                // Each culture starts with a few basic pictographs
+                const basicConcepts = this.conceptPool.slice(0, 4);
+                
+                this.cultures.forEach(culture => {
+                    basicConcepts.forEach(concept => {
+                        const symbol = new Symbol(concept, 10, false, culture.name);
+                        symbol.birthGeneration = 0;
+                        this.allSymbols.push(symbol);
+                        
+                        // Teach to a few agents in the culture
+                        const numTeachers = Math.ceil(culture.agents.length * 0.3);
+                        for (let i = 0; i < numTeachers; i++) {
+                            culture.agents[i].learn(symbol);
+                        }
+                    });
+                });
+            }
+
+            step() {
+                if (!this.isRunning) return;
+
+                this.generation++;
+
+                // Each culture evolves independently
+                this.cultures.forEach(culture => {
+                    this.evolveCulture(culture);
+                });
+
+                // Cross-cultural contact
+                if (Math.random() > this.params.culturalIsolation) {
+                    this.crossCulturalContact();
+                }
+
+                // Update shared symbols
+                this.cultures.forEach(culture => {
+                    culture.updateSharedSymbols();
+                    culture.generation++;
+                });
+
+                this.updateDisplay();
+            }
+
+            evolveCulture(culture) {
+                // Communication events
+                if (Math.random() < this.params.communicationFrequency) {
+                    this.communicationEvent(culture);
+                }
+
+                // Innovation events
+                if (Math.random() < this.params.innovationRate) {
+                    // 50% chance to innovate a compound instead of a single symbol
+                    if (Math.random() < 0.5) {
+                        this.compoundInnovationEvent(culture);
+                    } else {
+                        this.innovationEvent(culture);
+                    }
+                }
+
+                // Grammar innovation (step 3)
+                culture.agents.forEach(agent => agent.maybeInnovateGrammar());
+
+                // Simplification pressure
+                if (Math.random() < this.params.simplificationRate) {
+                    this.simplificationEvent(culture);
+                }
+
+                // Abstraction pressure
+                if (Math.random() < this.params.abstractionPressure) {
+                    this.abstractionEvent(culture);
+                }
+            }
+
+            // Compound innovation event
+            compoundInnovationEvent(culture) {
+                // Pick an agent
+                const agent = culture.agents[Math.floor(Math.random() * culture.agents.length)];
+                // Pick 2+ known symbols
+                const knownSymbols = Array.from(agent.vocabulary.values()).filter(s => s instanceof Symbol);
+                if (knownSymbols.length < 2) return;
+                // Pick a new meaning not in vocabulary
+                const unusedConcepts = this.conceptPool.filter(c => !agent.vocabulary.has(c));
+                if (unusedConcepts.length === 0) return;
+                const meaning = unusedConcepts[Math.floor(Math.random() * unusedConcepts.length)];
+                // Pick 2 random known symbols
+                const chosen = [];
+                while (chosen.length < 2) {
+                    const s = knownSymbols[Math.floor(Math.random() * knownSymbols.length)];
+                    if (!chosen.includes(s)) chosen.push(s);
+                }
+                const compound = agent.createCompound(meaning, chosen, culture.name);
+                if (compound) {
+                    this.log(`${culture.name}: Compound for "${meaning}" created from [${chosen.map(s=>s.meaning).join(', ')}]`, 'innovation');
+                }
+            }
+
+            communicationEvent(culture) {
+                // Pick two random agents
+                const agent1 = culture.agents[Math.floor(Math.random() * culture.agents.length)];
+                const agent2 = culture.agents[Math.floor(Math.random() * culture.agents.length)];
+                
+                if (agent1 === agent2) return;
+
+                // Pick a random concept they might need to communicate
+                const concept = this.conceptPool[Math.floor(Math.random() * this.params.vocabularySize)];
+                
+                const result = agent1.communicate(agent2, concept);
+                
+                if (result.success) {
+                    if (result.type === 'teach') {
+                        this.log(`${culture.name}: Symbol for "${concept}" learned`, 'success');
+                    }
+                }
+            }
+
+            innovationEvent(culture) {
+                // Agent needs to express something they can't
+                const agent = culture.agents[Math.floor(Math.random() * culture.agents.length)];
+                
+                // Find a concept they don't have
+                const neededConcepts = this.conceptPool
+                    .slice(0, this.params.vocabularySize)
+                    .filter(c => !agent.vocabulary.has(c));
+                
+                if (neededConcepts.length > 0) {
+                    const concept = neededConcepts[Math.floor(Math.random() * neededConcepts.length)];
+                    const complexity = 8 + Math.floor(Math.random() * 5);
+                    const newSymbol = agent.innovate(concept, complexity, culture.name);
+                    newSymbol.birthGeneration = this.generation;
+                    this.allSymbols.push(newSymbol);
+                    
+                    this.log(`${culture.name}: New symbol created for "${concept}"`, 'innovation');
+                }
+            }
+
+            simplificationEvent(culture) {
+                // Find the most used symbols and simplify them
+                const symbolUsage = new Map();
+                
+                culture.agents.forEach(agent => {
+                    agent.vocabulary.forEach(symbol => {
+                        const current = symbolUsage.get(symbol.id) || { symbol, count: 0 };
+                        current.count += symbol.usageCount;
+                        symbolUsage.set(symbol.id, current);
+                    });
+                });
+
+                // Sort by usage
+                const sorted = Array.from(symbolUsage.values())
+                    .sort((a, b) => b.count - a.count);
+
+                if (sorted.length > 0 && sorted[0].count > 10) {
+                    const simplified = sorted[0].symbol.simplify();
+                    if (simplified) {
+                        this.log(`${culture.name}: Symbol "${sorted[0].symbol.meaning}" simplified`, 'evolution');
+                    }
+                }
+            }
+
+            abstractionEvent(culture) {
+                // Convert pictographic symbols to abstract/phonetic ones
+                const pictographicSymbols = [];
+                
+                culture.agents.forEach(agent => {
+                    agent.vocabulary.forEach(symbol => {
+                        if (!symbol.isAbstract && symbol.usageCount > 20) {
+                            pictographicSymbols.push(symbol);
+                        }
+                    });
+                });
+
+                if (pictographicSymbols.length > 0) {
+                    const symbol = pictographicSymbols[Math.floor(Math.random() * pictographicSymbols.length)];
+                    const abstracted = symbol.abstract();
+                    if (abstracted) {
+                        this.log(`${culture.name}: Symbol "${symbol.meaning}" became abstract`, 'evolution');
+                    }
+                }
+            }
+
+            crossCulturalContact() {
+                // Two cultures exchange knowledge
+                if (this.cultures.length < 2) return;
+
+                const c1 = this.cultures[Math.floor(Math.random() * this.cultures.length)];
+                const c2 = this.cultures[Math.floor(Math.random() * this.cultures.length)];
+                
+                if (c1 === c2) return;
+
+                const agent1 = c1.agents[Math.floor(Math.random() * c1.agents.length)];
+                const agent2 = c2.agents[Math.floor(Math.random() * c2.agents.length)];
+
+                // Share a random symbol
+                if (agent1.vocabulary.size > 0) {
+                    const symbols = Array.from(agent1.vocabulary.values());
+                    const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+                    agent2.learn(symbol);
+                    
+                    this.log(`Cross-cultural exchange: ${c1.name} → ${c2.name}`, 'success');
+                }
+            }
+
+            log(message, type = 'info') {
+                this.communicationLog.unshift({ message, type, generation: this.generation });
+                if (this.communicationLog.length > 50) {
+                    this.communicationLog.pop();
+                }
+            }
+
+            getStats() {
+                const totalSymbols = new Set();
+                let totalComplexity = 0;
+                let complexityCount = 0;
+
+                this.cultures.forEach(culture => {
+                    culture.agents.forEach(agent => {
+                        agent.vocabulary.forEach(symbol => {
+                            totalSymbols.add(symbol.id);
+                            totalComplexity += symbol.complexity;
+                            complexityCount++;
+                        });
+                    });
+                });
+
+                return {
+                    generation: this.generation,
+                    activeSymbols: totalSymbols.size,
+                    avgComplexity: complexityCount > 0 ? 
+                        (totalComplexity / complexityCount).toFixed(1) : 0,
+                    dialects: this.cultures.length
+                };
+            }
+
+            updateDisplay() {
+                const stats = this.getStats();
+                document.getElementById('generationStat').textContent = stats.generation;
+                document.getElementById('symbolsStat').textContent = stats.activeSymbols;
+                document.getElementById('complexityStat').textContent = stats.avgComplexity;
+                document.getElementById('dialectsStat').textContent = stats.dialects;
+
+                // Update phase info
+                let phase = 'Pictographic Phase';
+                if (this.generation > 50) phase = 'Simplification Phase';
+                if (this.generation > 100) phase = 'Abstraction Phase';
+                if (this.generation > 150) phase = 'Grammar Emergence';
+                document.getElementById('phaseInfo').textContent = phase;
+
+                // Update communication log
+                this.updateCommunicationLog();
+                // Update symbol display
+                this.updateSymbolDisplay();
+                // Update grammar info and example sentences
+                this.renderGrammarInfo();
+                this.renderExampleSentences();
+                // Update utterance log
+                this.renderUtteranceLog();
+                updateAnalytics();
+            }
+        // Setup charts after DOM loaded (merged into main handler below)
+
+            updateCommunicationLog() {
+                filterAndRenderCommLog();
+                renderAgentInteractionViz();
+            }
+
+            updateSymbolDisplay() {
+                const container = document.getElementById('symbolContainer');
+                let html = '';
+
+                this.cultures.forEach(culture => {
+                    html += `<h4 style="color: ${culture.color}; margin: 15px 0 10px 0;">${culture.name} Script</h4>`;
+                    html += '<div class="symbol-grid">';
+                    
+                    const symbolArray = Array.from(culture.sharedSymbols.values());
+                    symbolArray.forEach((symbol, idx) => {
+                        const canvasId = `symbol-${culture.name}-${idx}`;
+                        html += `<div class="symbol-card">`;
+                        if (symbol instanceof Compound) {
+                            // Draw each symbol in the compound
+                            html += `<div style='display:flex; gap:2px; justify-content:center;'>`;
+                            symbol.symbols.forEach((s, cidx) => {
+                                const subCanvasId = `${canvasId}-c${cidx}`;
+                                html += `<canvas id="${subCanvasId}" width="38" height="38" class="symbol-canvas"></canvas>`;
+                            });
+                            html += `</div>`;
+                            html += `<div class="symbol-meaning">${symbol.meaning} <span style='font-size:0.7em;'>(compound)</span></div>`;
+                            html += `<div style="font-size: 0.7em; color: #666;">Gen ${symbol.birthGeneration}</div>`;
+                        } else {
+                            html += `<canvas id="${canvasId}" width="80" height="80" class="symbol-canvas"></canvas>`;
+                            html += `<div class="symbol-meaning">${symbol.meaning}</div>`;
+                            html += `<div class="symbol-complexity">⚡ ${symbol.complexity} | ${symbol.isAbstract ? '📝 Abstract' : '🖼️ Pictographic'}</div>`;
+                            html += `<div style="font-size: 0.7em; color: #666;">Gen ${symbol.birthGeneration}</div>`;
+                        }
+                        html += `</div>`;
+                    });
+                    
+                    html += '</div>';
+                });
+
+                container.innerHTML = html;
+
+                // Now draw the symbols on their canvases
+                this.cultures.forEach(culture => {
+                    const symbolArray = Array.from(culture.sharedSymbols.values());
+                    symbolArray.forEach((symbol, idx) => {
+                        const canvasId = `symbol-${culture.name}-${idx}`;
+                        if (symbol instanceof Compound) {
+                            symbol.symbols.forEach((s, cidx) => {
+                                const subCanvasId = `${canvasId}-c${cidx}`;
+                                const canvas = document.getElementById(subCanvasId);
+                                if (canvas) {
+                                    this.drawSymbolOnCanvas(canvas, s, culture.color);
+                                }
+                            });
+                        } else {
+                            const canvas = document.getElementById(canvasId);
+                            if (canvas) {
+                                this.drawSymbolOnCanvas(canvas, symbol, culture.color);
+                            }
+                        }
+                    });
+                });
+            }
+
+            drawSymbolOnCanvas(canvas, symbol, color) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Center the drawing
+                ctx.save();
+                ctx.translate(canvas.width / 2, canvas.height / 2);
+                
+                // Draw each stroke
+                ctx.strokeStyle = color;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                
+                symbol.strokes.forEach(stroke => {
+                    ctx.lineWidth = stroke.width;
+                    ctx.beginPath();
+                    
+                    if (stroke.points.length > 0) {
+                        ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+                        
+                        if (stroke.type === 'curve' && stroke.points.length >= 3) {
+                            // Draw smooth curves
+                            for (let i = 1; i < stroke.points.length - 1; i++) {
+                                const xc = (stroke.points[i].x + stroke.points[i + 1].x) / 2;
+                                const yc = (stroke.points[i].y + stroke.points[i + 1].y) / 2;
+                                ctx.quadraticCurveTo(stroke.points[i].x, stroke.points[i].y, xc, yc);
+                            }
+                            // Draw last segment
+                            const last = stroke.points[stroke.points.length - 1];
+                            ctx.lineTo(last.x, last.y);
+                        } else {
+                            // Draw straight lines
+                            for (let i = 1; i < stroke.points.length; i++) {
+                                ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
+                            }
+                        }
+                    }
+                    
+                    ctx.stroke();
+                });
+                
+                ctx.restore();
+            }
+
+            start() {
+                this.isRunning = true;
+            }
+
+            pause() {
+                this.isRunning = false;
+            }
+
+            reset() {
+                this.isRunning = false;
+                this.initialize();
+                this.updateDisplay();
+                renderer.render();
+            }
+        }
+
+        // Visualization Renderer
+        class Renderer {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.animationQueue = [];
+                this.currentAnimation = null;
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+            }
+
+            resize() {
+                const container = this.canvas.parentElement;
+                this.canvas.width = container.clientWidth - 40;
+                this.canvas.height = 500;
+            }
+
+            render() {
+                this.ctx.fillStyle = 'rgba(10, 10, 20, 0.95)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Draw title
+                this.ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+                this.ctx.font = 'bold 24px sans-serif';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('Script Evolution Canvas', this.canvas.width / 2, 30);
+
+                // Draw grid of symbols being actively written
+                this.drawActiveSymbols();
+
+                // Draw any ongoing animations
+                if (this.currentAnimation) {
+                    this.drawAnimation();
+                }
+
+                // Show evolution events
+                this.drawEvolutionEvents();
+            }
+
+            drawActiveSymbols() {
+                const ctx = this.ctx;
+                const symbolsToShow = [];
+                
+                // Collect recent symbols from all cultures
+                simulation.cultures.forEach(culture => {
+                    culture.sharedSymbols.forEach(symbol => {
+                        symbolsToShow.push({ symbol, culture });
+                    });
+                });
+
+                // Sort by birth generation (newest first)
+                symbolsToShow.sort((a, b) => b.symbol.birthGeneration - a.symbol.birthGeneration);
+
+                // Draw in grid
+                const cols = 6;
+                const symbolSize = 80;
+                const padding = 20;
+                const startY = 60;
+
+                symbolsToShow.slice(0, 18).forEach((item, idx) => {
+                    const col = idx % cols;
+                    const row = Math.floor(idx / cols);
+                    const x = padding + col * (symbolSize + padding);
+                    const y = startY + row * (symbolSize + padding);
+
+                    // Draw background
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+                    ctx.fillRect(x, y, symbolSize, symbolSize);
+
+                    // Draw border in culture color
+                    ctx.strokeStyle = item.culture.color;
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x, y, symbolSize, symbolSize);
+
+                    // Draw the symbol
+                    ctx.save();
+                    ctx.translate(x + symbolSize / 2, y + symbolSize / 2);
+                    this.drawSymbol(item.symbol, item.culture.color, 0.8);
+                    ctx.restore();
+
+                    // Draw label
+                    ctx.fillStyle = '#666';
+                    ctx.font = '10px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(item.symbol.meaning, x + symbolSize / 2, y + symbolSize + 12);
+
+                    // Age indicator
+                    const age = simulation.generation - item.symbol.birthGeneration;
+                    const alpha = Math.max(0.3, 1 - (age / 50));
+                    if (age < 10) {
+                        ctx.fillStyle = `rgba(255, 215, 0, ${alpha})`;
+                        ctx.fillText('NEW', x + symbolSize / 2, y - 5);
+                    }
+                });
+            }
+
+            drawSymbol(symbol, color, scale = 1.0) {
+                const ctx = this.ctx;
+                
+                ctx.strokeStyle = color;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                
+                symbol.strokes.forEach((stroke, strokeIdx) => {
+                    // Fade in effect for newer strokes
+                    const progress = 1.0; // Could be animated
+                    ctx.globalAlpha = progress;
+                    ctx.lineWidth = stroke.width * scale;
+                    ctx.beginPath();
+                    
+                    if (stroke.points.length > 0) {
+                        const p0 = stroke.points[0];
+                        ctx.moveTo(p0.x * scale, p0.y * scale);
+                        
+                        if (stroke.type === 'curve' && stroke.points.length >= 3) {
+                            for (let i = 1; i < stroke.points.length - 1; i++) {
+                                const p1 = stroke.points[i];
+                                const p2 = stroke.points[i + 1];
+                                const xc = (p1.x + p2.x) / 2 * scale;
+                                const yc = (p1.y + p2.y) / 2 * scale;
+                                ctx.quadraticCurveTo(p1.x * scale, p1.y * scale, xc, yc);
+                            }
+                            const last = stroke.points[stroke.points.length - 1];
+                            ctx.lineTo(last.x * scale, last.y * scale);
+                        } else {
+                            for (let i = 1; i < stroke.points.length; i++) {
+                                const p = stroke.points[i];
+                                ctx.lineTo(p.x * scale, p.y * scale);
+                            }
+                        }
+                    }
+                    
+                    ctx.stroke();
+                });
+                
+                ctx.globalAlpha = 1.0;
+            }
+
+            drawEvolutionEvents() {
+                const ctx = this.ctx;
+                const recentEvents = simulation.communicationLog.slice(0, 5);
+                
+                let y = this.canvas.height - 120;
+                
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+                ctx.fillRect(10, y - 10, this.canvas.width - 20, 110);
+                
+                ctx.fillStyle = '#ffd700';
+                ctx.font = 'bold 14px sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText('Recent Evolution Events:', 20, y + 10);
+                
+                y += 30;
+                ctx.font = '12px monospace';
+                
+                recentEvents.forEach((event, idx) => {
+                    const alpha = 1 - (idx * 0.15);
+                    const color = event.type === 'innovation' ? `rgba(251, 191, 36, ${alpha})` :
+                                 event.type === 'evolution' ? `rgba(129, 140, 248, ${alpha})` :
+                                 `rgba(74, 222, 128, ${alpha})`;
+                    
+                    ctx.fillStyle = color;
+                    ctx.fillText(`[Gen ${event.generation}] ${event.message}`, 20, y);
+                    y += 18;
+                });
+            }
+
+            drawAnimation() {
+                // Future: animate symbol creation stroke-by-stroke
+            }
+
+            addAnimation(type, data) {
+                this.animationQueue.push({ type, data, frame: 0 });
+            }
+        }
+
+        // Export Manager
+                // --- Import Button Handlers ---
+                document.addEventListener('DOMContentLoaded', function() {
+                    const importBtn = document.getElementById('importJsonBtn');
+                    const importInput = document.getElementById('importJsonInput');
+                    if (importBtn && importInput) {
+                        importBtn.addEventListener('click', () => importInput.click());
+                        importInput.addEventListener('change', function(e) {
+                            const file = e.target.files[0];
+                            if (!file) return;
+                            const reader = new FileReader();
+                            reader.onload = function(evt) {
+                                importSimulationFromJSON(evt.target.result);
+                            };
+                            reader.readAsText(file);
+                        });
+                    }
+                });
+        class ExportManager {
+            constructor(simulation) {
+                this.simulation = simulation;
+            }
+
+            exportAsPNG() {
+                // Create a high-res canvas for export
+                const exportCanvas = document.createElement('canvas');
+                exportCanvas.width = 2400;
+                exportCanvas.height = 1800;
+                const ctx = exportCanvas.getContext('2d');
+
+                // Background
+                ctx.fillStyle = '#1a1a2e';
+                ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+                // Title
+                ctx.fillStyle = '#ffd700';
+                ctx.font = 'bold 48px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Evolved Script System', exportCanvas.width / 2, 80);
+
+                ctx.font = '24px sans-serif';
+                ctx.fillStyle = '#a0a0a0';
+                ctx.fillText(`Generation ${this.simulation.generation}`, exportCanvas.width / 2, 120);
+
+                // Draw each culture's script
+                let yOffset = 200;
+                const colWidth = exportCanvas.width / this.simulation.cultures.length;
+
+                this.simulation.cultures.forEach((culture, cultureIdx) => {
+                    const xOffset = cultureIdx * colWidth + colWidth / 2;
+
+                    // Culture name
+                    ctx.fillStyle = culture.color;
+                    ctx.font = 'bold 32px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${culture.name} Script`, xOffset, yOffset);
+
+                    // Draw symbols in grid
+                    const symbols = Array.from(culture.sharedSymbols.values());
+                    const cols = 4;
+                    const symbolSize = 120;
+                    const padding = 20;
+                    let x = xOffset - (cols * (symbolSize + padding)) / 2;
+                    let y = yOffset + 50;
+
+                    symbols.forEach((symbol, idx) => {
+                        const col = idx % cols;
+                        const row = Math.floor(idx / cols);
+                        const sx = x + col * (symbolSize + padding);
+                        const sy = y + row * (symbolSize + padding);
+
+                        // Draw symbol background
+                        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                        ctx.fillRect(sx, sy, symbolSize, symbolSize);
+
+                        ctx.strokeStyle = culture.color;
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(sx, sy, symbolSize, symbolSize);
+
+                        // Draw the symbol
+                        ctx.save();
+                        ctx.translate(sx + symbolSize / 2, sy + symbolSize / 2);
+                        this.drawSymbolForExport(ctx, symbol, culture.color, 1.2);
+                        ctx.restore();
+
+                        // Label
+                        ctx.fillStyle = '#e0e0e0';
+                        ctx.font = '16px sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(symbol.meaning, sx + symbolSize / 2, sy + symbolSize + 20);
+
+                        // Stats
+                        ctx.fillStyle = '#666';
+                        ctx.font = '12px sans-serif';
+                        ctx.fillText(`⚡${symbol.complexity} Gen${symbol.birthGeneration}`, sx + symbolSize / 2, sy + symbolSize + 38);
+                    });
+                });
+
+                // Convert to blob and download
+                exportCanvas.toBlob(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `scriptforge-gen${this.simulation.generation}.png`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                });
+            }
+
+            exportAsSVG() {
+                let svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1800" viewBox="0 0 2400 1800">
+    <rect width="2400" height="1800" fill="#1a1a2e"/>
+    
+    <text x="1200" y="80" font-size="48" font-weight="bold" fill="#ffd700" text-anchor="middle">Evolved Script System</text>
+    <text x="1200" y="120" font-size="24" fill="#a0a0a0" text-anchor="middle">Generation ${this.simulation.generation}</text>
+`;
+
+                const colWidth = 2400 / this.simulation.cultures.length;
+                let yOffset = 200;
+
+                this.simulation.cultures.forEach((culture, cultureIdx) => {
+                    const xOffset = cultureIdx * colWidth + colWidth / 2;
+
+                    svg += `<text x="${xOffset}" y="${yOffset}" font-size="32" font-weight="bold" fill="${culture.color}" text-anchor="middle">${culture.name} Script</text>\n`;
+
+                    const symbols = Array.from(culture.sharedSymbols.values());
+                    const cols = 4;
+                    const symbolSize = 120;
+                    const padding = 20;
+                    const startX = xOffset - (cols * (symbolSize + padding)) / 2;
+                    const startY = yOffset + 50;
+
+                    symbols.forEach((symbol, idx) => {
+                        const col = idx % cols;
+                        const row = Math.floor(idx / cols);
+                        const sx = startX + col * (symbolSize + padding);
+                        const sy = startY + row * (symbolSize + padding);
+
+                        svg += `<rect x="${sx}" y="${sy}" width="${symbolSize}" height="${symbolSize}" fill="rgba(0,0,0,0.5)" stroke="${culture.color}" stroke-width="2"/>\n`;
+
+                        // Draw symbol strokes
+                        const cx = sx + symbolSize / 2;
+                        const cy = sy + symbolSize / 2;
+
+                        symbol.strokes.forEach(stroke => {
+                            if (stroke.points.length > 0) {
+                                let pathData = `M ${cx + stroke.points[0].x * 1.2} ${cy + stroke.points[0].y * 1.2}`;
+
+                                if (stroke.type === 'curve' && stroke.points.length >= 3) {
+                                    for (let i = 1; i < stroke.points.length - 1; i++) {
+                                        const p1 = stroke.points[i];
+                                        const p2 = stroke.points[i + 1];
+                                        const xc = (p1.x + p2.x) / 2 * 1.2;
+                                        const yc = (p1.y + p2.y) / 2 * 1.2;
+                                        pathData += ` Q ${cx + p1.x * 1.2} ${cy + p1.y * 1.2} ${cx + xc} ${cy + yc}`;
+                                    }
+                                    const last = stroke.points[stroke.points.length - 1];
+                                    pathData += ` L ${cx + last.x * 1.2} ${cy + last.y * 1.2}`;
+                                } else {
+                                    for (let i = 1; i < stroke.points.length; i++) {
+                                        pathData += ` L ${cx + stroke.points[i].x * 1.2} ${cy + stroke.points[i].y * 1.2}`;
+                                    }
+                                }
+
+                                svg += `<path d="${pathData}" stroke="${culture.color}" stroke-width="${stroke.width}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>\n`;
+                            }
+                        });
+
+                        svg += `<text x="${cx}" y="${sy + symbolSize + 20}" font-size="16" fill="#e0e0e0" text-anchor="middle">${symbol.meaning}</text>\n`;
+                        svg += `<text x="${cx}" y="${sy + symbolSize + 38}" font-size="12" fill="#666" text-anchor="middle">⚡${symbol.complexity} Gen${symbol.birthGeneration}</text>\n`;
+                    });
+                });
+
+                svg += '</svg>';
+
+                const blob = new Blob([svg], { type: 'image/svg+xml' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `scriptforge-gen${this.simulation.generation}.svg`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+
+            exportAsJSON() {
+                const data = {
+                    metadata: {
+                        generation: this.simulation.generation,
+                        timestamp: new Date().toISOString(),
+                        parameters: this.simulation.params
+                    },
+                    cultures: this.simulation.cultures.map(culture => ({
+                        name: culture.name,
+                        color: culture.color,
+                        generation: culture.generation,
+                        grammar: culture.grammar ? {
+                            wordOrder: culture.grammar.wordOrder,
+                            adjNounOrder: culture.grammar.adjNounOrder,
+                            useParticles: culture.grammar.useParticles,
+                            particles: {...culture.grammar.particles}
+                        } : undefined,
+                        symbols: Array.from(culture.sharedSymbols.values()).map(symbol => ({
+                            id: symbol.id,
+                            meaning: symbol.meaning,
+                            complexity: symbol.complexity,
+                            isAbstract: symbol.isAbstract,
+                            usageCount: symbol.usageCount,
+                            birthGeneration: symbol.birthGeneration,
+                            strokes: symbol.strokes
+                        })),
+                        exampleSentences: (() => {
+                            // Pick up to 5 recent utterances from agents in this culture
+                            let utterances = [];
+                            for (let agent of culture.agents) {
+                                if (agent.utteranceHistory) utterances = utterances.concat(agent.utteranceHistory.slice(-3));
+                            }
+                            utterances = utterances.sort((a,b)=>b.generation-a.generation).slice(0,5);
+                            return utterances.map(u => ({
+                                sentence: u.sentence,
+                                grammar: u.grammar ? {
+                                    wordOrder: u.grammar.wordOrder,
+                                    adjNounOrder: u.grammar.adjNounOrder,
+                                    useParticles: u.grammar.useParticles,
+                                    particles: {...u.grammar.particles}
+                                } : undefined,
+                                generation: u.generation
+                            }));
+                        })()
+                    })),
+                    stats: this.simulation.getStats()
+                };
+
+                const json = JSON.stringify(data, null, 2);
+                const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `scriptforge-gen${this.simulation.generation}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+
+            exportManuscript() {
+                // Create a beautiful manuscript-style document
+                const manuscriptCanvas = document.createElement('canvas');
+                manuscriptCanvas.width = 2480; // A4 at 300 DPI
+                manuscriptCanvas.height = 3508;
+                const ctx = manuscriptCanvas.getContext('2d');
+
+                // Parchment background
+                ctx.fillStyle = '#f4f1e8';
+                ctx.fillRect(0, 0, manuscriptCanvas.width, manuscriptCanvas.height);
+
+                // Add texture
+                ctx.fillStyle = 'rgba(139, 119, 101, 0.05)';
+                for (let i = 0; i < 1000; i++) {
+                    ctx.fillRect(
+                        Math.random() * manuscriptCanvas.width,
+                        Math.random() * manuscriptCanvas.height,
+                        2, 2
+                    );
+                }
+
+                // Border
+                ctx.strokeStyle = '#8b7765';
+                ctx.lineWidth = 8;
+                ctx.strokeRect(60, 60, manuscriptCanvas.width - 120, manuscriptCanvas.height - 120);
+
+                // Decorative corners
+                ctx.fillStyle = '#8b7765';
+                [
+                    [60, 60], [manuscriptCanvas.width - 60, 60],
+                    [60, manuscriptCanvas.height - 60], [manuscriptCanvas.width - 60, manuscriptCanvas.height - 60]
+                ].forEach(([x, y]) => {
+                    ctx.beginPath();
+                    ctx.arc(x, y, 15, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                // Title
+                ctx.fillStyle = '#2c1810';
+                ctx.font = 'bold 72px serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Codex of Emergent Scripts', manuscriptCanvas.width / 2, 200);
+
+                ctx.font = 'italic 32px serif';
+                ctx.fillStyle = '#5c4a3a';
+                ctx.fillText(`Generation ${this.simulation.generation} • ${new Date().toLocaleDateString()}`, manuscriptCanvas.width / 2, 260);
+
+                // Introduction text
+                ctx.font = '24px serif';
+                ctx.fillStyle = '#2c1810';
+                ctx.textAlign = 'left';
+                const introText = 'Herein lies a complete record of writing systems evolved through';
+                const introText2 = 'computational emergence, demonstrating how complex scripts arise';
+                const introText3 = 'from simple communication needs across isolated cultures.';
+                ctx.fillText(introText, 120, 340);
+                ctx.fillText(introText2, 120, 375);
+                ctx.fillText(introText3, 120, 410);
+
+                // Draw each culture's script section
+                let yPos = 500;
+                const sectionHeight = 800;
+
+                this.simulation.cultures.forEach((culture, idx) => {
+                    if (yPos > 3200) return; // Don't overflow page
+
+                    // Section header
+                    ctx.fillStyle = culture.color;
+                    ctx.font = 'bold 48px serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`The ${culture.name} Script`, manuscriptCanvas.width / 2, yPos);
+
+                    ctx.fillStyle = '#5c4a3a';
+                    ctx.font = 'italic 20px serif';
+                    ctx.fillText(`${culture.sharedSymbols.size} symbols • Generation ${culture.generation}`, manuscriptCanvas.width / 2, yPos + 35);
+
+                    // Horizontal divider
+                    ctx.strokeStyle = culture.color;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(200, yPos + 50);
+                    ctx.lineTo(manuscriptCanvas.width - 200, yPos + 50);
+                    ctx.stroke();
+
+                    // Draw symbols
+                    const symbols = Array.from(culture.sharedSymbols.values());
+                    const cols = 6;
+                    const symbolSize = 150;
+                    const padding = 40;
+                    const startX = (manuscriptCanvas.width - (cols * (symbolSize + padding))) / 2;
+                    let gridY = yPos + 100;
+
+                    symbols.forEach((symbol, idx) => {
+                        const col = idx % cols;
+                        const row = Math.floor(idx / cols);
+                        const sx = startX + col * (symbolSize + padding);
+                        const sy = gridY + row * (symbolSize + padding);
+
+                        // Symbol background
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                        ctx.fillRect(sx, sy, symbolSize, symbolSize);
+
+                        ctx.strokeStyle = '#d4c5b0';
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(sx, sy, symbolSize, symbolSize);
+
+                        // Draw symbol
+                        ctx.save();
+                        ctx.translate(sx + symbolSize / 2, sy + symbolSize / 2);
+                        this.drawSymbolForExport(ctx, symbol, culture.color, 1.5);
+                        ctx.restore();
+
+                        // Label with illuminated letter style
+                        ctx.fillStyle = '#2c1810';
+                        ctx.font = 'bold 18px serif';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(symbol.meaning.toUpperCase(), sx + symbolSize / 2, sy + symbolSize + 25);
+
+                        // Small stats
+                        ctx.fillStyle = '#8b7765';
+                        ctx.font = '14px serif';
+                        const typeText = symbol.isAbstract ? 'Abstract' : 'Pictographic';
+                        ctx.fillText(`${typeText} • ${symbol.complexity} strokes`, sx + symbolSize / 2, sy + symbolSize + 45);
+                    });
+
+                    yPos += sectionHeight;
+                });
+
+                // Footer
+                ctx.fillStyle = '#8b7765';
+                ctx.font = 'italic 18px serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Generated by ScriptForge • Forge Theory in Action', manuscriptCanvas.width / 2, manuscriptCanvas.height - 100);
+                ctx.fillText('Complexity emerges from the simple need to communicate', manuscriptCanvas.width / 2, manuscriptCanvas.height - 70);
+
+                // Convert to blob and download
+                manuscriptCanvas.toBlob(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `scriptforge-manuscript-gen${this.simulation.generation}.png`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                });
+            }
+
+            drawSymbolForExport(ctx, symbol, color, scale) {
+                ctx.strokeStyle = color;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                symbol.strokes.forEach(stroke => {
+                    ctx.lineWidth = stroke.width * scale;
+                    ctx.beginPath();
+
+                    if (stroke.points.length > 0) {
+                        const p0 = stroke.points[0];
+                        ctx.moveTo(p0.x * scale, p0.y * scale);
+
+                        if (stroke.type === 'curve' && stroke.points.length >= 3) {
+                            for (let i = 1; i < stroke.points.length - 1; i++) {
+                                const p1 = stroke.points[i];
+                                const p2 = stroke.points[i + 1];
+                                const xc = (p1.x + p2.x) / 2 * scale;
+                                const yc = (p1.y + p2.y) / 2 * scale;
+                                ctx.quadraticCurveTo(p1.x * scale, p1.y * scale, xc, yc);
+                            }
+                            const last = stroke.points[stroke.points.length - 1];
+                            ctx.lineTo(last.x * scale, last.y * scale);
+                        } else {
+                            for (let i = 1; i < stroke.points.length; i++) {
+                                const p = stroke.points[i];
+                                ctx.lineTo(p.x * scale, p.y * scale);
+                            }
+                        }
+                    }
+
+                    ctx.stroke();
+                });
+            }
+        }
+
+        // Initialize
+        const canvas = document.getElementById('mainCanvas');
+        const simulation = new ScriptForgeSimulation();
+        const renderer = new Renderer(canvas);
+        const exporter = new ExportManager(simulation);
+
+        simulation.initialize();
+        renderer.render();
+
+        // Animation loop
+        function animate() {
+            if (simulation.isRunning) {
+                simulation.step();
+                renderer.render();
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Controls
+        document.getElementById('startBtn').addEventListener('click', () => {
+            simulation.start();
+        });
+
+        document.getElementById('pauseBtn').addEventListener('click', () => {
+            simulation.pause();
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            simulation.reset();
+        });
+
+        // Export buttons
+        document.getElementById('exportPngBtn').addEventListener('click', () => {
+            simulation.pause();
+            exporter.exportAsPNG();
+        });
+
+        document.getElementById('exportSvgBtn').addEventListener('click', () => {
+            simulation.pause();
+            exporter.exportAsSVG();
+        });
+
+        document.getElementById('exportJsonBtn').addEventListener('click', () => {
+            simulation.pause();
+            exporter.exportAsJSON();
+        });
+
+        document.getElementById('exportManuscriptBtn').addEventListener('click', () => {
+            simulation.pause();
+            exporter.exportManuscript();
+        });
+
+        // Parameter controls
+        function setupSlider(sliderId, valueId, param, suffix = '', multiplier = 1) {
+            const slider = document.getElementById(sliderId);
+            const valueDisplay = document.getElementById(valueId);
+            
+            slider.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value) * multiplier;
+                simulation.params[param] = value;
+                valueDisplay.textContent = e.target.value + suffix;
+            });
+        }
+
+        setupSlider('culturesSlider', 'culturesValue', 'numCultures', '', 1);
+        setupSlider('agentsSlider', 'agentsValue', 'agentsPerCulture', '', 1);
+        setupSlider('isolationSlider', 'isolationValue', 'culturalIsolation', '%', 0.01);
+        setupSlider('simplificationSlider', 'simplificationValue', 'simplificationRate', '%', 0.01);
+        setupSlider('innovationSlider', 'innovationValue', 'innovationRate', '%', 0.01);
+        setupSlider('abstractionSlider', 'abstractionValue', 'abstractionPressure', '%', 0.01);
+        setupSlider('vocabSlider', 'vocabValue', 'vocabularySize', '', 1);
+        setupSlider('commFreqSlider', 'commFreqValue', 'communicationFrequency', '%', 0.01);
+    </script>
+</body>
+</html>

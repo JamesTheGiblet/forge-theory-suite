@@ -1,0 +1,83 @@
+{
+  "scp_version":  "0.1",
+  "scp_id":       "legion/orchestrator",
+  "object_class": "Thaumiel",
+  "intent":       "Drive the entire LEGION pipeline every hour by emitting the strategy.generated event, triggering the full generate-backtest-validate-select-dry-run chain automatically.",
+  "containment": {
+    "read_only":   false,
+    "audit_log":   true,
+    "kill_switch": true
+  },
+  "provenance": {
+    "author":       "James / Giblets Creations",
+    "agent":        "Claude Sonnet 4.6",
+    "created_at":   "2026-05-05T13:00:00Z",
+    "version":      "1.0.0",
+    "context":      "Phase 3 trading OS — master orchestrator capsule.",
+    "capture_mode": "conversation",
+    "lineage":      [
+      "legion/market-watcher",
+      "legion/strategy-generator",
+      "legion/backtester",
+      "legion/forward-validator",
+      "legion/strategy-selector",
+      "legion/dry-runner",
+      "legion/auditor-anchor"
+    ]
+  },
+  "behaviours": [
+    {
+      "trigger":  "cron",
+      "schedule": "0 * * * *",
+      "actions": [
+        {
+          "primitive": "log",
+          "params":    { "message": "Orchestrator: hourly pipeline cycle starting..." }
+        },
+        {
+          "primitive": "audit_event",
+          "params": {
+            "event_type": "orchestrator.cycle.start",
+            "data":       { "source": "legion/orchestrator", "schedule": "hourly" }
+          }
+        },
+        {
+          "primitive": "fetch_ohlcv",
+          "params": {
+            "symbol":   "BTCUSDT",
+            "interval": "1h",
+            "limit":    500,
+            "append":   false
+          }
+        },
+        {
+          "primitive": "fetch_ohlcv",
+          "params": {
+            "symbol":   "ETHUSDT",
+            "interval": "1h",
+            "limit":    500,
+            "append":   false
+          }
+        },
+        {
+          "primitive": "emit_event",
+          "params": {
+            "event":   "strategy.generated",
+            "payload": { "source": "legion/orchestrator", "cycle": "hourly" }
+          }
+        },
+        {
+          "primitive": "audit_event",
+          "params": {
+            "event_type": "orchestrator.cycle.pipeline_triggered",
+            "data":       { "event_emitted": "strategy.generated" }
+          }
+        },
+        {
+          "primitive": "log",
+          "params":    { "message": "Orchestrator: market data fetched, strategy.generated emitted — pipeline running." }
+        }
+      ]
+    }
+  ]
+}

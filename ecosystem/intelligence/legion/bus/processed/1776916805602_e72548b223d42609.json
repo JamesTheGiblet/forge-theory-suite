@@ -1,0 +1,10 @@
+{
+  "msg_id": "e72548b223d42609",
+  "from": "router",
+  "to": "tournament",
+  "type": "TOURNAMENT_LEADERBOARD",
+  "payload": {
+    "leaderboard": []
+  },
+  "timestamp": "2026-04-23T04:00:05.602Z"
+}

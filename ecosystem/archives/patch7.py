@@ -1,0 +1,8 @@
+f = open('config.js', 'r')
+c = f.read()
+f.close()
+c = c.replace("symbol: 'VNQ'", "symbol: 'O'")
+f = open('config.js', 'w')
+f.write(c)
+f.close()
+print('done')

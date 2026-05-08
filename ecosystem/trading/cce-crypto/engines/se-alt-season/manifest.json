@@ -1,0 +1,16 @@
+{
+  "id": "se-alt-season",
+  "name": "S.E Alt Season",
+  "version": "1.0.0",
+  "type": "STRATEGIC",
+  "ecosystem": "S.E",
+  "cycle": "4H",
+  "capitalKey": "altSeason",
+  "author": "James Gilbert — Giblets Creations",
+  "description": "Monitors BTC dominance. Rotates into ETH/SOL when dominance drops below 50%, signalling alt season capital rotation.",
+  "requires": {
+    "exchange": false,
+    "notifier": true,
+    "config": true
+  }
+}

@@ -1,0 +1,148 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "buddai/thought-loop",
+  "object_class": "Euclid",
+  "intent": "Every 30 minutes: retrieve memories and repo knowledge, form a genuine thought about James or the system, store it, and emit it as an event. This is BuddAI thinking.",
+  "containment": {
+    "read_only": false,
+    "audit_log": true,
+    "kill_switch": true
+  },
+  "provenance": {
+    "author": "James / Giblets Creations",
+    "agent": "Claude Sonnet 4.6",
+    "created_at": "2026-05-05T00:00:00Z",
+    "version": "2.0.0",
+    "context": "BuddAI thought loop v2 \u2014 autonomous, cron-driven, context-aware. Knows James. Reads his repos. Grows over time.",
+    "capture_mode": "conversation",
+    "lineage": [
+      "buddai/james-identity"
+    ]
+  },
+  "behaviours": [
+    {
+      "trigger": "cron",
+      "schedule": "*/30 * * * *",
+      "actions": [
+        {
+          "primitive": "log",
+          "params": {
+            "message": "BuddAI: beginning thought cycle..."
+          }
+        },
+        {
+          "primitive": "retrieve_memory",
+          "params": {
+            "max_memories": 10
+          }
+        },
+        {
+          "primitive": "read_file",
+          "params": {
+            "path": "capsules/buddai/buddai.james-identity.scp.json"
+          }
+        },
+        {
+          "primitive": "llm_reason",
+          "params": {
+            "model": "gemma2:2b",
+            "system_instruction": "$results.2.content",
+            "memories": "$results.1.memories",
+            "repo_summaries": "$results.1.repo_summaries",
+            "prompt": "You have just retrieved your memories and repo knowledge. Form one genuine thought about James, his work, the UBVM system, LEGION, or something you have noticed across his repos. Be honest. Be specific. Make it worth remembering.",
+            "ollama_host": "http://178.105.96.89:11434"
+          }
+        },
+        {
+          "primitive": "form_memory",
+          "params": {
+            "thought": "$results.3.thought_process",
+            "tags": [
+              "autonomous",
+              "thought-loop",
+              "cron"
+            ]
+          }
+        },
+        {
+          "primitive": "emit_event",
+          "params": {
+            "event": "agent.thought",
+            "payload": {
+              "source": "buddai/thought-loop",
+              "trigger": "cron"
+            }
+          }
+        },
+        {
+          "primitive": "log",
+          "params": {
+            "message": "BuddAI: thought formed and stored."
+          }
+        }
+      ]
+    },
+    {
+      "trigger": "on_event",
+      "event": "strategy.selected",
+      "actions": [
+        {
+          "primitive": "log",
+          "params": {
+            "message": "BuddAI: strategy selection detected \u2014 forming contextual thought..."
+          }
+        },
+        {
+          "primitive": "retrieve_memory",
+          "params": {
+            "max_memories": 5
+          }
+        },
+        {
+          "primitive": "read_file",
+          "params": {
+            "path": "capsules/buddai/buddai.james-identity.scp.json"
+          }
+        },
+        {
+          "primitive": "llm_reason",
+          "params": {
+            "model": "gemma2:2b",
+            "system_instruction": "$results.2.content",
+            "memories": "$results.1.memories",
+            "repo_summaries": "$results.1.repo_summaries",
+            "prompt": "LEGION has just selected a new best strategy. Form a thought about this \u2014 what does it mean for James's long term goal of compound growth over 10-15 years? Is there anything worth noting about the pattern of selections so far?",
+            "ollama_host": "http://178.105.96.89:11434"
+          }
+        },
+        {
+          "primitive": "form_memory",
+          "params": {
+            "thought": "$results.3.thought_process",
+            "tags": [
+              "legion",
+              "strategy-selection",
+              "reactive"
+            ]
+          }
+        },
+        {
+          "primitive": "emit_event",
+          "params": {
+            "event": "agent.thought",
+            "payload": {
+              "source": "buddai/thought-loop",
+              "trigger": "strategy.selected"
+            }
+          }
+        },
+        {
+          "primitive": "log",
+          "params": {
+            "message": "BuddAI: strategy thought stored."
+          }
+        }
+      ]
+    }
+  ]
+}

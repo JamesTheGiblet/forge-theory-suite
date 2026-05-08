@@ -1,0 +1,29 @@
+{
+  "msg_id": "0455b44a3732e26c",
+  "from": "router",
+  "to": "tournament",
+  "type": "TOURNAMENT_LEADERBOARD",
+  "payload": {
+    "leaderboard": [
+      {
+        "strategyId": "STRAT-021",
+        "name": "ringo_mutated",
+        "pnl": 0.025,
+        "realPnl": 0.025,
+        "winRate": 1,
+        "trades": 5,
+        "class": "Keter"
+      },
+      {
+        "strategyId": "AUTO_1776781955301_oew3ma",
+        "name": "Auto Generated",
+        "pnl": 0,
+        "realPnl": 0,
+        "winRate": 0,
+        "trades": 0,
+        "class": "Euclid"
+      }
+    ]
+  },
+  "timestamp": "2026-04-22T12:39:27.070Z"
+}

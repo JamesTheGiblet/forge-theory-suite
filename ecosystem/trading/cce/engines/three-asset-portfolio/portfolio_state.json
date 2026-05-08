@@ -1,0 +1,742 @@
+{
+  "positions": {
+    "LINK/USD": {
+      "asset": "LINK/USD",
+      "entryPrice": 8.79197,
+      "entryTimestamp": 1775692800,
+      "target": 8.8798897,
+      "stop": 8.726030224999999,
+      "size": 100
+    },
+    "BTC/USD": null,
+    "LTC/USD": null
+  },
+  "trades": [
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 3.1885935405970858,
+      "pnl": 3.1885935405970858,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 13.18481,
+      "exitPrice": 13.60522
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 4.538097282670821,
+      "pnl": 4.538097282670821,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 12.94948,
+      "exitPrice": 13.53714
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 5.899195755610777,
+      "pnl": 5.899195755610777,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 9.4996,
+      "exitPrice": 10.06
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 3.8814905704272338,
+      "pnl": 3.8814905704272338,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 2,
+      "entryPrice": 10.66008,
+      "exitPrice": 11.07385
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": -4.825046211579376,
+      "pnl": -4.825046211579376,
+      "win": false,
+      "reason": "stop_loss",
+      "holdDays": 1,
+      "entryPrice": 10.7657,
+      "exitPrice": 10.24625
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 2.618922216662727,
+      "pnl": 2.618922216662727,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 22.7838,
+      "exitPrice": 23.38049
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": -6.544720687842759,
+      "pnl": -6.544720687842759,
+      "win": false,
+      "reason": "stop_loss",
+      "holdDays": 1,
+      "entryPrice": 24.20088,
+      "exitPrice": 22.617
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 2.287200045691789,
+      "pnl": 2.287200045691789,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 3,
+      "entryPrice": 18.38405,
+      "exitPrice": 18.80453
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 18.300660239128298,
+      "pnl": 18.300660239128298,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 14.75526,
+      "exitPrice": 17.45557
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 3.54861076521565,
+      "pnl": 3.54861076521565,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 12.64833,
+      "exitPrice": 13.09717
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 1.3031205091357039,
+      "pnl": 1.3031205091357039,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 13.6388,
+      "exitPrice": 13.81653
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 3.6361975419810926,
+      "pnl": 3.6361975419810926,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 15.32535,
+      "exitPrice": 15.88261
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 1.0815240154125632,
+      "pnl": 1.0815240154125632,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 13.15551,
+      "exitPrice": 13.29779
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 10.091095940373565,
+      "pnl": 10.091095940373565,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 11.65255,
+      "exitPrice": 12.82842
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": -5.037246936282112,
+      "pnl": -5.037246936282112,
+      "win": false,
+      "reason": "stop_loss",
+      "holdDays": 1,
+      "entryPrice": 16.91817,
+      "exitPrice": 16.06596
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 2.1633287219325377,
+      "pnl": 2.1633287219325377,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 23.4925,
+      "exitPrice": 24.00072
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": -7.066112650046165,
+      "pnl": -7.066112650046165,
+      "win": false,
+      "reason": "stop_loss",
+      "holdDays": 3,
+      "entryPrice": 21.66,
+      "exitPrice": 20.12948
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 1.2407707100778764,
+      "pnl": 1.2407707100778764,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 16.60339,
+      "exitPrice": 16.8094
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 2.29163090859185,
+      "pnl": 2.29163090859185,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 13.80807,
+      "exitPrice": 14.1245
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": -6.82366082965804,
+      "pnl": -6.82366082965804,
+      "win": false,
+      "reason": "stop_loss",
+      "holdDays": 1,
+      "entryPrice": 12.96269,
+      "exitPrice": 12.07816
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 7.090532767670298,
+      "pnl": 7.090532767670298,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 3,
+      "entryPrice": 13.11735,
+      "exitPrice": 14.04744
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 3.6874667139296213,
+      "pnl": 3.6874667139296213,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 11.51007,
+      "exitPrice": 11.9345
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": -5.929882964681095,
+      "pnl": -5.929882964681095,
+      "win": false,
+      "reason": "stop_loss",
+      "holdDays": 1,
+      "entryPrice": 9.98502,
+      "exitPrice": 9.39292
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 12.914573906002891,
+      "pnl": 12.914573906002891,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 8.20089,
+      "exitPrice": 9.26
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 4.177960249719325,
+      "pnl": 4.177960249719325,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 8.51516,
+      "exitPrice": 8.87092
+    },
+    {
+      "asset": "LINK/USD",
+      "pnlPct": 2.431929059221186,
+      "pnl": 2.431929059221186,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 8.40814,
+      "exitPrice": 8.61262
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": -1.1497178147649456,
+      "pnl": -1.1497178147649456,
+      "win": false,
+      "reason": "stop_loss",
+      "holdDays": 1,
+      "entryPrice": 64833.3,
+      "exitPrice": 64087.9
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 2.7975237466482903,
+      "pnl": 2.7975237466482903,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 56650.1,
+      "exitPrice": 58234.9
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 3.839352670511883,
+      "pnl": 3.839352670511883,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 54006.5,
+      "exitPrice": 56080
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 2.3842547163121104,
+      "pnl": 2.3842547163121104,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 2,
+      "entryPrice": 60635.3,
+      "exitPrice": 62081
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 3.6878209009696494,
+      "pnl": 3.6878209009696494,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 60279.5,
+      "exitPrice": 62502.5
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": -0.7955266955266996,
+      "pnl": -0.7955266955266996,
+      "win": false,
+      "reason": "stop_loss",
+      "holdDays": 1,
+      "entryPrice": 69300,
+      "exitPrice": 68748.7
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 2.3772998564656564,
+      "pnl": 2.3772998564656564,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 101299.8,
+      "exitPrice": 103708
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": -0.8083067919935722,
+      "pnl": -0.8083067919935722,
+      "win": false,
+      "reason": "stop_loss",
+      "holdDays": 4,
+      "entryPrice": 96547.5,
+      "exitPrice": 95767.1
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 2.2963546113797393,
+      "pnl": 2.2963546113797393,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 3,
+      "entryPrice": 84089.8,
+      "exitPrice": 86020.8
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": -2.633979475484603,
+      "pnl": -2.633979475484603,
+      "win": false,
+      "reason": "stop_loss",
+      "holdDays": 1,
+      "entryPrice": 80684,
+      "exitPrice": 78558.8
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 1.6272879079635851,
+      "pnl": 1.6272879079635851,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 2,
+      "entryPrice": 104019.7,
+      "exitPrice": 105712.4
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 4.351115331638747,
+      "pnl": 4.351115331638747,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 100987.9,
+      "exitPrice": 105382
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": -2.1354966167742053,
+      "pnl": -2.1354966167742053,
+      "win": false,
+      "reason": "stop_loss",
+      "holdDays": 1,
+      "entryPrice": 115762.3,
+      "exitPrice": 113290.2
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 2.0843392734685473,
+      "pnl": 2.0843392734685473,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 2,
+      "entryPrice": 106451,
+      "exitPrice": 108669.8
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 1.1541725183213347,
+      "pnl": 1.1541725183213347,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 108302.7,
+      "exitPrice": 109552.7
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 1.079802321902965,
+      "pnl": 1.079802321902965,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 94517.3,
+      "exitPrice": 95537.9
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 2.476975055473613,
+      "pnl": 2.476975055473613,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 84679.9,
+      "exitPrice": 86777.4
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 5.8093858632676705,
+      "pnl": 5.8093858632676705,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 86300,
+      "exitPrice": 91313.5
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 1.6271318215106665,
+      "pnl": 1.6271318215106665,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 86434.3,
+      "exitPrice": 87840.7
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 5.352699937688656,
+      "pnl": 5.352699937688656,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 4,
+      "entryPrice": 90513.2,
+      "exitPrice": 95358.1
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": -1.159959244963833,
+      "pnl": -1.159959244963833,
+      "win": false,
+      "reason": "stop_loss",
+      "holdDays": 1,
+      "entryPrice": 93632.6,
+      "exitPrice": 92546.5
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 2.3243351516996134,
+      "pnl": 2.3243351516996134,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 76882.2,
+      "exitPrice": 78669.2
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 3.977415193689784,
+      "pnl": 3.977415193689784,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 66203.8,
+      "exitPrice": 68837
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 6.113930432909427,
+      "pnl": 6.113930432909427,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 64061.9,
+      "exitPrice": 67978.6
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 3.740904261526822,
+      "pnl": 3.740904261526822,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 65978.7,
+      "exitPrice": 68446.9
+    },
+    {
+      "asset": "BTC/USD",
+      "pnlPct": 1.1746724427333872,
+      "pnl": 1.1746724427333872,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 65950.3,
+      "exitPrice": 66725
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": -1.329411764705877,
+      "pnl": -0.6647058823529385,
+      "win": false,
+      "reason": "stop_loss",
+      "holdDays": 2,
+      "entryPrice": 85,
+      "exitPrice": 83.87
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": -3.983389726238075,
+      "pnl": -1.9916948631190374,
+      "win": false,
+      "reason": "stop_loss",
+      "holdDays": 2,
+      "entryPrice": 65.02,
+      "exitPrice": 62.43
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": 2.428639015928097,
+      "pnl": 1.2143195079640485,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 3,
+      "entryPrice": 63.41,
+      "exitPrice": 64.95
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": 8.702967268277757,
+      "pnl": 4.351483634138878,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 65.38,
+      "exitPrice": 71.07
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": -5.399346099953294,
+      "pnl": -2.699673049976647,
+      "win": false,
+      "reason": "stop_loss",
+      "holdDays": 1,
+      "entryPrice": 107.05,
+      "exitPrice": 101.27
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": 2.206673842841766,
+      "pnl": 1.103336921420883,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 2,
+      "entryPrice": 74.32,
+      "exitPrice": 75.96
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": 9.971167707832787,
+      "pnl": 4.985583853916394,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 83.24,
+      "exitPrice": 91.54
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": 5.869890329012971,
+      "pnl": 2.9349451645064857,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 80.24,
+      "exitPrice": 84.95
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": 1.4107387140902923,
+      "pnl": 0.7053693570451461,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 116.96,
+      "exitPrice": 118.61
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": 1.7758046614872462,
+      "pnl": 0.8879023307436231,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 90.1,
+      "exitPrice": 91.7
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": 1.067357512953369,
+      "pnl": 0.5336787564766845,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 96.5,
+      "exitPrice": 97.53
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": 1.2306567564274462,
+      "pnl": 0.6153283782137231,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 82.07,
+      "exitPrice": 83.08
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": -5.745869776482009,
+      "pnl": -2.8729348882410046,
+      "win": false,
+      "reason": "stop_loss",
+      "holdDays": 1,
+      "entryPrice": 82.32,
+      "exitPrice": 77.59
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": -3.0808886706763285,
+      "pnl": -1.5404443353381643,
+      "win": false,
+      "reason": "stop_loss",
+      "holdDays": 1,
+      "entryPrice": 81.47,
+      "exitPrice": 78.96
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": 2.1187705162638046,
+      "pnl": 1.0593852581319023,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 67.02,
+      "exitPrice": 68.44
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": -1.698049764626762,
+      "pnl": -0.849024882313381,
+      "win": false,
+      "reason": "stop_loss",
+      "holdDays": 1,
+      "entryPrice": 59.48,
+      "exitPrice": 58.47
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": 1.607347876004599,
+      "pnl": 0.8036739380022995,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 52.26,
+      "exitPrice": 53.1
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": 10.785463071512316,
+      "pnl": 5.392731535756158,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 51.18,
+      "exitPrice": 56.7
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": 2.459631993991743,
+      "pnl": 1.2298159969958715,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 53.26,
+      "exitPrice": 54.57
+    },
+    {
+      "asset": "LTC/USD",
+      "pnlPct": 2.2049040106443716,
+      "pnl": 1.1024520053221858,
+      "win": true,
+      "reason": "take_profit",
+      "holdDays": 1,
+      "entryPrice": 52.61,
+      "exitPrice": 53.77
+    }
+  ],
+  "lastProcessedIndices": {
+    "LINK/USD": 722,
+    "BTC/USD": 722,
+    "LTC/USD": 722
+  },
+  "updatedAt": "2026-04-10T06:22:08.501Z"
+}

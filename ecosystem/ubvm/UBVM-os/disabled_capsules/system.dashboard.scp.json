@@ -1,0 +1,56 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "system/dashboard",
+  "object_class": "Thaumiel",
+  "intent": "Render the global UBVM HTML dashboard with BuddAI and LEGION stats every minute.",
+  "containment": {
+    "read_only": false,
+    "audit_log": false,
+    "kill_switch": false
+  },
+  "behaviours": [
+    {
+      "trigger": "cron",
+      "schedule": "* * * * *",
+      "actions": [
+        {
+          "primitive": "retrieve_memory",
+          "params": {
+            "max_memories": 1
+          }
+        },
+        {
+          "primitive": "read_file",
+          "params": {
+            "path": "strategies/selected/current_best.json"
+          }
+        },
+        {
+          "primitive": "read_file",
+          "params": {
+            "path": "data/system_status.txt"
+          }
+        },
+        {
+          "primitive": "render_template",
+          "params": {
+            "template": "System Status: Nominal\nData Cube: Connected\n\n[ ECOSYSTEM AUDIT ]\n${audit}\n\n[ LATEST BUDDAI THOUGHT ]\n${thought}\n\n[ CURRENT BEST LEGION STRATEGY ]\n${strategy}",
+            "variables": {
+              "thought": "$results.0.memories.0.thought",
+              "strategy": "$results.1.content",
+              "audit": "$results.2.content"
+            }
+          }
+        },
+        {
+          "primitive": "render.component",
+          "params": {
+            "title": "UBVM Organism Core",
+            "content": "$results.3.output",
+            "path": "logs/dashboard.html"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0e27">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>LEGION MK20 - SCP Editor</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: #0a0e27;
+      color: #e0e0e0;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    
+    /* Mobile-first header */
+    .header {
+      background: linear-gradient(135deg, #0f1535 0%, #1a1f4e 100%);
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #2a2f6e;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header h1 {
+      font-size: 1.25rem;
+      background: linear-gradient(135deg, #fff, #a855f7);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    
+    .header .badge {
+      background: #1e1b4b;
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      color: #a855f7;
+    }
+    
+    /* Mobile bottom navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #0f122e;
+      border-top: 1px solid #1a1f4e;
+      display: flex;
+      justify-content: space-around;
+      padding: 0.5rem 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.5rem;
+      border: none;
+      background: none;
+      color: #6b7280;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 8px;
+    }
+    
+    .nav-item.active {
+      color: #a855f7;
+    }
+    
+    .nav-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.2rem;
+    }
+    
+    /* Main content - scrollable */
+    .main-content {
+      padding: 1rem;
+      padding-bottom: 80px;
+      margin-bottom: env(safe-area-inset-bottom);
+    }
+    
+    /* Cards - touch friendly */
+    .card {
+      background: #0f122e;
+      border-radius: 16px;
+      border: 1px solid #1a1f4e;
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+    
+    .card-header {
+      padding: 1rem;
+      background: #1a1f4e;
+      border-bottom: 1px solid #2a2f6e;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .card-header h3 {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    
+    .card-body {
+      padding: 1rem;
+    }
+    
+    /* Forms - touch friendly */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      color: #9ca3af;
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      background: #1a1f4e;
+      border: 1px solid #2a2f6e;
+      border-radius: 12px;
+      color: #e0e0e0;
+      font-size: 1rem;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    
+    button {
+      background: linear-gradient(135deg, #a855f7, #7c3aed);
+      border: none;
+      padding: 0.75rem 1.25rem;
+      border-radius: 12px;
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: opacity 0.2s;
+      width: 100%;
+      touch-action: manipulation;
+    }
+    
+    button.secondary {
+      background: #1a1f4e;
+      border: 1px solid #2a2f6e;
+    }
+    
+    button.danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+    
+    /* Table - scrollable on mobile */
+    .table-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 500px;
+    }
+    
+    .table th, .table td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #1a1f4e;
+    }
+    
+    .table th {
+      color: #9ca3af;
+      font-weight: 500;
+      font-size: 0.75rem;
+    }
+    
+    /* Metrics grid - responsive */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    
+    .metric-card {
+      background: #1a1f4e;
+      border-radius: 16px;
+      padding: 1rem;
+      text-align: center;
+    }
+    
+    .metric-value {
+      font-size: 1.75rem;
+      font-weight: bold;
+      color: #a855f7;
+    }
+    
+    .metric-label {
+      font-size: 0.7rem;
+      color: #9ca3af;
+    }
+    
+    /* Entropy meter */
+    .entropy-meter {
+      background: #1a1f4e;
+      border-radius: 20px;
+      height: 12px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+    
+    .entropy-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #22c55e, #f59e0b, #ef4444);
+      transition: width 0.3s;
+      border-radius: 20px;
+    }
+    
+    /* Status indicators */
+    .status {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 0.5rem;
+    }
+    
+    .status.online { background: #22c55e; box-shadow: 0 0 5px #22c55e; }
+    .status.warning { background: #f59e0b; }
+    .status.offline { background: #ef4444; }
+    
+    /* Modal - fullscreen on mobile */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.9);
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 1000;
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: #0f122e;
+      border-radius: 20px 20px 0 0;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    
+    .modal-header {
+      padding: 1rem;
+      border-bottom: 1px solid #1a1f4e;
+      position: sticky;
+      top: 0;
+      background: #0f122e;
+    }
+    
+    .modal-body {
+      padding: 1rem;
+    }
+    
+    .modal-footer {
+      padding: 1rem;
+      border-top: 1px solid #1a1f4e;
+      display: flex;
+      gap: 0.75rem;
+    }
+    
+    .modal-footer button {
+      flex: 1;
+    }
+    
+    /* Code viewer */
+    .code-viewer {
+      background: #0a0e27;
+      border-radius: 12px;
+      padding: 1rem;
+      font-family: 'Monaco', monospace;
+      font-size: 0.7rem;
+      overflow-x: auto;
+    }
+    
+    /* Hide scrollbar for cleaner look */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #0f122e;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #a855f7;
+      border-radius: 4px;
+    }
+    
+    /* Loading state */
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #a855f7;
+    }
+    
+    /* Section visibility */
+    .section {
+      display: none;
+    }
+    
+    .section.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📋 LEGION MK20</h1>
+    <div class="badge">SCP Editor</div>
+  </div>
+  
+  <div class="main-content">
+    <div id="dashboardSection" class="section active">
+      <div class="metrics-grid" id="metricsGrid"></div>
+      <div id="dashboardContent"></div>
+    </div>
+    
+    <div id="agentsSection" class="section">
+      <div class="card">
+        <div class="card-header">
+          <h3>🤖 Agents</h3>
+          <button onclick="openAddAgentModal()" style="width: auto; padding: 0.5rem 1rem;">+ Add</button>
+        </div>
+        <div class="card-body">
+          <div class="table-container">
+            <table class="table" id="agentsTable">
+              <thead><tr><th>Name</th><th>Class</th><th>Status</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="behaviorsSection" class="section">
+      <div class="card">
+        <div class="card-header">
+          <h3>⚡ Behaviors</h3>
+          <button onclick="openAddBehaviorModal()" style="width: auto; padding: 0.5rem 1rem;">+ Add</button>
+        </div>
+        <div class="card-body">
+          <div class="table-container">
+            <table class="table" id="behaviorsTable">
+              <thead><tr><th>Name</th><th>Trigger</th><th>Action</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="rulesSection" class="section">
+      <div class="card">
+        <div class="card-header">
+          <h3>📜 Rules</h3>
+          <button onclick="openAddRuleModal()" style="width: auto; padding: 0.5rem 1rem;">+ Add</button>
+        </div>
+        <div class="card-body">
+          <div class="table-container">
+            <table class="table" id="rulesTable">
+              <thead><tr><th>Name</th><th>Condition</th><th>Action</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="settingsSection" class="section">
+      <div class="card">
+        <div class="card-header"><h3>🔒 Containment</h3></div>
+        <div class="card-body">
+          <div class="form-group">
+            <label>Entropy Threshold</label>
+            <input type="range" id="threshold" step="0.01" min="0" max="1" value="0.7">
+            <span id="thresholdValue">0.7</span>
+          </div>
+          <button onclick="saveContainment()">Save</button>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header"><h3>🧬 Evolution</h3></div>
+        <div class="card-body">
+          <div class="form-group">
+            <label>Mutation Rate</label>
+            <input type="range" id="mutationRate" step="0.01" min="0" max="1" value="0.2">
+            <span id="mutationRateValue">0.2</span>
+          </div>
+          <button onclick="saveEvolution()">Save</button>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header"><h3>📄 Raw JSON</h3></div>
+        <div class="card-body">
+          <textarea id="rawJson" rows="15" style="font-family: monospace; font-size: 0.7rem;"></textarea>
+          <button onclick="saveRaw()" style="margin-top: 1rem;">Save to Server</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="bottom-nav">
+    <button class="nav-item active" onclick="switchSection('dashboard')">
+      <span class="nav-icon">📊</span>
+      <span>Dashboard</span>
+    </button>
+    <button class="nav-item" onclick="switchSection('agents')">
+      <span class="nav-icon">🤖</span>
+      <span>Agents</span>
+    </button>
+    <button class="nav-item" onclick="switchSection('behaviors')">
+      <span class="nav-icon">⚡</span>
+      <span>Behaviors</span>
+    </button>
+    <button class="nav-item" onclick="switchSection('rules')">
+      <span class="nav-icon">📜</span>
+      <span>Rules</span>
+    </button>
+    <button class="nav-item" onclick="switchSection('settings')">
+      <span class="nav-icon">⚙️</span>
+      <span>Settings</span>
+    </button>
+  </div>
+  
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Add Item</h3>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer">
+        <button class="secondary" onclick="closeModal()">Cancel</button>
+        <button onclick="saveModal()">Save</button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    let currentSCP = null;
+    let currentSection = 'dashboard';
+    
+    const API_URL = '';
+    
+    async function loadSCP() {
+      try {
+        const response = await fetch('/api/scp/registry');
+        currentSCP = await response.json();
+        renderCurrentSection();
+      } catch (err) {
+        document.getElementById('metricsGrid').innerHTML = '<div class="loading">Loading...</div>';
+      }
+    }
+    
+    function switchSection(section) {
+      currentSection = section;
+      document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+      document.getElementById(`${section}Section`).classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      event.target.closest('.nav-item').classList.add('active');
+      renderCurrentSection();
+    }
+    
+    async function renderCurrentSection() {
+      if (!currentSCP) return;
+      
+      if (currentSection === 'dashboard') {
+        await renderDashboard();
+      } else if (currentSection === 'agents') {
+        renderAgents();
+      } else if (currentSection === 'behaviors') {
+        renderBehaviors();
+      } else if (currentSection === 'rules') {
+        renderRules();
+      } else if (currentSection === 'settings') {
+        renderSettings();
+      }
+    }
+    
+    async function renderDashboard() {
+      const statusRes = await fetch('/api/status').catch(() => null);
+      const status = statusRes ? await statusRes.json() : { entropy: 0, threshold: 0.7, agents: 0 };
+      const entropyPercent = (status.entropy / status.threshold) * 100;
+      
+      document.getElementById('metricsGrid').innerHTML = `
+        <div class="metric-card"><div class="metric-value">${currentSCP?.agents?.length || 0}</div><div class="metric-label">Agents</div></div>
+        <div class="metric-card"><div class="metric-value">${status.agents || 0}</div><div class="metric-label">Running</div></div>
+        <div class="metric-card"><div class="metric-value">${currentSCP?.behaviors?.length || 0}</div><div class="metric-label">Behaviors</div></div>
+        <div class="metric-card"><div class="metric-value">${currentSCP?.rules?.length || 0}</div><div class="metric-label">Rules</div></div>
+      `;
+      
+      document.getElementById('dashboardContent').innerHTML = `
+        <div class="card">
+          <div class="card-header"><h3>📊 Entropy</h3></div>
+          <div class="card-body">
+            <div style="font-size: 2rem; font-weight: bold;">${(status.entropy || 0).toFixed(2)} <span style="font-size: 1rem;">/ ${status.threshold || 0.7}</span></div>
+            <div class="entropy-meter"><div class="entropy-fill" style="width: ${entropyPercent}%"></div></div>
+            <div style="color: ${entropyPercent > 70 ? '#ef4444' : entropyPercent > 30 ? '#f59e0b' : '#22c55e'}">
+              ${entropyPercent > 70 ? '⚠️ CRITICAL' : entropyPercent > 30 ? '📈 ELEVATED' : '✅ NORMAL'}
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>🤖 Top Agents</h3></div>
+          <div class="card-body">
+            ${currentSCP.agents?.slice(0, 5).map(a => `<div style="padding: 0.5rem 0; border-bottom: 1px solid #1a1f4e;">${a.name} <span style="color: #a855f7;">(${a.object_class})</span></div>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+    
+    function renderAgents() {
+      const tbody = document.querySelector('#agentsTable tbody');
+      tbody.innerHTML = currentSCP.agents?.map(agent => `
+        <tr>
+          <td><strong>${agent.name}</strong><br><small style="color:#6b7280">${agent.scp_id}</small></td>
+          <td><span style="color: ${agent.object_class === 'Keter' ? '#ef4444' : agent.object_class === 'Euclid' ? '#f59e0b' : '#22c55e'}">${agent.object_class}</span></td>
+          <td><span class="status ${agent.enabled !== false ? 'online' : 'offline'}"></span>${agent.enabled !== false ? 'Enabled' : 'Disabled'}</td>
+          <td><button onclick="editAgent('${agent.scp_id}')" style="width: auto; padding: 0.25rem 0.5rem; font-size: 0.7rem;">Edit</button></td>
+        </tr>
+      `).join('');
+    }
+    
+    function renderBehaviors() {
+      const tbody = document.querySelector('#behaviorsTable tbody');
+      tbody.innerHTML = currentSCP.behaviors?.map(b => `
+        <tr><td><strong>${b.name}</strong></td><td>${b.trigger}</td><td>${b.action}</td></tr>
+      `).join('');
+    }
+    
+    function renderRules() {
+      const tbody = document.querySelector('#rulesTable tbody');
+      tbody.innerHTML = currentSCP.rules?.map(r => `
+        <tr><td><strong>${r.name}</strong></td><td>${r.condition}</td><td>${r.action}</td></tr>
+      `).join('');
+    }
+    
+    function renderSettings() {
+      document.getElementById('threshold').value = currentSCP.containment?.threshold || 0.7;
+      document.getElementById('thresholdValue').innerText = currentSCP.containment?.threshold || 0.7;
+      document.getElementById('mutationRate').value = currentSCP.evolution?.mutation_rate || 0.2;
+      document.getElementById('mutationRateValue').innerText = currentSCP.evolution?.mutation_rate || 0.2;
+      document.getElementById('rawJson').value = JSON.stringify(currentSCP, null, 2);
+      
+      document.getElementById('threshold').oninput = () => {
+        document.getElementById('thresholdValue').innerText = document.getElementById('threshold').value;
+      };
+      document.getElementById('mutationRate').oninput = () => {
+        document.getElementById('mutationRateValue').innerText = document.getElementById('mutationRate').value;
+      };
+    }
+    
+    function saveContainment() {
+      alert('Containment settings would be saved');
+    }
+    
+    function saveEvolution() {
+      alert('Evolution settings would be saved');
+    }
+    
+    async function saveRaw() {
+      const newSCP = JSON.parse(document.getElementById('rawJson').value);
+      const response = await fetch('/api/scp/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newSCP)
+      });
+      if (response.ok) {
+        alert('SCP.json saved successfully');
+        loadSCP();
+      } else {
+        alert('Save failed');
+      }
+    }
+    
+    function openAddAgentModal() {
+      document.getElementById('modalTitle').innerText = 'Add Agent';
+      document.getElementById('modalBody').innerHTML = `
+        <div class="form-group"><label>Name</label><input type="text" id="agentName" placeholder="AgentName"></div>
+        <div class="form-group"><label>SCP ID</label><input type="text" id="agentScpId" placeholder="AGENT-NAME-001"></div>
+        <div class="form-group"><label>Class</label><select id="agentClass"><option>Safe</option><option>Euclid</option><option>Keter</option><option>Thaumiel</option></select></div>
+      `;
+      document.getElementById('modal').classList.add('active');
+    }
+    
+    function closeModal() {
+      document.getElementById('modal').classList.remove('active');
+    }
+    
+    function saveModal() {
+      alert('Save functionality to be implemented');
+      closeModal();
+    }
+    
+    loadSCP();
+    setInterval(loadSCP, 10000);
+  </script>
+</body>
+</html>

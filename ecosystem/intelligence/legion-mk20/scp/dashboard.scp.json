@@ -1,0 +1,105 @@
+{
+  "scp_id": "DASHBOARD-LEGION-001",
+  "object_class": "Thaumiel",
+  "title": "LEGION MK20 Dashboard",
+  "version": "1.0.0",
+  "description": "A self-contained, SCP-defined dashboard for monitoring and controlling LEGION",
+  
+  "containment_procedures": {
+    "port": 9000,
+    "auto_refresh_seconds": 5,
+    "theme": "dark",
+    "mobile_optimized": true
+  },
+  
+  "components": [
+    {
+      "id": "status_panel",
+      "type": "card",
+      "title": "System Status",
+      "api": "/api/status",
+      "fields": ["scp_id", "version", "entropy", "agents", "paper_mode"]
+    },
+    {
+      "id": "entropy_meter",
+      "type": "gauge",
+      "title": "Global Entropy",
+      "api": "/api/entropy",
+      "min": 0,
+      "max": 1,
+      "thresholds": {"safe": 0.3, "elevated": 0.7, "critical": 1}
+    },
+    {
+      "id": "agents_list",
+      "type": "table",
+      "title": "Active Agents",
+      "api": "/api/agents",
+      "columns": ["name", "class", "type"]
+    },
+    {
+      "id": "arbitrage_prices",
+      "type": "grid",
+      "title": "Live Prices",
+      "api": "/api/arbitrage/prices",
+      "refresh_seconds": 10
+    },
+    {
+      "id": "chatbot",
+      "type": "assistant",
+      "title": "Legion Assistant",
+      "capabilities": ["status", "agents", "entropy", "prices", "help"]
+    },
+    {
+      "id": "reports_list",
+      "type": "list",
+      "title": "Recent Reports",
+      "api": "/api/reports",
+      "max_items": 10
+    }
+  ],
+  
+  "layout": {
+    "mobile": [
+      ["status_panel", "entropy_meter"],
+      ["chatbot"],
+      ["agents_list"],
+      ["arbitrage_prices"],
+      ["reports_list"]
+    ],
+    "desktop": [
+      ["status_panel", "entropy_meter", "arbitrage_prices"],
+      ["chatbot", "agents_list"],
+      ["reports_list"]
+    ]
+  },
+  
+  "chatbot_config": {
+    "name": "Legion",
+    "greeting": "Hello! I'm Legion, your AI assistant. Ask me about system status, agents, strategies, or anything about LEGION MK20!",
+    "commands": [
+      {"trigger": "status", "response": "Fetching system status..."},
+      {"trigger": "agents", "response": "Listing all agents..."},
+      {"trigger": "entropy", "response": "Checking entropy levels..."},
+      {"trigger": "prices", "response": "Getting current prices..."},
+      {"trigger": "help", "response": "Available: status, agents, entropy, prices, reports, leaderboard"}
+    ]
+  },
+  
+  "theme": {
+    "primary": "#a855f7",
+    "secondary": "#7c3aed",
+    "background": "#0a0e27",
+    "surface": "#0f122e",
+    "text": "#e0e0e0",
+    "text_muted": "#9ca3af",
+    "success": "#22c55e",
+    "warning": "#f59e0b",
+    "danger": "#ef4444"
+  },
+  
+  "signature": {
+    "author": "LEGION MK20",
+    "date": "2026-04-23",
+    "status": "ACTIVE"
+  }
+}

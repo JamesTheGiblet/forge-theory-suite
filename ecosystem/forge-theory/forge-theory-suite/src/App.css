@@ -1,0 +1,146 @@
+/* Utility class for centering and spacing forge items horizontally */
+.forge-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 32px;
+  margin: 32px 0;
+}
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+/* Modern GUI Styles */
+
+body {
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  margin: 0;
+  color: #222;
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 32px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(44, 62, 80, 0.12);
+}
+
+h1, h2, h3 {
+  font-family: 'Montserrat', 'Segoe UI', sans-serif;
+  font-weight: 700;
+  color: #2d3a4b;
+  margin-bottom: 16px;
+}
+
+p, label, span {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #444;
+}
+
+button, .btn {
+  background: linear-gradient(90deg, #6a89cc 0%, #b8e994 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+  transition: background 0.3s, transform 0.2s;
+}
+
+button:hover, .btn:hover {
+  background: linear-gradient(90deg, #b8e994 0%, #6a89cc 100%);
+  transform: translateY(-2px) scale(1.04);
+}
+
+.card {
+  background: #f8fafc;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(44, 62, 80, 0.07);
+  padding: 24px;
+  margin-bottom: 24px;
+  transition: box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 6px 24px rgba(44, 62, 80, 0.13);
+}
+
+.input, input, select, textarea {
+  border: 1px solid #c3cfe2;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 1rem;
+  margin-bottom: 16px;
+  transition: border-color 0.2s;
+}
+
+.input:focus, input:focus, select:focus, textarea:focus {
+  border-color: #6a89cc;
+  outline: none;
+}
+
+.flex-row {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.divider {
+  height: 2px;
+  background: linear-gradient(90deg, #6a89cc 0%, #b8e994 100%);
+  border: none;
+  margin: 32px 0;
+}
+
+/* Add more custom styles for your components as needed */
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}

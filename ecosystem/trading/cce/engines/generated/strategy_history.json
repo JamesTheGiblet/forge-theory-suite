@@ -1,0 +1,18 @@
+[
+  {
+    "timestamp": "2026-04-15T07:40:09.203Z",
+    "marketState": {
+      "regime": "RANGING",
+      "sentiment": "NEUTRAL",
+      "phase": "ACCUMULATION",
+      "volatility": 1.8544292584549222,
+      "trend": 1.2863820204323457,
+      "volumeRatio": 0.21916770841695482,
+      "btcPrice": 71422.7,
+      "lastUpdated": "2026-04-15T07:23:42.681Z",
+      "timestamp": "2026-04-15T07:23:42.681Z"
+    },
+    "strategyId": "ranging-strategy-1776238809199",
+    "outputPath": "/data/data/com.termux/files/home/cce/engines/generated/ranging-strategy-1776238809199"
+  }
+]

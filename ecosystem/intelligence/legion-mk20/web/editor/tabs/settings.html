@@ -1,0 +1,56 @@
+<div class="card">
+    <h3>⚙️ Confidence Thresholds</h3>
+    <div class="settings-group">
+        <label>Min Buy Confidence: <span id="buyVal">0.65</span></label>
+        <input type="range" id="minBuy" min="0.5" max="0.9" step="0.01" value="0.65" onchange="updateThreshold('MIN_CONFIDENCE_BUY',this.value)">
+    </div>
+    <div class="settings-group">
+        <label>Min Sell Confidence: <span id="sellVal">0.65</span></label>
+        <input type="range" id="minSell" min="0.5" max="0.9" step="0.01" value="0.65" onchange="updateThreshold('MIN_CONFIDENCE_SELL',this.value)">
+    </div>
+    <div class="settings-group">
+        <label>LSTM Boost: <span id="boostVal">0.08</span></label>
+        <input type="range" id="lstmBoost" min="0" max="0.2" step="0.01" value="0.08" onchange="updateThreshold('LSTM_BOOST',this.value)">
+    </div>
+    <div class="settings-group">
+        <label>LSTM Penalty: <span id="penaltyVal">0.12</span></label>
+        <input type="range" id="lstmPenalty" min="0" max="0.25" step="0.01" value="0.12" onchange="updateThreshold('LSTM_PENALTY',this.value)">
+    </div>
+    <button class="danger-btn" onclick="emergencyStop()">🚨 Emergency Stop</button>
+</div>
+
+<script>
+const API = 'http://localhost:3011';
+
+async function loadThresholds() {
+    try {
+        const res = await fetch(API + '/api/thresholds');
+        const data = await res.json();
+        document.getElementById('buyVal').innerText = data.MIN_CONFIDENCE_BUY || 0.65;
+        document.getElementById('sellVal').innerText = data.MIN_CONFIDENCE_SELL || 0.65;
+        document.getElementById('boostVal').innerText = data.LSTM_BOOST || 0.08;
+        document.getElementById('penaltyVal').innerText = data.LSTM_PENALTY || 0.12;
+        document.getElementById('minBuy').value = data.MIN_CONFIDENCE_BUY || 0.65;
+        document.getElementById('minSell').value = data.MIN_CONFIDENCE_SELL || 0.65;
+        document.getElementById('lstmBoost').value = data.LSTM_BOOST || 0.08;
+        document.getElementById('lstmPenalty').value = data.LSTM_PENALTY || 0.12;
+    } catch(e) {}
+}
+
+window.updateThreshold = async (key, value) => {
+    await fetch(API + '/api/thresholds', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [key]: parseFloat(value) })
+    });
+};
+
+window.emergencyStop = async () => {
+    if (confirm('🚨 EMERGENCY STOP: This will halt all trading. Continue?')) {
+        await fetch('http://localhost:3003/api/kill_switch', { method: 'POST' });
+        alert('Emergency stop triggered');
+    }
+};
+
+loadThresholds();
+</script>

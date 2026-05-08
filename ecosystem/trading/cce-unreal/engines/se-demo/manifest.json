@@ -1,0 +1,12 @@
+{
+  "id": "se-demo",
+  "name": "S.E Demo",
+  "type": "STRATEGIC",
+  "ecosystem": "S.E",
+  "cycle": "4H",
+  "capitalKey": "usdc",
+  "author": "CCE Unreal",
+  "version": "1.0.0",
+  "description": "Demo strategic engine for CCE Unreal Platform - trend following strategy",
+  "dryRun": true
+}

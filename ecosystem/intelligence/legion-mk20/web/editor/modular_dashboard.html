@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LEGION EV22</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { background: #0a0e27; color: #e2e8f0; font-family: system-ui; padding: 20px; }
+        .card { background: #0f122e; border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid #1a1f4e; }
+        h1 { color: #a78bfa; }
+        .stat { font-size: 2rem; font-weight: bold; color: #a78bfa; }
+        button { background: #4f46e5; border: none; padding: 10px 20px; border-radius: 8px; color: white; cursor: pointer; }
+        input { background: #1a1f4e; border: 1px solid #2a2f6e; padding: 10px; border-radius: 8px; color: white; width: 70%; }
+        .chat-area { height: 300px; overflow-y: auto; border: 1px solid #1a1f4e; border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+        .user-msg { background: #4f46e5; padding: 8px 12px; border-radius: 12px; margin: 8px 0; text-align: right; }
+        .bot-msg { background: #1a1f4e; padding: 8px 12px; border-radius: 12px; margin: 8px 0; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab { background: #0f122e; border: 1px solid #1a1f4e; border-radius: 12px; padding: 8px 16px; cursor: pointer; }
+        .tab.active { background: #4f46e5; }
+        .hidden { display: none; }
+        .tab-content { min-height: 500px; }
+        .agent-item { background: #1a1f4e; border-radius: 8px; padding: 8px 12px; margin: 6px; display: inline-block; font-size: 13px; }
+        .agent-class { font-size: 10px; color: #a78bfa; display: block; margin-top: 4px; }
+        .agents-grid { display: flex; flex-wrap: wrap; }
+        .strategy-item { border-bottom: 1px solid #1a1f4e; padding: 12px; }
+        .fitness-bar { background: #1a1f4e; height: 6px; border-radius: 3px; margin-top: 5px; }
+        .fitness-fill { background: #a78bfa; height: 100%; border-radius: 3px; width: 0%; }
+        .rating-btn { background: #1a1f4e; border: none; padding: 4px 12px; margin: 4px; border-radius: 20px; cursor: pointer; color: white; }
+        .badge { background: #1a1f4e; border-radius: 20px; padding: 4px 12px; font-size: 12px; display: inline-block; margin: 4px; }
+        .settings-group { margin-bottom: 16px; }
+        .settings-group label { display: block; margin-bottom: 4px; font-size: 0.8rem; }
+        input[type="range"] { width: 100%; background: #1a1f4e; height: 4px; }
+        .danger-btn { background: #ef4444; width: 100%; margin-top: 8px; }
+    </style>
+</head>
+<body>
+    <h1>⚡ LEGION EV22</h1>
+    
+    <div class="tabs" id="tabs">
+        <div class="tab active" data-tab="dashboard">📊 Dashboard</div>
+        <div class="tab" data-tab="agents">🤖 Agents</div>
+        <div class="tab" data-tab="gallery">🏆 Gallery</div>
+        <div class="tab" data-tab="settings">⚙️ Settings</div>
+    </div>
+    
+    <div id="tabContainer" class="tab-content"></div>
+
+    <script>
+        let currentTab = 'dashboard';
+        
+        async function loadTab(tabName) {
+            const container = document.getElementById('tabContainer');
+            container.innerHTML = '<div style="text-align:center; padding:40px;">Loading...</div>';
+            
+            try {
+                const response = await fetch('/tabs/' + tabName + '.html');
+                const html = await response.text();
+                container.innerHTML = html;
+                
+                // Execute any scripts in the loaded content
+                const scripts = container.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    newScript.textContent = oldScript.textContent;
+                    document.body.appendChild(newScript);
+                    oldScript.remove();
+                });
+            } catch(e) {
+                container.innerHTML = '<div class="card">Error loading tab</div>';
+            }
+        }
+        
+        function switchTab(tabName) {
+            currentTab = tabName;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add('active');
+            loadTab(tabName);
+        }
+        
+        // Set up tab click handlers
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                switchTab(tab.dataset.tab);
+            });
+        });
+        
+        // Load initial tab
+        loadTab('dashboard');
+    </script>
+</body>
+</html>

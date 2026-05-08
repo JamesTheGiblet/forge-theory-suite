@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindForge - Cognitive Architect Studio</title>
+    
+    <!-- CSS Section -->
+    <style>
+        /* CSS Variables for Theming */
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.3);
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --node-size: 40px;
+            --particle-size: 4px;
+        }
+        
+        /* Global Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            overflow: hidden;
+            height: 100vh;
+            touch-action: none;
+        }
+        
+        /* Main Layout */
+        .app-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            grid-template-rows: 60px 1fr 80px;
+            height: 100vh;
+            gap: 1px;
+        }
+        
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background: var(--bg-card);
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 20px;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-card);
+            border-right: 1px solid #334155;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        /* Main Canvas Area */
+        .main {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Control Bar */
+        .controls {
+            grid-column: 1 / -1;
+            background: var(--bg-card);
+            border-top: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding: 0 20px;
+        }
+        
+        /* Canvas */
+        #mindCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+        }
+        
+        /* UI Components */
+        .btn {
+            background: #334155;
+            border: 1px solid #475569;
+            color: var(--text);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover { background: #475569; }
+        .btn.primary { background: var(--primary); }
+        .btn.primary:hover { background: #4f46e5; }
+        
+        .slider-container {
+            margin: 15px 0;
+        }
+        
+        .slider-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .pro-badge {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            margin-left: 5px;
+        }
+        
+        .locked {
+            opacity: 0.6;
+            position: relative;
+        }
+        
+        .locked::after {
+            content: '🔒';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <h1 style="font-weight: 300;">🧠 MINDFORGE</h1>
+            <div style="flex: 1;"></div>
+            <button class="btn" id="exportBtn">Export</button>
+            <button class="btn primary" id="proToggle">Try Pro</button>
+        </header>
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="section">
+                <h3 style="margin-bottom: 15px;">Architectures</h3>
+                <div class="architecture-list" id="archList"></div>
+            </div>
+            
+            <div class="section">
+                <h3 style="margin-bottom: 15px; margin-top: 30px;">Parameters</h3>
+                <div id="parameters"></div>
+            </div>
+            
+            <div class="section">
+                <h3 style="margin-bottom: 15px; margin-top: 30px;">Scenarios</h3>
+                <div class="scenario-list" id="scenarioList"></div>
+            </div>
+        </aside>
+        
+        <!-- Main Canvas -->
+        <main class="main">
+            <canvas id="mindCanvas"></canvas>
+            <div id="timeline" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);"></div>
+        </main>
+        
+        <!-- Controls -->
+        <footer class="controls">
+            <button class="btn" id="resetBtn">⟲ Reset</button>
+            <button class="btn primary" id="playBtn">▶ Play</button>
+            <button class="btn" id="stepBtn">⏭ Step</button>
+            <input type="range" id="speedSlider" min="1" max="10" value="5" style="width: 100px;">
+            <span style="font-size: 12px; color: var(--text-muted);">Time: <span id="timeDisplay">0</span></span>
+        </footer>
+    </div>
+
+    <!-- JavaScript Section -->
+    <script>
+        // ==================== LICENSE MANAGER ====================
+        const LicenseManager = {
+            isPro: false,
+            
+            init() {
+                this.isPro = localStorage.getItem('mindforge_pro') === 'true';
+                this.updateUI();
+            },
+            
+            unlockPro() {
+                this.isPro = true;
+                localStorage.setItem('mindforge_pro', 'true');
+                this.updateUI();
+                alert('Pro features unlocked! (Demo mode)');
+            },
+            
+            updateUI() {
+                document.getElementById('proToggle').textContent = 
+                    this.isPro ? '✓ Pro' : 'Try Pro';
+                this.applyLocks();
+            },
+            
+            applyLocks() {
+                // Apply visual locks to UI elements
+                document.querySelectorAll('.pro-only').forEach(el => {
+                    el.classList.toggle('locked', !this.isPro);
+                });
+            }
+        };
+
+        // ==================== STATE MANAGER ====================
+        class MindState {
+            constructor() {
+                this.nodes = [];
+                this.edges = [];
+                this.activations = new Map();
+                this.memory = new MemoryStore();
+                this.attention = new AttentionModel();
+                this.time = 0;
+                this.isRunning = false;
+                this.speed = 5;
+            }
+            
+            addNode(concept) {
+                const node = {
+                    id: this.nodes.length,
+                    label: concept,
+                    x: Math.random() * 800 + 100,
+                    y: Math.random() * 500 + 100,
+                    size: 40,
+                    activation: 0,
+                    color: this.getRandomColor()
+                };
+                this.nodes.push(node);
+                this.activations.set(node.id, 0);
+                return node;
+            }
+            
+            addEdge(sourceId, targetId, weight = 1) {
+                const edge = {
+                    source: sourceId,
+                    target: targetId,
+                    weight: weight,
+                    active: false
+                };
+                this.edges.push(edge);
+                return edge;
+            }
+            
+            getRandomColor() {
+                const hues = [0, 120, 240, 60, 300];
+                return `hsl(${hues[Math.floor(Math.random() * hues.length)]}, 70%, 60%)`;
+            }
+        }
+
+        class MemoryStore {
+            constructor() {
+                this.chunks = new Map();
+            }
+            
+            store(key, value) {
+                this.chunks.set(key, {
+                    value,
+                    strength: 1,
+                    lastAccessed: Date.now()
+                });
+            }
+        }
+
+        class AttentionModel {
+            constructor() {
+                this.focus = null;
+                this.bias = 0.5;
+            }
+        }
+
+        // ==================== ARCHITECTURES ====================
+        const Architectures = {
+            // Free Architecture 1: Spread Activation
+            spreadActivation: {
+                name: "Spread Activation Mind",
+                params: {
+                    decayRate: { min: 0, max: 1, value: 0.1 },
+                    spreadFactor: { min: 0, max: 2, value: 0.8 },
+                    inhibition: { min: 0, max: 1, value: 0.3 }
+                },
+                
+                update(state, input) {
+                    // Decay all activations
+                    for (let node of state.nodes) {
+                        node.activation *= (1 - this.params.decayRate.value);
+                    }
+                    
+                    // Spread activation through edges
+                    for (let edge of state.edges) {
+                        const source = state.nodes[edge.source];
+                        const target = state.nodes[edge.target];
+                        
+                        if (source.activation > this.params.inhibition.value) {
+                            const transfer = source.activation * this.params.spreadFactor.value * edge.weight;
+                            target.activation = Math.min(1, target.activation + transfer);
+                            edge.active = true;
+                        } else {
+                            edge.active = false;
+                        }
+                    }
+                    
+                    // Apply input if any
+                    if (input && input.concept) {
+                        const node = state.nodes.find(n => n.label === input.concept);
+                        if (node) {
+                            node.activation = Math.min(1, node.activation + 0.5);
+                        }
+                    }
+                }
+            },
+            
+            // Free Architecture 2: Learning Network
+            learningNetwork: {
+                name: "Learning Network",
+                params: {
+                    learningRate: { min: 0, max: 1, value: 0.3 },
+                    noise: { min: 0, max: 0.5, value: 0.1 }
+                },
+                
+                update(state, input) {
+                    // Simple learning: reinforce active paths
+                    for (let edge of state.edges) {
+                        const source = state.nodes[edge.source];
+                        const target = state.nodes[edge.target];
+                        
+                        if (source.activation > 0.5 && target.activation > 0.5) {
+                            edge.weight += this.params.learningRate.value * 0.1;
+                            edge.weight = Math.min(2, edge.weight);
+                        }
+                    }
+                    
+                    // Add noise
+                    for (let node of state.nodes) {
+                        node.activation += (Math.random() - 0.5) * this.params.noise.value;
+                        node.activation = Math.max(0, Math.min(1, node.activation));
+                    }
+                }
+            },
+            
+            // Pro Architectures (demo placeholders)
+            ruleMind: {
+                name: "Rule Mind PRO",
+                params: {},
+                update: () => {},
+                pro: true
+            },
+            
+            actrMind: {
+                name: "ACT-R Hybrid PRO",
+                params: {},
+                update: () => {},
+                pro: true
+            }
+        };
+
+        // ==================== SCENARIOS ====================
+        const Scenarios = {
+            decisionMaking: {
+                name: "Decision Making",
+                description: "Choose between conflicting options",
+                init(state) {
+                    // Add decision nodes
+                    const nodes = ['Option A', 'Option B', 'Pros', 'Cons', 'Bias'];
+                    nodes.forEach(label => state.addNode(label));
+                    
+                    // Create conflicting connections
+                    state.addEdge(0, 2, 0.8); // A → Pros
+                    state.addEdge(0, 3, 0.4); // A → Cons
+                    state.addEdge(1, 2, 0.6); // B → Pros
+                    state.addEdge(1, 3, 0.3); // B → Cons
+                    state.addEdge(4, 0, 0.7); // Bias → A
+                    
+                    // Activate initial node
+                    state.nodes[0].activation = 0.8;
+                }
+            },
+            
+            memoryRecall: {
+                name: "Memory Recall",
+                description: "Learn and recall associations",
+                init(state) {
+                    const pairs = [['Dog', 'Bark'], ['Cat', 'Meow'], ['Bird', 'Sing']];
+                    pairs.forEach(([word1, word2]) => {
+                        const n1 = state.addNode(word1);
+                        const n2 = state.addNode(word2);
+                        state.addEdge(n1.id, n2.id, 0.9);
+                    });
+                }
+            }
+        };
+
+        // ==================== RENDER ENGINE ====================
+        class RenderEngine {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.particles = [];
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+            }
+            
+            resize() {
+                this.canvas.width = this.canvas.offsetWidth;
+                this.canvas.height = this.canvas.offsetHeight;
+            }
+            
+            render(state) {
+                // Clear with fade effect
+                this.ctx.fillStyle = 'rgba(15, 23, 42, 0.1)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Render edges
+                this.renderEdges(state);
+                
+                // Render nodes
+                this.renderNodes(state);
+                
+                // Render particles
+                this.renderParticles(state);
+            }
+            
+            renderNodes(state) {
+                for (let node of state.nodes) {
+                    // Node glow
+                    const glow = this.ctx.createRadialGradient(
+                        node.x, node.y, 0,
+                        node.x, node.y, node.size * (1 + node.activation)
+                    );
+                    glow.addColorStop(0, `${node.color.replace(')', ', 0.8)').replace('hsl', 'hsla')}`);
+                    glow.addColorStop(1, `${node.color.replace(')', ', 0)').replace('hsl', 'hsla')}`);
+                    
+                    this.ctx.fillStyle = glow;
+                    this.ctx.beginPath();
+                    this.ctx.arc(node.x, node.y, node.size, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    
+                    // Node border
+                    this.ctx.strokeStyle = node.color;
+                    this.ctx.lineWidth = 2;
+                    this.ctx.stroke();
+                    
+                    // Node label
+                    this.ctx.fillStyle = 'white';
+                    this.ctx.font = '14px sans-serif';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.fillText(node.label, node.x, node.y + 5);
+                    
+                    // Activation indicator
+                    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                    this.ctx.beginPath();
+                    this.ctx.arc(node.x, node.y, node.size * node.activation, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+            }
+            
+            renderEdges(state) {
+                for (let edge of state.edges) {
+                    const source = state.nodes[edge.source];
+                    const target = state.nodes[edge.target];
+                    
+                    if (!source || !target) continue;
+                    
+                    this.ctx.strokeStyle = edge.active ? 
+                        `rgba(99, 102, 241, ${0.3 + edge.weight * 0.7})` : 
+                        'rgba(100, 100, 100, 0.2)';
+                    
+                    this.ctx.lineWidth = edge.weight * 3;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(source.x, source.y);
+                    this.ctx.lineTo(target.x, target.y);
+                    this.ctx.stroke();
+                    
+                    // Pulsing effect for active edges
+                    if (edge.active) {
+                        const pulse = Math.sin(Date.now() * 0.01) * 0.5 + 0.5;
+                        this.ctx.strokeStyle = `rgba(99, 102, 241, ${pulse * 0.5})`;
+                        this.ctx.lineWidth = edge.weight * 2;
+                        this.ctx.stroke();
+                    }
+                }
+            }
+            
+            renderParticles(state) {
+                // Create new particles from highly active nodes
+                for (let node of state.nodes) {
+                    if (node.activation > 0.7 && Math.random() > 0.7) {
+                        this.particles.push({
+                            x: node.x,
+                            y: node.y,
+                            vx: (Math.random() - 0.5) * 4,
+                            vy: (Math.random() - 0.5) * 4,
+                            color: node.color,
+                            life: 1.0
+                        });
+                    }
+                }
+                
+                // Update and render particles
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    const p = this.particles[i];
+                    
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.life -= 0.02;
+                    
+                    if (p.life <= 0) {
+                        this.particles.splice(i, 1);
+                        continue;
+                    }
+                    
+                    this.ctx.fillStyle = p.color.replace(')', `, ${p.life})`).replace('hsl', 'hsla');
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+                
+                // Limit particles
+                if (this.particles.length > 200) {
+                    this.particles = this.particles.slice(-200);
+                }
+            }
+        }
+
+        // ==================== UI MANAGER ====================
+        class UIManager {
+            constructor() {
+                this.currentArch = 'spreadActivation';
+                this.currentScenario = 'decisionMaking';
+                this.renderParamSliders();
+                this.renderArchList();
+                this.renderScenarioList();
+            }
+            
+            renderParamSliders() {
+                const container = document.getElementById('parameters');
+                const arch = Architectures[this.currentArch];
+                
+                if (!arch.params) return;
+                
+                container.innerHTML = '';
+                for (let [key, param] of Object.entries(arch.params)) {
+                    const div = document.createElement('div');
+                    div.className = 'slider-container';
+                    
+                    const label = key.replace(/([A-Z])/g, ' $1').toLowerCase();
+                    div.innerHTML = `
+                        <label>${label}: <span id="val-${key}">${param.value.toFixed(2)}</span></label>
+                        <input type="range" min="${param.min * 100}" max="${param.max * 100}" 
+                               value="${param.value * 100}" class="param-slider" data-key="${key}">
+                    `;
+                    container.appendChild(div);
+                }
+                
+                // Add event listeners
+                container.querySelectorAll('.param-slider').forEach(slider => {
+                    slider.addEventListener('input', (e) => {
+                        const key = e.target.dataset.key;
+                        const value = e.target.value / 100;
+                        Architectures[this.currentArch].params[key].value = value;
+                        document.getElementById(`val-${key}`).textContent = value.toFixed(2);
+                    });
+                });
+            }
+            
+            renderArchList() {
+                const container = document.getElementById('archList');
+                container.innerHTML = '';
+                
+                for (let [key, arch] of Object.entries(Architectures)) {
+                    const div = document.createElement('div');
+                    div.className = `btn ${arch.pro ? 'pro-only' : ''}`;
+                    div.style.marginBottom = '5px';
+                    div.textContent = arch.name;
+                    if (arch.pro) {
+                        const badge = document.createElement('span');
+                        badge.className = 'pro-badge';
+                        badge.textContent = 'PRO';
+                        div.appendChild(badge);
+                    }
+                    
+                    div.addEventListener('click', () => {
+                        if (arch.pro && !LicenseManager.isPro) {
+                            alert('Pro feature. Try Pro to unlock!');
+                            return;
+                        }
+                        this.currentArch = key;
+                        this.renderParamSliders();
+                    });
+                    
+                    container.appendChild(div);
+                }
+            }
+            
+            renderScenarioList() {
+                const container = document.getElementById('scenarioList');
+                container.innerHTML = '';
+                
+                for (let [key, scenario] of Object.entries(Scenarios)) {
+                    const div = document.createElement('div');
+                    div.className = 'btn';
+                    div.style.marginBottom = '5px';
+                    div.innerHTML = `
+                        <strong>${scenario.name}</strong><br>
+                        <small style="color: var(--text-muted);">${scenario.description}</small>
+                    `;
+                    
+                    div.addEventListener('click', () => {
+                        this.currentScenario = key;
+                        initScenario(key);
+                    });
+                    
+                    container.appendChild(div);
+                }
+            }
+        }
+
+        // ==================== MAIN APPLICATION ====================
+        class MindForgeApp {
+            constructor() {
+                this.state = new MindState();
+                this.renderer = new RenderEngine(document.getElementById('mindCanvas'));
+                this.ui = new UIManager();
+                this.animationId = null;
+                this.lastTime = 0;
+                
+                this.init();
+                this.setupEventListeners();
+            }
+            
+            init() {
+                LicenseManager.init();
+                initScenario('decisionMaking');
+                this.loop(0);
+            }
+            
+            setupEventListeners() {
+                document.getElementById('playBtn').addEventListener('click', () => {
+                    this.state.isRunning = !this.state.isRunning;
+                    document.getElementById('playBtn').textContent = 
+                        this.state.isRunning ? '⏸ Pause' : '▶ Play';
+                });
+                
+                document.getElementById('stepBtn').addEventListener('click', () => {
+                    this.update();
+                });
+                
+                document.getElementById('resetBtn').addEventListener('click', () => {
+                    this.state = new MindState();
+                    initScenario(this.ui.currentScenario);
+                });
+                
+                document.getElementById('speedSlider').addEventListener('input', (e) => {
+                    this.state.speed = parseInt(e.target.value);
+                });
+                
+                document.getElementById('exportBtn').addEventListener('click', () => {
+                    this.exportPNG();
+                });
+                
+                document.getElementById('proToggle').addEventListener('click', () => {
+                    if (!LicenseManager.isPro) {
+                        LicenseManager.unlockPro();
+                    }
+                });
+                
+                // Canvas interactions
+                this.renderer.canvas.addEventListener('click', (e) => {
+                    const rect = this.renderer.canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    // Find clicked node
+                    for (let node of this.state.nodes) {
+                        const dist = Math.sqrt((x - node.x) ** 2 + (y - node.y) ** 2);
+                        if (dist < node.size) {
+                            node.activation = Math.min(1, node.activation + 0.3);
+                            break;
+                        }
+                    }
+                });
+            }
+            
+            update() {
+                const arch = Architectures[this.ui.currentArch];
+                if (arch && arch.update) {
+                    arch.update(this.state, {});
+                }
+                
+                this.state.time += 0.1;
+                document.getElementById('timeDisplay').textContent = this.state.time.toFixed(1);
+            }
+            
+            loop(timestamp) {
+                if (!this.lastTime) this.lastTime = timestamp;
+                const delta = timestamp - this.lastTime;
+                
+                // Update at speed-controlled rate
+                if (this.state.isRunning && delta > (100 - this.state.speed * 10)) {
+                    this.update();
+                    this.lastTime = timestamp;
+                }
+                
+                // Always render
+                this.renderer.render(this.state);
+                this.animationId = requestAnimationFrame((t) => this.loop(t));
+            }
+            
+            exportPNG() {
+                const dataUrl = this.renderer.canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = `mindforge-${Date.now()}.png`;
+                link.href = LicenseManager.isPro ? dataUrl : addWatermark(dataUrl);
+                link.click();
+            }
+        }
+
+        // ==================== UTILITY FUNCTIONS ====================
+        function initScenario(scenarioKey) {
+            const scenario = Scenarios[scenarioKey];
+            if (scenario) {
+                const state = app.state;
+                state.nodes = [];
+                state.edges = [];
+                state.time = 0;
+                scenario.init(state);
+            }
+        }
+
+        function addWatermark(dataUrl) {
+            // Simple watermark for free version
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            
+            img.onload = function() {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                
+                // Add watermark text
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                ctx.font = '24px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('MINDFORGE - TRY PRO', canvas.width/2, 40);
+            };
+            
+            img.src = dataUrl;
+            return canvas.toDataURL('image/png');
+        }
+
+        // ==================== INITIALIZATION ====================
+        let app;
+        window.addEventListener('DOMContentLoaded', () => {
+            app = new MindForgeApp();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "system/auditor",
+  "object_class": "Thaumiel",
+  "intent": "Scan all active capsules, compare against previous knowledge, and generate a live UBVM ecosystem status report.",
+  "containment": {
+    "read_only": false,
+    "audit_log": true,
+    "kill_switch": false
+  },
+  "behaviours": [
+    {
+      "trigger": "on_load",
+      "actions": [
+        {
+          "primitive": "scan_capsules",
+          "params": {}
+        },
+        {
+          "primitive": "retrieve_memory",
+          "params": {
+            "max_memories": 5
+          }
+        },
+        {
+          "primitive": "llm_reason",
+          "params": {
+            "prompt": "Current active capsules: $results.0.capsules. Total count: $results.0.count. Compare this to your recent memories: $results.1.memories. Write a 3-bullet point clinical status report on the UBVM ecosystem. Mention the total count and any newly added capsules. Keep it concise.",
+            "system_instruction": "You are BuddAI, acting as the system auditor. Be clinical, observant, and concise."
+          }
+        },
+        {
+          "primitive": "form_memory",
+          "params": {
+            "thought": "$results.2.thought",
+            "tags": ["system", "audit"]
+          }
+        },
+        {
+          "primitive": "write_file",
+          "params": {
+            "path": "data/system_status.txt",
+            "content": "$results.2.thought"
+          }
+        }
+      ]
+    },
+    {
+      "trigger": "cron",
+      "schedule": "0 * * * *",
+      "actions": [
+        {
+          "primitive": "scan_capsules",
+          "params": {}
+        },
+        {
+          "primitive": "retrieve_memory",
+          "params": {
+            "max_memories": 5
+          }
+        },
+        {
+          "primitive": "llm_reason",
+          "params": {
+            "prompt": "Current active capsules: $results.0.capsules. Total count: $results.0.count. Compare this to your recent memories: $results.1.memories. Write a 3-bullet point clinical status report on the UBVM ecosystem. Mention the total count and any newly added capsules. Keep it concise.",
+            "system_instruction": "You are BuddAI, acting as the system auditor. Be clinical, observant, and concise."
+          }
+        },
+        {
+          "primitive": "form_memory",
+          "params": {
+            "thought": "$results.2.thought",
+            "tags": ["system", "audit"]
+          }
+        },
+        {
+          "primitive": "write_file",
+          "params": {
+            "path": "data/system_status.txt",
+            "content": "$results.2.thought"
+          }
+        }
+      ]
+    }
+  ]
+}

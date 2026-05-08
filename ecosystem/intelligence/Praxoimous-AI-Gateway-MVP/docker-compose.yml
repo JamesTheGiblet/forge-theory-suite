@@ -1,0 +1,33 @@
+networks:
+  praximous-net:
+    driver: bridge
+
+services:
+  praximous:
+    # Build the Docker image from the Dockerfile in the current directory
+    build: .
+    # Name the container for easier identification
+    container_name: praximous
+    ports: # Maps container port to host port
+      - "8000:8000"
+    # Load environment variables from the .env file
+    env_file:
+      - .env
+    # Mount local directories into the container for persistent data
+    volumes:
+      - ./config:/app/config
+      - ./logs:/app/logs
+    networks:
+      - praximous-net
+    depends_on:
+      - ollama
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    volumes:
+      - ./ollama_data:/root/.ollama # Persists Ollama models on your host machine
+    ports: # Optional: expose Ollama on the host if you want to access it from outside Docker
+      - "11434:11434"
+    networks:
+      - praximous-net

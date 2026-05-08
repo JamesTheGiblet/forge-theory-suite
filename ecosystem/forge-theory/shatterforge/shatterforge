@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shattered Glass Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 300;
+            font-size: clamp(1.5em, 5vw, 2em);
+            color: #7fdbca;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .control-group {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .control-group h3 {
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #7fdbca;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .control-item {
+            margin-bottom: 15px;
+        }
+        
+        .control-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85em;
+            margin-bottom: 8px;
+            color: #b0b0b0;
+        }
+        
+        .value {
+            font-weight: 600;
+            color: #7fdbca;
+            font-size: 0.95em;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #7fdbca;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #5fc4b0;
+            transform: scale(1.2);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #7fdbca;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        
+        .canvas-container {
+            background: rgba(10, 14, 39, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        canvas {
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            max-width: 100%;
+            height: auto;
+            cursor: crosshair;
+        }
+        
+        .timelapse-control {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .timelapse-control h3 {
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #7fdbca;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .play-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px;
+            background: rgba(127, 219, 202, 0.2);
+            border: 1px solid #7fdbca;
+            color: #7fdbca;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            background: rgba(127, 219, 202, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.active {
+            background: #7fdbca;
+            color: #0a0e27;
+        }
+        
+        .glass-type-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .glass-type-btn {
+            flex: 1;
+            padding: 8px;
+            font-size: 0.8em;
+        }
+        
+        .lighting-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: #7fdbca;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: rgba(127, 219, 202, 0.3);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .instruction-text {
+            text-align: center;
+            color: #7fdbca;
+            font-size: 0.85em;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .canvas-container {
+                order: -1;
+                min-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💥 Shattered Glass Simulator</h1>
+        
+        <div class="main-content">
+            <div class="controls">
+                <div class="control-group">
+                    <h3>Glass Type</h3>
+                    <div class="glass-type-selector">
+                        <button class="glass-type-btn" data-type="window">Window</button>
+                        <button class="glass-type-btn" data-type="tempered">Tempered</button>
+                        <button class="glass-type-btn" data-type="crystal">Crystal</button>
+                    </div>
+                    <div class="lighting-toggle">
+                        <span>Lighting Effects</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="lightingToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Fracture Parameters</h3>
+                    <div class="control-item">
+                        <label>
+                            Crack Density
+                            <span class="value" id="densityValue">6</span>
+                        </label>
+                        <input type="range" id="density" min="3" max="12" value="6" step="1">
+                    </div>
+                    <div class="control-item">
+                        <label>
+                            Branching Probability
+                            <span class="value" id="branchingValue">0.30</span>
+                        </label>
+                        <input type="range" id="branching" min="0.1" max="0.6" value="0.3" step="0.05">
+                    </div>
+                    <div class="control-item">
+                        <label>
+                            Max Length
+                            <span class="value" id="lengthValue">150</span>
+                        </label>
+                        <input type="range" id="maxLength" min="50" max="300" value="150" step="10">
+                    </div>
+                    <div class="control-item">
+                        <label>
+                            Impact Force
+                            <span class="value" id="forceValue">75%</span>
+                        </label>
+                        <input type="range" id="impactForce" min="10" max="100" value="75" step="1">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Fracture Dynamics</h3>
+                    <div class="control-item">
+                        <label>
+                            Angle Variation
+                            <span class="value" id="randomValue">20°</span>
+                        </label>
+                        <input type="range" id="randomness" min="5" max="45" value="20" step="1">
+                    </div>
+                    <div class="control-item">
+                        <label>
+                            Segment Length
+                            <span class="value" id="segmentValue">25</span>
+                        </label>
+                        <input type="range" id="segmentLength" min="10" max="50" value="25" step="5">
+                    </div>
+                    <div class="control-item">
+                        <label>
+                            Material Brittleness
+                            <span class="value" id="brittleValue">0.70</span>
+                        </label>
+                        <input type="range" id="brittleness" min="0.3" max="1" value="0.7" step="0.05">
+                    </div>
+                    <div class="control-item">
+                        <label>
+                            Animation Speed
+                            <span class="value" id="speedValue">1.0x</span>
+                        </label>
+                        <input type="range" id="speed" min="0.1" max="3" value="1" step="0.1">
+                    </div>
+                </div>
+                
+                <div class="timelapse-control">
+                    <h3>Fracture Control</h3>
+                    <div class="play-controls">
+                        <button id="playBtn">▶ Shatter</button>
+                        <button id="resetBtn">↻ Reset</button>
+                    </div>
+                    <div class="control-item">
+                        <label>
+                            Fracture Stage
+                            <span class="value" id="timeValue">0%</span>
+                        </label>
+                        <input type="range" id="timeSlider" min="0" max="100" value="0" step="1">
+                    </div>
+                    <div class="instruction-text">
+                        💡 Click on the glass to add fractures!
+                    </div>
+                </div>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="glassCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('glassCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Parameters
+        let params = {
+            glassType: 'window',
+            showLighting: true,
+            density: 6,
+            branching: 0.3,
+            maxLength: 150,
+            impactForce: 75,
+            randomness: 20,
+            segmentLength: 25,
+            brittleness: 0.7,
+            speed: 1.0,
+            fractureStage: 0
+        };
+        
+        // Glass type presets
+        const glassPresets = {
+            window: {
+                density: 6,
+                branching: 0.3,
+                maxLength: 150,
+                impactForce: 75,
+                randomness: 20,
+                segmentLength: 25,
+                brittleness: 0.7
+            },
+            tempered: {
+                density: 10,
+                branching: 0.5,
+                maxLength: 100,
+                impactForce: 90,
+                randomness: 35,
+                segmentLength: 15,
+                brittleness: 0.9
+            },
+            crystal: {
+                density: 4,
+                branching: 0.15,
+                maxLength: 200,
+                impactForce: 60,
+                randomness: 10,
+                segmentLength: 35,
+                brittleness: 0.5
+            }
+        };
+        
+        let isPlaying = false;
+        let animationId = null;
+        let impactPoints = [];
+        let crackSegments = [];
+        
+        // Canvas click handler
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+            
+            addImpactPoint(x, y);
+        });
+        
+        // Touch support for mobile
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            const x = (touch.clientX - rect.left) * (canvas.width / rect.width);
+            const y = (touch.clientY - rect.top) * (canvas.height / rect.height);
+            
+            addImpactPoint(x, y);
+        });
+        
+        // Add impact point at specific location
+        function addImpactPoint(x, y) {
+            const newImpact = {
+                x: x,
+                y: y,
+                force: params.impactForce / 100
+            };
+            
+            impactPoints.push(newImpact);
+            
+            // Generate cracks from this impact point
+            generateCracksFromPoint(newImpact);
+            
+            // Reset fracture stage and start animation
+            params.fractureStage = 0;
+            document.getElementById('timeSlider').value = 0;
+            updateDisplay();
+            
+            // Auto-play animation
+            if (!isPlaying) {
+                isPlaying = true;
+                document.getElementById('playBtn').textContent = '⏸ Pause';
+                document.getElementById('playBtn').classList.add('active');
+                animate();
+            }
+        }
+        
+        // Generate cracks from a specific impact point
+        function generateCracksFromPoint(point) {
+            const numPrimaryCracks = params.density;
+            
+            // Create primary cracks radiating from impact point
+            for (let i = 0; i < numPrimaryCracks; i++) {
+                const baseAngle = (i / numPrimaryCracks) * Math.PI * 2;
+                const angleVariation = (Math.random() - 0.5) * (params.randomness * Math.PI / 180);
+                const angle = baseAngle + angleVariation;
+                
+                // Generate a single crack path
+                generateCrackPath(point.x, point.y, angle, 0, point.force);
+            }
+        }
+        
+        // Generate a single crack path with branching
+        function generateCrackPath(startX, startY, angle, totalLength, forceMultiplier) {
+            const maxLength = params.maxLength * forceMultiplier;
+            
+            let currentX = startX;
+            let currentY = startY;
+            let currentAngle = angle;
+            let currentLength = 0;
+            
+            // Generate segments along the crack
+            while (currentLength < maxLength) {
+                // Vary the angle slightly for organic look
+                const angleChange = (Math.random() - 0.5) * (params.randomness * Math.PI / 180) * 0.3;
+                currentAngle += angleChange;
+                
+                // Calculate segment endpoint
+                const segLength = params.segmentLength * (0.8 + Math.random() * 0.4);
+                const endX = currentX + Math.cos(currentAngle) * segLength;
+                const endY = currentY + Math.sin(currentAngle) * segLength;
+                
+                // Store this segment
+                crackSegments.push({
+                    x1: currentX,
+                    y1: currentY,
+                    x2: endX,
+                    y2: endY,
+                    totalLength: currentLength + segLength,
+                    maxLength: maxLength
+                });
+                
+                // Chance to branch
+                if (Math.random() < params.branching * params.brittleness && currentLength > maxLength * 0.2) {
+                    const branchAngle = currentAngle + (Math.random() > 0.5 ? 1 : -1) * (30 + Math.random() * 30) * Math.PI / 180;
+                    const branchLength = (maxLength - currentLength) * (0.5 + Math.random() * 0.3);
+                    generateCrackPath(currentX, currentY, branchAngle, currentLength, forceMultiplier * 0.7);
+                }
+                
+                // Move to next segment
+                currentX = endX;
+                currentY = endY;
+                currentLength += segLength;
+                
+                // Check if we've gone off canvas
+                if (currentX < 0 || currentX > canvas.width || currentY < 0 || currentY > canvas.height) {
+                    break;
+                }
+                
+                // Gradually decrease segment length
+                if (Math.random() < 0.1) break;
+            }
+        }
+        
+        // Update display values
+        function updateDisplay() {
+            document.getElementById('densityValue').textContent = params.density;
+            document.getElementById('branchingValue').textContent = params.branching.toFixed(2);
+            document.getElementById('lengthValue').textContent = params.maxLength;
+            document.getElementById('forceValue').textContent = params.impactForce + '%';
+            document.getElementById('randomValue').textContent = params.randomness + '°';
+            document.getElementById('segmentValue').textContent = params.segmentLength;
+            document.getElementById('brittleValue').textContent = params.brittleness.toFixed(2);
+            document.getElementById('speedValue').textContent = params.speed.toFixed(1) + 'x';
+            document.getElementById('timeValue').textContent = Math.round(params.fractureStage) + '%';
+        }
+        
+        // Apply glass type preset
+        function applyGlassType(type) {
+            const preset = glassPresets[type];
+            Object.keys(preset).forEach(key => {
+                params[key] = preset[key];
+                const input = document.getElementById(key);
+                if (input) {
+                    input.value = preset[key];
+                }
+            });
+            updateDisplay();
+            drawGlass();
+        }
+        
+        // Generate initial impact points (for random mode)
+        function generateImpactPoints() {
+            impactPoints = [];
+            crackSegments = [];
+            
+            const numPoints = Math.max(1, Math.floor(params.density / 4));
+            
+            for (let i = 0; i < numPoints; i++) {
+                const point = {
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    force: params.impactForce / 100
+                };
+                impactPoints.push(point);
+                generateCracksFromPoint(point);
+            }
+        }
+        
+        // Event listeners
+        document.getElementById('density').addEventListener('input', (e) => {
+            params.density = parseInt(e.target.value);
+            updateDisplay();
+        });
+        
+        document.getElementById('branching').addEventListener('input', (e) => {
+            params.branching = parseFloat(e.target.value);
+            updateDisplay();
+        });
+        
+        document.getElementById('maxLength').addEventListener('input', (e) => {
+            params.maxLength = parseInt(e.target.value);
+            updateDisplay();
+        });
+        
+        document.getElementById('impactForce').addEventListener('input', (e) => {
+            params.impactForce = parseInt(e.target.value);
+            updateDisplay();
+        });
+        
+        document.getElementById('randomness').addEventListener('input', (e) => {
+            params.randomness = parseInt(e.target.value);
+            updateDisplay();
+        });
+        
+        document.getElementById('segmentLength').addEventListener('input', (e) => {
+            params.segmentLength = parseInt(e.target.value);
+            updateDisplay();
+        });
+        
+        document.getElementById('brittleness').addEventListener('input', (e) => {
+            params.brittleness = parseFloat(e.target.value);
+            updateDisplay();
+        });
+        
+        document.getElementById('speed').addEventListener('input', (e) => {
+            params.speed = parseFloat(e.target.value);
+            updateDisplay();
+        });
+        
+        document.getElementById('timeSlider').addEventListener('input', (e) => {
+            params.fractureStage = parseFloat(e.target.value);
+            updateDisplay();
+            drawGlass();
+        });
+        
+        document.getElementById('lightingToggle').addEventListener('change', (e) => {
+            params.showLighting = e.target.checked;
+            drawGlass();
+        });
+        
+        document.querySelectorAll('.glass-type-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.glass-type-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                params.glassType = e.target.dataset.type;
+                applyGlassType(params.glassType);
+            });
+        });
+        
+        document.getElementById('playBtn').addEventListener('click', () => {
+            if (impactPoints.length === 0) {
+                generateImpactPoints();
+                params.fractureStage = 0;
+            }
+            
+            isPlaying = !isPlaying;
+            document.getElementById('playBtn').textContent = isPlaying ? '⏸ Pause' : '▶ Shatter';
+            document.getElementById('playBtn').classList.toggle('active');
+            if (isPlaying) {
+                animate();
+            } else {
+                cancelAnimationFrame(animationId);
+            }
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            params.fractureStage = 0;
+            document.getElementById('timeSlider').value = 0;
+            impactPoints = [];
+            crackSegments = [];
+            isPlaying = false;
+            document.getElementById('playBtn').textContent = '▶ Shatter';
+            document.getElementById('playBtn').classList.remove('active');
+            updateDisplay();
+            drawGlass();
+        });
+        
+        // Animation
+        function animate() {
+            if (!isPlaying) return;
+            
+            params.fractureStage += 0.8 * params.speed;
+            if (params.fractureStage > 100) {
+                params.fractureStage = 100;
+                isPlaying = false;
+                document.getElementById('playBtn').textContent = '▶ Shatter';
+                document.getElementById('playBtn').classList.remove('active');
+            }
+            
+            document.getElementById('timeSlider').value = params.fractureStage;
+            updateDisplay();
+            drawGlass();
+            
+            if (isPlaying) {
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+        
+        // Draw glass
+        function drawGlass() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw glass background
+            const bgGradient = ctx.createRadialGradient(
+                canvas.width/2, canvas.height/2, 0,
+                canvas.width/2, canvas.height/2, canvas.width * 0.7
+            );
+            bgGradient.addColorStop(0, 'rgba(220, 235, 255, 0.15)');
+            bgGradient.addColorStop(1, 'rgba(180, 200, 230, 0.08)');
+            ctx.fillStyle = bgGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw glass border
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(0, 0, canvas.width, canvas.height);
+            
+            // Calculate current growth
+            const growthFactor = params.fractureStage / 100;
+            const maxTotalLength = crackSegments.reduce((max, seg) => Math.max(max, seg.maxLength), 0);
+            const currentMaxLength = maxTotalLength * growthFactor;
+            
+            // Draw crack segments
+            crackSegments.forEach(segment => {
+                if (segment.totalLength <= currentMaxLength) {
+                    drawCrackSegment(segment, 1.0);
+                } else if (segment.totalLength - params.segmentLength <= currentMaxLength) {
+                    // Partial segment
+                    const partialProgress = (currentMaxLength - (segment.totalLength - params.segmentLength)) / params.segmentLength;
+                    drawCrackSegment(segment, partialProgress);
+                }
+            });
+            
+            // Draw impact points
+            impactPoints.forEach(point => {
+                const radius = 4 + 8 * growthFactor;
+                
+                // Inner core
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, radius * 0.5, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 80, 80, ${0.6 + 0.4 * growthFactor})`;
+                ctx.fill();
+                
+                // Outer ring
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(255, 100, 100, ${0.3 + 0.5 * growthFactor})`;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            });
+            
+            // Add lighting effects
+            if (params.showLighting) {
+                addLightingEffects(growthFactor);
+            }
+        }
+        
+        function drawCrackSegment(segment, progress) {
+            const x2 = segment.x1 + (segment.x2 - segment.x1) * progress;
+            const y2 = segment.y1 + (segment.y2 - segment.y1) * progress;
+            
+            // Vary appearance based on glass type
+            let lineWidth, color, shadowBlur;
+            switch(params.glassType) {
+                case 'tempered':
+                    lineWidth = 1.5;
+                    color = 'rgba(160, 200, 255, 0.8)';
+                    shadowBlur = 2;
+                    break;
+                case 'crystal':
+                    lineWidth = 1;
+                    color = 'rgba(255, 255, 255, 0.9)';
+                    shadowBlur = 3;
+                    break;
+                default: // window
+                    lineWidth = 2;
+                    color = 'rgba(200, 220, 255, 0.75)';
+                    shadowBlur = 1.5;
+            }
+            
+            ctx.save();
+            ctx.shadowColor = color;
+            ctx.shadowBlur = shadowBlur;
+            
+            ctx.beginPath();
+            ctx.moveTo(segment.x1, segment.y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = lineWidth;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+        
+        function addLightingEffects(growth) {
+            // Add subtle specular highlights
+            ctx.strokeStyle = `rgba(255, 255, 255, ${0.15 * growth})`;
+            ctx.lineWidth = 0.5;
+            
+            // Draw highlights on random segments
+            crackSegments.forEach(segment => {
+                if (Math.random() < 0.2) {
+                    const offsetX = (segment.x2 - segment.x1) * 0.1;
+                    const offsetY = (segment.y2 - segment.y1) * 0.1;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(segment.x1 + offsetY, segment.y1 - offsetX);
+                    ctx.lineTo(segment.x2 + offsetY, segment.y2 - offsetX);
+                    ctx.stroke();
+                }
+            });
+        }
+        
+        // Make canvas responsive
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const size = Math.min(container.clientWidth - 40, 700);
+            canvas.width = size;
+            canvas.height = size;
+            drawGlass();
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Initial setup
+        resizeCanvas();
+        updateDisplay();
+        document.querySelector('.glass-type-btn[data-type="window"]').classList.add('active');
+    </script>
+</body>
+</html>

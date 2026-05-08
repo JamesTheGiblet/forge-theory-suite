@@ -1,0 +1,45 @@
+{
+  "active": [
+    "STRAT-021"
+  ],
+  "standings": {
+    "STRAT-021": {
+      "pnl": 0.025,
+      "realPnl": 0.025,
+      "winRate": 1,
+      "trades": 5,
+      "startTime": 1776883005713,
+      "allocation": 10000,
+      "name": "ringo_mutated",
+      "class": "Keter",
+      "lastPrice": 78954
+    }
+  },
+  "history": [
+    {
+      "endTime": 1776861567071,
+      "duration": 24,
+      "finalStandings": [
+        {
+          "strategyId": "STRAT-021",
+          "name": "ringo_mutated",
+          "pnl": 0.025,
+          "realPnl": 0.025,
+          "winRate": 1,
+          "trades": 5,
+          "class": "Keter"
+        },
+        {
+          "strategyId": "AUTO_1776781955301_oew3ma",
+          "name": "Auto Generated",
+          "pnl": 0,
+          "realPnl": 0,
+          "winRate": 0,
+          "trades": 0,
+          "class": "Euclid"
+        }
+      ]
+    }
+  ],
+  "currentStart": 1776861567072
+}

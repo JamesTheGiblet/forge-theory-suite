@@ -1,0 +1,58 @@
+<div class="card">
+  <div class="card-header">🖥️ System Status</div>
+  <div class="card-body" id="systemStatusContent">Loading...</div>
+</div>
+
+<div class="card">
+  <div class="card-header">⚙️ Trading Configuration</div>
+  <div class="card-body">
+    <div class="settings-group">
+      <div class="settings-label">💰 Live Trading Mode</div>
+      <label style="display:flex;align-items:center;gap:12px;margin-top:8px">
+        <input type="checkbox" id="liveTrading" onchange="toggleLiveTrading()"> Enable Live Trading (REAL MONEY)
+      </label>
+      <div class="settings-hint" style="font-size:11px;color:var(--danger);margin-top:8px">⚠️ WARNING: This will execute real orders on Kraken. Only enable after paper mode passes.</div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-label">📊 Maximum Position Size (BTC)</div>
+      <input type="number" id="maxPosition" class="settings-input" value="0.1" step="0.01" style="width:100%;padding:12px;margin-top:8px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:8px">
+      <div class="settings-hint" style="font-size:11px;color:var(--text-secondary);margin-top:8px">Maximum BTC per trade. Start with 0.01 for testing.</div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-label">📉 Maximum Daily Loss (%)</div>
+      <input type="number" id="maxDailyLoss" class="settings-input" value="5" step="1" style="width:100%;padding:12px;margin-top:8px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:8px">
+      <div class="settings-hint" style="font-size:11px;color:var(--text-secondary);margin-top:8px">Trading stops if daily loss exceeds this percentage</div>
+    </div>
+    <button class="btn" onclick="saveTradingConfig()" style="margin-top:16px">💾 Save Trading Config</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">🔄 System Actions</div>
+  <div class="card-body">
+    <button class="btn btn-secondary" onclick="restartLegion()">🔄 Restart LEGION Core</button>
+    <button class="btn btn-secondary" onclick="restartAPI()" style="margin-left:12px">🔄 Restart API Server</button>
+    <button class="btn btn-danger" onclick="clearData()" style="margin-left:12px">🗑️ Clear All Data (Reset)</button>
+    <div class="settings-hint" style="font-size:11px;color:var(--text-secondary);margin-top:12px">⚠️ Restarting services may cause brief downtime. Clearing data resets all strategies.</div>
+  </div>
+</div>
+
+<script>
+async function loadSystemStatusContent() {
+  try {
+    const stats = await fetch(API_URL + '/api/stats').then(r => r.json());
+    document.getElementById('systemStatusContent').innerHTML = `
+      <div class="strategy-row"><span>🖥️ LEGION Core</span><span style="color:#00c896">✅ Running</span></div>
+      <div class="strategy-row"><span>📡 API Server</span><span style="color:#00c896">✅ Port 3001</span></div>
+      <div class="strategy-row"><span>💰 Portfolio API</span><span style="color:#00c896">✅ Port 3002</span></div>
+      <div class="strategy-row"><span>📊 Active Strategies</span><span>${stats.strategies}</span></div>
+      <div class="strategy-row"><span>📋 Paper Mode</span><span>${stats.paperHours.toFixed(0)}h left</span></div>
+      <div class="strategy-row"><span>🛡️ Safety Breaches</span><span style="color:#00c896">${stats.breaches}</span></div>
+    `;
+  } catch(e) {
+    document.getElementById('systemStatusContent').innerHTML = '<div class="error">⚠️ Cannot connect to API</div>';
+  }
+}
+loadSystemStatusContent();
+setInterval(loadSystemStatusContent, 30000);
+</script>

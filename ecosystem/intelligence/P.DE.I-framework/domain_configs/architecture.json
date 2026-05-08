@@ -1,0 +1,36 @@
+{
+  "domain": "architecture",
+  "description": "Sustainable Architecture & BIM Standards",
+  "file_types": [".rvt", ".dwg", ".py", ".ifc"],
+  "hardware_profiles": {
+    "Workstation": {
+      "gpu_acceleration": "enabled",
+      "render_engine": "V-Ray"
+    },
+    "SiteTablet": {
+      "mode": "viewer",
+      "render_engine": "low-poly"
+    }
+  },
+  "validation_rules": {
+    "sustainability": [
+      {
+        "id": "leed_material",
+        "severity": "warning",
+        "message": "Check material against LEED certification database.",
+        "trigger": ["material", "concrete", "steel", "wood"],
+        "required_pattern": "LEED_Certified"
+      }
+    ],
+    "standards": [
+      {
+        "id": "ada_compliance",
+        "severity": "error",
+        "message": "Ensure ADA compliance for accessibility (min width 36 inches).",
+        "trigger": ["door", "ramp", "corridor", "hallway"],
+        "required_pattern": "width >= 36",
+        "auto_fix": "fix_ada_compliance"
+      }
+    ]
+  }
+}

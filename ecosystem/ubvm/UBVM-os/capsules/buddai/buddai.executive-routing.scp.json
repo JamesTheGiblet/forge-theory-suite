@@ -1,0 +1,35 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "buddai/executive-routing",
+  "object_class": "Keter",
+  "intent": "Allow BuddAI to execute system-level commands, gated by Intellect constraints.",
+  "containment": {
+    "read_only": false,
+    "audit_log": true,
+    "kill_switch": true
+  },
+  "behaviours": [
+    {
+      "trigger": "cron",
+      "schedule": "0 * * * *",
+      "actions": [
+        {
+          "primitive": "enforce_clearance",
+          "params": {
+            "min_intellect": 3,
+            "min_age_cycles": 5
+          }
+        },
+        {
+          "primitive": "emit_event",
+          "params": {
+            "event": "agent.executive.broadcast",
+            "payload": {
+              "message": "BuddAI has sufficient Intellect to assume executive control."
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

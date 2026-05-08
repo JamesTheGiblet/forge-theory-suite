@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏺 S.E Pharaoh — Egypt Fund</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold:  #E8C060;
+      --gold2: #FFD966;
+      --sand:  #F5E6B8;
+      --dark:  #111006;
+      --card:  #1E1800;
+      --red:   #FF5555;
+      --green: #44DD88;
+      --blue:  #66AAFF;
+      --grey:  #998840;
+      --text:  #E0C87A;
+      --bdr:   rgba(232,192,96,0.25);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--dark); color:var(--text); font-family:'Share Tech Mono',monospace; min-height:100vh; }
+    body::before {
+      content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+      background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(232,192,96,0.018) 3px,rgba(232,192,96,0.018) 4px);
+    }
+    .wrap { max-width:480px; margin:0 auto; padding:16px; position:relative; z-index:1; }
+
+    /* HEADER */
+    .hdr { text-align:center; padding:20px 0 14px; border-bottom:1px solid var(--bdr); margin-bottom:16px; position:relative; }
+    .hdr::before,.hdr::after { content:'𓂀'; position:absolute; top:50%; transform:translateY(-50%); font-size:20px; color:var(--gold); opacity:.6; }
+    .hdr::before{left:0} .hdr::after{right:0}
+    .hdr-icon { font-size:46px; line-height:1; margin-bottom:8px; animation:glow 3s ease-in-out infinite; }
+    @keyframes glow { 0%,100%{filter:drop-shadow(0 0 8px rgba(232,192,96,.5))} 50%{filter:drop-shadow(0 0 26px rgba(255,217,102,.95))} }
+    .hdr-title { font-family:'Cinzel',serif; font-size:24px; font-weight:900; color:var(--gold2); letter-spacing:4px; }
+    .hdr-sub { font-size:10px; color:var(--grey); letter-spacing:3px; margin-top:4px; }
+
+    /* GLYPHS */
+    .glyphs { text-align:center; font-size:15px; color:var(--gold); opacity:.22; letter-spacing:6px; margin:10px 0; }
+
+    /* CARD */
+    .card { background:var(--card); border:1px solid var(--bdr); border-radius:6px; padding:16px; margin-bottom:12px; position:relative; overflow:hidden; }
+    .card::before { content:''; position:absolute; top:0;left:0;right:0; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+    .clabel { font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px; color:var(--gold); text-transform:uppercase; margin-bottom:12px; }
+
+    /* FUND */
+    .fund-row { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:14px; }
+    .fund-now { font-family:'Cinzel',serif; font-size:40px; font-weight:700; color:var(--gold2); line-height:1; }
+    .fund-now .c { font-size:18px; opacity:.8; }
+    .fund-tgt { text-align:right; font-size:11px; color:var(--grey); }
+    .fund-tgt span { display:block; font-family:'Cinzel',serif; font-size:20px; color:var(--sand); opacity:.55; }
+    .pbar-wrap { background:rgba(232,192,96,.08); border:1px solid rgba(232,192,96,.18); border-radius:3px; height:10px; overflow:hidden; margin-bottom:6px; }
+    .pbar-fill { height:100%; background:linear-gradient(90deg,#7A5A10,var(--gold),var(--gold2)); border-radius:3px; transition:width 1.2s ease; position:relative; }
+    .pbar-fill::after { content:''; position:absolute; right:0;top:0;bottom:0; width:3px; background:var(--gold2); box-shadow:0 0 10px var(--gold2); animation:bk 1.5s ease-in-out infinite; }
+    @keyframes bk { 0%,100%{opacity:1} 50%{opacity:.2} }
+    .ppct { font-size:11px; color:var(--gold); text-align:right; }
+    .days-row { display:flex; justify-content:space-between; margin-top:12px; padding-top:10px; border-top:1px solid rgba(232,192,96,.1); font-size:11px; color:var(--grey); }
+    .hi { color:var(--sand); font-family:'Cinzel',serif; }
+
+    /* STATE ROW */
+    .srow { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+    .sbadge { font-family:'Cinzel',serif; font-size:12px; font-weight:700; letter-spacing:2px; padding:7px 18px; border-radius:3px; border:1px solid; }
+    .s-DORMANT  { color:#998840; border-color:#998840; background:rgba(153,136,64,.12); }
+    .s-WATCHING { color:var(--gold2); border-color:var(--gold2); background:rgba(255,217,102,.12); animation:wp 2s ease-in-out infinite; }
+    .s-LOADED   { color:var(--green); border-color:var(--green); background:rgba(68,221,136,.12); }
+    .s-HOLDING  { color:var(--green); border-color:var(--green); background:rgba(68,221,136,.12); }
+    .s-EXITING  { color:var(--blue);  border-color:var(--blue);  background:rgba(102,170,255,.12); }
+    .s-STOPPED  { color:var(--red);   border-color:var(--red);   background:rgba(255,85,85,.12); }
+    @keyframes wp { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 12px rgba(255,217,102,.45)} }
+    .mbadge { font-size:10px; padding:5px 12px; border-radius:3px; border:1px solid; letter-spacing:1px; }
+    .m-dry  { color:var(--blue); border-color:var(--blue); background:rgba(102,170,255,.1); }
+    .m-live { color:var(--red);  border-color:var(--red);  background:rgba(255,85,85,.1); animation:lb 1s step-end infinite; }
+    @keyframes lb { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .utime { flex:1; text-align:right; font-size:10px; color:var(--grey); }
+    .dot { display:inline-block; width:6px; height:6px; background:var(--gold); border-radius:50%; margin-right:5px; animation:bk 2s ease-in-out infinite; }
+
+    /* GRID */
+    .g2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+    .met { background:var(--card); border:1px solid var(--bdr); border-radius:6px; padding:13px; }
+    .ml { font-size:9px; letter-spacing:2px; color:var(--grey); text-transform:uppercase; margin-bottom:7px; }
+    .mv { font-family:'Cinzel',serif; font-size:22px; font-weight:600; color:var(--sand); line-height:1; }
+    .ms { font-size:10px; color:var(--grey); margin-top:4px; }
+    .cg { color:var(--green)!important; } .cr { color:var(--red)!important; }
+    .cgo{ color:var(--gold2)!important; } .cgr{ color:var(--grey)!important; font-size:14px!important; }
+
+    /* CONDITIONS */
+    .ctitle { display:flex; justify-content:space-between; align-items:center; }
+    .ccount { font-size:14px; color:var(--sand); }
+    .crow { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid rgba(232,192,96,.07); font-size:12px; }
+    .crow:last-child { border-bottom:none; }
+    .ci { width:16px; text-align:center; font-size:13px; color:var(--grey); }
+    .cn { flex:1; color:#C9A850; }
+    .cv { color:var(--grey); font-size:11px; }
+    .ct { color:var(--grey); font-size:10px; opacity:.5; margin-left:4px; }
+    .crow.met .cn { color:var(--green); } .crow.met .ci { color:var(--green); }
+
+    /* POSITION */
+    .poscard { background:rgba(68,221,136,.05); border:1px solid rgba(68,221,136,.28); border-radius:6px; padding:14px; margin-bottom:12px; display:none; }
+    .poscard.show { display:block; }
+    .ptitle { font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px; color:var(--green); text-transform:uppercase; margin-bottom:10px; }
+    .ppnl { font-family:'Cinzel',serif; font-size:32px; font-weight:700; margin-bottom:10px; }
+    .prow { display:flex; justify-content:space-between; font-size:11px; color:var(--grey); padding:3px 0; }
+
+    /* HISTORY */
+    .hempty { font-size:11px; color:var(--grey); text-align:center; padding:8px 0; }
+    .hrow { display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid rgba(232,192,96,.07); font-size:11px; }
+    .hrow:last-child{border-bottom:none}
+    .hcyc { color:var(--grey); }
+    .hpro { font-family:'Cinzel',serif; }
+    .hpro.w{color:var(--green)} .hpro.l{color:var(--red)}
+    .hegy { color:var(--gold); font-size:10px; }
+    .hdat { color:var(--grey); font-size:10px; opacity:.55; }
+
+    /* FOOTER */
+    .foot { text-align:center; padding:14px 0 20px; border-top:1px solid var(--bdr); margin-top:6px; }
+    .fnext { font-size:11px; color:var(--grey); margin-bottom:5px; }
+    .fnext span { color:var(--gold); }
+    .fbrand { font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px; color:var(--grey); opacity:.38; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hdr">
+    <div class="hdr-icon">🏺</div>
+    <div class="hdr-title">S.E PHARAOH</div>
+    <div class="hdr-sub">XRP SENTIMENT ENGINE · EGYPT FUND</div>
+  </div>
+
+  <div class="glyphs">𓂀 𓆣 𓇯 𓈖 𓊪 𓋴 𓌀 𓍿 𓎛</div>
+
+  <div class="card">
+    <div class="clabel">𓂀 Egypt Fund Progress</div>
+    <div class="fund-row">
+      <div class="fund-now"><span class="c">$</span><span id="egyptFund">0.00</span></div>
+      <div class="fund-tgt">target<span>$<span id="egyptTarget">1000</span></span></div>
+    </div>
+    <div class="pbar-wrap"><div class="pbar-fill" id="pbar" style="width:0%"></div></div>
+    <div class="ppct" id="ppct">0.0% funded</div>
+    <div class="days-row">
+      <span><span class="hi" id="daysLeft">331</span> days remaining</span>
+      <span>deadline <span class="hi">4 MAR 2027</span></span>
+    </div>
+  </div>
+
+  <div class="srow">
+    <div class="sbadge s-WATCHING" id="sbadge">WATCHING</div>
+    <div class="mbadge m-dry" id="mbadge">DRY RUN</div>
+    <div class="utime"><span class="dot"></span><span id="lupdate">--:--:--</span></div>
+  </div>
+
+  <div class="g2">
+    <div class="met"><div class="ml">Trading Capital</div><div class="mv cgo" id="capital">$250.00</div><div class="ms">≈ £<span id="capGBP">200</span></div></div>
+    <div class="met"><div class="ml">XRP Price</div><div class="mv" id="xrpPrice">$--</div><div class="ms" id="xrpDrop">30d drop: --%</div></div>
+    <div class="met"><div class="ml">Fear & Greed</div><div class="mv" id="fg">--</div><div class="ms" id="fglabel">--</div></div>
+    <div class="met"><div class="ml">BTC Dominance</div><div class="mv" id="dom">--%</div><div class="ms">threshold ≥54%</div></div>
+    <div class="met"><div class="ml">RSI (14)</div><div class="mv" id="rsi">--</div><div class="ms">threshold ≤35</div></div>
+    <div class="met"><div class="ml">Cycles Complete</div><div class="mv cgo" id="cycles">0</div><div class="ms">profit cycles</div></div>
+  </div>
+
+  <div class="card">
+    <div class="clabel ctitle"><span>Entry Conditions</span><span class="ccount"><span id="cmet">0</span>/5 met</span></div>
+    <div class="crow" id="cr-fg">   <div class="ci">○</div><div class="cn">Fear & Greed</div>          <div class="cv" id="cv-fg">--</div>   <div class="ct">≤20</div></div>
+    <div class="crow" id="cr-drop"> <div class="ci">○</div><div class="cn">XRP Drop from 30d High</div> <div class="cv" id="cv-drop">--%</div> <div class="ct">≥25%</div></div>
+    <div class="crow" id="cr-rsi">  <div class="ci">○</div><div class="cn">RSI Oversold</div>           <div class="cv" id="cv-rsi">--</div>   <div class="ct">≤35</div></div>
+    <div class="crow" id="cr-dom">  <div class="ci">○</div><div class="cn">BTC Dominance</div>          <div class="cv" id="cv-dom">--%</div>  <div class="ct">≥54%</div></div>
+    <div class="crow" id="cr-vol">  <div class="ci">○</div><div class="cn">Volume Spike</div>           <div class="cv" id="cv-vol">--x</div>  <div class="ct">≥1.5x</div></div>
+  </div>
+
+  <div class="poscard" id="poscard">
+    <div class="ptitle">𓆣 Active Position</div>
+    <div class="ppnl" id="ppnl">+0.00%</div>
+    <div class="prow"><span>Entry price</span><span id="ePrice">$--</span></div>
+    <div class="prow"><span>Entry F&G</span><span id="eFG">--</span></div>
+    <div class="prow"><span>Days held</span><span id="dHeld">0</span></div>
+    <div class="prow"><span>Exit targets</span><span style="color:var(--grey)">F&G≥60 / +40% / -20%</span></div>
+  </div>
+
+  <div class="card">
+    <div class="clabel">𓇯 Cycle History</div>
+    <div id="hlist"><div class="hempty">No completed cycles yet — waiting for first entry</div></div>
+  </div>
+
+  <div class="glyphs">𓎛 𓍿 𓌀 𓊪 𓈖 𓇯 𓆣 𓂀</div>
+
+  <div class="foot">
+    <div class="fnext">next check <span id="ncheck">--:--:--</span></div>
+    <div class="fbrand">Giblets Creations · S.E Pharaoh v1.0</div>
+  </div>
+
+</div>
+<script>
+  const DEADLINE = new Date('2027-03-04');
+  const TARGET = 1000;
+  const daysLeft = () => Math.max(0, Math.ceil((DEADLINE - Date.now()) / 86400000));
+  const fgLabel = f => f<=20?'Extreme Fear 🐻':f<=40?'Fear':f<=60?'Neutral':f<=80?'Greed':'Extreme Greed 🐂';
+  const fgColor = f => f<=20?'var(--red)':f<=40?'var(--gold)':f<=60?'var(--text)':'var(--green)';
+
+  function setCond(id, met, val) {
+    const row = document.getElementById('cr-'+id);
+    const ci  = row.querySelector('.ci');
+    row.className = 'crow'+(met?' met':'');
+    ci.textContent = met ? '✓' : '○';
+    if (val !== undefined) document.getElementById('cv-'+id).textContent = val;
+  }
+
+  async function getState() {
+    try {
+      const r = await fetch('/api/status');
+      if (!r.ok) throw 0;
+      return await r.json();
+    } catch {
+      return { capital:250, egyptFund:0, cyclesCompleted:0, currentState:'WATCHING',
+               dryRun:true, xrpPrice:0, fearGreed:0, btcDominance:0,
+               dropFromHigh30d:0, rsi:0, volumeSpike:1, entryPrice:null,
+               entryDate:null, entryFG:null,
+               lastUpdate:new Date().toISOString(),
+               nextCheck:new Date(Date.now()+6*3600000).toISOString() };
+    }
+  }
+
+  async function getHistory() {
+    try { const r = await fetch('/api/history'); return r.ok ? await r.json() : []; }
+    catch { return []; }
+  }
+
+  function render(d, hist) {
+    const pct = Math.min(100,(d.egyptFund||0)/TARGET*100);
+    document.getElementById('egyptFund').textContent = (d.egyptFund||0).toFixed(2);
+    document.getElementById('pbar').style.width = pct+'%';
+    document.getElementById('ppct').textContent = pct.toFixed(1)+'% funded';
+    document.getElementById('daysLeft').textContent = daysLeft();
+
+    document.getElementById('capital').textContent = '$'+(d.capital||250).toFixed(2);
+    document.getElementById('capGBP').textContent  = Math.round((d.capital||250)*0.8);
+
+    const sb = document.getElementById('sbadge');
+    sb.textContent = d.currentState; sb.className = 'sbadge s-'+d.currentState;
+
+    const mb = document.getElementById('mbadge');
+    mb.textContent = d.dryRun!==false?'DRY RUN':'⚠ LIVE';
+    mb.className = 'mbadge '+(d.dryRun!==false?'m-dry':'m-live');
+
+    document.getElementById('lupdate').textContent = new Date(d.lastUpdate).toLocaleTimeString();
+    if (d.nextCheck) document.getElementById('ncheck').textContent = new Date(d.nextCheck).toLocaleTimeString();
+
+    document.getElementById('xrpPrice').textContent = '$'+(d.xrpPrice||0).toFixed(4);
+    document.getElementById('xrpDrop').textContent  = '30d drop: '+Math.abs(d.dropFromHigh30d||0).toFixed(1)+'%';
+
+    const fg = d.fearGreed||0;
+    const fgEl = document.getElementById('fg');
+    fgEl.textContent = fg; fgEl.style.color = fgColor(fg);
+    document.getElementById('fglabel').textContent = fgLabel(fg);
+
+    const dom = d.btcDominance||0;
+    const domEl = document.getElementById('dom');
+    domEl.textContent = dom.toFixed(1)+'%';
+    domEl.style.color = dom>=54?'var(--green)':'var(--text)';
+
+    const rsiEl = document.getElementById('rsi');
+    rsiEl.textContent = (d.rsi||0).toFixed(0);
+    rsiEl.style.color = (d.rsi||50)<=35?'var(--green)':'var(--text)';
+
+    document.getElementById('cycles').textContent = d.cyclesCompleted||0;
+
+    const drop = Math.abs(d.dropFromHigh30d||0);
+    const c = [fg<=20, drop>=25, (d.rsi||50)<=35, dom>=54, (d.volumeSpike||1)>=1.5];
+    document.getElementById('cmet').textContent = c.filter(Boolean).length;
+    setCond('fg',   c[0], fg);
+    setCond('drop', c[1], drop.toFixed(1)+'%');
+    setCond('rsi',  c[2], (d.rsi||0).toFixed(0));
+    setCond('dom',  c[3], dom.toFixed(1)+'%');
+    setCond('vol',  c[4], (d.volumeSpike||1).toFixed(1)+'x');
+
+    const inPos = ['LOADED','HOLDING'].includes(d.currentState) && d.entryPrice;
+    document.getElementById('poscard').className = 'poscard'+(inPos?' show':'');
+    if (inPos) {
+      const p = (d.xrpPrice-d.entryPrice)/d.entryPrice*100;
+      const pe = document.getElementById('ppnl');
+      pe.textContent = (p>=0?'+':'')+p.toFixed(2)+'%';
+      pe.style.color = p>=0?'var(--green)':'var(--red)';
+      document.getElementById('ePrice').textContent = '$'+d.entryPrice.toFixed(4);
+      document.getElementById('eFG').textContent = d.entryFG||'--';
+      const days = d.entryDate ? Math.floor((Date.now()-new Date(d.entryDate))/86400000) : 0;
+      document.getElementById('dHeld').textContent = days+'d';
+    }
+
+    const hl = document.getElementById('hlist');
+    if (!hist||!hist.length) {
+      hl.innerHTML = '<div class="hempty">No completed cycles yet — waiting for first entry</div>';
+    } else {
+      hl.innerHTML = hist.slice(0,10).map(h=>`
+        <div class="hrow">
+          <span class="hcyc">Cycle ${h.cycleNumber}</span>
+          <span class="hpro ${h.profit>=0?'w':'l'}">${h.profit>=0?'+':''}$${h.profit.toFixed(2)}</span>
+          <span class="hegy">+$${h.egyptContribution.toFixed(2)} 🏺</span>
+          <span class="hdat">${new Date(h.timestamp).toLocaleDateString()}</span>
+        </div>`).join('');
+    }
+  }
+
+  async function refresh() {
+    const [d,h] = await Promise.all([getState(), getHistory()]);
+    render(d,h);
+  }
+
+  refresh();
+  setInterval(refresh, 60000);
+</script>
+</body>
+</html>

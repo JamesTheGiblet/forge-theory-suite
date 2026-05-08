@@ -1,0 +1,70 @@
+{
+  "protocol": {
+    "name": "Semantic Capsule Protocol",
+    "version": "1.0.0"
+  },
+  "manifest": {
+    "id": "hyp_h_e_mean_reversion_bollinger_mo2sm98j",
+    "name": "H.E Mean Reversion Bollinger",
+    "version": "1.0.0",
+    "created": "2026-04-17T10:56:26.179Z",
+    "type": "generated_hypothesis",
+    "symbol": "BTC/USD",
+    "exchange": "kraken",
+    "capital": 1000,
+    "status": "hypothesis",
+    "parameters": {
+      "targetPct": 13,
+      "stopPct": 5,
+      "maxHoldDays": 12
+    },
+    "marketFit": {
+      "bestRegime": "RANGING",
+      "generatedFor": {
+        "regime": "RANGING",
+        "phase": "ACCUMULATION",
+        "sentiment": "NEUTRAL",
+        "volatility": 1.85
+      }
+    },
+    "hash": "7fbb5f99611bd578"
+  },
+  "semantic_context": {
+    "regime": "RANGING",
+    "entry_rules": [
+      "Price below lower Bollinger Band",
+      "RSI(14) < 35"
+    ],
+    "exit_rules": [
+      "RSI(14) > 50",
+      "Price above MA(20)"
+    ],
+    "risk_management": {
+      "position_size": "3% of capital",
+      "stop_loss": "-5%",
+      "take_profit": "+13%",
+      "max_hold_days": 12
+    },
+    "performance_metrics": {
+      "confidence": 0.5
+    }
+  },
+  "cognitive_layer": {
+    "intent": "Exploit RANGING conditions with NEUTRAL sentiment",
+    "philosophy": "Learned from 3 failure(s): Backtest: Failed: WR 45.5% (min 50%), return -26.3% (must be > 0%); Forward: Failed: only 2 trades (min 10), return -0.3% (must be > 0%); Forward: Failed: only 4 trades (min 10)",
+    "mantra": "NEUTRAL market. RANGING regime. Act accordingly."
+  },
+  "lineage": {
+    "parent": null,
+    "source": "Forge Reasoning Engine",
+    "failures_considered": 3
+  },
+  "lifecycle": {
+    "status": "hypothesis",
+    "last_updated": "2026-04-17T10:56:26.179Z"
+  },
+  "signature": {
+    "hash": "7fbb5f99611bd578",
+    "timestamp": "2026-04-17T10:56:26.179Z"
+  }
+}

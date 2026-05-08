@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DATA CUBE</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<header>
+  <div class="logo">⬡ DATA CUBE</div>
+  <div class="header-actions">
+    <button class="hdr-btn" id="search-btn">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      SEARCH
+    </button>
+    <button class="hdr-btn" id="layer-btn">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="2" width="10" height="2" rx="0.5" fill="currentColor" opacity="0.9"/><rect x="1" y="5.5" width="10" height="2" rx="0.5" fill="currentColor" opacity="0.6"/><rect x="1" y="9" width="10" height="2" rx="0.5" fill="currentColor" opacity="0.3"/></svg>
+      LAYERS
+    </button>
+    <button class="hdr-btn" id="bookmark-btn">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 1h7l-1 5 1 5-3.5-2L2.5 11V1z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      VIEWS
+    </button>
+    <button class="hdr-btn" id="discovery-btn">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1.5" y="1.5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><circle cx="4.5" cy="4.5" r="0.7" fill="currentColor"/><circle cx="7.5" cy="7.5" r="0.7" fill="currentColor"/></svg>
+      DISCOVER
+    </button>
+    <button class="hdr-btn" id="stats-btn">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 10V6M4 10V2M7 10V4M10 10V8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      STATS
+    </button>
+    <button class="hdr-btn" id="export-btn">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v6.5M3.5 5.5L6 8l2.5-2.5M2 10.5h8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      EXPORT
+    </button>
+    <button class="hdr-btn" id="html-btn">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 9h8M3 5l3 3 3-3M6 1v7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      HTML
+    </button>
+    <button class="hdr-btn" id="timeline-btn">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 3v3.5h2.5M6 10.5a4.5 4.5 0 100-9 4.5 4.5 0 000 9z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      TIMELINE
+    </button>
+    <button class="hdr-btn" id="theme-btn">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M9.5 8.5a4 4 0 11-7-7 6 6 0 007 7z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      THEME
+    </button>
+    <div class="meta" id="header-meta">0 nodes · 0 entries</div>
+  </div>
+</header>
+
+<div id="world">
+  <div class="vb tl"></div><div class="vb tr"></div>
+  <div class="vb bl"></div><div class="vb br"></div>
+  <div class="reticle"></div>
+  <div id="stage"></div>
+</div>
+
+<div id="timeline-controls">
+  <div id="timeline-date-label">NOW</div>
+  <div class="timeline-track-wrap">
+    <canvas id="timeline-canvas"></canvas>
+    <input type="range" id="timeline-slider" min="0" max="1" value="1" step="0.001" title="Timeline slider" placeholder="Adjust timeline">
+  </div>
+</div>
+
+<!-- BATCH ACTIONS PANEL -->
+<div id="batch-panel">
+  <div id="batch-count"></div>
+  <div class="flex-spacer"></div>
+  <button id="batch-merge-btn" class="holo-btn-ghost">MERGE</button>
+  <button id="batch-export-btn" class="holo-btn-ghost">EXPORT</button>
+  <button id="batch-delete-btn" class="holo-btn-ghost batch-delete-btn">DELETE</button>
+  <div class="batch-panel-divider"></div>
+  <button id="batch-clear-btn" class="holo-btn-ghost">CLEAR</button>
+</div>
+
+<div id="input-bar">
+  <button id="import-btn" title="Import">
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+      <path d="M7.5 1v9M4 7l3.5 3.5L11 7M2 12h11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <button id="voice-btn" title="Voice Input">
+    <svg width="12" height="15" viewBox="0 0 12 15" fill="none">
+      <path d="M6 1v8m-3.5 0a3.5 3.5 0 107 0M2 5h8M1.5 14h9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <input id="data-input" type="text" placeholder="ENTER A FACT TO SEED A NEW CUBE…" autocomplete="off">
+  <button id="add-btn" title="Add">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M8 2v12M2 8h12" stroke="rgba(0,212,255,0.9)" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </button>
+</div>
+
+<!-- LENS PICKER MODAL -->
+<div id="lens-modal">
+  <div id="lens-card">
+    <div class="lens-heading">Select Perspective Lens</div>
+    <div class="lens-sub" id="lens-sub"></div>
+    <div class="lens-entry-preview" id="lens-entry-preview"></div>
+    <div class="lens-target-info" id="lens-target-info"></div>
+    <div class="lens-grid" id="lens-grid"></div>
+    <div class="lens-new-node-row">
+      <button class="lens-new-btn" id="lens-new-btn">⊕ Spawn as new fact cube instead</button>
+    </div>
+    <button class="lens-cancel-btn" id="lens-cancel-btn">Cancel</button>
+  </div>
+</div>
+
+<!-- EXPAND OVERLAY -->
+<div id="overlay">
+  <div id="expand-card">
+    <button id="expand-close">×</button>
+    <div id="expand-lens-badge"><span id="expand-lens-icon"></span><span id="expand-lens-name"></span></div>
+    <div id="expand-topic"></div>
+    <div id="expand-text"></div>
+    <div id="expand-meta"></div>
+    <button id="expand-lock">LOCK ROTATION</button>
+    <button id="expand-delete">DELETE CUBE</button>
+    <div id="expand-notes-section">
+      <div class="expand-notes-title">PRIVATE NOTES</div>
+      <div id="expand-notes-list"></div>
+      <div id="expand-note-input-row">
+        <input id="expand-note-input" type="text" placeholder="Add a private note..." autocomplete="off">
+        <button id="expand-note-add-btn" class="holo-btn-ghost">ADD</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL -->
+<div id="import-modal">
+  <div id="import-card">
+    <button id="import-close">×</button>
+    <div class="import-title">Upload Data Stream</div>
+    <div class="import-sub">Each line is treated as a new FACT and seeds a fresh cube. You will assign perspectives after import.</div>
+    <div class="import-drop" id="import-drop">
+      <div class="import-drop-label">▼ Drop File · TXT / MD / CSV / JSON</div>
+      <input type="file" id="import-file" accept=".txt,.md,.csv,.json,text/plain,application/json" title="Upload file" placeholder="Select a file to import">
+    </div>
+    <div class="import-format-note">— or paste below — one entry per line —</div>
+    <textarea id="import-paste" placeholder="The speed of light is 299,792,458 m/s&#10;Water boils at 100°C at sea level&#10;…"></textarea>
+    <div class="import-actions">
+      <button class="holo-btn-ghost" id="import-cancel">Abort</button>
+      <button class="holo-btn-solid" id="import-confirm" disabled>Transmit</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div id="orbit-hint">DRAG TO ORBIT · SCROLL TO ZOOM</div>
+
+<!-- LAYER VIEW PANEL -->
+<div id="layer-panel">
+  <div id="layer-header">
+    <div class="layer-title">⬡ LAYER VIEW</div>
+    <div class="layer-header-flex">
+      <div class="layer-header-actions">
+        <button class="hdr-btn" id="layer-split-btn">◫ SPLIT</button>
+      </div>
+      <button id="layer-close">×</button>
+    </div>
+  </div>
+  <div id="layer-tabs"></div>
+  <div id="layer-body">
+    <div id="layer-cards"></div>
+  </div>
+</div>
+
+<!-- SEARCH PANEL -->
+<div id="search-panel">
+  <div id="search-header">
+    <div class="search-top">
+      <div class="search-title">⌕ SEARCH MATRIX</div>
+      <button id="search-close">×</button>
+    </div>
+    <div class="search-input-row">
+      <input id="search-input" type="text" placeholder="SEARCH ALL CUBES AND LENSES…" autocomplete="off" spellcheck="false">
+    </div>
+    <div id="search-filters"></div>
+  </div>
+  <div id="search-body">
+    <div id="search-results-meta"></div>
+    <div id="search-results"></div>
+  </div>
+</div>
+
+<!-- BOOKMARK PANEL -->
+<div id="bookmark-panel">
+  <div id="bookmark-header">
+    <div class="bookmark-title">⚑ SAVED VIEWS</div>
+    <button id="bookmark-close">×</button>
+  </div>
+  <div class="bookmark-body">
+    <div class="bookmark-input-row">
+      <input id="bookmark-input" type="text" placeholder="NAME CURRENT VIEW…" autocomplete="off">
+      <button id="bookmark-save-btn" class="holo-btn-solid">SAVE</button>
+    </div>
+    <div class="bookmark-list" id="bookmark-list"></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

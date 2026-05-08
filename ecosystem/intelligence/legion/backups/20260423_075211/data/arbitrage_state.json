@@ -1,0 +1,28 @@
+{
+  "baselines": {
+    "BTC/ETH": {
+      "ratio": 32.650611237544,
+      "samples": 107
+    },
+    "BTC/SOL": {
+      "ratio": 885.5953920296649,
+      "samples": 107
+    },
+    "ETH/SOL": {
+      "ratio": 27.12347122565825,
+      "samples": 107
+    },
+    "XRP/LINK": {
+      "ratio": 0.15254419947075118,
+      "samples": 107
+    },
+    "LTC/DOGE": {
+      "ratio": 574.6481727785915,
+      "samples": 107
+    }
+  },
+  "lastScan": 1776863367797,
+  "alerts": {
+    "LTC/DOGE": 1776776187704
+  }
+}

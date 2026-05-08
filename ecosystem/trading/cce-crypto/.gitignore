@@ -1,0 +1,66 @@
+# Dependencies
+node_modules/
+
+# Production / Build
+dist/
+
+# Environment & Secrets
+.env
+
+# CCE Data & Logs
+data/
+logs/
+*.log
+npm-debug.log*
+
+# Database Files (SQLite)
+*.db
+*.db-journal
+*.sqlite
+
+# Release Artifacts
+cce-windows-release.zip
+
+# OS / Editor Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Backtest Results
+backtest-results/
+
+# Optimization Results
+optimization-results/
+
+# Documentation
+
+# Proprietary IP / Secrets
+proprietary.config.js
+
+# Installer Packages
+windows_installer/reports/
+# Proprietary Engine Logic
+src/strategy.js
+src/*-strategy.js
+src/lce-strategy.js
+src/cce-*-engine.js
+src/data-feed.js
+src/*-data-feed.js
+src/*-storage.js
+src/*-strategy.js
+strategies/
+src/dxy-layer.js
+src/exchange-connector.js
+src/notification.js
+src/storage.js
+src/cce-engine.js
+config.js
+proprietary.config.js
+sdk.js
+README_WINDOWS.txt
+Troubleshooting_Windows.md
+scripts/build-win.js
+scripts/copy-native-deps.js
+scripts/verify-pkg.js
+scripts/list-models.js

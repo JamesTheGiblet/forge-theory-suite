@@ -1,0 +1,12 @@
+[
+  {
+    "pair": "LTC/DOGE",
+    "deviation": "-21.90",
+    "direction": "undervalued",
+    "signal": "BUY first / SELL second",
+    "confidence": "95",
+    "priceA": "55.37",
+    "priceB": "0.1250",
+    "timestamp": 1776776187703
+  }
+]

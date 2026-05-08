@@ -1,0 +1,14 @@
+{
+  "lastRebalance": 1776922450711,
+  "totalAllocated": 10000,
+  "allocations": {
+    "STRAT-021": {
+      "allocation": 3000,
+      "rank": 1,
+      "pnl": 0.025,
+      "winRate": 1,
+      "name": "ringo_mutated",
+      "class": "Keter"
+    }
+  }
+}

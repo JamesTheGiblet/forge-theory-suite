@@ -1,0 +1,16 @@
+{
+  "id":          "te-brk",
+  "name":        "T.E Breakout",
+  "version":     "1.0.0",
+  "type":        "TACTICAL",
+  "ecosystem":   "T.E",
+  "cycle":       "1H",
+  "capitalKey":  "brk",
+  "author":      "James Gilbert — Giblets Creations",
+  "description": "Bollinger Band squeeze breakout engine. Detects low-volatility squeezes and trades the explosive move when bands expand.",
+  "requires": {
+    "exchange": true,
+    "notifier": true,
+    "config":   true
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "domain": "robotics",
+  "description": "Gilbot Combat Robot Configuration",
+  "suppressed_rules": [
+    "enforce_inline_math"
+  ],
+  "hardware_profiles": {
+    "ESP32_Gilbot_v1": {
+      "description": "ESP32-C3 Controller with explicit timer mapping",
+      "timer_map": {
+        "timer_0": {
+          "role": "SERVO_POOL",
+          "frequency": 50,
+          "channels": [0, 1, 2, 3],
+          "description": "Dedicated 50Hz pool for servos (Weapon/Flipper)"
+        },
+        "timer_1": {
+          "role": "MOTOR_POOL",
+          "frequency": 20000,
+          "channels": [4, 5],
+          "description": "High-frequency pool for DC Motors (Drive)"
+        }
+      }
+    }
+  },
+  "validation_rules": {
+    "hardware_safety": [
+      {
+        "id": "timer_0_servo_enforcement",
+        "severity": "error",
+        "message": "Hardware Violation: Servos must use Timer 0 at 50Hz (ledcSetup(0, 50, ...)).",
+        "trigger": ["Servo", "attach", "write"],
+        "required_regex": "ledcSetup\\s*\\(\\s*0\\s*,\\s*50\\s*,"
+      },
+      {
+        "id": "timer_1_motor_enforcement",
+        "severity": "error",
+        "message": "Hardware Violation: Motors must use Timer 1 at 20kHz (ledcSetup(1, 20000, ...)).",
+        "trigger": ["L298N", "motor", "drive"],
+        "required_regex": "ledcSetup\\s*\\(\\s*1\\s*,\\s*20000\\s*,"
+      }
+    ]
+  }
+}

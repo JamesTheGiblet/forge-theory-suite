@@ -1,0 +1,603 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2026-01-05",
+  "domains": {
+    "caffeine-forge": {
+      "id": "caffeine-forge",
+      "name": "Caffeine Forge",
+      "category": "health-medicine",
+      "description": "Pharmacokinetic caffeine metabolism tracking",
+      "icon": "☕",
+      "color": "amber",
+      "complexity": "beginner",
+      "popular": true,
+      "tags": ["pharmacokinetics", "metabolism", "sleep", "caffeine"],
+      "useCase": "Track your buzz, predict your crash, optimize your intake",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 5.0,
+        "rateConstant": 0.1386,
+        "bodyWeight": 70,
+        "volumeDistribution": 42,
+        "metabolismRate": "typical"
+      },
+      "thresholds": {
+        "safe": 10,
+        "alert": 50,
+        "jittery": 150,
+        "critical": 250
+      },
+      "units": {
+        "time": "hours",
+        "amount": "mg",
+        "concentration": "mg/L"
+      },
+      "references": [
+        "Arnaud, M. J. (2011). Pharmacokinetics and metabolism of natural methylxanthines",
+        "FDA: ~400mg/day safe limit for adults"
+      ]
+    },
+    
+    "dope-forge": {
+      "id": "dope-forge",
+      "name": "Dope Forge",
+      "category": "health-medicine",
+      "description": "ADHD motivation decay modeling",
+      "icon": "🧠",
+      "color": "purple",
+      "complexity": "intermediate",
+      "tags": ["adhd", "motivation", "dopamine", "productivity"],
+      "useCase": "Predict project abandonment risk, optimize work patterns",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 2.5,
+        "rateConstant": 0.277
+      },
+      "thresholds": {
+        "safe": 70,
+        "warning": 40,
+        "critical": 20
+      },
+      "units": {
+        "time": "days",
+        "amount": "motivation_units"
+      },
+      "references": [
+        "Barkley, R. A. (2015). ADHD: A Handbook for Diagnosis and Treatment"
+      ]
+    },
+    
+    "tooth-forge": {
+      "id": "tooth-forge",
+      "name": "Tooth Forge",
+      "category": "health-medicine",
+      "description": "30-year dental decay prediction",
+      "icon": "🦷",
+      "color": "blue",
+      "complexity": "beginner",
+      "popular": true,
+      "tags": ["dental", "health", "prevention", "enamel"],
+      "useCase": "Patient retention & treatment planning",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 10950,
+        "rateConstant": 0.0000633
+      },
+      "thresholds": {
+        "safe": 80,
+        "warning": 60,
+        "critical": 40
+      },
+      "units": {
+        "time": "days",
+        "amount": "percent_integrity"
+      }
+    },
+    
+    "therapeutic-forge": {
+      "id": "therapeutic-forge",
+      "name": "Therapeutic Forge",
+      "category": "health-medicine",
+      "description": "General medical pharmacokinetics",
+      "icon": "💊",
+      "color": "green",
+      "complexity": "advanced",
+      "tags": ["medicine", "drugs", "treatment", "pharmacology"],
+      "useCase": "Drug dosing & treatment timelines",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 6.0,
+        "rateConstant": 0.1155
+      },
+      "units": {
+        "time": "hours",
+        "amount": "mg"
+      }
+    },
+    
+    "canna-forge": {
+      "id": "canna-forge",
+      "name": "Canna Forge",
+      "category": "agriculture-cultivation",
+      "description": "Cannabis cultivation optimization",
+      "icon": "🌿",
+      "color": "emerald",
+      "complexity": "intermediate",
+      "popular": true,
+      "tags": ["cannabis", "cultivation", "yield", "growth"],
+      "useCase": "Yield prediction & nutrient timing",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 7.0,
+        "rateConstant": 0.099
+      },
+      "units": {
+        "time": "days",
+        "amount": "percent"
+      }
+    },
+    
+    "terp-forge": {
+      "id": "terp-forge",
+      "name": "Terp Forge",
+      "category": "agriculture-cultivation",
+      "description": "Terpene profile modeling",
+      "icon": "🧪",
+      "color": "lime",
+      "complexity": "advanced",
+      "tags": ["terpenes", "flavor", "effects", "chemistry"],
+      "useCase": "Flavor & effect optimization",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 5.0,
+        "rateConstant": 0.1386
+      },
+      "units": {
+        "time": "days",
+        "amount": "mg_per_g"
+      }
+    },
+    
+    "roast-forge": {
+      "id": "roast-forge",
+      "name": "Roast Forge",
+      "category": "coffee-science",
+      "description": "Green bean chemistry modeling",
+      "icon": "🔥",
+      "color": "orange",
+      "complexity": "advanced",
+      "tags": ["roasting", "chemistry", "flavor", "maillard"],
+      "useCase": "Flavor compound development",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 8.0,
+        "rateConstant": 0.0866
+      },
+      "units": {
+        "time": "minutes",
+        "amount": "percent_moisture"
+      }
+    },
+    
+    "brew-forge": {
+      "id": "brew-forge",
+      "name": "Brew Forge",
+      "category": "coffee-science",
+      "description": "Extraction physics modeling",
+      "icon": "☕",
+      "color": "amber",
+      "complexity": "intermediate",
+      "popular": true,
+      "tags": ["brewing", "extraction", "physics", "coffee"],
+      "useCase": "Optimal brewing parameters",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 3.5,
+        "rateConstant": 0.198
+      },
+      "units": {
+        "time": "minutes",
+        "amount": "percent_extracted"
+      }
+    },
+    
+    "grind-forge": {
+      "id": "grind-forge",
+      "name": "Grind Forge",
+      "category": "coffee-science",
+      "description": "Particle distribution analysis",
+      "icon": "⚙️",
+      "color": "stone",
+      "complexity": "intermediate",
+      "tags": ["grinding", "particles", "distribution"],
+      "useCase": "Grind size optimization",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 2.0,
+        "rateConstant": 0.3466
+      },
+      "units": {
+        "time": "seconds",
+        "amount": "percent"
+      }
+    },
+    
+    "cyber-forge": {
+      "id": "cyber-forge",
+      "name": "Cyber Forge",
+      "category": "security-risk",
+      "description": "Breach probability calculator",
+      "icon": "🔒",
+      "color": "red",
+      "complexity": "intermediate",
+      "popular": true,
+      "tags": ["security", "risk", "breach", "probability"],
+      "useCase": "Defense-in-depth quantification",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 365,
+        "rateConstant": 0.0019
+      },
+      "thresholds": {
+        "safe": 20,
+        "warning": 50,
+        "critical": 80
+      },
+      "units": {
+        "time": "days",
+        "amount": "percent_risk"
+      }
+    },
+    
+    "trial-forge": {
+      "id": "trial-forge",
+      "name": "Trial Forge",
+      "category": "security-risk",
+      "description": "Clinical trial patient retention",
+      "icon": "👥",
+      "color": "blue",
+      "complexity": "advanced",
+      "tags": ["clinical", "trials", "retention", "dropout"],
+      "useCase": "Dropout risk prediction",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 180,
+        "rateConstant": 0.00385
+      },
+      "units": {
+        "time": "days",
+        "amount": "percent_retained"
+      }
+    },
+    
+    "cleanroom-forge": {
+      "id": "cleanroom-forge",
+      "name": "Cleanroom Forge",
+      "category": "security-risk",
+      "description": "Contamination decay modeling",
+      "icon": "🧬",
+      "color": "cyan",
+      "complexity": "advanced",
+      "tags": ["cleanroom", "contamination", "compliance", "ISO"],
+      "useCase": "ISO compliance prediction",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 0.5,
+        "rateConstant": 1.386
+      },
+      "units": {
+        "time": "hours",
+        "amount": "particles_per_m3"
+      }
+    },
+    
+    "tyre-forge": {
+      "id": "tyre-forge",
+      "name": "Tyre Forge",
+      "category": "manufacturing-maintenance",
+      "description": "Tread wear prediction",
+      "icon": "🚗",
+      "color": "slate",
+      "complexity": "beginner",
+      "popular": true,
+      "tags": ["automotive", "maintenance", "safety", "wear"],
+      "useCase": "Fleet management & safety",
+      "defaults": {
+        "initialValue": 8.0,
+        "halfLife": 50000,
+        "rateConstant": 0.00001386
+      },
+      "thresholds": {
+        "safe": 3.0,
+        "warning": 2.5,
+        "critical": 1.6
+      },
+      "units": {
+        "time": "kilometers",
+        "amount": "mm"
+      }
+    },
+    
+    "motor-forge": {
+      "id": "motor-forge",
+      "name": "Motor Forge",
+      "category": "manufacturing-maintenance",
+      "description": "Motion sizing & performance",
+      "icon": "⚡",
+      "color": "yellow",
+      "complexity": "advanced",
+      "tags": ["motors", "engineering", "performance"],
+      "useCase": "Engineering calculations",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 10000,
+        "rateConstant": 0.0000693
+      },
+      "units": {
+        "time": "hours",
+        "amount": "percent_efficiency"
+      }
+    },
+    
+    "supply-forge": {
+      "id": "supply-forge",
+      "name": "Supply Forge",
+      "category": "manufacturing-maintenance",
+      "description": "Procurement optimization",
+      "icon": "📦",
+      "color": "indigo",
+      "complexity": "intermediate",
+      "tags": ["supply-chain", "procurement", "optimization"],
+      "useCase": "Supply chain efficiency",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 90,
+        "rateConstant": 0.0077
+      },
+      "units": {
+        "time": "days",
+        "amount": "percent"
+      }
+    },
+    
+    "bodyforge": {
+      "id": "bodyforge",
+      "name": "Body Forge",
+      "category": "biological-evolution",
+      "description": "Evolutionary adaptation simulator",
+      "icon": "🦎",
+      "color": "green",
+      "complexity": "beginner",
+      "tags": ["evolution", "adaptation", "biology", "natural-selection"],
+      "useCase": "Visualize natural selection",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 50,
+        "rateConstant": 0.01386
+      },
+      "units": {
+        "time": "generations",
+        "amount": "fitness"
+      }
+    },
+    
+    "ecoforge": {
+      "id": "ecoforge",
+      "name": "Eco Forge",
+      "category": "biological-evolution",
+      "description": "Ecosystem dynamics modeling",
+      "icon": "🌍",
+      "color": "emerald",
+      "complexity": "intermediate",
+      "tags": ["ecology", "ecosystems", "dynamics", "food-web"],
+      "useCase": "Food web modeling",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 100,
+        "rateConstant": 0.00693
+      },
+      "units": {
+        "time": "days",
+        "amount": "population"
+      }
+    },
+    
+    "lifeforge": {
+      "id": "lifeforge",
+      "name": "Life Forge",
+      "category": "biological-evolution",
+      "description": "Cellular evolution simulation",
+      "icon": "🧬",
+      "color": "cyan",
+      "complexity": "advanced",
+      "tags": ["cells", "evolution", "origin", "abiogenesis"],
+      "useCase": "Origin of life simulation",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 1000,
+        "rateConstant": 0.000693
+      },
+      "units": {
+        "time": "years",
+        "amount": "complexity"
+      }
+    },
+    
+    "carbon-forge": {
+      "id": "carbon-forge",
+      "name": "Carbon Forge",
+      "category": "energy-environment",
+      "description": "Carbon footprint tracking",
+      "icon": "🌱",
+      "color": "green",
+      "complexity": "beginner",
+      "tags": ["carbon", "environment", "sustainability", "climate"],
+      "useCase": "Sustainability metrics",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 20,
+        "rateConstant": 0.03466
+      },
+      "units": {
+        "time": "years",
+        "amount": "tonnes_CO2"
+      }
+    },
+    
+    "emissions-forge": {
+      "id": "emissions-forge",
+      "name": "Emissions Forge",
+      "category": "energy-environment",
+      "description": "Pollution decay modeling",
+      "icon": "🏭",
+      "color": "gray",
+      "complexity": "intermediate",
+      "tags": ["pollution", "emissions", "environmental"],
+      "useCase": "Environmental impact",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 50,
+        "rateConstant": 0.01386
+      },
+      "units": {
+        "time": "years",
+        "amount": "pollution_index"
+      }
+    },
+    
+    "energy-flow-forge": {
+      "id": "energy-flow-forge",
+      "name": "Energy Flow Forge",
+      "category": "energy-environment",
+      "description": "Energy conservation visualization",
+      "icon": "⚡",
+      "color": "yellow",
+      "complexity": "advanced",
+      "tags": ["energy", "conservation", "physics", "thermodynamics"],
+      "useCase": "System efficiency analysis",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 10,
+        "rateConstant": 0.0693
+      },
+      "units": {
+        "time": "seconds",
+        "amount": "joules"
+      }
+    },
+    
+    "artforge": {
+      "id": "artforge",
+      "name": "Art Forge",
+      "category": "creative-emergence",
+      "description": "Evolutionary art generation",
+      "icon": "🎨",
+      "color": "pink",
+      "complexity": "beginner",
+      "tags": ["art", "evolution", "genetic-algorithm", "creativity"],
+      "useCase": "Genetic algorithm art",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 50,
+        "rateConstant": 0.01386
+      },
+      "units": {
+        "time": "generations",
+        "amount": "fitness"
+      }
+    },
+    
+    "langforge": {
+      "id": "langforge",
+      "name": "Lang Forge",
+      "category": "creative-emergence",
+      "description": "Language emergence simulation",
+      "icon": "💬",
+      "color": "blue",
+      "complexity": "intermediate",
+      "tags": ["language", "communication", "emergence", "linguistics"],
+      "useCase": "Communication system evolution",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 200,
+        "rateConstant": 0.003466
+      },
+      "units": {
+        "time": "generations",
+        "amount": "complexity"
+      }
+    },
+    
+    "neuroforge": {
+      "id": "neuroforge",
+      "name": "Neuro Forge",
+      "category": "creative-emergence",
+      "description": "Neural network visualization",
+      "icon": "🧠",
+      "color": "purple",
+      "complexity": "intermediate",
+      "tags": ["neural-networks", "ml", "education", "ai"],
+      "useCase": "ML education & visualization",
+      "defaults": {
+        "initialValue": 100,
+        "halfLife": 100,
+        "rateConstant": 0.00693
+      },
+      "units": {
+        "time": "epochs",
+        "amount": "accuracy"
+      }
+    }
+  },
+  
+  "categories": {
+    "health-medicine": {
+      "name": "Health & Medicine",
+      "icon": "💊",
+      "description": "Pharmacokinetics and medical modeling",
+      "order": 1
+    },
+    "agriculture-cultivation": {
+      "name": "Agriculture & Cultivation",
+      "icon": "🌿",
+      "description": "Plant growth and optimization",
+      "order": 2
+    },
+    "coffee-science": {
+      "name": "Coffee Science",
+      "icon": "☕",
+      "description": "Bean to cup chemistry and physics",
+      "order": 3
+    },
+    "security-risk": {
+      "name": "Security & Risk",
+      "icon": "🔒",
+      "description": "Probability and risk modeling",
+      "order": 4
+    },
+    "manufacturing-maintenance": {
+      "name": "Manufacturing & Maintenance",
+      "icon": "⚙️",
+      "description": "Industrial and maintenance prediction",
+      "order": 5
+    },
+    "biological-evolution": {
+      "name": "Biological Evolution",
+      "icon": "🦎",
+      "description": "Evolution and ecosystem dynamics",
+      "order": 6
+    },
+    "energy-environment": {
+      "name": "Energy & Environment",
+      "icon": "🌍",
+      "description": "Environmental impact and energy flow",
+      "order": 7
+    },
+    "creative-emergence": {
+      "name": "Creative & Emergence",
+      "icon": "🎨",
+      "description": "Evolutionary and emergent systems",
+      "order": 8
+    }
+  }
+}

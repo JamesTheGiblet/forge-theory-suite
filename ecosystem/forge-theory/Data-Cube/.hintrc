@@ -1,0 +1,19 @@
+{
+  "extends": [
+    "development"
+  ],
+  "hints": {
+    "button-type": "off",
+    "compat-api/css": [
+      "default",
+      {
+        "ignore": [
+          "border-color: color-mix(in srgb, var(--lc) 60%, transparent)",
+          "border-color: color-mix(in srgb, var(--lc,var(--holo)) 50%, transparent)",
+          "color: color-mix(in srgb, var(--lc,var(--holo)) 55%, transparent)",
+          "color: color-mix(in srgb, var(--lc,var(--holo)) 85%, white)"
+        ]
+      }
+    ]
+  }
+}

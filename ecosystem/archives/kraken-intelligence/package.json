@@ -1,0 +1,38 @@
+{
+  "name": "kraken-intelligence",
+  "version": "1.4.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "trading",
+    "crypto",
+    "kraken",
+    "ai",
+    "adaptive",
+    "intelligence",
+    "aip"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@google/genai": "^1.50.1",
+    "better-sqlite3": "^11.10.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "ws": "^8.20.0"
+  },
+  "platform": {
+    "name": "Adaptive Intelligence Platform",
+    "tool": "Kraken Intelligence",
+    "suite": "AIP",
+    "license": "MIT"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adaptive-intelligence/kraken-intelligence"
+  }
+}

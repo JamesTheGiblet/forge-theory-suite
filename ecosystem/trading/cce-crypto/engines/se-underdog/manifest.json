@@ -1,0 +1,16 @@
+{
+  "id": "se-underdog",
+  "name": "S.E Underdog",
+  "version": "1.0.0",
+  "type": "STRATEGIC",
+  "ecosystem": "S.E",
+  "cycle": "4H",
+  "capitalKey": "underdog",
+  "author": "James Gilbert — Giblets Creations",
+  "description": "Buys a basket of quality beaten-down altcoins (ALGO, DOT, ATOM, VET) during extreme fear. Holds for alt season rotation. Exits when greed returns or BTC dominance recovers.",
+  "requires": {
+    "exchange": false,
+    "notifier": true,
+    "config": true
+  }
+}

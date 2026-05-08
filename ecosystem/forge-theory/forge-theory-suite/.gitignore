@@ -1,0 +1,32 @@
+# === Forge-Theory-Suite Global Ignore Rules ===
+
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.pyc
+
+# Node / JS
+node_modules/
+npm-debug.log
+
+# Build artifacts
+dist/
+build/
+out/
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+tmp-*/
+*.tmp
+
+# Environment files
+.env
+.env.*

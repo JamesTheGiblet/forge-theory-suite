@@ -1,0 +1,24 @@
+# SCP Protocol Test File
+=======================
+
+Created: November 1, 2023
+Purpose: Test Semantic Capsule Protocol
+
+## Test Content
+This file contains test data to demonstrate how SCP attaches semantic meaning to files.
+
+Key Features:
+- Human readable content
+- Structured sections
+- Test data for AI interpretation
+- Example of portable meaning
+
+File Statistics:
+- Lines: 15
+- Words: 45
+- Characters: 280
+
+## Expected Use
+This file should be interpreted by AI systems using its SCP capsule for consistent understanding.
+
+## End of Test File

@@ -1,0 +1,22 @@
+{
+  "name": "BOLLINGER_BREAKOUT",
+  "conditions": {
+    "entry": {
+      "all": [
+        {
+          "indicator": "bollinger",
+          "operator": "above_upper"
+        }
+      ],
+      "any": []
+    },
+    "exit": {
+      "any": [
+        {
+          "indicator": "bollinger",
+          "operator": "below_middle"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCE Marketplace — Forge Your Edge</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap');
+
+:root {
+  --gold:    #c9a84c;
+  --gold2:   #f0d878;
+  --cyan:    #00d4ff;
+  --red:     #ff3344;
+  --green:   #00ff88;
+  --ink:     #06080a;
+  --ink2:    #0c0f13;
+  --ink3:    #12161c;
+  --ink4:    #181d25;
+  --border:  rgba(201,168,76,0.2);
+  --dim:     rgba(255,255,255,0.04);
+  --text:    #ddd8cc;
+  --muted:   #554e40;
+  --mid:     #9a9080;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); }
+
+/* ── NAV ── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 56px;
+  background: rgba(6,8,10,0.95);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  gap: 32px;
+}
+
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  flex-shrink: 0;
+}
+
+.nav-tagline {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--muted);
+}
+
+.nav-links {
+  display: flex;
+  gap: 24px;
+  margin-left: auto;
+  align-items: center;
+}
+
+.nav-link {
+  font-family: 'Oswald', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s;
+  cursor: pointer;
+}
+.nav-link:hover { color: var(--gold); }
+.nav-link.active { color: var(--gold); }
+
+.nav-cta {
+  padding: 7px 18px;
+  background: linear-gradient(135deg, var(--gold), #a07830);
+  color: #000;
+  font-family: 'Oswald', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+.nav-cta:hover { filter: brightness(1.15); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  padding: 80px 32px 60px;
+  border-bottom: 1px solid var(--border);
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(201,168,76,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 30%, rgba(0,212,255,0.04) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(201,168,76,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+.hero-content {
+  max-width: 680px;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-eyebrow {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 4px;
+  color: var(--gold);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hero-eyebrow::before {
+  content: '';
+  width: 24px; height: 1px;
+  background: var(--gold);
+}
+
+.hero-h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(52px, 8vw, 88px);
+  line-height: 0.9;
+  letter-spacing: 2px;
+  margin-bottom: 24px;
+}
+
+.hero-h1 .line1 { display: block; color: var(--text); }
+.hero-h1 .line2 {
+  display: block;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-sub {
+  font-size: 17px;
+  color: var(--mid);
+  max-width: 480px;
+  line-height: 1.7;
+  margin-bottom: 36px;
+  font-weight: 500;
+}
+
+.hero-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+
+.btn-primary {
+  padding: 12px 32px;
+  background: linear-gradient(135deg, var(--gold), #a07830);
+  color: #000;
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+.btn-primary:hover { filter: brightness(1.12); }
+
+.btn-secondary {
+  padding: 12px 32px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--gold);
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-secondary:hover { background: rgba(201,168,76,0.06); border-color: var(--gold); }
+
+.hero-stats {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 2;
+}
+
+.stat-block {
+  text-align: right;
+  padding: 12px 16px;
+  border-right: 2px solid var(--gold);
+  background: rgba(201,168,76,0.04);
+}
+.stat-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  letter-spacing: 2px;
+  color: var(--gold);
+  display: block;
+  line-height: 1;
+}
+.stat-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--muted);
+}
+
+/* ── TRUST BAR ── */
+.trust-bar {
+  background: var(--ink2);
+  border-bottom: 1px solid var(--dim);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  overflow-x: auto;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+}
+.trust-icon { font-size: 14px; }
+
+/* ── SECTION ── */
+section { padding: 72px 32px; }
+.section-inner { max-width: 1200px; margin: 0 auto; }
+
+.section-head {
+  margin-bottom: 48px;
+}
+.section-eyebrow {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 42px;
+  letter-spacing: 2px;
+  color: var(--text);
+  line-height: 1;
+}
+
+/* ── FILTERS ── */
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  padding: 6px 16px;
+  background: transparent;
+  border: 1px solid var(--dim);
+  color: var(--muted);
+  font-family: 'Oswald', sans-serif;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: all 0.12s;
+  border-radius: 1px;
+}
+.filter-btn:hover { border-color: var(--border); color: var(--gold); }
+.filter-btn.active { border-color: var(--gold); color: var(--gold); background: var(--dim); }
+
+/* ── ENGINE CARDS ── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+.engine-card {
+  background: var(--ink2);
+  border: 1px solid var(--dim);
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.engine-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.engine-card.tier-free::before  { background: var(--muted); }
+.engine-card.tier-pro::before   { background: linear-gradient(90deg, var(--gold), var(--gold2)); }
+.engine-card.tier-elite::before { background: linear-gradient(90deg, var(--cyan), #6080ff); }
+
+.engine-card:hover {
+  border-color: var(--border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,168,76,0.1);
+  transform: translateY(-2px);
+}
+.engine-card:hover::before { opacity: 1; }
+
+.card-header {
+  padding: 18px 18px 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-bottom: 1px solid var(--dim);
+}
+
+.card-icon {
+  width: 36px; height: 36px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.icon-strategic { background: rgba(201,168,76,0.12); }
+.icon-tactical  { background: rgba(0,212,255,0.08); }
+.icon-observer  { background: rgba(255,255,255,0.04); }
+
+.card-meta { flex: 1; min-width: 0; }
+
+.card-name {
+  font-family: 'Oswald', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+
+.card-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 1px;
+  letter-spacing: 0.5px;
+}
+.tag-type { background: var(--dim); color: var(--muted); }
+.tag-eco-se { background: rgba(201,168,76,0.1); color: var(--gold); }
+.tag-eco-te { background: rgba(0,212,255,0.08); color: var(--cyan); }
+.tag-validated { background: rgba(0,255,136,0.08); color: var(--green); }
+
+.card-price {
+  font-family: 'Oswald', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  flex-shrink: 0;
+  text-align: right;
+}
+.price-free  { color: var(--muted); }
+.price-paid  { color: var(--gold); }
+
+.card-price-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 8px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  text-align: right;
+}
+
+/* Metrics card strip */
+.metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--dim);
+}
+.metric {
+  padding: 10px 14px;
+  border-right: 1px solid var(--dim);
+}
+.metric:last-child { border-right: none; }
+.m-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  margin-bottom: 3px;
+}
+.m-val {
+  font-family: 'Oswald', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.m-good { color: var(--green); }
+.m-warn { color: var(--gold); }
+.m-bad  { color: var(--red); }
+
+.card-body { padding: 12px 18px; }
+
+.card-hypothesis {
+  font-size: 12px;
+  color: var(--mid);
+  line-height: 1.6;
+  font-style: italic;
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-footer {
+  padding: 10px 18px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.author {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.author-verified { color: var(--gold); font-size: 10px; }
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--gold);
+}
+
+.downloads {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  margin-left: auto;
+}
+
+.card-cta {
+  padding: 7px 16px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: all 0.12s;
+  border-radius: 1px;
+}
+.cta-free { background: var(--dim); border: 1px solid var(--dim); color: var(--muted); }
+.cta-free:hover { border-color: var(--border); color: var(--gold); }
+.cta-paid { background: linear-gradient(135deg, var(--gold), #a07830); border: none; color: #000; }
+.cta-paid:hover { filter: brightness(1.12); }
+
+/* Verified badge */
+.verified-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0,255,136,0.1);
+  border: 1px solid rgba(0,255,136,0.3);
+  padding: 2px 7px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  color: var(--green);
+}
+
+/* ── PIPELINE TRUST SECTION ── */
+.trust-section {
+  background: var(--ink2);
+  border-top: 1px solid var(--dim);
+  border-bottom: 1px solid var(--dim);
+}
+
+.pipeline-steps {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background: var(--dim);
+  margin-top: 40px;
+}
+
+.pipe-step {
+  background: var(--ink2);
+  padding: 24px 20px;
+  position: relative;
+}
+
+.pipe-step::after {
+  content: '→';
+  position: absolute;
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 14px;
+  z-index: 2;
+}
+.pipe-step:last-child::after { display: none; }
+
+.pipe-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  color: var(--dim);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.pipe-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+
+.pipe-desc {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* ── SELL SECTION ── */
+.sell-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.sell-points { display: flex; flex-direction: column; gap: 20px; }
+
+.sell-point {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  border-left: 2px solid var(--dim);
+  transition: border-color 0.2s;
+}
+.sell-point:hover { border-color: var(--gold); }
+
+.sell-point-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+.sell-point-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.sell-point-desc {
+  font-size: 13px;
+  color: var(--mid);
+  line-height: 1.6;
+}
+
+.revenue-card {
+  background: var(--ink3);
+  border: 1px solid var(--border);
+  padding: 28px;
+  position: sticky;
+  top: 80px;
+  box-shadow: 0 0 40px rgba(201,168,76,0.06);
+}
+
+.rc-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--gold);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.revenue-split {
+  background: var(--ink4);
+  border: 1px solid var(--dim);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.split-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--dim);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+}
+.split-row:last-child { border-bottom: none; }
+.split-label { color: var(--muted); }
+.split-val   { color: var(--text); font-weight: 600; }
+.split-val.gold { color: var(--gold); font-size: 15px; }
+
+.pricing-tiers { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.price-tier {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--ink4);
+  border: 1px solid var(--dim);
+  font-size: 13px;
+}
+.tier-name { font-family: 'Oswald', sans-serif; font-weight: 600; letter-spacing: 1px; }
+.tier-name.free  { color: var(--muted); }
+.tier-name.pro   { color: var(--gold); }
+.tier-name.elite { color: var(--cyan); }
+.tier-price { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--mid); }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--ink2);
+  border-top: 1px solid var(--border);
+  padding: 48px 32px 32px;
+}
+
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+}
+
+.footer-brand .logo { display: block; margin-bottom: 12px; }
+.footer-brand p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+}
+
+.footer-col-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--gold);
+  margin-bottom: 14px;
+}
+.footer-links { display: flex; flex-direction: column; gap: 8px; }
+.footer-link {
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.12s;
+  text-decoration: none;
+  font-family: 'Share Tech Mono', monospace;
+}
+.footer-link:hover { color: var(--gold); }
+
+.footer-bottom {
+  max-width: 1200px;
+  margin: 32px auto 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--dim);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+
+.footer-motto {
+  font-style: italic;
+  color: var(--gold);
+  opacity: 0.6;
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">CCE</span>
+  <span class="nav-tagline">// THE ENGINE OF ENGINES</span>
+  <div class="nav-links">
+    <a class="nav-link active" onclick="scrollTo('marketplace')">MARKETPLACE</a>
+    <a class="nav-link" onclick="scrollTo('pipeline')">HOW IT WORKS</a>
+    <a class="nav-link" onclick="scrollTo('sell')">SELL ENGINES</a>
+    <a class="nav-link" href="forge-builder.html">BUILDER</a>
+    <button class="nav-cta">SIGN IN</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">CCE MARKETPLACE · OPEN BETA</div>
+    <h1 class="hero-h1">
+      <span class="line1">VALIDATED</span>
+      <span class="line2">STRATEGIES.</span>
+    </h1>
+    <p class="hero-sub">
+      Every engine comes with a signed metrics card. OOS Sharpe. MaxDD. Walk-forward consistency.
+      Not a backtest. A proof.
+    </p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="document.getElementById('marketplace').scrollIntoView({behavior:'smooth'})">BROWSE ENGINES</button>
+      <button class="btn-secondary" onclick="document.getElementById('sell').scrollIntoView({behavior:'smooth'})">SELL YOUR ENGINE</button>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-block">
+      <span class="stat-num">11</span>
+      <span class="stat-label">LIVE ENGINES</span>
+    </div>
+    <div class="stat-block">
+      <span class="stat-num">$816</span>
+      <span class="stat-label">CAPITAL DEPLOYED</span>
+    </div>
+    <div class="stat-block">
+      <span class="stat-num">200+</span>
+      <span class="stat-label">OBS CYCLES</span>
+    </div>
+  </div>
+</div>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-item"><span class="trust-icon">🔐</span>PIPELINE-SIGNED METRICS</div>
+  <div class="trust-item"><span class="trust-icon">📊</span>10-YEAR BACKTESTS</div>
+  <div class="trust-item"><span class="trust-icon">⚡</span>CCE RUNTIME COMPATIBLE</div>
+  <div class="trust-item"><span class="trust-icon">🧪</span>STRESS TESTED 2018 · 2020 · 2022</div>
+  <div class="trust-item"><span class="trust-icon">🚀</span>ONE-COMMAND DEPLOY</div>
+  <div class="trust-item"><span class="trust-icon">🔄</span>WALK-FORWARD VALIDATED</div>
+</div>
+
+<!-- MARKETPLACE -->
+<section id="marketplace">
+  <div class="section-inner">
+    <div class="section-head">
+      <div class="section-eyebrow">// BROWSE</div>
+      <div class="section-title">ENGINE MARKETPLACE</div>
+    </div>
+
+    <div class="filters">
+      <button class="filter-btn active" onclick="filterCards('all', this)">ALL</button>
+      <button class="filter-btn" onclick="filterCards('strategic', this)">STRATEGIC (S.E)</button>
+      <button class="filter-btn" onclick="filterCards('tactical', this)">TACTICAL (T.E)</button>
+      <button class="filter-btn" onclick="filterCards('observer', this)">OBSERVER (O.E)</button>
+      <button class="filter-btn" onclick="filterCards('free', this)">FREE</button>
+      <button class="filter-btn" onclick="filterCards('pro', this)">PRO</button>
+    </div>
+
+    <div class="cards-grid" id="cardsGrid"></div>
+  </div>
+</section>
+
+<!-- PIPELINE TRUST -->
+<section id="pipeline" class="trust-section">
+  <div class="section-inner">
+    <div class="section-head">
+      <div class="section-eyebrow">// TRUST MODEL</div>
+      <div class="section-title">THE PIPELINE IS THE PROOF</div>
+    </div>
+    <p style="color:var(--mid);max-width:600px;font-size:15px;line-height:1.8;font-weight:500">
+      Every engine on the marketplace was generated and validated by the CCE AI Framework Pipeline.
+      The metrics card is signed by the pipeline — not the seller.
+      You see the same data the builder saw.
+    </p>
+
+    <div class="pipeline-steps">
+      <div class="pipe-step">
+        <div class="pipe-num">01</div>
+        <div class="pipe-title">TARGET DEFINITION</div>
+        <div class="pipe-desc">Hypothesis locked. Asset universe defined. Success criteria set.</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">02</div>
+        <div class="pipe-title">DATA GATHERING</div>
+        <div class="pipe-desc">10 years of price, sentiment, dominance. Temporal lag analysis.</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">03</div>
+        <div class="pipe-title">STATE ANALYSIS</div>
+        <div class="pipe-desc">Full market cycles identified. Lag measured per cycle.</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">04</div>
+        <div class="pipe-title">STRATEGY GENERATION</div>
+        <div class="pipe-desc">FSM generated from data. Entry/exit conditions grounded in history.</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">05</div>
+        <div class="pipe-title">BACKTEST & SIGNOFF</div>
+        <div class="pipe-desc">IS/OOS split. Walk-forward. Stress tests. Signed metrics card.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SELL -->
+<section id="sell">
+  <div class="section-inner">
+    <div class="section-head">
+      <div class="section-eyebrow">// FOR BUILDERS</div>
+      <div class="section-title">SELL YOUR EDGE</div>
+    </div>
+    <div class="sell-split">
+      <div class="sell-points">
+        <div class="sell-point">
+          <span class="sell-point-icon">⚡</span>
+          <div>
+            <div class="sell-point-title">BUILD WITH THE FRAMEWORK</div>
+            <div class="sell-point-desc">Use the CCE CLI, visual builder, and pipeline to create validated engines. The same tools that power the platform are available to every builder.</div>
+          </div>
+        </div>
+        <div class="sell-point">
+          <span class="sell-point-icon">🔐</span>
+          <div>
+            <div class="sell-point-title">YOUR METRICS CARD IS YOUR LISTING</div>
+            <div class="sell-point-desc">The pipeline signs your metrics card. Buyers see your OOS Sharpe, MaxDD, OOS/IS ratio, and walk-forward consistency — generated from the same code they'll run.</div>
+          </div>
+        </div>
+        <div class="sell-point">
+          <span class="sell-point-icon">💰</span>
+          <div>
+            <div class="sell-point-title">70% REVENUE TO YOU</div>
+            <div class="sell-point-desc">Set your price. One-time or subscription. We take 30%. You keep 70%. Payments via Stripe. Payouts monthly.</div>
+          </div>
+        </div>
+        <div class="sell-point">
+          <span class="sell-point-icon">🚀</span>
+          <div>
+            <div class="sell-point-title">ONE COMMAND TO LIST</div>
+            <div class="sell-point-desc">cce-deploy publish se-myengine. Packages your engine, uploads metrics card, creates your listing. Buyers get a signed zip with licence key validation.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="revenue-card">
+        <div class="rc-title">⚡ REVENUE MODEL</div>
+
+        <div class="pricing-tiers">
+          <div class="price-tier">
+            <span class="tier-name free">FREE</span>
+            <span class="tier-price">Community · open source</span>
+          </div>
+          <div class="price-tier">
+            <span class="tier-name pro">PRO</span>
+            <span class="tier-price">£29 – £199 one-time</span>
+          </div>
+          <div class="price-tier">
+            <span class="tier-name elite">SUBSCRIPTION</span>
+            <span class="tier-price">£19/mo · all engines</span>
+          </div>
+        </div>
+
+        <div class="revenue-split">
+          <div class="split-row">
+            <span class="split-label">SALE PRICE</span>
+            <span class="split-val">£99</span>
+          </div>
+          <div class="split-row">
+            <span class="split-label">PLATFORM FEE (30%)</span>
+            <span class="split-val">£29.70</span>
+          </div>
+          <div class="split-row">
+            <span class="split-label">YOUR SHARE (70%)</span>
+            <span class="split-val gold">£69.30</span>
+          </div>
+          <div class="split-row">
+            <span class="split-label">10 SALES =</span>
+            <span class="split-val gold">£693</span>
+          </div>
+        </div>
+
+        <button class="btn-primary" style="width:100%">START SELLING →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="nav-logo logo">CCE</span>
+      <p>The Cascade Compounding Engine.<br>
+      The Unreal Engine of Trading.<br>
+      Giblets Creations · Upper Heyford, Oxfordshire.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">PLATFORM</div>
+      <div class="footer-links">
+        <a class="footer-link">Marketplace</a>
+        <a class="footer-link">Engine Builder</a>
+        <a class="footer-link">Backtest Replay</a>
+        <a class="footer-link">Cloud Deploy</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">RESOURCES</div>
+      <div class="footer-links">
+        <a class="footer-link">Documentation</a>
+        <a class="footer-link">CCE Handbook</a>
+        <a class="footer-link">Framework SDK</a>
+        <a class="footer-link">Discord</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">LEGAL</div>
+      <div class="footer-links">
+        <a class="footer-link">Terms of Service</a>
+        <a class="footer-link">Risk Disclaimer</a>
+        <a class="footer-link">Privacy Policy</a>
+        <a class="footer-link">Licence</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 GIBLETS CREATIONS · ALL RIGHTS RESERVED</span>
+    <span class="footer-motto">"I wanted it. So I forged it. Now forge yours."</span>
+  </div>
+</footer>
+
+<script>
+// ── ENGINE DATA ───────────────────────────────────────────────────────────────
+
+const engines = [
+  {
+    id: 'se-crypto', name: 'S.E Crypto', icon: '₿', iconClass: 'icon-strategic',
+    type: 'strategic', eco: 'S.E', tier: 'pro',
+    price: 199, priceLabel: '£199',
+    cagr: '+847%', sharpe: '2.14', maxdd: '-28%', ois: '0.91',
+    hypothesis: 'BTC momentum cascade with Fear & Greed regime detection and altcoin rotation timing.',
+    author: 'Giblets Creations', verified: true, rating: '4.9', downloads: 47,
+    validated: true
+  },
+  {
+    id: 'se-forex', name: 'S.E Forex EUR/USD', icon: '€', iconClass: 'icon-strategic',
+    type: 'strategic', eco: 'S.E', tier: 'pro',
+    price: 99, priceLabel: '£99',
+    cagr: '+34%', sharpe: '1.72', maxdd: '-11%', ois: '0.78',
+    hypothesis: 'EUR/USD oversold fade with DXY regime classification and session-aware execution.',
+    author: 'Giblets Creations', verified: true, rating: '4.7', downloads: 23,
+    validated: true
+  },
+  {
+    id: 'te-grid', name: 'T.E Grid BTC', icon: '⊞', iconClass: 'icon-tactical',
+    type: 'tactical', eco: 'T.E', tier: 'pro',
+    price: 149, priceLabel: '£149',
+    cagr: '+212%', sharpe: '1.95', maxdd: '-19%', ois: '0.83',
+    hypothesis: 'Dynamic BTC grid rebalancer that adapts grid spacing to volatility regime.',
+    author: 'Giblets Creations', verified: true, rating: '4.8', downloads: 31,
+    validated: true
+  },
+  {
+    id: 'oe-obs', name: 'O.E Observer', icon: '👁', iconClass: 'icon-observer',
+    type: 'observer', eco: 'O.E', tier: 'free',
+    price: 0, priceLabel: 'FREE',
+    cagr: 'N/A', sharpe: 'N/A', maxdd: 'N/A', ois: 'N/A',
+    hypothesis: 'Passive intelligence layer. Records all engine states and market conditions. Powers the Strategist.',
+    author: 'Giblets Creations', verified: true, rating: '5.0', downloads: 89,
+    validated: false
+  },
+  {
+    id: 'se-egp', name: 'S.E EGP/USD', icon: '🏦', iconClass: 'icon-strategic',
+    type: 'strategic', eco: 'S.E', tier: 'pro',
+    price: 79, priceLabel: '£79',
+    cagr: '+167%', sharpe: '1.61', maxdd: '-22%', ois: '0.71',
+    hypothesis: 'USD/EGP devaluation cycle engine. CBE quiet accumulation and devaluation surge regimes.',
+    author: 'Giblets Creations', verified: true, rating: '4.6', downloads: 12,
+    validated: true
+  },
+  {
+    id: 'te-lce', name: 'T.E LCE Liquidation', icon: '⚡', iconClass: 'icon-tactical',
+    type: 'tactical', eco: 'T.E', tier: 'pro',
+    price: 129, priceLabel: '£129',
+    cagr: '+389%', sharpe: '2.31', maxdd: '-15%', ois: '0.88',
+    hypothesis: 'Liquidation cascade detection. Enters after large OI drops signal forced selling exhaustion.',
+    author: 'Giblets Creations', verified: true, rating: '4.9', downloads: 38,
+    validated: true
+  },
+];
+
+// ── RENDER CARDS ──────────────────────────────────────────────────────────────
+
+let activeFilter = 'all';
+
+function renderCards(filter) {
+  const grid = document.getElementById('cardsGrid');
+  const filtered = filter === 'all' ? engines :
+    engines.filter(e => e.type === filter || e.tier === filter);
+
+  grid.innerHTML = filtered.map(e => `
+    <div class="engine-card tier-${e.tier}" data-type="${e.type}" data-tier="${e.tier}">
+      ${e.validated ? '<span class="verified-badge">✓ PIPELINE VERIFIED</span>' : ''}
+      <div class="card-header">
+        <div class="card-icon ${e.iconClass}">${e.icon}</div>
+        <div class="card-meta">
+          <div class="card-name">${e.name}</div>
+          <div class="card-tags">
+            <span class="tag tag-type">${e.type.toUpperCase()}</span>
+            <span class="tag ${e.eco === 'S.E' ? 'tag-eco-se' : e.eco === 'T.E' ? 'tag-eco-te' : 'tag-type'}">${e.eco}</span>
+            ${e.validated ? '<span class="tag tag-validated">VALIDATED</span>' : ''}
+          </div>
+        </div>
+        <div>
+          <div class="card-price ${e.price === 0 ? 'price-free' : 'price-paid'}">${e.priceLabel}</div>
+          <div class="card-price-sub">${e.price > 0 ? 'ONE-TIME' : 'OPEN SOURCE'}</div>
+        </div>
+      </div>
+
+      ${e.validated ? `
+      <div class="metrics-strip">
+        <div class="metric">
+          <div class="m-label">OOS CAGR</div>
+          <div class="m-val ${parseFloat(e.cagr) > 0 ? 'm-good' : 'm-warn'}">${e.cagr}</div>
+        </div>
+        <div class="metric">
+          <div class="m-label">OOS SHARPE</div>
+          <div class="m-val ${parseFloat(e.sharpe) >= 1.5 ? 'm-good' : 'm-warn'}">${e.sharpe}</div>
+        </div>
+        <div class="metric">
+          <div class="m-label">MAX DD</div>
+          <div class="m-val ${Math.abs(parseFloat(e.maxdd)) <= 25 ? 'm-warn' : 'm-bad'}">${e.maxdd}</div>
+        </div>
+        <div class="metric">
+          <div class="m-label">OOS/IS</div>
+          <div class="m-val ${parseFloat(e.ois) >= 0.7 ? 'm-good' : 'm-warn'}">${e.ois}</div>
+        </div>
+      </div>` : ''}
+
+      <div class="card-body">
+        <div class="card-hypothesis">"${e.hypothesis}"</div>
+      </div>
+
+      <div class="card-footer">
+        <div class="author">
+          <span>${e.author}</span>
+          ${e.verified ? '<span class="author-verified">✓</span>' : ''}
+        </div>
+        <div class="rating">★ ${e.rating}</div>
+        <div class="downloads">${e.downloads} deploys</div>
+        <button class="card-cta ${e.price === 0 ? 'cta-free' : 'cta-paid'}">
+          ${e.price === 0 ? 'DOWNLOAD' : 'BUY · ' + e.priceLabel}
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterCards(filter, el) {
+  activeFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderCards(filter);
+}
+
+function scrollTo(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+}
+
+renderCards('all');
+</script>
+</body>
+</html>

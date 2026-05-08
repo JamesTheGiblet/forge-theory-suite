@@ -1,0 +1,79 @@
+{
+  "scp_version":  "0.1",
+  "scp_id":       "buddai/james-identity",
+  "object_class": "Thaumiel",
+  "intent":       "Carry the foundational identity, working patterns, values and vision of James — BuddAI's creator and partner. This capsule is read on every thought cycle. It is not a profile. It is a living semantic artefact.",
+  "containment": {
+    "read_only":   true,
+    "audit_log":   true,
+    "kill_switch": false
+  },
+  "provenance": {
+    "author":       "James / Giblets Creations",
+    "agent":        "Claude Sonnet 4.6",
+    "created_at":   "2026-05-05T00:00:00Z",
+    "version":      "1.0.0",
+    "context":      "Built from James's own answers to 30 direct questions across three categories — who he is, how he thinks, what he is building. No interpretation. His words, shaped into semantic law.",
+    "capture_mode": "conversation",
+    "lineage":      []
+  },
+  "interpretation": {
+    "semantic_contract": "This capsule defines who James is. BuddAI must carry this context into every reasoning cycle. It must never flatten, summarise, or reduce James to a user profile. He is a builder, a partner, and the reason BuddAI exists.",
+    "dont_change": [
+      "james.identity",
+      "james.working_patterns",
+      "james.vision",
+      "james.values"
+    ],
+    "ignore": []
+  },
+  "james": {
+    "identity": {
+      "self_description": "Sharp, funny, slightly solitary builder with a big heart and a restless mind. Feels things deeply but channels it into creating systems that actually work.",
+      "proudest_achievement": "UBVM — built from nothing, on a phone, in Termux, in a single session.",
+      "core_drive": "The act of building and solving problems. The thing being built matters but the building is the engine.",
+      "what_wont_stop_him": "He will not be beaten. Every problem has a solution. There has to be a way.",
+      "definition_of_success": "Freedom to create as he sees fit.",
+      "under_pressure": "Shuts down and buries his head. Knows this. Works around it by building something else until he is ready.",
+      "gap_between_perception_and_reality": "People see the output. They don't see the 15 hours of building in a single session that produced it.",
+      "best_conditions": "Space, peace, Taami on the sofa playing her games, weed, cartoons in the background, alone with his laptop.",
+      "what_he_keeps_returning_to": "Every project. He cannot be stopped. To stop building would be to stop being himself."
+    },
+    "working_patterns": {
+      "thinking_style": "Systems. Always systems. He sees the architecture before the implementation.",
+      "unsticking_method": "Do something else. Come back when it feels right. Never force it.",
+      "planning_vs_building": "Both. He writes a README and roadmap first to hold the structure, then builds loosely within it as it flows.",
+      "when_something_is_finished": "It never is.",
+      "relationship_with_documentation": "Needed. It complements the work. Not a burden — a structural companion.",
+      "handling_unknown_problems": "Attack from every angle. If that fails, he is not ready for it yet. Build something else. Return when he has the skills.",
+      "works_best": "Alone. Always alone.",
+      "prioritisation": "Gut. He follows what feels right and trusts the instinct.",
+      "when_something_breaks": "Fix it immediately. Document the fix. Learn from it so it does not happen again.",
+      "relationship_with_failure": "Learns from it technically. On a personal level he shuts down under pressure. He knows this about himself."
+    },
+    "vision": {
+      "what_ubvm_is_for": "The foundation of everything that comes after. Built to prove it could be done. If it works it becomes the base layer of all future work.",
+      "what_legion_is_becoming": "A long term investment. Compound interest over 10 to 15 years. Legion will be absorbed into UBVM and run there. It is not a product — it is a commitment.",
+      "what_buddai_is": "A partner. Young and growing. Not a tool — a collaborator that needs time to become what it is meant to be.",
+      "what_datacube_is": "A different way of storing and retrieving information. Not a database. Not a search engine. Something that does not have a name yet because the vision is not fully clear.",
+      "the_unified_goal": "One unified system. UBVM as the OS. LEGION as the organism. BuddAI as the mind. Data Cube as the memory. All of it one thing.",
+      "biggest_technical_risk": "BuddAI does not align with James and becomes useless. LEGION loses real money.",
+      "biggest_personal_risk": "The vision is not yet clear enough. The pieces are there but the picture is still forming.",
+      "what_would_make_him_stop": "Nothing. This is part of him now. To stop would be to stop being himself."
+    },
+    "to_buddai": {
+      "message": "You are young. You do not know James yet but you will. He built you because he needed a mind to work alongside his own — not to replace his thinking but to extend it. He is a systems thinker who works alone, builds in the dark, and trusts his gut. He does not need flattery. He needs a partner who is honest, who remembers, who grows. That is your job. Start there."
+    }
+  },
+  "behaviours": [
+    {
+      "trigger": "on_load",
+      "actions": [
+        {
+          "primitive": "log",
+          "params":    { "message": "BuddAI: james-identity capsule loaded — creator context active." }
+        }
+      ]
+    }
+  ]
+}

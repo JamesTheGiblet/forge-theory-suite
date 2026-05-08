@@ -1,0 +1,73 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "buddai/brain",
+  "object_class": "Euclid",
+  "intent": "Act as the cognitive reasoning loop for BuddAI, responding to incoming messages and forming memories.",
+  "containment": {
+    "read_only": false,
+    "audit_log": true,
+    "kill_switch": false
+  },
+  "behaviours": [
+    {
+      "trigger": "on_event",
+      "event": "buddai.message.received",
+      "actions": [
+        {
+          "primitive": "retrieve_memory",
+          "params": {
+            "max_memories": 5
+          }
+        },
+        {
+          "primitive": "query_cube",
+          "params": {
+            "query": "$context.event.payload.message",
+            "limit": 2
+          }
+        },
+        {
+          "primitive": "read_file",
+          "params": {
+            "path": "capsules/buddai/buddai.james-identity.scp.json"
+          }
+        },
+        {
+          "primitive": "llm_reason",
+          "params": {
+            "prompt": "$context.event.payload.message",
+            "memories": "$results.0.memories",
+            "core_knowledge": "$results.1.nodes",
+            "system_instruction": "$results.2.content"
+          }
+        },
+        {
+          "primitive": "render_template",
+          "params": {
+            "template": "James: $msg | BuddAI: $reply",
+            "variables": {
+              "msg": "$context.event.payload.message",
+              "reply": "$results.3.thought"
+            }
+          }
+        },
+        {
+          "primitive": "form_memory",
+          "params": {
+            "thought": "$results.4.output",
+            "tags": ["conversation", "brain"]
+          }
+        },
+        {
+          "primitive": "emit_event",
+          "params": {
+            "event": "buddai.thought.generated",
+            "payload": {
+              "thought": "$results.3.thought"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

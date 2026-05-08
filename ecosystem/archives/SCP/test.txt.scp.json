@@ -1,0 +1,101 @@
+{
+  "scp_version": "beta-1.0.0",
+  "capsule_id": "scp_1770709833109",
+  "target_file": "test.txt",
+  "generated_at": "2026-02-10T07:50:33.109Z",
+  "structural_map": {
+    "file_type": "text/plain",
+    "encoding": "UTF-8",
+    "sections": [
+      "header",
+      "creation_info",
+      "content_section",
+      "features_list",
+      "statistics",
+      "usage_declaration",
+      "footer"
+    ],
+    "schema": "markdown_like",
+    "line_count": 15,
+    "word_count": 45,
+    "char_count": 280
+  },
+  "semantic_summary": {
+    "domain": "protocol_testing",
+    "primary_concept": "semantic_capsule_demonstration",
+    "entities": [
+      "SCP",
+      "test_file",
+      "AI_system",
+      "semantic_meaning"
+    ],
+    "relationships": [
+      "file demonstrates SCP",
+      "SCP enables consistent AI interpretation",
+      "capsule contains semantic meaning"
+    ],
+    "key_topics": [
+      "protocol testing",
+      "semantic attachment",
+      "AI interpretation",
+      "meaning preservation"
+    ]
+  },
+  "intent_declaration": {
+    "purpose": "To test and demonstrate the Semantic Capsule Protocol",
+    "expected_use": [
+      "AI interpretation testing",
+      "SCP protocol validation",
+      "semantic meaning demonstration"
+    ],
+    "constraints": [
+      "test_data_only",
+      "not_for_production",
+      "requires_SCP_aware_AI"
+    ],
+    "assumptions": [
+      "AI_can_read_text_files",
+      "AI_can_parse_JSON_capsules",
+      "sidecar_file_storage"
+    ],
+    "required_context": "SCP_beta_specification_v1"
+  },
+  "embedding_signature": {
+    "vector_model": "scp_semantic_v1",
+    "dimensions": 10,
+    "vector": [
+      0.42,
+      -0.18,
+      0.76,
+      0.91,
+      -0.05,
+      0.33,
+      0.67,
+      -0.22,
+      0.48,
+      0.12
+    ],
+    "latent_concepts": [
+      "protocol_testing",
+      "semantic_attachment",
+      "AI_interpretation",
+      "meaning_preservation"
+    ],
+    "semantic_fingerprint": "scp_test_mlgawzh1"
+  },
+  "provenance": {
+    "creator": "SCP_Beta_Test_Suite",
+    "generator": "scp_demo.html",
+    "timestamp": "2026-02-10T07:50:33.109Z",
+    "upstream_sources": [],
+    "version": "test_1.0",
+    "lineage": [
+      "initial_test_creation"
+    ]
+  },
+  "ai_instructions": {
+    "interpretation_guidance": "This is a test file for SCP. Interpret it as a demonstration of semantic capsule attachment.",
+    "importance_level": "test",
+    "trust_score": 0.95
+  }
+}

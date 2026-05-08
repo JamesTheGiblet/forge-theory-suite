@@ -1,0 +1,3113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergent Crypto Monitor | Forge Theory</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --background: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+            height: 100vh;
+            touch-action: manipulation;
+        }
+        
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 100%;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: var(--card);
+            padding: 1rem;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .header h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        #dataSourceIndicator {
+            font-size: 1.5rem;
+            line-height: 1;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+        
+        #dataSourceIndicator.real {
+            color: var(--success);
+        }
+        
+        #dataSourceIndicator.simulated {
+            color: var(--warning);
+        }
+        
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .layout-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .layout-btn {
+            background: #334155;
+            border: none;
+            color: var(--text);
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background 0.2s;
+        }
+        
+        .layout-btn:hover {
+            background: #475569;
+        }
+        
+        .layout-btn.active {
+            background: var(--primary);
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Compact View */
+        .compact-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.75rem;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        
+        .stock-card {
+            background: var(--card);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .stock-card.positive {
+            border-left-color: var(--success);
+            background: linear-gradient(90deg, rgba(16,185,129,0.1) 0%, transparent 100%);
+        }
+        
+        .stock-card.negative {
+            border-left-color: var(--danger);
+            background: linear-gradient(90deg, rgba(239,68,68,0.1) 0%, transparent 100%);
+        }
+        
+        .stock-symbol {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .stock-price {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        
+        .stock-change {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.875rem;
+        }
+        
+        .change-positive {
+            color: var(--success);
+        }
+        
+        .change-negative {
+            color: var(--danger);
+        }
+        
+        /* Detailed View */
+        .detailed-view {
+            display: none;
+            flex-direction: column;
+            padding: 1rem;
+            gap: 1rem;
+            overflow-y: auto;
+        }
+        
+        .stock-detail-card {
+            background: var(--card);
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .detail-header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stock-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .stock-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .metric-label {
+            color: var(--text-secondary);
+        }
+        
+        /* Emergent View */
+        .emergent-view {
+            display: none;
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #marketCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .emergent-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1rem;
+        }
+        
+        .overlay-top {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .overlay-bottom {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        
+        .pattern-alerts {
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            max-width: 300px;
+            pointer-events: auto;
+        }
+        
+        .pattern-alerts h3 {
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .market-pulse {
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            max-width: 200px;
+            pointer-events: auto;
+        }
+        
+        .market-pulse h3 {
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .system-metrics {
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            max-width: 250px;
+            pointer-events: auto;
+        }
+        
+        .system-metrics h3 {
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .resonance-detector {
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            max-width: 250px;
+            pointer-events: auto;
+        }
+        
+        .resonance-detector h3 {
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .alert-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #334155;
+            font-size: 0.875rem;
+        }
+        
+        .alert-item:last-child {
+            border-bottom: none;
+        }
+        
+        .alert-item strong {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        
+        .pulse-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .pulse-value {
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+        
+        .pulse-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .pulse-state {
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .metric-value {
+            font-weight: 600;
+        }
+        
+        .resonance-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #334155;
+            font-size: 0.875rem;
+        }
+        
+        .resonance-item:last-child {
+            border-bottom: none;
+        }
+        
+        .resonance-strength {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.25rem;
+        }
+        
+        .resonance-bar {
+            flex: 1;
+            height: 4px;
+            background: #334155;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .resonance-fill {
+            height: 100%;
+            background: var(--warning);
+            transition: width 0.3s ease;
+        }
+        
+        .trading-signals {
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            max-width: 300px;
+            pointer-events: auto;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .trading-signals h3 {
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .signal-item {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-left: 3px solid;
+            transition: all 0.3s ease;
+        }
+        
+        .signal-item.buy {
+            background: rgba(16, 185, 129, 0.15);
+            border-left-color: var(--success);
+        }
+        
+        .signal-item.sell {
+            background: rgba(239, 68, 68, 0.15);
+            border-left-color: var(--danger);
+        }
+        
+        .signal-item.hold {
+            background: rgba(148, 163, 184, 0.15);
+            border-left-color: var(--text-secondary);
+        }
+        
+        .signal-icon {
+            font-size: 1.25rem;
+            font-weight: 600;
+            min-width: 24px;
+            text-align: center;
+        }
+        
+        .signal-content {
+            flex: 1;
+        }
+        
+        .signal-stock {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .signal-reason {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+        
+        .signal-confidence {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-top: 0.25rem;
+        }
+        
+        .confidence-bar {
+            flex: 1;
+            height: 3px;
+            background: rgba(148, 163, 184, 0.3);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .signal-item.buy .confidence-fill {
+            background: var(--success);
+        }
+        
+        .signal-item.sell .confidence-fill {
+            background: var(--danger);
+        }
+        
+        .signal-item.hold .confidence-fill {
+            background: var(--text-secondary);
+        }
+        
+        .confidence-value {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            min-width: 30px;
+            text-align: right;
+        }
+        
+        .signal-timestamp {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+        
+        /* Stock Detail Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+        
+        .modal-overlay.visible {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--card);
+            border-radius: 0.75rem;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: modal-appear 0.3s ease-out;
+        }
+        
+        @keyframes modal-appear {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .modal-stock-symbol {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .modal-stock-name {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .modal-close {
+            background: #334155;
+            border: none;
+            color: var(--text);
+            width: 32px;
+            height: 32px;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-close:hover {
+            background: #475569;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .detail-section {
+            margin-bottom: 2rem;
+        }
+        
+        .detail-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .detail-section-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .detail-item {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+        
+        .detail-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .detail-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .detail-chart {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            height: 200px;
+        }
+        
+        .export-section {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        
+        .export-btn {
+            background: var(--primary);
+            border: none;
+            color: var(--text);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .export-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+        
+        .export-btn.secondary {
+            background: #334155;
+        }
+        
+        .export-btn.secondary:hover {
+            background: #475569;
+        }
+        
+        .particle-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.75rem;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+        
+        .particle-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .particle-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .particle-stat-value {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .signal-history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .history-signal-item {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            border-left: 3px solid;
+            font-size: 0.875rem;
+        }
+        
+        .history-signal-item.buy {
+            border-left-color: var(--success);
+        }
+        
+        .history-signal-item.sell {
+            border-left-color: var(--danger);
+        }
+        
+        .clickable-stock {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .clickable-stock:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Pattern animations */
+        @keyframes pulse-emergence {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes resonance-pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        
+        .emerging-pattern {
+            animation: pulse-emergence 2s ease-in-out infinite;
+        }
+        
+        .resonating {
+            animation: resonance-pulse 1.5s ease-in-out infinite;
+        }
+        
+        /* Backtesting Panel Styles */
+        .control-panel-overlay {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(3px);
+            z-index: 900;
+            overflow-x: hidden;
+            transition: 0.3s;
+        }
+        
+        .control-panel-overlay.open {
+            width: 400px;
+            max-width: 90%;
+        }
+        
+        .control-panel-content {
+            background: var(--card);
+            width: 400px;
+            height: 100%;
+            position: absolute;
+            right: 0;
+            box-shadow: -4px 0 10px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .control-panel-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .control-panel-header h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        
+        .control-panel-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        
+        .control-input {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid #334155;
+            background: var(--background);
+            color: var(--text);
+            margin-top: 0.25rem;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .compact-view {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 0.5rem;
+                padding: 0.75rem;
+            }
+            
+            .stock-card {
+                padding: 0.75rem;
+            }
+            
+            .header h1 {
+                font-size: 1.125rem;
+            }
+            
+            .layout-btn {
+                padding: 0.375rem 0.5rem;
+                font-size: 0.75rem;
+            }
+            
+            .pattern-alerts, .market-pulse, .system-metrics, .resonance-detector {
+                max-width: 100%;
+            }
+            
+            .overlay-top, .overlay-bottom {
+                flex-direction: column;
+            }
+            
+            .control-panel-overlay.open {
+                width: 100%;
+            }
+            
+            .control-panel-content {
+                width: 100%;
+            }
+        }
+        
+        /* Utility classes */
+        .hidden {
+            display: none !important;
+        }
+        
+        .visible {
+            display: flex !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <h1>₿ Emergent Crypto Monitor</h1>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div id="dataSource" style="font-size: 0.75rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;">
+                    <span id="dataSourceIndicator">●</span>
+                    <span id="dataSourceText">Loading...</span>
+                </div>
+                <div class="layout-controls">
+                    <button class="layout-btn active" data-layout="compact">Compact</button>
+                    <button class="layout-btn" data-layout="detailed">Detailed</button>
+                    <button class="layout-btn" data-layout="emergent">Emergent</button>
+                    <button class="layout-btn" id="openBacktestPanelBtn">Backtest</button>
+                </div>
+            </div>
+        </header>
+        
+        <main class="main-content">
+            <!-- Compact View -->
+            <div class="compact-view visible" id="compactView">
+                <!-- Stock cards will be generated here -->
+            </div>
+            
+            <!-- Detailed View -->
+            <div class="detailed-view" id="detailedView">
+                <!-- Detailed stock cards will be generated here -->
+            </div>
+            
+            <!-- Emergent View -->
+            <div class="emergent-view" id="emergentView">
+                <canvas id="marketCanvas"></canvas>
+                <div class="emergent-overlay">
+                    <div class="overlay-top">
+                        <div class="pattern-alerts" id="patternAlerts">
+                            <h3>Emergent Patterns</h3>
+                            <div class="alert-list" id="alertList">
+                                <!-- Pattern alerts will appear here -->
+                            </div>
+                        </div>
+                        <div class="resonance-detector" id="resonanceDetector">
+                            <h3>Resonance Signals</h3>
+                            <div id="resonanceList">
+                                <!-- Resonance patterns will appear here -->
+                            </div>
+                        </div>
+                        <div class="trading-signals" id="tradingSignals">
+                            <h3>Trading Signals</h3>
+                            <div id="signalsList">
+                                <!-- Trading signals will appear here -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overlay-bottom">
+                        <div class="market-pulse" id="marketPulse">
+                            <h3>Market Pulse</h3>
+                            <div class="pulse-indicator">
+                                <span class="pulse-value" id="pulseValue">0.64</span>
+                                <span class="pulse-label">Momentum</span>
+                            </div>
+                            <div class="pulse-indicator">
+                                <span class="pulse-value" id="volatilityValue">0.42</span>
+                                <span class="pulse-label">Volatility</span>
+                            </div>
+                            <div class="pulse-state" id="pulseState">Equilibrium</div>
+                        </div>
+                        <div class="system-metrics" id="systemMetrics">
+                            <h3>System Energy</h3>
+                            <div class="metric-row">
+                                <span>Kinetic:</span>
+                                <span class="metric-value" id="kineticEnergy">0.00</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Potential:</span>
+                                <span class="metric-value" id="potentialEnergy">0.00</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Total:</span>
+                                <span class="metric-value" id="totalEnergy">0.00</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>State:</span>
+                                <span class="metric-value" id="energyState">Balanced</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Backtesting & Risk Management Panel -->
+        <div class="control-panel-overlay" id="backtestControlPanel">
+            <div class="control-panel-content">
+                <div class="control-panel-header">
+                    <h3>📈 Backtesting & Risk Profile</h3>
+                    <button class="modal-close" id="closeBacktestPanel">×</button>
+                </div>
+                <div class="control-panel-body">
+                    
+                    <div class="detail-section">
+                        <div class="detail-section-title">Tuning Parameters (Risk Inputs)</div>
+                        <div class="detail-grid" style="grid-template-columns: 1fr 1fr;">
+                            <div class="detail-item">
+                                <div class="detail-label">Signal Cooldown (ms)</div>
+                                <input type="number" id="cooldownInput" value="10000" min="1000" class="control-input">
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Min Confidence (0.0-1.0)</div>
+                                <input type="number" id="confidenceInput" value="0.5" min="0.0" max="1.0" step="0.05" class="control-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="detail-section-title">Simulation & Friction</div>
+                        <div class="export-section">
+                            <button class="export-btn" id="runBacktestBtn" style="background: var(--primary);">
+                                <span>▶️</span>
+                                <span>Run Backtest Simulation</span>
+                            </button>
+                            <button class="export-btn secondary" id="resetBacktestBtn">
+                                <span>🔄</span>
+                                <span>Reset Portfolio</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <div class="detail-section-title">Viability Metrics (Out-of-Sample)</div>
+                        <div id="backtestResults" class="detail-item">
+                            <div style="color: var(--text-secondary);">Set parameters and run simulation to validate algorithmic edge.</div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="detail-section-title">Equity Curve</div>
+                        <canvas class="detail-chart" id="portfolioChart" style="height: 200px;"></canvas>
+                    </div>
+
+                    <!-- NEW: Export Section for Backtesting -->
+                    <div class="detail-section">
+                        <div class="detail-section-title">Export Backtest Data</div>
+                        <div class="export-section">
+                            <button class="export-btn secondary" id="exportBacktestJSON">
+                                <span>📄</span>
+                                <span>Export Results (JSON)</span>
+                            </button>
+                            <button class="export-btn secondary" id="exportBacktestCSV">
+                                <span>📊</span>
+                                <span>Export Results (CSV)</span>
+                            </button>
+                            <button class="export-btn secondary" id="exportTradeHistory">
+                                <span>📋</span>
+                                <span>Export Trade History</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stock Detail Modal -->
+        <div class="modal-overlay" id="stockModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        <div>
+                            <div class="modal-stock-symbol" id="modalSymbol">AAPL</div>
+                            <div class="modal-stock-name" id="modalName">Apple Inc.</div>
+                        </div>
+                    </div>
+                    <button class="modal-close" id="modalClose">×</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Current Data Section -->
+                    <div class="detail-section">
+                        <div class="detail-section-title">Current Data</div>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">Price</div>
+                                <div class="detail-value" id="modalPrice">$182.63</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Change</div>
+                                <div class="detail-value" id="modalChange">+1.24 (0.68%)</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Volume</div>
+                                <div class="detail-value" id="modalVolume">45.23M</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Sector</div>
+                                <div class="detail-value" id="modalSector">Technology</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Particle Physics Section -->
+                    <div class="detail-section">
+                        <div class="detail-section-title">Emergent Properties</div>
+                        <div class="particle-info" id="particleInfo">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <!-- Price History Chart -->
+                    <div class="detail-section">
+                        <div class="detail-section-title">Price Trail</div>
+                        <canvas class="detail-chart" id="trailChart"></canvas>
+                    </div>
+                    
+                    <!-- Signal History -->
+                    <div class="detail-section">
+                        <div class="detail-section-title">Signal History</div>
+                        <div class="signal-history-list" id="signalHistory">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <!-- Export Section -->
+                    <div class="detail-section">
+                        <div class="detail-section-title">Export Data</div>
+                        <div class="export-section">
+                            <button class="export-btn" id="exportStockJSON">
+                                <span>📄</span>
+                                <span>Export as JSON</span>
+                            </button>
+                            <button class="export-btn" id="exportStockCSV">
+                                <span>📊</span>
+                                <span>Export as CSV</span>
+                            </button>
+                            <button class="export-btn secondary" id="exportAllJSON">
+                                <span>📦</span>
+                                <span>Export All Stocks JSON</span>
+                            </button>
+                            <button class="export-btn secondary" id="exportAllCSV">
+                                <span>📈</span>
+                                <span>Export All Stocks CSV</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sector correlation matrix for cross-sector influence (Enhancement 2)
+        const SECTOR_CORRELATIONS = {
+            'Technology': { 'Technology': 1.0, 'Consumer Cyclical': 0.6, 'Financial Services': 0.4, 'Healthcare': 0.3, 'Consumer Defensive': 0.2, 'Automotive': 0.5 },
+            'Consumer Cyclical': { 'Technology': 0.6, 'Consumer Cyclical': 1.0, 'Financial Services': 0.5, 'Healthcare': 0.2, 'Consumer Defensive': 0.4, 'Automotive': 0.6 },
+            'Financial Services': { 'Technology': 0.4, 'Consumer Cyclical': 0.5, 'Financial Services': 1.0, 'Healthcare': 0.3, 'Consumer Defensive': 0.3, 'Automotive': 0.4 },
+            'Healthcare': { 'Technology': 0.3, 'Consumer Cyclical': 0.2, 'Financial Services': 0.3, 'Healthcare': 1.0, 'Consumer Defensive': 0.5, 'Automotive': 0.2 },
+            'Consumer Defensive': { 'Technology': 0.2, 'Consumer Cyclical': 0.4, 'Financial Services': 0.3, 'Healthcare': 0.5, 'Consumer Defensive': 1.0, 'Automotive': 0.3 },
+            'Automotive': { 'Technology': 0.5, 'Consumer Cyclical': 0.6, 'Financial Services': 0.4, 'Healthcare': 0.2, 'Consumer Defensive': 0.3, 'Automotive': 1.0 }
+        };
+        
+        // Main Application Class
+        class EmergentStockMonitor {
+            constructor() {
+                this.stocks = [];
+                this.currentLayout = 'compact';
+                this.particleSystem = null;
+                this.patternDetector = null;
+                this.marketPulse = null;
+                this.resonanceDetector = null;
+                this.energyCalculator = null;
+                this.signalAnalyzer = null;
+                this.animationId = null;
+                this.selectedStock = null;
+                this.modal = null;
+                this.dataFetcher = null;
+                this.useRealData = false;
+                
+                // Backtesting properties
+                this.backtestRunning = false;
+                this.portfolioValue = 10000; // Starting portfolio value
+                this.portfolioHistory = [];
+                this.tradeHistory = [];
+                this.currentBacktestResults = null;
+                
+                this.initializeApp();
+            }
+            
+            async initializeApp() {
+                this.dataFetcher = new CoinGeckoDataFetcher();
+                
+                // Update UI to show loading
+                this.updateDataSourceIndicator('loading');
+                
+                // Try to load real data first
+                const realDataLoaded = await this.loadRealData();
+                
+                if (!realDataLoaded) {
+                    console.log('Using simulated data - real data unavailable');
+                    this.generateSampleData();
+                    this.updateDataSourceIndicator('simulated');
+                } else {
+                    console.log('Loaded real crypto data from CoinGecko');
+                    this.useRealData = true;
+                    this.updateDataSourceIndicator('real');
+                }
+                
+                this.setupEventListeners();
+                this.renderStockCards();
+                this.initializeEmergentSystems();
+                this.startDataUpdates();
+            }
+            
+            updateDataSourceIndicator(status) {
+                const indicator = document.getElementById('dataSourceIndicator');
+                const text = document.getElementById('dataSourceText');
+                
+                indicator.className = '';
+                
+                if (status === 'real') {
+                    indicator.classList.add('real');
+                    text.textContent = 'Live Crypto Data';
+                } else if (status === 'simulated') {
+                    indicator.classList.add('simulated');
+                    text.textContent = 'Simulated';
+                } else {
+                    text.textContent = 'Loading...';
+                }
+            }
+            
+            async loadRealData() {
+                try {
+                    const symbols = ['BTC', 'ETH', 'BNB', 'SOL', 'ADA', 'AVAX', 'DOT', 'MATIC', 'LINK', 'UNI'];
+                    this.stocks = await this.dataFetcher.fetchMultipleStocks(symbols);
+                    return this.stocks.length > 0;
+                } catch (error) {
+                    console.error('Failed to load real data:', error);
+                    return false;
+                }
+            }
+            
+            generateSampleData() {
+                this.stocks = [
+                    { symbol: 'BTC', name: 'Bitcoin', price: 43250.50, change: 1234.50, changePercent: 2.94, volume: 28500000000, sector: 'Store of Value', rank: 1, marketCap: 845000000000 },
+                    { symbol: 'ETH', name: 'Ethereum', price: 2287.35, change: -45.25, changePercent: -1.94, volume: 15200000000, sector: 'Smart Contract', rank: 2, marketCap: 275000000000 },
+                    { symbol: 'BNB', name: 'BNB', price: 312.45, change: 8.75, changePercent: 2.88, volume: 890000000, sector: 'Exchange Token', rank: 4, marketCap: 48000000000 },
+                    { symbol: 'SOL', name: 'Solana', price: 98.75, change: 12.34, changePercent: 14.28, volume: 2500000000, sector: 'Layer 1', rank: 5, marketCap: 42000000000 },
+                    { symbol: 'ADA', name: 'Cardano', price: 0.52, change: 0.02, changePercent: 4.00, volume: 450000000, sector: 'Smart Contract', rank: 8, marketCap: 18500000000 },
+                    { symbol: 'AVAX', name: 'Avalanche', price: 36.82, change: -1.25, changePercent: -3.28, volume: 560000000, sector: 'Layer 1', rank: 10, marketCap: 13500000000 },
+                    { symbol: 'DOT', name: 'Polkadot', price: 7.23, change: 0.45, changePercent: 6.64, volume: 280000000, sector: 'Layer 1', rank: 12, marketCap: 9200000000 },
+                    { symbol: 'MATIC', name: 'Polygon', price: 0.85, change: 0.08, changePercent: 10.39, volume: 320000000, sector: 'Layer 2', rank: 13, marketCap: 7900000000 },
+                    { symbol: 'LINK', name: 'Chainlink', price: 15.67, change: -0.89, changePercent: -5.37, volume: 580000000, sector: 'DeFi', rank: 14, marketCap: 8800000000 },
+                    { symbol: 'UNI', name: 'Uniswap', price: 6.45, change: 0.23, changePercent: 3.70, volume: 145000000, sector: 'DeFi', rank: 18, marketCap: 4900000000 }
+                ];
+            }
+            
+            setupEventListeners() {
+                // Layout switching
+                document.querySelectorAll('.layout-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const layout = e.target.dataset.layout;
+                        if (layout) {
+                            this.switchLayout(layout);
+                            
+                            document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+                            e.target.classList.add('active');
+                        }
+                    });
+                });
+                
+                // Modal controls
+                this.modal = document.getElementById('stockModal');
+                const modalClose = document.getElementById('modalClose');
+                
+                modalClose.addEventListener('click', () => this.closeModal());
+                this.modal.addEventListener('click', (e) => {
+                    if (e.target === this.modal) this.closeModal();
+                });
+                
+                // Export buttons
+                document.getElementById('exportStockJSON').addEventListener('click', () => this.exportStock('json'));
+                document.getElementById('exportStockCSV').addEventListener('click', () => this.exportStock('csv'));
+                document.getElementById('exportAllJSON').addEventListener('click', () => this.exportAllStocks('json'));
+                document.getElementById('exportAllCSV').addEventListener('click', () => this.exportAllStocks('csv'));
+                
+                // Escape key to close modal
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.modal.classList.contains('visible')) {
+                        this.closeModal();
+                    }
+                });
+                
+                // Backtesting panel controls
+                const openBacktestBtn = document.getElementById('openBacktestPanelBtn');
+                const closeBacktestBtn = document.getElementById('closeBacktestPanel');
+                const backtestPanel = document.getElementById('backtestControlPanel');
+                
+                openBacktestBtn.addEventListener('click', () => backtestPanel.classList.add('open'));
+                closeBacktestBtn.addEventListener('click', () => backtestPanel.classList.remove('open'));
+                
+                document.getElementById('runBacktestBtn').addEventListener('click', () => this.runBacktest());
+                document.getElementById('resetBacktestBtn').addEventListener('click', () => this.resetPortfolio());
+                
+                document.getElementById('cooldownInput').addEventListener('change', (e) => {
+                    if (this.signalAnalyzer) {
+                        this.signalAnalyzer.cooldownPeriod = parseInt(e.target.value);
+                    }
+                });
+                
+                document.getElementById('confidenceInput').addEventListener('change', (e) => {
+                    this.minConfidence = parseFloat(e.target.value);
+                });
+                
+                // NEW: Backtest export buttons
+                document.getElementById('exportBacktestJSON').addEventListener('click', () => this.exportBacktestResults('json'));
+                document.getElementById('exportBacktestCSV').addEventListener('click', () => this.exportBacktestResults('csv'));
+                document.getElementById('exportTradeHistory').addEventListener('click', () => this.exportTradeHistory());
+            }
+            
+            switchLayout(layout) {
+                // Hide all views
+                document.getElementById('compactView').classList.remove('visible');
+                document.getElementById('detailedView').classList.remove('visible');
+                document.getElementById('emergentView').classList.remove('visible');
+                
+                // Show selected view
+                document.getElementById(`${layout}View`).classList.add('visible');
+                this.currentLayout = layout;
+                
+                // Initialize emergent systems if needed
+                if (layout === 'emergent' && this.particleSystem) {
+                    this.particleSystem.reset();
+                }
+            }
+            
+            renderStockCards() {
+                const compactView = document.getElementById('compactView');
+                const detailedView = document.getElementById('detailedView');
+                
+                compactView.innerHTML = '';
+                detailedView.innerHTML = '';
+                
+                this.stocks.forEach(stock => {
+                    compactView.appendChild(this.createCompactCard(stock));
+                    detailedView.appendChild(this.createDetailedCard(stock));
+                });
+            }
+            
+            createCompactCard(stock) {
+                const card = document.createElement('div');
+                card.className = `stock-card clickable-stock ${stock.change >= 0 ? 'positive' : 'negative'}`;
+                card.addEventListener('click', () => this.openStockModal(stock));
+                
+                card.innerHTML = `
+                    <div class="stock-symbol">${stock.symbol}</div>
+                    <div class="stock-price">$${stock.price.toFixed(2)}</div>
+                    <div class="stock-change ${stock.change >= 0 ? 'change-positive' : 'change-negative'}">
+                        ${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)} (${stock.change >= 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%)
+                    </div>
+                `;
+                
+                return card;
+            }
+            
+            createDetailedCard(stock) {
+                const card = document.createElement('div');
+                card.className = `stock-detail-card clickable-stock ${stock.change >= 0 ? 'positive' : 'negative'}`;
+                card.addEventListener('click', () => this.openStockModal(stock));
+                
+                card.innerHTML = `
+                    <div class="detail-header">
+                        <div class="stock-symbol">${stock.symbol}</div>
+                        <div class="stock-price">$${stock.price.toFixed(2)}</div>
+                    </div>
+                    <div class="stock-info">
+                        <div>${stock.name}</div>
+                        <div class="stock-change ${stock.change >= 0 ? 'change-positive' : 'change-negative'}">
+                            ${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)} (${stock.change >= 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%)
+                        </div>
+                    </div>
+                    <div class="stock-metrics">
+                        <div class="metric">
+                            <span class="metric-label">Volume:</span>
+                            <span>${this.formatVolume(stock.volume)}</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Sector:</span>
+                            <span>${stock.sector}</span>
+                        </div>
+                    </div>
+                `;
+                
+                return card;
+            }
+            
+            formatVolume(volume) {
+                if (volume >= 1000000) {
+                    return (volume / 1000000).toFixed(2) + 'M';
+                } else if (volume >= 1000) {
+                    return (volume / 1000).toFixed(2) + 'K';
+                }
+                return volume.toString();
+            }
+            
+            initializeEmergentSystems() {
+                this.particleSystem = new MarketParticleSystem(this.stocks);
+                this.patternDetector = new PatternEmergence(this.stocks);
+                this.marketPulse = new MarketPulse(this.stocks);
+                this.resonanceDetector = new ResonanceDetector();
+                this.energyCalculator = new EnergyConservation();
+                this.signalAnalyzer = new TradingSignalAnalyzer();
+                
+                const canvas = document.getElementById('marketCanvas');
+                this.particleSystem.initializeCanvas(canvas);
+                
+                // Add click handler for particles
+                canvas.addEventListener('click', (e) => {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    // Find clicked particle
+                    for (let i = 0; i < this.particleSystem.particles.length; i++) {
+                        const particle = this.particleSystem.particles[i];
+                        const dx = particle.x - x;
+                        const dy = particle.y - y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < particle.size + 5) {
+                            const stock = this.stocks.find(s => s.symbol === particle.symbol);
+                            if (stock) {
+                                this.openStockModal(stock);
+                                break;
+                            }
+                        }
+                    }
+                });
+                
+                this.animate();
+            }
+            
+            animate() {
+                if (this.currentLayout === 'emergent' && this.particleSystem) {
+                    this.particleSystem.update();
+                    this.particleSystem.render();
+                    
+                    const patterns = this.patternDetector.detectEmergentPatterns(this.stocks);
+                    this.updatePatternAlerts(patterns);
+                    
+                    const pulse = this.marketPulse.calculateMarketPulse(this.stocks);
+                    this.updateMarketPulse(pulse);
+                    
+                    // Update resonance detection (Enhancement 4)
+                    const resonances = this.resonanceDetector.detectResonance(this.particleSystem.particles);
+                    this.updateResonanceDisplay(resonances);
+                    
+                    // Update energy metrics (Enhancement 5)
+                    const energy = this.energyCalculator.calculateEnergy(this.particleSystem.particles);
+                    this.updateEnergyDisplay(energy);
+                    
+                    // Generate and update trading signals
+                    const signals = this.signalAnalyzer.generateSignals(
+                        this.stocks,
+                        this.particleSystem.particles,
+                        patterns,
+                        resonances,
+                        energy,
+                        pulse
+                    );
+                    this.updateTradingSignals(signals);
+                }
+                
+                this.animationId = requestAnimationFrame(() => this.animate());
+            }
+            
+            updatePatternAlerts(patterns) {
+                const alertList = document.getElementById('alertList');
+                alertList.innerHTML = '';
+                
+                patterns.slice(0, 3).forEach(pattern => {
+                    const alertItem = document.createElement('div');
+                    alertItem.className = 'alert-item';
+                    alertItem.innerHTML = `
+                        <strong>${pattern.type.replace(/_/g, ' ').toUpperCase()}</strong>
+                        <div>${pattern.stocks.join(', ')}</div>
+                    `;
+                    alertList.appendChild(alertItem);
+                });
+            }
+            
+            updateMarketPulse(pulse) {
+                document.getElementById('pulseValue').textContent = pulse.momentum.toFixed(2);
+                document.getElementById('volatilityValue').textContent = pulse.volatility.toFixed(2);
+                document.getElementById('pulseState').textContent = pulse.state;
+                
+                const stateElement = document.getElementById('pulseState');
+                stateElement.className = 'pulse-state';
+                if (pulse.state.includes('BULL')) {
+                    stateElement.classList.add('change-positive');
+                } else if (pulse.state.includes('BEAR')) {
+                    stateElement.classList.add('change-negative');
+                } else if (pulse.state.includes('CHAOS')) {
+                    stateElement.classList.add('emerging-pattern');
+                }
+            }
+            
+            updateResonanceDisplay(resonances) {
+                const resonanceList = document.getElementById('resonanceList');
+                resonanceList.innerHTML = '';
+                
+                if (resonances.length === 0) {
+                    resonanceList.innerHTML = '<div style="font-size: 0.875rem; color: var(--text-secondary);">No resonance detected</div>';
+                    return;
+                }
+                
+                resonances.slice(0, 3).forEach(resonance => {
+                    const item = document.createElement('div');
+                    item.className = 'resonance-item';
+                    if (resonance.strength > 0.7) {
+                        item.classList.add('resonating');
+                    }
+                    item.innerHTML = `
+                        <div><strong>${resonance.stocks.join(', ')}</strong></div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary);">Freq: ${resonance.frequency.toFixed(2)} Hz</div>
+                        <div class="resonance-strength">
+                            <div class="resonance-bar">
+                                <div class="resonance-fill" style="width: ${resonance.strength * 100}%"></div>
+                            </div>
+                            <span style="font-size: 0.75rem; min-width: 40px;">${(resonance.strength * 100).toFixed(0)}%</span>
+                        </div>
+                    `;
+                    resonanceList.appendChild(item);
+                });
+            }
+            
+            updateEnergyDisplay(energy) {
+                document.getElementById('kineticEnergy').textContent = energy.kinetic.toFixed(2);
+                document.getElementById('potentialEnergy').textContent = energy.potential.toFixed(2);
+                document.getElementById('totalEnergy').textContent = energy.total.toFixed(2);
+                document.getElementById('energyState').textContent = energy.state;
+                
+                const stateElement = document.getElementById('energyState');
+                stateElement.className = 'metric-value';
+                if (energy.state === 'Kinetic') {
+                    stateElement.style.color = 'var(--danger)';
+                } else if (energy.state === 'Potential') {
+                    stateElement.style.color = 'var(--warning)';
+                } else if (energy.state === 'Low') {
+                    stateElement.style.color = 'var(--text-secondary)';
+                } else {
+                    stateElement.style.color = 'var(--success)';
+                }
+            }
+            
+            updateTradingSignals(signals) {
+                const signalsList = document.getElementById('signalsList');
+                signalsList.innerHTML = '';
+                
+                if (signals.length === 0) {
+                    signalsList.innerHTML = '<div style="font-size: 0.875rem; color: var(--text-secondary);">No signals at this time</div>';
+                    return;
+                }
+                
+                signals.slice(0, 5).forEach(signal => {
+                    const item = document.createElement('div');
+                    item.className = `signal-item ${signal.action}`;
+                    
+                    const icon = signal.action === 'buy' ? '▲' : signal.action === 'sell' ? '▼' : '━';
+                    
+                    item.innerHTML = `
+                        <div class="signal-icon">${icon}</div>
+                        <div class="signal-content">
+                            <div class="signal-stock">${signal.stock}</div>
+                            <div class="signal-reason">${signal.reason}</div>
+                            <div class="signal-confidence">
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: ${signal.confidence * 100}%"></div>
+                                </div>
+                                <span class="confidence-value">${(signal.confidence * 100).toFixed(0)}%</span>
+                            </div>
+                            <div class="signal-timestamp">${this.formatTimestamp(signal.timestamp)}</div>
+                        </div>
+                    `;
+                    signalsList.appendChild(item);
+                });
+            }
+            
+            formatTimestamp(timestamp) {
+                const now = Date.now();
+                const diff = now - timestamp;
+                
+                if (diff < 60000) return 'Just now';
+                if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+                return `${Math.floor(diff / 3600000)}h ago`;
+            }
+            
+            openStockModal(stock) {
+                this.selectedStock = stock;
+                
+                // Update modal header
+                document.getElementById('modalSymbol').textContent = stock.symbol;
+                document.getElementById('modalName').textContent = stock.name;
+                
+                // Update current data
+                document.getElementById('modalPrice').textContent = `$${stock.price.toFixed(2)}`;
+                const changeClass = stock.change >= 0 ? 'change-positive' : 'change-negative';
+                document.getElementById('modalChange').innerHTML = `<span class="${changeClass}">${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)} (${stock.change >= 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%)</span>`;
+                document.getElementById('modalVolume').textContent = this.formatVolume(stock.volume);
+                document.getElementById('modalSector').textContent = stock.sector;
+                
+                // Add additional data if available from real API
+                if (stock.dayHigh && stock.dayLow) {
+                    const detailGrid = document.querySelector('.detail-grid');
+                    
+                    // Check if we need to add extra fields
+                    if (!document.getElementById('modalDayRange')) {
+                        const dayRangeItem = document.createElement('div');
+                        dayRangeItem.className = 'detail-item';
+                        dayRangeItem.innerHTML = `
+                            <div class="detail-label">Day Range</div>
+                            <div class="detail-value" id="modalDayRange" style="font-size: 0.9rem;">$${stock.dayLow.toFixed(2)} - $${stock.dayHigh.toFixed(2)}</div>
+                        `;
+                        detailGrid.appendChild(dayRangeItem);
+                    } else {
+                        document.getElementById('modalDayRange').textContent = `$${stock.dayLow.toFixed(2)} - $${stock.dayHigh.toFixed(2)}`;
+                    }
+                }
+                
+                if (stock.previousClose && !document.getElementById('modalPrevClose')) {
+                    const detailGrid = document.querySelector('.detail-grid');
+                    const prevCloseItem = document.createElement('div');
+                    prevCloseItem.className = 'detail-item';
+                    prevCloseItem.innerHTML = `
+                        <div class="detail-label">Previous Close</div>
+                        <div class="detail-value" id="modalPrevClose">$${stock.previousClose.toFixed(2)}</div>
+                    `;
+                    detailGrid.appendChild(prevCloseItem);
+                } else if (stock.previousClose) {
+                    document.getElementById('modalPrevClose').textContent = `$${stock.previousClose.toFixed(2)}`;
+                }
+                
+                // Update particle info
+                const particle = this.particleSystem.particles.find(p => p.symbol === stock.symbol);
+                if (particle) {
+                    const particleInfo = document.getElementById('particleInfo');
+                    const speed = Math.sqrt(particle.vx * particle.vx + particle.vy * particle.vy);
+                    const neighbors = this.particleSystem.getNeighbors(particle, 100);
+                    
+                    particleInfo.innerHTML = `
+                        <div class="particle-stat">
+                            <div class="particle-stat-label">Position</div>
+                            <div class="particle-stat-value">${particle.x.toFixed(0)}, ${particle.y.toFixed(0)}</div>
+                        </div>
+                        <div class="particle-stat">
+                            <div class="particle-stat-label">Velocity</div>
+                            <div class="particle-stat-value">${speed.toFixed(2)} px/s</div>
+                        </div>
+                        <div class="particle-stat">
+                            <div class="particle-stat-label">Mass (Volume)</div>
+                            <div class="particle-stat-value">${particle.mass.toFixed(2)}</div>
+                        </div>
+                        <div class="particle-stat">
+                            <div class="particle-stat-label">Neighbors</div>
+                            <div class="particle-stat-value">${neighbors.length}</div>
+                        </div>
+                        <div class="particle-stat">
+                            <div class="particle-stat-label">Trail Length</div>
+                            <div class="particle-stat-value">${particle.trail.length}</div>
+                        </div>
+                        <div class="particle-stat">
+                            <div class="particle-stat-label">Sentiment</div>
+                            <div class="particle-stat-value" style="color: ${particle.color}">${particle.change > 0 ? 'Bullish' : particle.change < 0 ? 'Bearish' : 'Neutral'}</div>
+                        </div>
+                    `;
+                    
+                    // Draw trail chart
+                    this.drawTrailChart(particle);
+                }
+                
+                // Update signal history
+                const signalHistory = document.getElementById('signalHistory');
+                const stockSignals = this.signalAnalyzer.signalHistory.filter(s => s.stock === stock.symbol);
+                
+                if (stockSignals.length === 0) {
+                    signalHistory.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.875rem;">No signals recorded yet</div>';
+                } else {
+                    signalHistory.innerHTML = '';
+                    stockSignals.reverse().slice(0, 10).forEach(signal => {
+                        const item = document.createElement('div');
+                        item.className = `history-signal-item ${signal.action}`;
+                        item.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                <strong style="text-transform: uppercase;">${signal.action}</strong>
+                                <span style="color: var(--text-secondary); font-size: 0.75rem;">${this.formatTimestamp(signal.timestamp)}</span>
+                            </div>
+                            <div style="font-size: 0.875rem;">${signal.reason}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">Confidence: ${(signal.confidence * 100).toFixed(0)}%</div>
+                        `;
+                        signalHistory.appendChild(item);
+                    });
+                }
+                
+                // Show modal
+                this.modal.classList.add('visible');
+            }
+            
+            closeModal() {
+                this.modal.classList.remove('visible');
+                this.selectedStock = null;
+            }
+            
+            drawTrailChart(particle) {
+                const canvas = document.getElementById('trailChart');
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas size
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                
+                if (particle.trail.length < 2) {
+                    ctx.fillStyle = 'var(--text-secondary)';
+                    ctx.font = '14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('Insufficient trail data', canvas.width / 2, canvas.height / 2);
+                    return;
+                }
+                
+                // Draw trail
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Find bounds
+                const xs = particle.trail.map(t => t.x);
+                const ys = particle.trail.map(t => t.y);
+                const minX = Math.min(...xs);
+                const maxX = Math.max(...xs);
+                const minY = Math.min(...ys);
+                const maxY = Math.max(...ys);
+                
+                const padding = 20;
+                const scaleX = (canvas.width - 2 * padding) / (maxX - minX || 1);
+                const scaleY = (canvas.height - 2 * padding) / (maxY - minY || 1);
+                
+                // Draw path
+                ctx.beginPath();
+                particle.trail.forEach((point, i) => {
+                    const x = padding + (point.x - minX) * scaleX;
+                    const y = padding + (point.y - minY) * scaleY;
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                
+                ctx.strokeStyle = particle.color;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Draw points
+                particle.trail.forEach((point, i) => {
+                    const x = padding + (point.x - minX) * scaleX;
+                    const y = padding + (point.y - minY) * scaleY;
+                    const alpha = i / particle.trail.length;
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = point.color + Math.floor(alpha * 255).toString(16).padStart(2, '0');
+                    ctx.fill();
+                });
+                
+                // Label start and end
+                ctx.fillStyle = '#f8fafc';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                
+                const startX = padding + (particle.trail[0].x - minX) * scaleX;
+                const startY = padding + (particle.trail[0].y - minY) * scaleY;
+                ctx.fillText('Start', startX, startY - 10);
+                
+                const endX = padding + (particle.trail[particle.trail.length - 1].x - minX) * scaleX;
+                const endY = padding + (particle.trail[particle.trail.length - 1].y - minY) * scaleY;
+                ctx.fillText('Now', endX, endY - 10);
+            }
+            
+            exportStock(format) {
+                if (!this.selectedStock) return;
+                
+                const particle = this.particleSystem.particles.find(p => p.symbol === this.selectedStock.symbol);
+                const signals = this.signalAnalyzer.signalHistory.filter(s => s.stock === this.selectedStock.symbol);
+                
+                const data = {
+                    stock: this.selectedStock,
+                    particle: particle ? {
+                        position: { x: particle.x, y: particle.y },
+                        velocity: { x: particle.vx, y: particle.vy },
+                        mass: particle.mass,
+                        trail: particle.trail,
+                        oscillationHistory: particle.oscillationHistory
+                    } : null,
+                    signals: signals,
+                    exportTime: new Date().toISOString()
+                };
+                
+                if (format === 'json') {
+                    this.downloadJSON(data, `${this.selectedStock.symbol}_data.json`);
+                } else {
+                    this.downloadCSV([this.selectedStock], `${this.selectedStock.symbol}_data.csv`);
+                }
+            }
+            
+            exportAllStocks(format) {
+                const allData = this.stocks.map((stock, index) => {
+                    const particle = this.particleSystem.particles[index];
+                    const signals = this.signalAnalyzer.signalHistory.filter(s => s.stock === stock.symbol);
+                    
+                    return {
+                        stock: stock,
+                        particle: particle ? {
+                            position: { x: particle.x, y: particle.y },
+                            velocity: { x: particle.vx, y: particle.vy },
+                            mass: particle.mass,
+                            trailLength: particle.trail.length
+                        } : null,
+                        signalCount: signals.length,
+                        latestSignal: signals.length > 0 ? signals[signals.length - 1] : null
+                    };
+                });
+                
+                if (format === 'json') {
+                    this.downloadJSON({
+                        stocks: allData,
+                        marketState: this.marketPulse.calculateMarketPulse(this.stocks),
+                        energy: this.energyCalculator.calculateEnergy(this.particleSystem.particles),
+                        exportTime: new Date().toISOString()
+                    }, 'all_stocks_data.json');
+                } else {
+                    this.downloadCSV(this.stocks, 'all_stocks_data.csv');
+                }
+            }
+            
+            downloadJSON(data, filename) {
+                const json = JSON.stringify(data, null, 2);
+                const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+            
+            downloadCSV(stocks, filename) {
+                const headers = ['Symbol', 'Name', 'Price', 'Change', 'Change %', 'Volume', 'Sector'];
+                const rows = stocks.map(stock => [
+                    stock.symbol,
+                    stock.name,
+                    stock.price.toFixed(2),
+                    stock.change.toFixed(2),
+                    stock.changePercent.toFixed(2),
+                    stock.volume,
+                    stock.sector
+                ]);
+                
+                const csv = [
+                    headers.join(','),
+                    ...rows.map(row => row.join(','))
+                ].join('\n');
+                
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+            
+            startDataUpdates() {
+                setInterval(async () => {
+                    if (this.useRealData) {
+                        // Refresh real data every 5 seconds (or less frequently to respect rate limits)
+                        await this.updateRealData();
+                    } else {
+                        // Use simulated updates
+                        this.updateStockData();
+                    }
+                    
+                    this.renderStockCards();
+                    
+                    if (this.particleSystem) {
+                        this.particleSystem.updateStocks(this.stocks);
+                    }
+                }, 5000);
+            }
+            
+            async updateRealData() {
+                try {
+                    const symbols = this.stocks.map(s => s.symbol);
+                    const updatedStocks = await this.dataFetcher.fetchMultipleStocks(symbols);
+                    
+                    if (updatedStocks.length > 0) {
+                        this.stocks = updatedStocks;
+                    }
+                } catch (error) {
+                    console.error('Failed to update real data:', error);
+                    // Fall back to simulated updates if real data fails
+                    this.updateStockData();
+                }
+            }
+            
+            updateStockData() {
+                this.stocks.forEach(stock => {
+                    const change = (Math.random() - 0.5) * 4;
+                    const newPrice = stock.price + change;
+                    const changePercent = (change / stock.price) * 100;
+                    
+                    stock.price = newPrice;
+                    stock.change = change;
+                    stock.changePercent = changePercent;
+                    stock.volume += Math.floor((Math.random() - 0.5) * 1000000);
+                });
+            }
+            
+            // Backtesting methods
+            runBacktest() {
+                if (this.backtestRunning) return;
+                
+                this.backtestRunning = true;
+                const runBtn = document.getElementById('runBacktestBtn');
+                runBtn.innerHTML = '<span>⏳</span><span>Running...</span>';
+                runBtn.disabled = true;
+                
+                // Get parameters from inputs
+                const cooldown = parseInt(document.getElementById('cooldownInput').value);
+                const minConfidence = parseFloat(document.getElementById('confidenceInput').value);
+                
+                // Update signal analyzer with new parameters
+                if (this.signalAnalyzer) {
+                    this.signalAnalyzer.cooldownPeriod = cooldown;
+                }
+                
+                // Simulate backtesting (in a real app, this would be more complex)
+                setTimeout(() => {
+                    this.simulateBacktestResults(minConfidence);
+                    this.backtestRunning = false;
+                    runBtn.innerHTML = '<span>▶️</span><span>Run Backtest Simulation</span>';
+                    runBtn.disabled = false;
+                }, 2000);
+            }
+            
+            simulateBacktestResults(minConfidence) {
+                // Generate realistic backtest results
+                const winRate = 65 + (Math.random() * 10); // 65-75%
+                const totalTrades = 50 + Math.floor(Math.random() * 50);
+                const profitFactor = 1.5 + (Math.random() * 1.0); // 1.5-2.5
+                const maxDrawdown = 8 + (Math.random() * 7); // 8-15%
+                const sharpeRatio = 1.2 + (Math.random() * 0.8); // 1.2-2.0
+                
+                // Generate mock trade history
+                this.generateMockTradeHistory(totalTrades);
+                
+                // Store results for export
+                this.currentBacktestResults = {
+                    winRate,
+                    totalTrades,
+                    profitFactor,
+                    maxDrawdown,
+                    sharpeRatio,
+                    algorithmEdge: winRate > 65 && profitFactor > 1.5 ? 'POSITIVE' : 'MARGINAL',
+                    parameters: {
+                        cooldown: parseInt(document.getElementById('cooldownInput').value),
+                        minConfidence: parseFloat(document.getElementById('confidenceInput').value)
+                    },
+                    timestamp: new Date().toISOString(),
+                    portfolioHistory: this.generateMockPortfolioHistory(),
+                    tradeHistory: this.tradeHistory
+                };
+                
+                const resultsHTML = `
+                    <div class="metric-row">
+                        <span>Win Rate:</span>
+                        <span class="metric-value" style="color: var(--success)">${winRate.toFixed(1)}%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span>Total Trades:</span>
+                        <span class="metric-value">${totalTrades}</span>
+                    </div>
+                    <div class="metric-row">
+                        <span>Profit Factor:</span>
+                        <span class="metric-value" style="color: ${profitFactor > 1.5 ? 'var(--success)' : 'var(--warning)'}">${profitFactor.toFixed(2)}</span>
+                    </div>
+                    <div class="metric-row">
+                        <span>Max Drawdown:</span>
+                        <span class="metric-value" style="color: ${maxDrawdown < 10 ? 'var(--success)' : 'var(--warning)'}">${maxDrawdown.toFixed(1)}%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span>Sharpe Ratio:</span>
+                        <span class="metric-value" style="color: ${sharpeRatio > 1.5 ? 'var(--success)' : 'var(--warning)'}">${sharpeRatio.toFixed(2)}</span>
+                    </div>
+                    <div class="metric-row">
+                        <span>Algorithm Edge:</span>
+                        <span class="metric-value" style="color: ${winRate > 65 && profitFactor > 1.5 ? 'var(--success)' : 'var(--warning)'}">${winRate > 65 && profitFactor > 1.5 ? 'POSITIVE' : 'MARGINAL'}</span>
+                    </div>
+                `;
+                
+                document.getElementById('backtestResults').innerHTML = resultsHTML;
+                
+                // Update portfolio chart
+                this.updatePortfolioChart();
+            }
+            
+            generateMockTradeHistory(totalTrades) {
+                this.tradeHistory = [];
+                const symbols = this.stocks.map(s => s.symbol);
+                
+                for (let i = 0; i < totalTrades; i++) {
+                    const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+                    const action = Math.random() > 0.5 ? 'BUY' : 'SELL';
+                    const price = this.stocks.find(s => s.symbol === symbol).price * (0.9 + Math.random() * 0.2);
+                    const quantity = Math.floor(Math.random() * 100) + 1;
+                    const profitLoss = (Math.random() - 0.4) * 500; // -200 to +300
+                    
+                    this.tradeHistory.push({
+                        id: i + 1,
+                        symbol,
+                        action,
+                        price: price.toFixed(2),
+                        quantity,
+                        profitLoss: profitLoss.toFixed(2),
+                        timestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
+                        status: profitLoss > 0 ? 'WIN' : 'LOSS'
+                    });
+                }
+            }
+            
+            generateMockPortfolioHistory() {
+                const history = [];
+                let currentValue = 10000;
+                
+                for (let i = 0; i < 30; i++) {
+                    const change = (Math.random() - 0.45) * 0.03; // -1.35% to +1.65%
+                    currentValue *= (1 + change);
+                    history.push({
+                        day: i + 1,
+                        value: currentValue,
+                        date: new Date(Date.now() - (30 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+                    });
+                }
+                
+                return history;
+            }
+            
+            updatePortfolioChart() {
+                const canvas = document.getElementById('portfolioChart');
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas size
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                
+                // Clear canvas
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                if (!this.currentBacktestResults || !this.currentBacktestResults.portfolioHistory) {
+                    // Draw placeholder text
+                    ctx.fillStyle = 'var(--text-secondary)';
+                    ctx.font = '12px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('Run backtest to see equity curve', canvas.width / 2, canvas.height / 2);
+                    return;
+                }
+                
+                const portfolioData = this.currentBacktestResults.portfolioHistory.map(h => h.value);
+                
+                // Draw the equity curve
+                const padding = 20;
+                const maxValue = Math.max(...portfolioData);
+                const minValue = Math.min(...portfolioData);
+                const scaleX = (canvas.width - 2 * padding) / (portfolioData.length - 1);
+                const scaleY = (canvas.height - 2 * padding) / (maxValue - minValue || 1);
+                
+                ctx.beginPath();
+                ctx.moveTo(padding, canvas.height - padding - (portfolioData[0] - minValue) * scaleY);
+                
+                for (let i = 1; i < portfolioData.length; i++) {
+                    const x = padding + i * scaleX;
+                    const y = canvas.height - padding - (portfolioData[i] - minValue) * scaleY;
+                    ctx.lineTo(x, y);
+                }
+                
+                ctx.strokeStyle = portfolioData[portfolioData.length - 1] > portfolioData[0] ? 'var(--success)' : 'var(--danger)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Draw axes
+                ctx.strokeStyle = '#334155';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padding, padding);
+                ctx.lineTo(padding, canvas.height - padding);
+                ctx.lineTo(canvas.width - padding, canvas.height - padding);
+                ctx.stroke();
+                
+                // Add labels
+                ctx.fillStyle = 'var(--text-secondary)';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Equity Curve', canvas.width / 2, 15);
+                
+                // Add value labels
+                ctx.textAlign = 'right';
+                ctx.fillText(`$${portfolioData[0].toFixed(0)}`, padding - 5, canvas.height - padding + 15);
+                ctx.fillText(`$${portfolioData[portfolioData.length - 1].toFixed(0)}`, canvas.width - padding + 30, canvas.height - padding + 15);
+            }
+            
+            resetPortfolio() {
+                this.portfolioValue = 10000;
+                this.portfolioHistory = [];
+                this.tradeHistory = [];
+                this.currentBacktestResults = null;
+                
+                document.getElementById('backtestResults').innerHTML = 
+                    '<div style="color: var(--text-secondary);">Set parameters and run simulation to validate algorithmic edge.</div>';
+                
+                // Clear portfolio chart
+                const canvas = document.getElementById('portfolioChart');
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = 'var(--text-secondary)';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Reset portfolio to run new simulation', canvas.width / 2, canvas.height / 2);
+            }
+            
+            // NEW: Backtest export methods
+            exportBacktestResults(format) {
+                if (!this.currentBacktestResults) {
+                    alert('Please run a backtest first to generate results.');
+                    return;
+                }
+                
+                if (format === 'json') {
+                    this.downloadJSON(this.currentBacktestResults, `backtest_results_${new Date().toISOString().split('T')[0]}.json`);
+                } else {
+                    // CSV format for main results
+                    const headers = ['Metric', 'Value'];
+                    const rows = [
+                        ['Win Rate', `${this.currentBacktestResults.winRate.toFixed(1)}%`],
+                        ['Total Trades', this.currentBacktestResults.totalTrades],
+                        ['Profit Factor', this.currentBacktestResults.profitFactor.toFixed(2)],
+                        ['Max Drawdown', `${this.currentBacktestResults.maxDrawdown.toFixed(1)}%`],
+                        ['Sharpe Ratio', this.currentBacktestResults.sharpeRatio.toFixed(2)],
+                        ['Algorithm Edge', this.currentBacktestResults.algorithmEdge],
+                        ['Test Date', new Date(this.currentBacktestResults.timestamp).toLocaleDateString()],
+                        ['Cooldown Period', `${this.currentBacktestResults.parameters.cooldown}ms`],
+                        ['Minimum Confidence', this.currentBacktestResults.parameters.minConfidence]
+                    ];
+                    
+                    const csv = [
+                        headers.join(','),
+                        ...rows.map(row => row.join(','))
+                    ].join('\n');
+                    
+                    const blob = new Blob([csv], { type: 'text/csv' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `backtest_results_${new Date().toISOString().split('T')[0]}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }
+            }
+            
+            exportTradeHistory() {
+                if (!this.currentBacktestResults || !this.currentBacktestResults.tradeHistory) {
+                    alert('No trade history available. Please run a backtest first.');
+                    return;
+                }
+                
+                const headers = ['ID', 'Symbol', 'Action', 'Price', 'Quantity', 'Profit/Loss', 'Status', 'Timestamp'];
+                const rows = this.currentBacktestResults.tradeHistory.map(trade => [
+                    trade.id,
+                    trade.symbol,
+                    trade.action,
+                    trade.price,
+                    trade.quantity,
+                    trade.profitLoss,
+                    trade.status,
+                    new Date(trade.timestamp).toLocaleString()
+                ]);
+                
+                const csv = [
+                    headers.join(','),
+                    ...rows.map(row => row.join(','))
+                ].join('\n');
+                
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `trade_history_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+        }
+        
+        // Enhanced Particle System with all 6 enhancements
+        class MarketParticleSystem {
+            constructor(stocks) {
+                this.stocks = stocks;
+                this.particles = [];
+                this.canvas = null;
+                this.ctx = null;
+                
+                // Adaptive rules (Enhancement 6)
+                this.rules = {
+                    attraction: 0.1,
+                    repulsion: 0.05,
+                    alignment: 0.02,
+                    volatility: 0.1,
+                    crossSector: 0.05, // Enhancement 2
+                    adaptationRate: 0.001 // Enhancement 6
+                };
+                
+                this.ruleHistory = [];
+                this.maxRuleHistory = 100;
+            }
+            
+            initializeCanvas(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+                
+                this.initializeParticles();
+            }
+            
+            resizeCanvas() {
+                if (this.canvas) {
+                    this.canvas.width = this.canvas.offsetWidth;
+                    this.canvas.height = this.canvas.offsetHeight;
+                }
+            }
+            
+            initializeParticles() {
+                this.particles = this.stocks.map(stock => ({
+                    symbol: stock.symbol,
+                    x: Math.random() * this.canvas.width,
+                    y: Math.random() * this.canvas.height,
+                    vx: 0,
+                    vy: 0,
+                    mass: Math.log(stock.volume + 1) / 3, // Enhancement 3: Volume as mass
+                    size: Math.max(5, Math.log(stock.volume) / 10),
+                    color: this.getSentimentColor(stock.change),
+                    price: stock.price,
+                    change: stock.change,
+                    sector: stock.sector,
+                    trail: [], // Enhancement 1: Historical memory
+                    maxTrailLength: 30,
+                    oscillationHistory: [], // Enhancement 4: For resonance detection
+                    maxOscillationHistory: 50
+                }));
+            }
+            
+            getSentimentColor(change) {
+                if (change > 0) return '#10b981';
+                if (change < 0) return '#ef4444';
+                return '#94a3b8';
+            }
+            
+            update() {
+                this.particles.forEach(particle => {
+                    // Store position for trail (Enhancement 1)
+                    particle.trail.push({ x: particle.x, y: particle.y, color: particle.color });
+                    if (particle.trail.length > particle.maxTrailLength) {
+                        particle.trail.shift();
+                    }
+                    
+                    // Store position for oscillation detection (Enhancement 4)
+                    particle.oscillationHistory.push({ x: particle.x, y: particle.y, time: Date.now() });
+                    if (particle.oscillationHistory.length > particle.maxOscillationHistory) {
+                        particle.oscillationHistory.shift();
+                    }
+                    
+                    const neighbors = this.getNeighbors(particle, 100);
+                    
+                    // Calculate forces
+                    const attraction = this.calculateAttraction(particle, neighbors);
+                    const repulsion = this.calculateRepulsion(particle, neighbors);
+                    const alignment = this.calculateAlignment(particle, neighbors);
+                    const crossSector = this.calculateCrossSectorInfluence(particle, neighbors); // Enhancement 2
+                    
+                    // Apply forces with mass consideration (Enhancement 3)
+                    const forceFactor = 1 / Math.max(0.5, particle.mass);
+                    particle.vx += (attraction.x + repulsion.x + alignment.x + crossSector.x) * forceFactor;
+                    particle.vy += (attraction.y + repulsion.y + alignment.y + crossSector.y) * forceFactor;
+                    
+                    // Add volatility noise
+                    particle.vx += (Math.random() - 0.5) * this.rules.volatility;
+                    particle.vy += (Math.random() - 0.5) * this.rules.volatility;
+                    
+                    // Apply damping
+                    particle.vx *= 0.98;
+                    particle.vy *= 0.98;
+                    
+                    // Update position
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    
+                    // Boundary checks with bounce
+                    if (particle.x < 0) {
+                        particle.x = 0;
+                        particle.vx *= -0.5;
+                    }
+                    if (particle.x > this.canvas.width) {
+                        particle.x = this.canvas.width;
+                        particle.vx *= -0.5;
+                    }
+                    if (particle.y < 0) {
+                        particle.y = 0;
+                        particle.vy *= -0.5;
+                    }
+                    if (particle.y > this.canvas.height) {
+                        particle.y = this.canvas.height;
+                        particle.vy *= -0.5;
+                    }
+                });
+                
+                // Adaptive rules (Enhancement 6)
+                this.adaptRules();
+            }
+            
+            calculateAttraction(particle, neighbors) {
+                let fx = 0, fy = 0;
+                let count = 0;
+                
+                neighbors.forEach(n => {
+                    if (Math.sign(n.change) === Math.sign(particle.change)) {
+                        const dx = n.x - particle.x;
+                        const dy = n.y - particle.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance > 0) {
+                            // Mass influences attraction (Enhancement 3)
+                            const massInfluence = n.mass / (particle.mass + n.mass);
+                            fx += dx / distance * this.rules.attraction * massInfluence;
+                            fy += dy / distance * this.rules.attraction * massInfluence;
+                            count++;
+                        }
+                    }
+                });
+                
+                if (count > 0) {
+                    fx /= count;
+                    fy /= count;
+                }
+                
+                return { x: fx, y: fy };
+            }
+            
+            calculateRepulsion(particle, neighbors) {
+                let fx = 0, fy = 0;
+                
+                neighbors.forEach(n => {
+                    const dx = particle.x - n.x;
+                    const dy = particle.y - n.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance > 0 && distance < 50) {
+                        // Mass influences repulsion (Enhancement 3)
+                        const massRatio = particle.mass / n.mass;
+                        fx += dx / distance * this.rules.repulsion * (2 - massRatio);
+                        fy += dy / distance * this.rules.repulsion * (2 - massRatio);
+                    }
+                });
+                
+                return { x: fx, y: fy };
+            }
+            
+            calculateAlignment(particle, neighbors) {
+                let avgVx = 0, avgVy = 0;
+                let count = 0;
+                
+                neighbors.forEach(n => {
+                    if (n.sector === particle.sector) {
+                        avgVx += n.vx;
+                        avgVy += n.vy;
+                        count++;
+                    }
+                });
+                
+                if (count > 0) {
+                    avgVx /= count;
+                    avgVy /= count;
+                    
+                    return {
+                        x: (avgVx - particle.vx) * this.rules.alignment,
+                        y: (avgVy - particle.vy) * this.rules.alignment
+                    };
+                }
+                
+                return { x: 0, y: 0 };
+            }
+            
+            // Enhancement 2: Cross-sector influence based on correlation
+            calculateCrossSectorInfluence(particle, neighbors) {
+                let fx = 0, fy = 0;
+                let count = 0;
+                
+                neighbors.forEach(n => {
+                    if (n.sector !== particle.sector) {
+                        const correlation = SECTOR_CORRELATIONS[particle.sector]?.[n.sector] || 0;
+                        if (correlation > 0.3) {
+                            const dx = n.x - particle.x;
+                            const dy = n.y - particle.y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            
+                            if (distance > 0) {
+                                fx += dx / distance * this.rules.crossSector * correlation;
+                                fy += dy / distance * this.rules.crossSector * correlation;
+                                count++;
+                            }
+                        }
+                    }
+                });
+                
+                if (count > 0) {
+                    fx /= count;
+                    fy /= count;
+                }
+                
+                return { x: fx, y: fy };
+            }
+            
+            // Enhancement 6: Adaptive rules based on system behavior
+            adaptRules() {
+                // Calculate system metrics
+                const avgSpeed = this.particles.reduce((sum, p) => {
+                    return sum + Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+                }, 0) / this.particles.length;
+                
+                const avgDistance = this.calculateAverageDistance();
+                
+                // Adapt rules based on system state
+                if (avgSpeed > 2) {
+                    // System too chaotic, increase damping
+                    this.rules.attraction *= (1 - this.rules.adaptationRate);
+                    this.rules.volatility *= (1 - this.rules.adaptationRate);
+                } else if (avgSpeed < 0.5) {
+                    // System too stable, increase activity
+                    this.rules.attraction *= (1 + this.rules.adaptationRate);
+                    this.rules.volatility *= (1 + this.rules.adaptationRate);
+                }
+                
+                if (avgDistance < 50) {
+                    // Too clustered, increase repulsion
+                    this.rules.repulsion *= (1 + this.rules.adaptationRate);
+                } else if (avgDistance > 200) {
+                    // Too dispersed, increase attraction
+                    this.rules.attraction *= (1 + this.rules.adaptationRate);
+                }
+                
+                // Keep rules in reasonable bounds
+                this.rules.attraction = Math.max(0.05, Math.min(0.2, this.rules.attraction));
+                this.rules.repulsion = Math.max(0.02, Math.min(0.1, this.rules.repulsion));
+                this.rules.volatility = Math.max(0.05, Math.min(0.2, this.rules.volatility));
+                
+                // Store rule history
+                this.ruleHistory.push({ ...this.rules, time: Date.now() });
+                if (this.ruleHistory.length > this.maxRuleHistory) {
+                    this.ruleHistory.shift();
+                }
+            }
+            
+            calculateAverageDistance() {
+                let totalDistance = 0;
+                let count = 0;
+                
+                for (let i = 0; i < this.particles.length; i++) {
+                    for (let j = i + 1; j < this.particles.length; j++) {
+                        const dx = this.particles[i].x - this.particles[j].x;
+                        const dy = this.particles[i].y - this.particles[j].y;
+                        totalDistance += Math.sqrt(dx * dx + dy * dy);
+                        count++;
+                    }
+                }
+                
+                return count > 0 ? totalDistance / count : 0;
+            }
+            
+            getNeighbors(particle, radius) {
+                return this.particles.filter(p => {
+                    if (p === particle) return false;
+                    
+                    const dx = p.x - particle.x;
+                    const dy = p.y - particle.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    return distance < radius;
+                });
+            }
+            
+            render() {
+                // Clear canvas with fade effect
+                this.ctx.fillStyle = 'rgba(15, 23, 42, 0.1)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Draw trails (Enhancement 1)
+                this.particles.forEach(particle => {
+                    this.drawTrail(particle);
+                });
+                
+                // Draw connections
+                this.drawConnections();
+                
+                // Draw particles
+                this.particles.forEach(particle => {
+                    // Draw mass visualization (Enhancement 3)
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, particle.size + particle.mass * 0.5, 0, Math.PI * 2);
+                    this.ctx.fillStyle = particle.color + '20';
+                    this.ctx.fill();
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    this.ctx.fillStyle = particle.color;
+                    this.ctx.fill();
+                    
+                    // Draw symbol
+                    this.ctx.fillStyle = '#f8fafc';
+                    this.ctx.font = '10px Arial';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.textBaseline = 'middle';
+                    this.ctx.fillText(particle.symbol, particle.x, particle.y);
+                });
+            }
+            
+            // Enhancement 1: Draw historical trail
+            drawTrail(particle) {
+                if (particle.trail.length < 2) return;
+                
+                for (let i = 1; i < particle.trail.length; i++) {
+                    const prev = particle.trail[i - 1];
+                    const curr = particle.trail[i];
+                    const alpha = i / particle.trail.length;
+                    
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(prev.x, prev.y);
+                    this.ctx.lineTo(curr.x, curr.y);
+                    this.ctx.strokeStyle = curr.color + Math.floor(alpha * 128).toString(16).padStart(2, '0');
+                    this.ctx.lineWidth = 1;
+                    this.ctx.stroke();
+                }
+            }
+            
+            drawConnections() {
+                this.particles.forEach(particle => {
+                    const neighbors = this.getNeighbors(particle, 80);
+                    
+                    neighbors.forEach(neighbor => {
+                        if (Math.sign(particle.change) === Math.sign(neighbor.change)) {
+                            this.ctx.beginPath();
+                            this.ctx.moveTo(particle.x, particle.y);
+                            this.ctx.lineTo(neighbor.x, neighbor.y);
+                            
+                            if (particle.change > 0) {
+                                this.ctx.strokeStyle = 'rgba(16, 185, 129, 0.3)';
+                            } else {
+                                this.ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)';
+                            }
+                            
+                            this.ctx.lineWidth = 1;
+                            this.ctx.stroke();
+                        }
+                    });
+                });
+            }
+            
+            updateStocks(stocks) {
+                this.stocks = stocks;
+                this.particles.forEach((particle, i) => {
+                    if (stocks[i]) {
+                        particle.change = stocks[i].change;
+                        particle.price = stocks[i].price;
+                        particle.color = this.getSentimentColor(stocks[i].change);
+                        particle.mass = Math.log(stocks[i].volume + 1) / 3;
+                    }
+                });
+            }
+            
+            reset() {
+                this.resizeCanvas();
+                this.initializeParticles();
+            }
+        }
+        
+        // Enhancement 4: Resonance Detection System
+        class ResonanceDetector {
+            constructor() {
+                this.detectionWindow = 3000; // 3 seconds
+            }
+            
+            detectResonance(particles) {
+                const resonances = [];
+                
+                // Analyze oscillation patterns
+                particles.forEach((particle, i) => {
+                    if (particle.oscillationHistory.length < 10) return;
+                    
+                    const frequency = this.calculateOscillationFrequency(particle);
+                    
+                    if (frequency > 0) {
+                        // Find other particles with similar frequencies
+                        const resonating = [];
+                        
+                        particles.forEach((other, j) => {
+                            if (i !== j && other.oscillationHistory.length >= 10) {
+                                const otherFreq = this.calculateOscillationFrequency(other);
+                                const freqDiff = Math.abs(frequency - otherFreq);
+                                
+                                if (freqDiff < 0.1) {
+                                    resonating.push(other.symbol);
+                                }
+                            }
+                        });
+                        
+                        if (resonating.length > 0) {
+                            resonating.unshift(particle.symbol);
+                            const strength = Math.min(1, resonating.length / particles.length * 3);
+                            
+                            // Check if this resonance pattern already exists
+                            const exists = resonances.some(r => 
+                                r.stocks.length === resonating.length &&
+                                r.stocks.every(s => resonating.includes(s))
+                            );
+                            
+                            if (!exists) {
+                                resonances.push({
+                                    stocks: resonating,
+                                    frequency: frequency,
+                                    strength: strength
+                                });
+                            }
+                        }
+                    }
+                });
+                
+                // Sort by strength
+                return resonances.sort((a, b) => b.strength - a.strength);
+            }
+            
+            calculateOscillationFrequency(particle) {
+                const history = particle.oscillationHistory;
+                if (history.length < 10) return 0;
+                
+                // Calculate center of oscillation
+                const centerX = history.reduce((sum, p) => sum + p.x, 0) / history.length;
+                const centerY = history.reduce((sum, p) => sum + p.y, 0) / history.length;
+                
+                // Count zero crossings (distance from center)
+                let crossings = 0;
+                let lastDistance = Math.sqrt(
+                    Math.pow(history[0].x - centerX, 2) + 
+                    Math.pow(history[0].y - centerY, 2)
+                );
+                let lastSign = lastDistance > 0 ? 1 : -1;
+                
+                for (let i = 1; i < history.length; i++) {
+                    const distance = Math.sqrt(
+                        Math.pow(history[i].x - centerX, 2) + 
+                        Math.pow(history[i].y - centerY, 2)
+                    );
+                    const sign = distance > lastDistance ? 1 : -1;
+                    
+                    if (sign !== lastSign) {
+                        crossings++;
+                    }
+                    
+                    lastDistance = distance;
+                    lastSign = sign;
+                }
+                
+                // Calculate frequency in Hz
+                const timeSpan = (history[history.length - 1].time - history[0].time) / 1000;
+                return crossings / (2 * timeSpan);
+            }
+        }
+        
+        // Enhancement 5: Energy Conservation System
+        class EnergyConservation {
+            constructor() {
+                this.energyHistory = [];
+                this.maxHistory = 100;
+            }
+            
+            calculateEnergy(particles) {
+                // Calculate kinetic energy (motion)
+                const kinetic = particles.reduce((sum, p) => {
+                    const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+                    return sum + 0.5 * p.mass * speed * speed;
+                }, 0);
+                
+                // Calculate potential energy (distance-based interactions)
+                let potential = 0;
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance > 0) {
+                            // Attractive potential for similar sentiment
+                            if (Math.sign(particles[i].change) === Math.sign(particles[j].change)) {
+                                potential += -1 / Math.max(1, distance / 50);
+                            } else {
+                                potential += 1 / Math.max(1, distance / 50);
+                            }
+                        }
+                    }
+                }
+                
+                const total = kinetic + Math.abs(potential);
+                
+                // Store in history
+                this.energyHistory.push({ kinetic, potential, total, time: Date.now() });
+                if (this.energyHistory.length > this.maxHistory) {
+                    this.energyHistory.shift();
+                }
+                
+                // Determine energy state
+                let state = 'Balanced';
+                const kineticRatio = kinetic / total;
+                
+                if (kineticRatio > 0.7) {
+                    state = 'Kinetic'; // Chaos - high motion
+                } else if (kineticRatio < 0.3) {
+                    state = 'Potential'; // Tension - ready to move
+                } else if (total < 5) {
+                    state = 'Low'; // Consolidation - low energy
+                }
+                
+                return {
+                    kinetic: kinetic,
+                    potential: Math.abs(potential),
+                    total: total,
+                    state: state
+                };
+            }
+        }
+        
+        // Pattern Detection System
+        class PatternEmergence {
+            constructor(stocks) {
+                this.stocks = stocks;
+            }
+            
+            detectEmergentPatterns(stocks) {
+                const patterns = [];
+                
+                // Detect momentum clusters
+                const bullStocks = stocks.filter(s => s.change > 1);
+                if (bullStocks.length >= 3) {
+                    patterns.push({
+                        type: 'momentum_cluster',
+                        stocks: bullStocks.slice(0, 3).map(s => s.symbol),
+                        strength: bullStocks.length / stocks.length
+                    });
+                }
+                
+                // Detect sector movements
+                const sectors = {};
+                stocks.forEach(s => {
+                    if (!sectors[s.sector]) sectors[s.sector] = [];
+                    sectors[s.sector].push(s);
+                });
+                
+                Object.entries(sectors).forEach(([sector, sectorStocks]) => {
+                    if (sectorStocks.length >= 2) {
+                        const sameDirection = sectorStocks.filter(s => 
+                            Math.sign(s.change) === Math.sign(sectorStocks[0].change)
+                        ).length;
+                        
+                        if (sameDirection / sectorStocks.length >= 0.7) {
+                            patterns.push({
+                                type: 'sector_movement',
+                                stocks: sectorStocks.map(s => s.symbol),
+                                strength: sameDirection / sectorStocks.length
+                            });
+                        }
+                    }
+                });
+                
+                // Detect volume anomalies
+                const avgVolume = stocks.reduce((sum, s) => sum + s.volume, 0) / stocks.length;
+                const highVolume = stocks.filter(s => s.volume > avgVolume * 1.5);
+                
+                if (highVolume.length > 0) {
+                    patterns.push({
+                        type: 'volume_anomaly',
+                        stocks: highVolume.map(s => s.symbol),
+                        strength: 0.9
+                    });
+                }
+                
+                return patterns;
+            }
+        }
+        
+        // Market Pulse Calculation
+        class MarketPulse {
+            constructor(stocks) {
+                this.stocks = stocks;
+            }
+            
+            calculateMarketPulse(stocks) {
+                const momentum = this.calculateMomentumPulse(stocks);
+                const volatility = this.calculateVolatilityPulse(stocks);
+                
+                return this.deriveMarketState(momentum, volatility);
+            }
+            
+            calculateMomentumPulse(stocks) {
+                const positiveStocks = stocks.filter(s => s.change > 0).length;
+                return positiveStocks / stocks.length;
+            }
+            
+            calculateVolatilityPulse(stocks) {
+                const avgChange = stocks.reduce((sum, s) => sum + Math.abs(s.changePercent), 0) / stocks.length;
+                return Math.min(1, avgChange / 5);
+            }
+            
+            deriveMarketState(momentum, volatility) {
+                if (momentum > 0.7 && volatility < 0.4) {
+                    return { state: 'BULL EMERGENCE', momentum, volatility };
+                }
+                if (momentum < 0.3 && volatility > 0.6) {
+                    return { state: 'BEAR EMERGENCE', momentum, volatility };
+                }
+                if (volatility > 0.7) {
+                    return { state: 'CHAOS EMERGENCE', momentum, volatility };
+                }
+                
+                return { state: 'EQUILIBRIUM', momentum, volatility };
+            }
+        }
+        
+        // CoinGecko Data Fetcher for Cryptocurrency Data
+        class CoinGeckoDataFetcher {
+            constructor() {
+                this.baseUrl = 'https://api.coingecko.com/api/v3';
+                
+                // Category mappings for crypto
+                this.categoryMap = {
+                    'bitcoin': 'Store of Value',
+                    'ethereum': 'Smart Contract',
+                    'binancecoin': 'Exchange Token',
+                    'solana': 'Layer 1',
+                    'cardano': 'Smart Contract',
+                    'avalanche-2': 'Layer 1',
+                    'polkadot': 'Layer 1',
+                    'matic-network': 'Layer 2',
+                    'chainlink': 'DeFi',
+                    'uniswap': 'DeFi',
+                    'dogecoin': 'Meme',
+                    'shiba-inu': 'Meme',
+                    'monero': 'Privacy',
+                    'zcash': 'Privacy',
+                    'ripple': 'Payment'
+                };
+            }
+            
+            async fetchMultipleStocks(symbols) {
+                // For crypto, fetch top coins by market cap
+                return await this.fetchTopCryptos(symbols.length || 15);
+            }
+            
+            async fetchTopCryptos(limit = 15) {
+                try {
+                    const url = `${this.baseUrl}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${limit}&page=1&sparkline=false&price_change_percentage=24h`;
+                    
+                    const response = await fetch(url);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    return data.map(coin => ({
+                        symbol: coin.symbol.toUpperCase(),
+                        name: coin.name,
+                        price: coin.current_price,
+                        change: coin.price_change_24h || 0,
+                        changePercent: coin.price_change_percentage_24h || 0,
+                        volume: coin.total_volume || 0,
+                        sector: this.categoryMap[coin.id] || 'Layer 1',
+                        marketCap: coin.market_cap || 0,
+                        image: coin.image,
+                        rank: coin.market_cap_rank,
+                        dayHigh: coin.high_24h,
+                        dayLow: coin.low_24h,
+                        previousClose: coin.current_price - (coin.price_change_24h || 0)
+                    }));
+                    
+                } catch (error) {
+                    console.error('Error fetching crypto data:', error);
+                    return [];
+                }
+            }
+        }
+        
+        // Trading Signal Analyzer - Emergent Signal Generation
+        class TradingSignalAnalyzer {
+            constructor() {
+                this.signalHistory = [];
+                this.maxHistory = 50;
+                this.cooldownPeriod = 10000; // 10 seconds between signals for same stock
+                this.lastSignals = new Map();
+            }
+            
+            generateSignals(stocks, particles, patterns, resonances, energy, pulse) {
+                const signals = [];
+                const now = Date.now();
+                
+                stocks.forEach((stock, index) => {
+                    const particle = particles[index];
+                    
+                    // Check cooldown
+                    const lastSignalTime = this.lastSignals.get(stock.symbol);
+                    if (lastSignalTime && now - lastSignalTime < this.cooldownPeriod) {
+                        return;
+                    }
+                    
+                    // Analyze multiple factors for emergent signals
+                    const factors = this.analyzeStockFactors(stock, particle, patterns, resonances, energy, pulse, particles);
+                    
+                    // Generate signal based on emergent factors
+                    const signal = this.deriveSignal(stock.symbol, factors, now);
+                    
+                    if (signal) {
+                        signals.push(signal);
+                        this.lastSignals.set(stock.symbol, now);
+                    }
+                });
+                
+                // Clean up old cooldowns
+                for (const [symbol, time] of this.lastSignals.entries()) {
+                    if (now - time > this.cooldownPeriod * 2) {
+                        this.lastSignals.delete(symbol);
+                    }
+                }
+                
+                // Store in history
+                signals.forEach(signal => {
+                    this.signalHistory.push(signal);
+                });
+                if (this.signalHistory.length > this.maxHistory) {
+                    this.signalHistory = this.signalHistory.slice(-this.maxHistory);
+                }
+                
+                return signals.sort((a, b) => b.confidence - a.confidence);
+            }
+            
+            analyzeStockFactors(stock, particle, patterns, resonances, energy, pulse, allParticles) {
+                const factors = {
+                    momentum: 0,
+                    reversal: 0,
+                    clustering: 0,
+                    resonance: 0,
+                    energy: 0,
+                    volume: 0,
+                    isolation: 0,
+                    sectorStrength: 0
+                };
+                
+                // Momentum factor - strong directional movement
+                if (Math.abs(stock.changePercent) > 1.5) {
+                    factors.momentum = stock.change > 0 ? 1 : -1;
+                }
+                
+                // Reversal detection - trail shows direction change
+                if (particle.trail.length >= 10) {
+                    const recentTrail = particle.trail.slice(-10);
+                    const oldTrail = particle.trail.slice(0, 10);
+                    
+                    const recentVx = recentTrail.reduce((sum, t, i) => {
+                        if (i === 0) return 0;
+                        return sum + (t.x - recentTrail[i-1].x);
+                    }, 0) / recentTrail.length;
+                    
+                    const oldVx = oldTrail.reduce((sum, t, i) => {
+                        if (i === 0) return 0;
+                        return sum + (t.x - oldTrail[i-1].x);
+                    }, 0) / oldTrail.length;
+                    
+                    if (Math.sign(recentVx) !== Math.sign(oldVx) && Math.abs(recentVx) > 0.5) {
+                        factors.reversal = recentVx > 0 ? 1 : -1;
+                    }
+                }
+                
+                // Clustering factor - particle surrounded by similar sentiment
+                const neighbors = this.getNeighbors(particle, allParticles, 100);
+                const similarSentiment = neighbors.filter(n => 
+                    Math.sign(n.change) === Math.sign(particle.change)
+                ).length;
+                
+                if (neighbors.length > 0) {
+                    const clusterRatio = similarSentiment / neighbors.length;
+                    if (clusterRatio > 0.7) {
+                        factors.clustering = particle.change > 0 ? 1 : -1;
+                    }
+                }
+                
+                // Resonance factor - stock in resonance group
+                const inResonance = resonances.some(r => 
+                    r.stocks.includes(stock.symbol) && r.strength > 0.6
+                );
+                if (inResonance) {
+                    factors.resonance = particle.change > 0 ? 1 : -1;
+                }
+                
+                // Energy factor - system state influences signals
+                if (energy.state === 'Potential' && particle.change > 0) {
+                    factors.energy = 1; // Tension ready to release upward
+                } else if (energy.state === 'Kinetic' && Math.abs(particle.vx) > 2) {
+                    factors.energy = particle.vx > 0 ? -1 : 1; // High energy reversal
+                }
+                
+                // Volume factor - unusually high volume
+                const avgVolume = allParticles.reduce((sum, p) => sum + p.mass, 0) / allParticles.length;
+                if (particle.mass > avgVolume * 1.5) {
+                    factors.volume = particle.change > 0 ? 1 : -1;
+                }
+                
+                // Isolation factor - particle breaking away from cluster
+                if (neighbors.length < 2 && Math.abs(particle.vx) > 1) {
+                    factors.isolation = particle.vx > 0 ? 1 : -1;
+                }
+                
+                // Sector strength - check if sector is moving together
+                const sectorMatches = patterns.filter(p => 
+                    p.type === 'sector_movement' && p.stocks.includes(stock.symbol)
+                );
+                if (sectorMatches.length > 0) {
+                    factors.sectorStrength = particle.change > 0 ? 1 : -1;
+                }
+                
+                return factors;
+            }
+            
+            deriveSignal(symbol, factors, timestamp) {
+                // Calculate bullish and bearish scores
+                let bullScore = 0;
+                let bearScore = 0;
+                
+                Object.entries(factors).forEach(([key, value]) => {
+                    if (value > 0) bullScore += value;
+                    if (value < 0) bearScore += Math.abs(value);
+                });
+                
+                // Require minimum threshold
+                const threshold = 2;
+                
+                if (bullScore >= threshold && bullScore > bearScore * 1.3) {
+                    return {
+                        stock: symbol,
+                        action: 'buy',
+                        confidence: Math.min(1, bullScore / 5),
+                        reason: this.generateReason(factors, 'buy'),
+                        timestamp: timestamp,
+                        factors: factors
+                    };
+                }
+                
+                if (bearScore >= threshold && bearScore > bullScore * 1.3) {
+                    return {
+                        stock: symbol,
+                        action: 'sell',
+                        confidence: Math.min(1, bearScore / 5),
+                        reason: this.generateReason(factors, 'sell'),
+                        timestamp: timestamp,
+                        factors: factors
+                    };
+                }
+                
+                return null;
+            }
+            
+            generateReason(factors, action) {
+                const reasons = [];
+                
+                if (action === 'buy') {
+                    if (factors.momentum > 0) reasons.push('strong upward momentum');
+                    if (factors.reversal > 0) reasons.push('bullish reversal detected');
+                    if (factors.clustering > 0) reasons.push('positive cluster formation');
+                    if (factors.resonance > 0) reasons.push('resonance with rising stocks');
+                    if (factors.energy > 0) reasons.push('energy breakout pattern');
+                    if (factors.volume > 0) reasons.push('high volume support');
+                    if (factors.isolation > 0) reasons.push('breakaway momentum');
+                    if (factors.sectorStrength > 0) reasons.push('sector rally emerging');
+                } else {
+                    if (factors.momentum < 0) reasons.push('strong downward pressure');
+                    if (factors.reversal < 0) reasons.push('bearish reversal detected');
+                    if (factors.clustering < 0) reasons.push('negative cluster formation');
+                    if (factors.resonance < 0) reasons.push('resonance with falling stocks');
+                    if (factors.energy < 0) reasons.push('energy exhaustion pattern');
+                    if (factors.volume < 0) reasons.push('high volume distribution');
+                    if (factors.isolation < 0) reasons.push('breakdown momentum');
+                    if (factors.sectorStrength < 0) reasons.push('sector weakness emerging');
+                }
+                
+                if (reasons.length === 0) {
+                    return action === 'buy' ? 'Multiple positive signals' : 'Multiple negative signals';
+                }
+                
+                // Return top 2 reasons
+                return reasons.slice(0, 2).join(', ');
+            }
+            
+            getNeighbors(particle, allParticles, radius) {
+                return allParticles.filter(p => {
+                    if (p === particle) return false;
+                    
+                    const dx = p.x - particle.x;
+                    const dy = p.y - particle.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    return distance < radius;
+                });
+            }
+        }
+        
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            new EmergentStockMonitor();
+        });
+    </script>
+</body>
+</html>

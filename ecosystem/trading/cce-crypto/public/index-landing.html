@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCE — Cascade Compounding Engine | cce-trading.co.uk</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#050c1a;--dark:#080f20;--card:#0c1628;--blue:#0066FF;--cyan:#00d4ff;--gold:#D4AF37;--gold2:#f0c842;--green:#00e676;--red:#ff3d5a;--muted:#4a6080;--text:#c8d8f0;--white:#ffffff;--border:rgba(0,102,255,0.15);--glow:0 0 40px rgba(0,102,255,0.12)}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--navy);color:var(--text);font-family:'Outfit',sans-serif;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.6}
+
+/* TICKER */
+.ticker{background:var(--dark);border-bottom:1px solid var(--border);padding:8px 0;overflow:hidden;position:relative;z-index:100}
+.ticker-inner{display:flex;gap:48px;padding:0 24px;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.5px;white-space:nowrap;animation:ticker-scroll 40s linear infinite;width:max-content}
+@keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ti{display:flex;align-items:center;gap:8px}
+.tl{color:var(--muted);text-transform:uppercase}
+.tv{color:var(--white)}
+.tc-up{color:var(--green)}
+.tc-down{color:var(--red)}
+.tdot{width:5px;height:5px;border-radius:50%;background:var(--blue);animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:99;background:rgba(5,12,26,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px}
+.nl{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nlm{width:32px;height:32px;background:linear-gradient(135deg,var(--blue),#0044bb);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 20px rgba(0,102,255,.3)}
+.nlt{font-family:'DM Serif Display',serif;font-size:20px;color:var(--white);letter-spacing:-.5px}
+.nls{font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-top:-2px}
+.nav-links{display:flex;align-items:center;gap:20px;list-style:none}
+@media(max-width:768px){.nav-links li:not(:last-child){display:none}}
+.nav-links a{font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--white)}
+.ncta{background:var(--blue)!important;color:var(--white)!important;padding:8px 18px;border-radius:8px;font-weight:600!important;transition:all .2s!important}
+.ncta:hover{background:#0052cc!important;box-shadow:0 0 20px rgba(0,102,255,.4)!important}
+
+/* HERO */
+.hero{position:relative;min-height:auto;display:flex;align-items:flex-start;padding:40px 24px 60px;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,102,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,102,255,.04) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 80% at 50% 0%,black 30%,transparent 100%)}
+.hg1{position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(0,102,255,.08) 0%,transparent 70%);top:-200px;right:-100px;pointer-events:none}
+.hg2{position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(212,175,55,.05) 0%,transparent 70%);bottom:0;left:-100px;pointer-events:none}
+/* Hero inner — centred on mobile when terminal is hidden */
+.hi{position:relative;z-index:1;max-width:600px;width:100%}
+@media(max-width:1100px){.hi{margin:0 auto}}
+.hey{display:inline-flex;align-items:center;gap:8px;background:rgba(0,102,255,.1);border:1px solid rgba(0,102,255,.2);border-radius:100px;padding:6px 14px;margin-bottom:32px;animation:fade-up-anim .6s ease both}
+.hey-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse-dot 2s infinite}
+.hey span{font-family:'DM Mono',monospace;font-size:11px;color:var(--cyan);letter-spacing:1px;text-transform:uppercase}
+.ht{font-family:'DM Serif Display',serif;font-size:clamp(42px,7vw,88px);line-height:1.0;color:var(--white);letter-spacing:-2px;margin-bottom:24px;animation:fade-up-anim .6s .1s ease both}
+.ht em{font-style:italic;background:linear-gradient(135deg,var(--blue) 0%,var(--cyan) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hs{font-size:18px;font-weight:300;color:var(--muted);max-width:560px;line-height:1.7;margin-bottom:48px;animation:fade-up-anim .6s .2s ease both}
+.hs strong{color:var(--text);font-weight:500}
+.ha{display:flex;gap:12px;flex-wrap:wrap;animation:fade-up-anim .6s .3s ease both}
+@media(max-width:600px){.ha{flex-direction:column}.bp,.bs{width:100%;justify-content:center}}
+.bp{background:var(--blue);color:white;padding:14px 28px;border-radius:10px;font-size:15px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s;box-shadow:0 0 30px rgba(0,102,255,.3)}
+.bp:hover{background:#0052cc;box-shadow:0 0 50px rgba(0,102,255,.5);transform:translateY(-1px)}
+.bs{background:transparent;color:var(--text);padding:14px 28px;border-radius:10px;font-size:15px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);transition:all .2s}
+.bs:hover{border-color:rgba(0,102,255,.4);color:var(--white);background:rgba(0,102,255,.05)}
+/* Hero stats — dedicated class, not .sl which belongs to ticker */
+.hstats{display:flex;gap:24px;margin-top:24px;padding-top:24px;border-top:1px solid var(--border);animation:fade-up-anim .6s .4s ease both;flex-wrap:wrap}
+.sv{font-family:'DM Serif Display',serif;font-size:28px;color:var(--white);letter-spacing:-1px}
+.sv span{color:var(--gold)}
+.stat-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-top:4px}
+/* Terminal */
+.hterminal{position:absolute;right:24px;top:50%;transform:translateY(-50%);width:380px;animation:fade-up-anim .6s .3s ease both}
+@media(max-width:1100px){.hterminal{display:none}}
+.tw{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.03)}
+.tb{background:rgba(0,0,0,.3);padding:12px 16px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)}
+.td{width:10px;height:10px;border-radius:50%}
+.td.r{background:#ff5f57}.td.y{background:#febc2e}.td.g{background:#28c840}
+.tt{margin-left:auto;margin-right:auto;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+.tbody{padding:20px;font-family:'DM Mono',monospace;font-size:12px;line-height:1.8}
+.tline{display:flex;gap:10px}
+.tp{color:var(--blue)}.tc{color:var(--text)}
+.to{color:var(--muted);padding-left:20px}
+.to.g{color:var(--green)}.to.gold{color:var(--gold)}.to.c{color:var(--cyan)}.to.r{color:var(--red)}
+.tcur{display:inline-block;width:8px;height:14px;background:var(--blue);vertical-align:middle;animation:blink 1s infinite;border-radius:1px}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* SECTIONS */
+section{position:relative;z-index:1;padding:60px 24px}
+.si{max-width:1100px;margin:0 auto}
+.stag{font-family:'DM Mono',monospace;font-size:10px;color:var(--blue);text-transform:uppercase;letter-spacing:3px;margin-bottom:16px}
+.stitle{font-family:'DM Serif Display',serif;font-size:clamp(32px,4vw,52px);color:var(--white);letter-spacing:-1px;line-height:1.1;margin-bottom:20px}
+.ssub{font-size:16px;color:var(--muted);line-height:1.7;max-width:560px;margin-bottom:60px}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:0 24px}
+
+/* PILLARS */
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media(max-width:900px){.pillars{grid-template-columns:1fr}}
+.pillar{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 28px;position:relative;overflow:hidden;transition:border-color .3s,transform .3s}
+.pillar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--cyan));opacity:0;transition:opacity .3s}
+.pillar:hover{border-color:rgba(0,102,255,.3);transform:translateY(-4px)}
+.pillar:hover::before{opacity:1}
+.pn{font-family:'DM Serif Display',serif;font-size:64px;color:rgba(0,102,255,.08);line-height:1;margin-bottom:16px;letter-spacing:-3px}
+.pt{font-size:15px;font-weight:700;color:var(--white);margin-bottom:12px;letter-spacing:.3px}
+.px{font-size:14px;color:var(--muted);line-height:1.7}
+
+/* ENGINES */
+.eg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.ec{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px 20px;display:flex;gap:16px;align-items:flex-start;transition:border-color .2s,box-shadow .2s}
+.ec:hover{border-color:rgba(0,102,255,.25);box-shadow:var(--glow)}
+.ei{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ei.se{background:rgba(0,102,255,.15)}.ei.te{background:rgba(0,212,255,.1)}.ei.oe{background:rgba(212,175,55,.1)}.ei.go{background:rgba(0,230,118,.1)}
+.eb{font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px}
+.eb.se{color:var(--blue)}.eb.te{color:var(--cyan)}.eb.oe{color:var(--gold)}.eb.go{color:var(--green)}
+.en{font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px}
+.ex{font-size:12px;color:var(--muted);line-height:1.5}
+.es{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.sd{width:7px;height:7px;border-radius:50%}
+.sd.live{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse-dot 2s infinite}.sd.dry{background:var(--blue)}
+.sl2{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+
+/* HOW IT WORKS */
+.hg{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+@media(max-width:900px){.hg{grid-template-columns:1fr}}
+.hstep{display:flex;flex-direction:column;gap:24px}
+.hsi{display:flex;gap:20px}
+.hsn{width:36px;height:36px;border-radius:50%;background:rgba(0,102,255,.1);border:1px solid rgba(0,102,255,.2);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:13px;color:var(--blue);flex-shrink:0}
+.hst{font-size:15px;font-weight:600;color:var(--white);margin-bottom:6px}
+.hsx{font-size:13px;color:var(--muted);line-height:1.6}
+.hv{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px}
+.cf{display:flex;flex-direction:column;gap:4px}
+.ci{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;background:rgba(0,0,0,.2);font-size:13px}
+.ci.a{background:rgba(0,102,255,.08);border:1px solid rgba(0,102,255,.15)}
+.ca{color:var(--muted);font-size:10px;padding-left:26px}
+.cin{color:var(--white);font-weight:500;flex:1}
+.cis{font-family:'DM Mono',monospace;font-size:10px;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px}
+.cis.d{background:rgba(74,96,128,.3);color:var(--muted)}.cis.l{background:rgba(0,230,118,.15);color:var(--green)}.cis.ac{background:rgba(0,102,255,.15);color:var(--cyan)}.cis.w{background:rgba(212,175,55,.15);color:var(--gold)}
+
+/* BY THE NUMBERS */
+.pg{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px}
+@media(max-width:900px){.pg{grid-template-columns:repeat(2,1fr)}}
+.pc{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 20px;text-align:center;position:relative;overflow:hidden}
+.pc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--cyan))}
+.pv{font-family:'DM Serif Display',serif;font-size:36px;color:var(--white);letter-spacing:-1px;margin-bottom:6px}
+.pv .u{font-size:22px;color:var(--gold)}
+.pl{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:2px}
+.disc{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-align:center;padding:16px;border:1px solid var(--border);border-radius:10px;line-height:1.6}
+
+/* PRICING */
+.priceg{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media(max-width:900px){.priceg{grid-template-columns:1fr}}
+.pricard{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 28px;position:relative;transition:transform .3s}
+.pricard:hover:not(.locked){transform:translateY(-4px)}
+.pricard.feat{border-color:rgba(0,102,255,.4);box-shadow:0 0 60px rgba(0,102,255,.1)}
+/* Locked state — unified, no duplication */
+.pricard.locked{opacity:0.5;pointer-events:none}
+.pribadge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:10px;font-weight:700;padding:4px 14px;border-radius:0 0 8px 8px;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.pribadge.soon{background:#1e2d40;color:var(--muted)}
+.pritier{font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--blue);margin-bottom:12px}
+.pritier.offset{margin-top:20px}/* push down when badge present */
+.priprice{font-family:'DM Serif Display',serif;font-size:48px;color:var(--white);letter-spacing:-2px;margin-bottom:4px}
+.priprice sup{font-size:24px;color:var(--gold)}
+.pricycle{font-size:13px;color:var(--muted);margin-bottom:28px}
+.prifeats{list-style:none;margin-bottom:32px}
+.prifeats li{display:flex;gap:10px;font-size:13px;color:var(--text);padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.prifeats li::before{content:'→';color:var(--blue);flex-shrink:0}
+.pribtn{display:block;text-align:center;padding:12px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;transition:all .2s}
+.pribtn.p{background:var(--blue);color:white}.pribtn.p:hover{background:#0052cc}
+.pribtn.g{border:1px solid var(--border);color:var(--text)}.pribtn.g:hover{border-color:rgba(0,102,255,.3);color:var(--white)}
+
+/* CTA BAND */
+.ctas{background:linear-gradient(135deg,rgba(0,102,255,.08) 0%,rgba(0,212,255,.04) 100%);border-top:1px solid var(--border);border-bottom:1px solid var(--border);text-align:center}
+
+/* FOOTER */
+footer{padding:60px 24px 40px;border-top:1px solid var(--border);position:relative;z-index:1}
+.fi{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:60px;margin-bottom:48px}
+@media(max-width:900px){.fi{grid-template-columns:1fr;gap:32px}}
+.fbn{font-family:'DM Serif Display',serif;font-size:22px;color:var(--white);margin-bottom:12px}
+.fbt{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:20px;max-width:300px}
+.ftag{font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);letter-spacing:.5px;font-style:italic}
+.fct{font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:16px}
+.fl{list-style:none}
+.fl li{margin-bottom:10px}
+.fl a{font-size:13px;color:var(--muted);text-decoration:none;transition:color .2s}
+.fl a:hover{color:var(--white)}
+.fb{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;padding-top:24px;border-top:1px solid var(--border);flex-wrap:wrap;gap:12px}
+.fcopy{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.5px}
+.frisk{font-family:'DM Mono',monospace;font-size:9px;color:rgba(74,96,128,.6);max-width:500px;text-align:right;line-height:1.5}
+
+/* ANIMATIONS */
+@keyframes fade-up-anim{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+
+/* BACK TO TOP — class-driven, no inline style conflict */
+#btt{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--blue);border:none;color:white;font-size:18px;cursor:pointer;z-index:999;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,102,255,0.4);opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .2s,transform .2s}
+#btt.visible{opacity:1;pointer-events:auto;transform:translateY(0)}
+#btt:hover{background:#0052cc}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--navy)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="ticker">
+  <div class="ticker-inner">
+    <div class="ti"><div class="tdot"></div><span class="tl">BTC/USDC</span><span class="tv" id="bp">Loading…</span><span class="tc-up">▲ LIVE</span></div>
+    <div class="ti"><span class="tl">Fear &amp; Greed</span><span class="tv" id="fg">—</span><span id="fg-label" class="tc-down">Loading</span></div>
+    <div class="ti"><span class="tl">CCE Status</span><span class="tv">DORMANT</span><span style="color:var(--gold)">Waiting</span></div>
+    <div class="ti"><span class="tl">Engines</span><span class="tv">21 Active</span></div>
+    <div class="ti"><span class="tl">Exchange</span><span class="tv">Kraken</span></div>
+    <div class="ti"><span class="tl">Runtime</span><span class="tv">S24 Ultra · VPS</span></div>
+    <!-- duplicate for seamless loop -->
+    <div class="ti"><div class="tdot"></div><span class="tl">BTC/USDC</span><span class="tv" id="bp2">Loading…</span><span class="tc-up">▲ LIVE</span></div>
+    <div class="ti"><span class="tl">Fear &amp; Greed</span><span class="tv" id="fg2">—</span><span id="fg-label2" class="tc-down">Loading</span></div>
+    <div class="ti"><span class="tl">CCE Status</span><span class="tv">DORMANT</span><span style="color:var(--gold)">Waiting</span></div>
+    <div class="ti"><span class="tl">Engines</span><span class="tv">21 Active</span></div>
+    <div class="ti"><span class="tl">Exchange</span><span class="tv">Kraken</span></div>
+    <div class="ti"><span class="tl">Runtime</span><span class="tv">S24 Ultra · VPS</span></div>
+  </div>
+</div>
+
+<nav>
+  <a href="/" class="nl">
+    <div class="nlm">⚡</div>
+    <div><div class="nlt">CCE</div><div class="nls">cce-trading.co.uk</div></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how-it-works">How It Works</a></li>
+    <li><a href="#engines">Engines</a></li>
+    <li><a href="#handbook">Handbook</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="/onboarding" class="ncta">Get Started →</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hg1"></div>
+  <div class="hg2"></div>
+  <div class="hi">
+    <div class="hey"><div class="hey-dot"></div><span>Live · 2026 · Kraken</span></div>
+    <h1 class="ht">The market never<br>sleeps.<br><em>Neither does CCE.</em></h1>
+    <p class="hs">A fully autonomous algorithmic trading OS running <strong>24 hours a day</strong> on your own hardware. 21 engines. One phone. <strong>Your money stays in your account.</strong></p>
+    <div class="ha">
+      <a href="/onboarding" class="bp">Start Onboarding ⚡</a>
+      <a href="#how-it-works" class="bs">See How It Works</a>
+    </div>
+    <div class="hstats">
+      <div><div class="sv">21<span>+</span></div><div class="stat-label">Trading Engines</div></div>
+      <div><div class="sv">24<span>/7</span></div><div class="stat-label">Autonomous Operation</div></div>
+      <div><div class="sv">£200</div><div class="stat-label">Setup Fee (Starter)</div></div>
+      <div><div class="sv">10<span>%</span></div><div class="stat-label">Siphon on Profits Only</div></div>
+    </div>
+  </div>
+  <div class="hterminal">
+    <div class="tw">
+      <div class="tb"><div class="td r"></div><div class="td y"></div><div class="td g"></div><div class="tt">cce-bot — live</div></div>
+      <div class="tbody">
+        <div class="tline"><span class="tp">$</span><span class="tc">pm2 ls cce-bot</span></div>
+        <div class="to g">✓ online · 21 engines · 147mb</div><br>
+        <div class="tline"><span class="tp">$</span><span class="tc">status</span></div>
+        <div class="to c">[S.E] Crypto    → DORMANT</div>
+        <div class="to gold">[S.E] Fear Fade → WATCHING</div>
+        <div class="to gold">[S.E] GoldForge → WATCHING</div>
+        <div class="to c">[T.E] Grid      → ACTIVE</div>
+        <div class="to c">[T.E] Scalp     → IDLE</div>
+        <div class="to g">[G.O] Score     → 0.80 ↑</div><br>
+        <div class="tline"><span class="tp">$</span><span class="tc">observer</span></div>
+        <div class="to g">✓ 409 obs · 12 patterns detected</div><br>
+        <div class="tline"><span class="tp">$</span><span class="tc">_<span class="tcur"></span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="how-it-works">
+  <div class="si">
+    <div class="stag fade-up">How It Works</div>
+    <h2 class="stitle fade-up">Three pillars.<br>One system.</h2>
+    <p class="ssub fade-up">CCE is built on principles that govern every line of code, every state transition, every decision.</p>
+    <div class="pillars">
+      <div class="pillar fade-up"><div class="pn">01</div><div class="pt">Environment First. Action Second.</div><div class="px">CCE doesn't ask where price is going. It asks what the environment is. In a hostile environment, the correct action is inaction. In a favourable environment, the correct action is deployment.</div></div>
+      <div class="pillar fade-up"><div class="pn">02</div><div class="pt">No Prediction. No Emotion. No Exceptions.</div><div class="px">CCE does not predict. It observes, filters, and responds. The system has conditions. When met, it acts. When not, it waits. No override. No discretionary exceptions.</div></div>
+      <div class="pillar fade-up"><div class="pn">03</div><div class="pt">Transparency by Default.</div><div class="px">Every state transition is logged. Every condition that influenced a decision is recorded. Every trade notified. You always know exactly what CCE is doing and why.</div></div>
+    </div>
+    <div style="height:80px"></div>
+    <div class="hg fade-up">
+      <div class="hstep">
+        <div class="stag">The Cascade</div>
+        <h3 class="stitle" style="font-size:32px;margin-bottom:36px">Intelligence that<br>compounds over time</h3>
+        <div class="hsi"><div class="hsn">1</div><div><div class="hst">Engines generate signals</div><div class="hsx">21 engines across S.E, T.E, and O.E ecosystems run continuously, each analysing their specific market domain.</div></div></div>
+        <div class="hsi"><div class="hsn">2</div><div><div class="hst">Observer records everything</div><div class="hsx">Every 15 minutes a complete snapshot of all engine states and market conditions is written to the intelligence database.</div></div></div>
+        <div class="hsi"><div class="hsn">3</div><div><div class="hst">Sentinel detects anomalies</div><div class="hsx">17 detection rules run continuously. Regime divergences, correlation breakdowns, unusual engine behaviour — all flagged instantly via Telegram.</div></div></div>
+        <div class="hsi"><div class="hsn">4</div><div><div class="hst">G.O adjusts capital ceilings</div><div class="hsx">The Grand Orchestrator scores every engine hourly and adjusts capital allocation. The platform gets smarter with every cycle.</div></div></div>
+      </div>
+      <div class="hv fade-up">
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:16px">Live engine states</div>
+        <div class="cf">
+          <div class="ci a"><span>🟠</span><span class="cin">S.E Crypto</span><span class="cis d">Dormant</span></div>
+          <div class="ca">↓</div>
+          <div class="ci a"><span>😱</span><span class="cin">S.E Fear Fade</span><span class="cis w">Watching</span></div>
+          <div class="ca">↓</div>
+          <div class="ci a"><span>🥇</span><span class="cin">S.E GoldForge</span><span class="cis w">Watching</span></div>
+          <div class="ca">↓</div>
+          <div class="ci a"><span>📉</span><span class="cin">S.E Pulse</span><span class="cis ac">Scanning</span></div>
+          <div class="ca">↓</div>
+          <div class="ci a"><span>🔁</span><span class="cin">T.E Grid</span><span class="cis ac">Active</span></div>
+          <div class="ca">↓</div>
+          <div class="ci a"><span>⚡</span><span class="cin">T.E Scalp</span><span class="cis ac">Idle</span></div>
+          <div class="ca">↓</div>
+          <div class="ci" style="background:rgba(0,230,118,.05);border:1px solid rgba(0,230,118,.1)"><span>🧠</span><span class="cin">G.O Orchestrator</span><span class="cis l">Advisory</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="engines">
+  <div class="si">
+    <div class="stag fade-up">The Engines</div>
+    <h2 class="stitle fade-up">21 engines.<br>One mission.</h2>
+    <p class="ssub fade-up">Three ecosystems working in parallel. Strategic engines wait for conditions. Tactical engines harvest movement. Observer engines build intelligence.</p>
+    <div class="eg">
+      <div class="ec fade-up"><div class="ei se">🟠</div><div><div class="eb se">S.E Strategic</div><div class="en">S.E Crypto</div><div class="ex">BTC/USDC full market cycle. Deploys capital incrementally as conditions align.</div></div><div class="es"><div class="sd live"></div><div class="sl2">Live</div></div></div>
+      <div class="ec fade-up"><div class="ei se">😱</div><div><div class="eb se">S.E Strategic</div><div class="en">S.E Fear Fade</div><div class="ex">Buys BTC at Extreme Fear (F&amp;G ≤ 20). Exits when Greed returns (≥ 60).</div></div><div class="es"><div class="sd dry"></div><div class="sl2">Dry Run</div></div></div>
+      <div class="ec fade-up"><div class="ei se">🥇</div><div><div class="eb se">S.E Strategic</div><div class="en">S.E GoldForge</div><div class="ex">Trades Tether Gold (XAUT) when crypto fear spikes. Counter-cycle to BTC.</div></div><div class="es"><div class="sd dry"></div><div class="sl2">Dry Run</div></div></div>
+      <div class="ec fade-up"><div class="ei se">🔄</div><div><div class="eb se">S.E Strategic</div><div class="en">S.E Alt Season</div><div class="ex">Rotates into ETH/SOL when BTC dominance falls below 50%.</div></div><div class="es"><div class="sd dry"></div><div class="sl2">Dry Run</div></div></div>
+      <div class="ec fade-up"><div class="ei se">🐕</div><div><div class="eb se">S.E Strategic</div><div class="en">S.E Underdog</div><div class="ex">ALGO/DOT/ATOM/VET basket at historic lows. Equal weight, Extreme Fear entry.</div></div><div class="es"><div class="sd dry"></div><div class="sl2">Dry Run</div></div></div>
+      <div class="ec fade-up"><div class="ei se">📉</div><div><div class="eb se">S.E Strategic</div><div class="en">S.E Pulse</div><div class="ex">Mean reversion. Buys BTC dips of 2.5%+, exits on recovery. Any market.</div></div><div class="es"><div class="sd dry"></div><div class="sl2">Dry Run</div></div></div>
+      <div class="ec fade-up"><div class="ei te">🔁</div><div><div class="eb te">T.E Tactical</div><div class="en">T.E Grid</div><div class="ex">BTC/USDC grid bot. Orders at fixed intervals. Profits from volatility.</div></div><div class="es"><div class="sd dry"></div><div class="sl2">Dry Run</div></div></div>
+      <div class="ec fade-up"><div class="ei te">📈</div><div><div class="eb te">T.E Tactical</div><div class="en">T.E Momentum</div><div class="ex">EMA crossover momentum. Trades BTC/ETH/SOL on trend confirmation.</div></div><div class="es"><div class="sd dry"></div><div class="sl2">Dry Run</div></div></div>
+      <div class="ec fade-up"><div class="ei te">💥</div><div><div class="eb te">T.E Tactical</div><div class="en">T.E Breakout</div><div class="ex">Bollinger Band squeeze breakout. Catches explosive moves after low volatility.</div></div><div class="es"><div class="sd dry"></div><div class="sl2">Dry Run</div></div></div>
+      <div class="ec fade-up"><div class="ei te">⚡</div><div><div class="eb te">T.E Tactical</div><div class="en">T.E Scalp</div><div class="ex">RSI + volume scalper. 5-minute cycles. 10-20 trades per week.</div></div><div class="es"><div class="sd dry"></div><div class="sl2">Dry Run</div></div></div>
+      <div class="ec fade-up"><div class="ei oe">👁️</div><div><div class="eb oe">O.E Observer</div><div class="en">Observer · Sentinel · Strategist</div><div class="ex">Passive intelligence. 409+ observations. Anomaly detection. Pattern analysis.</div></div><div class="es"><div class="sd live"></div><div class="sl2">Active</div></div></div>
+      <div class="ec fade-up"><div class="ei go">🧠</div><div><div class="eb go">Intelligence</div><div class="en">G.O Grand Orchestrator</div><div class="ex">Scores all engines hourly. Adjusts capital ceilings. Gets smarter every cycle.</div></div><div class="es"><div class="sd live"></div><div class="sl2">Advisory</div></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <div class="si">
+    <div class="stag fade-up">By The Numbers</div>
+    <h2 class="stitle fade-up">Built in the open.<br>Running live.</h2>
+    <p class="ssub fade-up">Running since March 2026 with real capital on Kraken. Every state, every observation, every decision logged.</p>
+    <div class="pg">
+      <div class="pc fade-up"><div class="pv">21<span class="u">+</span></div><div class="pl">Active Engines</div></div>
+      <div class="pc fade-up"><div class="pv">409<span class="u">+</span></div><div class="pl">Observations Logged</div></div>
+      <div class="pc fade-up"><div class="pv">36</div><div class="pl">Documentation Pages</div></div>
+      <div class="pc fade-up"><div class="pv">0<span class="u">%</span></div><div class="pl">Siphon on Losses</div></div>
+    </div>
+    <div class="disc fade-up">⚠️ Past performance does not guarantee future results. Cryptocurrency trading carries significant risk including total loss of capital. CCE is a private technology service, not FCA regulated investment advice. Your funds remain in your own exchange account at all times.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="handbook">
+  <div class="si">
+    <div class="stag fade-up">The Handbook</div>
+    <h2 class="stitle fade-up">The philosophy behind<br>the platform.</h2>
+    <p class="ssub fade-up">The CCE Handbook is the complete guide to how the platform thinks, makes decisions, and manages risk. Required reading before onboarding.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:40px" class="fade-up">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold2))"></div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px">Purchase</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:32px;color:var(--white);letter-spacing:-1px;margin-bottom:4px">£<span style="font-size:48px">29</span></div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:20px">PDF + Markdown bundle · Instant download</div>
+        <ul style="list-style:none;margin-bottom:24px">
+          <li style="display:flex;gap:8px;font-size:13px;color:var(--text);padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)"><span style="color:var(--gold)">→</span> 923 lines of documentation</li>
+          <li style="display:flex;gap:8px;font-size:13px;color:var(--text);padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)"><span style="color:var(--gold)">→</span> Philosophy, architecture, all 21 engines</li>
+          <li style="display:flex;gap:8px;font-size:13px;color:var(--text);padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)"><span style="color:var(--gold)">→</span> Signal methodology reference</li>
+          <li style="display:flex;gap:8px;font-size:13px;color:var(--text);padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)"><span style="color:var(--gold)">→</span> Configuration guide</li>
+          <li style="display:flex;gap:8px;font-size:13px;color:var(--text);padding:7px 0"><span style="color:var(--gold)">→</span> State machine design patterns</li>
+        </ul>
+        <a href="https://jamesthegiblet.gumroad.com/l/cyfdfz" target="_blank" style="display:block;text-align:center;padding:13px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0A2540;transition:all .2s">Buy the Handbook →</a>
+      </div>
+
+      <div style="background:var(--card);border:1px solid rgba(0,102,255,0.3);border-radius:20px;padding:28px;position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--cyan))"></div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--blue);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px">Included Free</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:32px;color:var(--white);letter-spacing:-1px;margin-bottom:4px">£<span style="font-size:48px">0</span></div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:20px">With every CCE onboarding · Read inside the flow</div>
+        <ul style="list-style:none;margin-bottom:24px">
+          <li style="display:flex;gap:8px;font-size:13px;color:var(--text);padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)"><span style="color:var(--blue)">→</span> Full handbook embedded in onboarding</li>
+          <li style="display:flex;gap:8px;font-size:13px;color:var(--text);padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)"><span style="color:var(--blue)">→</span> Read it, confirm it, then quiz</li>
+          <li style="display:flex;gap:8px;font-size:13px;color:var(--text);padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)"><span style="color:var(--blue)">→</span> Must pass knowledge check to proceed</li>
+          <li style="display:flex;gap:8px;font-size:13px;color:var(--text);padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)"><span style="color:var(--blue)">→</span> Sign the agreement inside the flow</li>
+          <li style="display:flex;gap:8px;font-size:13px;color:var(--text);padding:7px 0"><span style="color:var(--blue)">→</span> Get your unique access code</li>
+        </ul>
+        <a href="/onboarding" style="display:block;text-align:center;padding:13px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;background:var(--blue);color:white;transition:all .2s">Start Onboarding ⚡</a>
+      </div>
+    </div>
+
+    <div style="background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.2);border-radius:14px;padding:16px 20px;font-family:'DM Mono',monospace;font-size:12px;color:var(--gold);text-align:center" class="fade-up">
+      💡 Already purchased the handbook? The onboarding flow includes everything — start there.
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="si">
+    <div class="stag fade-up">Pricing</div>
+    <h2 class="stitle fade-up">One setup fee.<br>10% of wins only.</h2>
+    <p class="ssub fade-up">No monthly fees. No fee on losses. No fee during DORMANT periods. You keep 90% of every winning trade.</p>
+    <div class="priceg">
+      <!-- STARTER — available -->
+      <div class="pricard fade-up">
+        <div class="pritier">Starter</div>
+        <div class="priprice"><sup>£</sup>200</div>
+        <div class="pricycle">one-time setup · then 10% of profits</div>
+        <ul class="prifeats">
+          <li>Kraken exchange</li>
+          <li>11 engines (S.E + T.E + O.E)</li>
+          <li>Personal dashboard</li>
+          <li>Telegram trade alerts</li>
+          <li>G.O intelligence layer</li>
+          <li>Recommended capital £500+</li>
+        </ul>
+        <a href="/onboarding" class="pribtn g">Get Started →</a>
+      </div>
+      <!-- ADVANCED — coming soon -->
+      <div class="pricard feat locked fade-up">
+        <div class="pribadge soon">🔒 Coming Soon</div>
+        <div class="pritier offset">Advanced</div>
+        <div class="priprice"><sup>£</sup>300</div>
+        <div class="pricycle">one-time setup · then 10% of profits</div>
+        <ul class="prifeats">
+          <li>Kraken + Binance Futures</li>
+          <li>12 engines (adds T.E LCE)</li>
+          <li>Everything in Starter</li>
+          <li>Liquidation cascade engine</li>
+          <li>Futures market access</li>
+          <li>Recommended capital £1,000+</li>
+        </ul>
+        <span class="pribtn p" style="cursor:default">Coming Soon</span>
+      </div>
+      <!-- FULL PLATFORM — coming soon -->
+      <div class="pricard locked fade-up">
+        <div class="pribadge soon">🔒 Coming Soon</div>
+        <div class="pritier offset">Full Platform</div>
+        <div class="priprice"><sup>£</sup>500</div>
+        <div class="pricycle">one-time setup · then 10% of profits</div>
+        <ul class="prifeats">
+          <li>All exchanges</li>
+          <li>17+ engines (all ecosystems)</li>
+          <li>Forex, REIT, Stocks, Commodities</li>
+          <li>Full intelligence layer</li>
+          <li>Priority support</li>
+          <li>Recommended capital £2,000+</li>
+        </ul>
+        <span class="pribtn g" style="cursor:default">Coming Soon</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="ctas">
+  <div class="si" style="text-align:center">
+    <div class="stag" style="display:inline-block;margin-bottom:16px">Ready to Start</div>
+    <h2 class="stitle fade-up" style="max-width:600px;margin:0 auto 20px">Your money. Your account.<br><em>Our engine.</em></h2>
+    <p class="ssub fade-up" style="margin:0 auto 40px">Complete the onboarding in 10 minutes. Read the handbook. Pass the knowledge check. Sign the agreement. Get your access code.</p>
+    <div class="ha fade-up" style="justify-content:center">
+      <a href="/onboarding" class="bp">Begin Onboarding ⚡</a>
+      <a href="https://jamesthegiblet.gumroad.com/l/cyfdfz" class="bs" target="_blank">Get the Handbook £29 →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="fi">
+    <div>
+      <div class="fbn">⚡ CCE</div>
+      <p class="fbt">Cascade Compounding Engine. An autonomous algorithmic trading OS built from scratch. 21 engines, one phone, your capital stays in your account.</p>
+      <div class="ftag">"I wanted it. So I forged it. Now forge yours."</div>
+    </div>
+    <div>
+      <div class="fct">Platform</div>
+      <ul class="fl">
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#engines">Engines</a></li>
+        <li><a href="#handbook">Handbook</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="/onboarding">Onboarding</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="fct">Giblets Creations</div>
+      <ul class="fl">
+        <li><a href="https://jamesthegiblet.github.io" target="_blank">Website</a></li>
+        <li><a href="https://jamesthegiblet.gumroad.com/l/cyfdfz" target="_blank">Buy Handbook £29</a></li>
+        <li><a href="https://github.com/JamesTheGiblet" target="_blank">GitHub</a></li>
+        <li><a href="mailto:gibletscreations@gmail.com">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="fb">
+    <div class="fcopy">© 2026 Giblets Creations · James Gilbert · Upper Heyford, Oxfordshire · cce-trading.co.uk</div>
+    <div class="frisk">CCE is a private technology service, not FCA regulated investment advice. Cryptocurrency trading carries significant risk. Your capital is at risk.</div>
+  </div>
+</footer>
+
+<button id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">↑</button>
+
+<script>
+async function updateTicker() {
+  try {
+    const res = await fetch('/api/status');
+    const d = await res.json();
+    if (d.btc_price) {
+      const p = '$' + Number(d.btc_price).toLocaleString();
+      document.getElementById('bp').textContent = p;
+      document.getElementById('bp2').textContent = p;
+    }
+    if (d.fear_greed !== undefined) {
+      const fg = d.fear_greed;
+      const label = fg <= 20 ? 'Extreme Fear' : fg <= 40 ? 'Fear' : fg <= 60 ? 'Neutral' : fg <= 80 ? 'Greed' : 'Extreme Greed';
+      const cls = fg <= 40 ? 'tc-down' : fg >= 60 ? 'tc-up' : '';
+      ['fg','fg2'].forEach(id => document.getElementById(id).textContent = fg);
+      ['fg-label','fg-label2'].forEach(id => {
+        const el = document.getElementById(id);
+        el.textContent = label;
+        el.className = cls;
+      });
+    }
+  } catch(e) {}
+}
+
+const scrollObs = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => scrollObs.observe(el));
+
+const btt = document.getElementById('btt');
+window.addEventListener('scroll', () => {
+  btt.classList.toggle('visible', window.scrollY > 400);
+}, { passive: true });
+
+updateTicker();
+setInterval(updateTicker, 30000);
+</script>
+</body>
+</html>

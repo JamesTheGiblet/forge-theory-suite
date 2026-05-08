@@ -1,0 +1,12 @@
+{
+  "id": "my-layer",
+  "name": "My Layer",
+  "version": "1.0.0",
+  "pattern": "ANALYST",
+  "hook": "post_cycle",
+  "attaches_to": ["S.E", "T.E", "O.E"],
+  "interval_minutes": 15,
+  "author": "Your Name",
+  "description": "One sentence describing what this layer does.",
+  "golden_rule": "This layer NEVER affects engine behaviour. Read-only access only."
+}
