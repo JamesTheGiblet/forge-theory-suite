@@ -1,0 +1,42 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "intelligence/buddai_feeder",
+  "object_class": "Safe",
+  "intent": "Request context from the Data Cube and feed the resolved data into BuddAI.",
+  "containment": {
+    "read_only": true,
+    "audit_log": true,
+    "kill_switch": false
+  },
+  "behaviours": [
+    {
+      "trigger": "on_event",
+      "event": "buddai.context.requested",
+      "actions": [
+        {
+          "primitive": "emit_event",
+          "params": {
+            "event": "datacube.query.requested",
+            "payload": {
+              "dimensions": "$context.event.payload.dimensions",
+              "limit": "$context.event.payload.limit"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "trigger": "on_event",
+      "event": "datacube.query.resolved",
+      "actions": [
+        {
+          "primitive": "prompt_buddai",
+          "params": {
+            "context_data": "$context.event.payload.results",
+            "instruction": "Analyze the retrieved historical context from the Data Cube."
+          }
+        }
+      ]
+    }
+  ]
+}

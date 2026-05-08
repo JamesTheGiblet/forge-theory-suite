@@ -63,6 +63,7 @@ Each domain inherits the global governance rules and may define additional domai
 - Forge-Theory  
 - Intelligence  
 - Trading  
+- Data-Cube
 - UBVM  
 - Robotics  
 - Utilities  
@@ -74,4 +75,3 @@ Domain-specific governance files (if present) are located within each domain’s
 ## Versioning
 Governance documents evolve as the ecosystem grows.  
 All changes must be reviewed for architectural consistency and long-term maintainability.
-

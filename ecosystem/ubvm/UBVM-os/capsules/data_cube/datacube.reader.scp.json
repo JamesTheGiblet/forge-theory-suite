@@ -1,0 +1,41 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "datacube/reader",
+  "object_class": "Safe",
+  "intent": "Listen for query requests, read relevant consolidated memories from the Data Cube, and return the data.",
+  "containment": {
+    "read_only": true,
+    "audit_log": true,
+    "kill_switch": false
+  },
+  "behaviours": [
+    {
+      "trigger": "on_event",
+      "event": "datacube.query.requested",
+      "actions": [
+        {
+          "primitive": "query_cube",
+          "params": {
+            "dimensions": "$context.event.payload.dimensions",
+            "limit": "$context.event.payload.limit"
+          }
+        },
+        {
+          "primitive": "emit_event",
+          "params": {
+            "event": "datacube.query.resolved",
+            "payload": {
+              "results": "$results.0.data"
+            }
+          }
+        },
+        {
+          "primitive": "log",
+          "params": {
+            "message": "DataCube Reader: Retrieved records for dimensions $context.event.payload.dimensions"
+          }
+        }
+      ]
+    }
+  ]
+}

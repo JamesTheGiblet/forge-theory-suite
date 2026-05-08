@@ -13,6 +13,7 @@ The ecosystem is organised into six sovereign domains:
 - [Forge‑Theory](ca://s?q=Tell_me_more_about_forge_theory_domain) — theoretical engines, creative forges, simulation systems, and meta‑language frameworks.
 - [Intelligence](ca://s?q=Tell_me_more_about_intelligence_domain) — agent systems, reasoning engines, LLM frameworks, and AI gateways.
 - [Trading](ca://s?q=Tell_me_more_about_trading_domain) — the CCE ecosystem, market engines, crypto data, and backtesting infrastructure.
+- [Data-Cube](ca://s?q=Tell_me_more_about_data_cube_domain) — structured datasets, multi-dimensional storage, and system state memory.
 - [UBVM](ca://s?q=Tell_me_more_about_ubvm_domain) — a sovereign OS layer for capsules, daemons, interpreters, and semantic computation.
 - [Robotics](ca://s?q=Tell_me_more_about_robotics_domain) — embedded systems, hardware interfaces, and physical‑world engines.
 - [Utilities](ca://s?q=Tell_me_more_about_utilities_domain) — standalone tools, scripts, wires, and operational utilities.
@@ -58,6 +59,10 @@ This domain contains the cognitive layer of the ecosystem.
 Trading
 Market engines, the CCE ecosystem, crypto data pipelines, backtesting engines, and signal systems.
 A computational environment for modelling, simulating, and executing market behaviour.
+
+Data-Cube
+Structured datasets, persistent state memory, and multi-dimensional data storage.
+Acts as the foundational memory and data access layer for the other computational domains.
 
 UBVM
 A sovereign OS layer for capsule‑driven computation, semantic execution, and deterministic orchestration.

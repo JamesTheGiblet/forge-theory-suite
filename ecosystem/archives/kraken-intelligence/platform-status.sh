@@ -1,1 +1,0 @@
-scripts/platform-status.sh
