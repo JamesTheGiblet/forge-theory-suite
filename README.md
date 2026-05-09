@@ -142,24 +142,51 @@ Analysis scripts, wire engines, fix engines, sentinel systems, forward-test tool
 ## 🧭 Purpose of the Suite
 
 - A research archive
-- A systems-engineering portfolio
 - A multi-domain experimentation environment
+- A comprehensive systems-engineering portfolio
 - A canonical index of all Forge-Theory-Labs projects
 - A demonstration of architectural thinking
 
-> "I can design, build, and maintain complex systems across multiple domains."
+> "Designing, building, and maintaining complex systems across multiple domains."
 
 ---
 
-## 📜 Governance
+## 📜 Governance & Standards
 
 GOVERNANCE.md · CONTRIBUTING.md · SECURITY.md · LICENSE
 
 ---
 
-## 📞 Contact
+## 👤 The Architect (Living CV)
 
-- GitHub: [JamesTheGiblet](https://github.com/JamesTheGiblet)
+**James (Giblets Creations)** — *Neurodivergent Polymath & Systems Architect*
+
+This entire 40+ engine ecosystem was built by a single individual. My background is not in a computer science classroom, but in the physical world. I spent over a decade mastering physical and mechanical systems: from load-bearing Carpentry and precision Watch Repair, to Locksmithing, Water Hygiene/Asbestos Engineering, and outfitting emergency Ambulances.
+
+Parallel to this, my journey into technical engineering began 15 years ago by building a 3D printer from an Eaglemoss Vector 3 subscription. That sparked a lifelong obsession with creation and scale: I taught myself 3D modeling, kinematic rigging, and animation in Blender using reference images. 
+
+Instead of solving problems once, I built systems to solve them infinitely. When designing figures, rather than sculpting static poses, I engineered parametric T-pose rigs to generate a million possible positions—a mindset that directly mirrors my approach to software state machines today. I scaled this operation to running a fleet of 12 simultaneous 3D printers and custom-built massive 1.2m² format printers from scratch. 
+
+My hardware and fabrication work under **Giblets Creations** was formally recognized and published in the *Haynes Manual for Model Making of the Future*.
+
+I am Dyslexic, Autistic, and have ADHD. I don't process the world in linear text; I see it in 3D systems, spatial architecture, and deep pattern recognition. When physical health required me to pivot, I pointed that exact same hyper-focus and systemic maker-mindset entirely at software. 
+
+I build digital systems with the same principles I used in the physical world:
+- **Structural Integrity:** Systems must be modular, robust, and load-bearing (like carpentry and custom 3D printer builds).
+- **Precision Mechanics & Kinematics:** State machines must be exact and predictable (like watch repair, locksmithing, and 3D rigging).
+- **Hardware-to-Software Synergy:** Bridging the physical and digital (trained by writing custom firmware and building autonomous robotics).
+- **Zero-Tolerance Safety:** Code must have strict invariants, determinism, and safety boundaries (trained by fire safety, water hygiene, and asbestos engineering).
+
+If you are an employer, client, or collaborator reviewing this suite as a portfolio, it serves as undeniable proof of work. It demonstrates a rare capacity to architect and maintain complex ecosystems across **7+ distinct technical domains** and translate theoretical frameworks into production-ready software in days.
+
+**Engineering Ethics & Boundaries:**
+With the capacity to build complex, autonomous systems comes the responsibility of how they are used. I build to explore emergence, intelligence, and creation. I maintain a strict, uncompromising personal protocol: I do not build weapons, I do not write malicious code, and I engineer systems with strict safety boundaries to ensure they do not cause harm.
+
+---
+
+## � Contact
+
+- GitHub: [Forge-Theory-Labs](https://github.com/Forge-Theory-Labs) / [JamesTheGiblet](https://github.com/JamesTheGiblet)
 - Twitter: [@JamesTheGiblet](https://twitter.com/JamesTheGiblet)
 - Email: contact@forge-theory.com
 
@@ -169,4 +196,4 @@ GOVERNANCE.md · CONTRIBUTING.md · SECURITY.md · LICENSE
 
 Forge-Theory-Suite demonstrates: systems architecture · AI engineering · robotics · simulation · emergence · quantitative modelling · OS-level experimentation · long-term research discipline.
 
-This is the repo that shows employers you are not just a developer — you are a systems thinker.
+This ecosystem serves as a living portfolio, demonstrating the capacity to architect, engineer, and maintain scalable, multi-domain computational environments.

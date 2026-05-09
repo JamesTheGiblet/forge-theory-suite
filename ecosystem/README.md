@@ -35,8 +35,9 @@ Each domain is a self‑contained universe with its own purpose, logic, and inte
 
 ## Ecosystem Structure
 
-The root contains a single directory:ecosystem/
-`
+The root contains a single directory:
+
+`ecosystem/`
 
 Inside it, each domain is isolated, intentional, and internally consistent.
 This structure enables:

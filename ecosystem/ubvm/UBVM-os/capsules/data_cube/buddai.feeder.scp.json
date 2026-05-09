@@ -1,6 +1,6 @@
 {
   "scp_version": "0.1",
-  "scp_id": "intelligence/buddai_feeder",
+  "scp_id": "datacube/buddai_feeder",
   "object_class": "Safe",
   "intent": "Request context from the Data Cube and feed the resolved data into BuddAI.",
   "containment": {

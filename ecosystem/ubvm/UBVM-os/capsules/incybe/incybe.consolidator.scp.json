@@ -1,0 +1,33 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "incybe/consolidator",
+  "object_class": "Thaumiel",
+  "intent": "Consolidate BuddAI's short-term memories into long-term Core Memory facts and archive the raw logs.",
+  "containment": {
+    "read_only": false,
+    "audit_log": true,
+    "kill_switch": false
+  },
+  "behaviours": [
+    {
+      "trigger": "cron",
+      "schedule": "0 3 * * *",
+      "actions": [
+        {
+          "primitive": "consolidate_memories",
+          "params": {}
+        },
+        {
+          "primitive": "emit_event",
+          "params": {
+            "event": "incybe.memory.consolidated",
+            "payload": {
+              "status": "$results.0.status",
+              "core_memory_path": "$results.0.core_memory_path"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
