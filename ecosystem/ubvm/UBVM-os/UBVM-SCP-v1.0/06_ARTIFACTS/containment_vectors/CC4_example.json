@@ -1,0 +1,29 @@
+{
+  "scp_version": "1.0",
+  "capsule_id": "7d32483b-e7ef-4bd1-8994-5a6167607664",
+  "created_at": "2026-05-11T07:45:12.883Z",
+  "node_scope": "example-node",
+  "intent": {
+    "declared": "Minimal agent — output generation only",
+    "category": "GENERATION",
+    "sensitivity": "LOW"
+  },
+  "containment_class": "CC4",
+  "author": {
+    "id": "example-operator",
+    "name": "Example Operator"
+  },
+  "primitives": [
+    "READ_TEXT",
+    "STRUCTURE_OUTPUT",
+    "EMIT_EVENT"
+  ],
+  "payload": {
+    "text": "Example payload for CC4 capsule"
+  },
+  "provenance": {
+    "created_at": "2026-05-11T07:45:12.883Z",
+    "sha256": "a1efee30cfbe84f5c00cc830a2695caf4b465770a6cee98fbc59fbd3612a607e",
+    "parent_capsule_id": null
+  }
+}

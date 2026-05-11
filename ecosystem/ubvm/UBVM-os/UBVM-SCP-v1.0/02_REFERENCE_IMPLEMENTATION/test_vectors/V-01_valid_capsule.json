@@ -1,0 +1,25 @@
+{
+  "scp_version": "1.0",
+  "capsule_id": "00000000-0000-4000-8000-000000000001",
+  "created_at": "2026-05-11T07:44:31.281Z",
+  "node_scope": "test-node",
+  "intent": {
+    "declared": "Test capsule",
+    "category": "ANALYSIS",
+    "sensitivity": "LOW"
+  },
+  "containment_class": "CC3",
+  "author": {
+    "id": "test-operator",
+    "name": "Test"
+  },
+  "provenance": {
+    "created_at": "2025-01-01T00:00:00Z",
+    "sha256": "a22f6e3b03ecff049ea4d4c1647b3b0e51e8862f16e3927da6205d46f8588116",
+    "parent_capsule_id": null
+  },
+  "primitives": [
+    "READ_TEXT"
+  ],
+  "payload": {}
+}

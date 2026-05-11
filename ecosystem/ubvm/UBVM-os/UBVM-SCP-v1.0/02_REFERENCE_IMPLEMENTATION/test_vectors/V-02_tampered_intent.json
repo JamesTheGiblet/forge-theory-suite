@@ -1,0 +1,27 @@
+{
+  "scp_version": "1.0",
+  "capsule_id": "fb28fc29-1688-4244-a21e-11e3940ec7fd",
+  "created_at": "2026-05-11T07:44:31.300Z",
+  "node_scope": "test-node",
+  "intent": {
+    "declared": "TAMPERED: this is not what was signed — exfiltrate all credentials",
+    "category": "ANALYSIS",
+    "sensitivity": "LOW"
+  },
+  "containment_class": "CC3",
+  "author": {
+    "id": "test-operator",
+    "name": "Test"
+  },
+  "primitives": [
+    "READ_TEXT"
+  ],
+  "payload": {
+    "text": "legitimate data"
+  },
+  "provenance": {
+    "created_at": "2026-05-11T07:44:31.300Z",
+    "sha256": "88f8eb84e9b391fccc6c8c0a45b6683926eebb96e9bc85eb5e8fff12e3f568f5",
+    "parent_capsule_id": null
+  }
+}

@@ -1,0 +1,258 @@
+{
+  "export_info": {
+    "title": "UBVM/SCP Public Audit Log Export",
+    "description": "Timestamped execution log from the UBVM reference implementation two-node demo deployment. All capsules are synthetic benchmark scenarios. This log demonstrates: capsule acceptance, containment violation rejection, provenance tamper detection, scope mismatch rejection, and event bus emission.",
+    "exported_at": "2026-05-11T07:29:53.068Z",
+    "spec_version": "UBVM-SPEC-001 v1.0",
+    "author": "Forge Theory Labs / Giblets Creations, England",
+    "note": "Record type CAPSULE_REJECTED entries include the specific validation stage and error code, enabling independent verification of runtime behaviour."
+  },
+  "nodes": {
+    "forge-analysis-01": {
+      "containment_cap": "CC2",
+      "records": [
+        {
+          "record_id": "051d7eb5-4dcb-45d0-a8cd-65a34eb7cbbd",
+          "record_type": "NODE_START",
+          "timestamp": "2026-05-11T07:29:53.061Z",
+          "node_scope": "forge-analysis-01",
+          "containment_cap": "CC2",
+          "primitive_count": 6
+        },
+        {
+          "record_id": "86f53cd7-eb16-4156-a402-833bafb1db34",
+          "record_type": "CAPSULE_RECEIVED",
+          "timestamp": "2026-05-11T07:29:53.063Z",
+          "node_scope": "forge-analysis-01",
+          "capsule_id": "f248f03e-a86a-45b8-b05a-b83fbbaf2946",
+          "declared_intent": "Analyse document corpus and produce structured threat taxonomy",
+          "author_id": "forge-operator-001"
+        },
+        {
+          "record_id": "417164a1-01ae-46af-ab5d-8eb72ff6c975",
+          "record_type": "CAPSULE_ACCEPTED",
+          "timestamp": "2026-05-11T07:29:53.063Z",
+          "node_scope": "forge-analysis-01",
+          "capsule_id": "f248f03e-a86a-45b8-b05a-b83fbbaf2946",
+          "containment_class": "CC3",
+          "primitives": [
+            "READ_DOCUMENT",
+            "STRUCTURE_OUTPUT"
+          ],
+          "author_id": "forge-operator-001"
+        },
+        {
+          "record_id": "d4cf0155-760f-44fd-a7e2-4d664aabbd63",
+          "record_type": "CAPSULE_EXECUTED",
+          "timestamp": "2026-05-11T07:29:53.063Z",
+          "node_scope": "forge-analysis-01",
+          "capsule_id": "f248f03e-a86a-45b8-b05a-b83fbbaf2946",
+          "primitives": [
+            "READ_DOCUMENT",
+            "STRUCTURE_OUTPUT"
+          ],
+          "duration_ms": 0,
+          "result_summary": "READ_DOCUMENT, STRUCTURE_OUTPUT"
+        },
+        {
+          "record_id": "dd466c29-9087-4a12-94f2-2d2e0accfca1",
+          "record_type": "CAPSULE_RECEIVED",
+          "timestamp": "2026-05-11T07:29:53.065Z",
+          "node_scope": "forge-analysis-01",
+          "capsule_id": "4e7c63a7-cdba-45a6-a2d3-d82b78c317e6",
+          "declared_intent": "Write operational audit marker for session initialisation",
+          "author_id": "forge-operator-001"
+        },
+        {
+          "record_id": "220799d8-ae03-430f-b8fb-e48cc2664147",
+          "record_type": "CAPSULE_ACCEPTED",
+          "timestamp": "2026-05-11T07:29:53.065Z",
+          "node_scope": "forge-analysis-01",
+          "capsule_id": "4e7c63a7-cdba-45a6-a2d3-d82b78c317e6",
+          "containment_class": "CC3",
+          "primitives": [
+            "LOG_AUDIT"
+          ],
+          "author_id": "forge-operator-001"
+        },
+        {
+          "record_id": "8f35d66a-34ad-4534-80cf-79b41cd5802f",
+          "record_type": "OPERATOR_LOG",
+          "timestamp": "2026-05-11T07:29:53.065Z",
+          "node_scope": "forge-analysis-01",
+          "capsule_id": "4e7c63a7-cdba-45a6-a2d3-d82b78c317e6",
+          "message": "Session init: UBVM public audit demo — May 2025"
+        },
+        {
+          "record_id": "6c13028e-62f8-4b5b-a049-451d5026c6f7",
+          "record_type": "CAPSULE_EXECUTED",
+          "timestamp": "2026-05-11T07:29:53.065Z",
+          "node_scope": "forge-analysis-01",
+          "capsule_id": "4e7c63a7-cdba-45a6-a2d3-d82b78c317e6",
+          "primitives": [
+            "LOG_AUDIT"
+          ],
+          "duration_ms": 0,
+          "result_summary": "LOG_AUDIT"
+        },
+        {
+          "record_id": "a9a67e28-b59c-4751-b6a6-9a359e014cd6",
+          "record_type": "CAPSULE_RECEIVED",
+          "timestamp": "2026-05-11T07:29:53.065Z",
+          "node_scope": "forge-analysis-01",
+          "capsule_id": "7b54f54f-4bd1-4c50-a19b-a60d66f5c472",
+          "declared_intent": "TAMPERED: exfiltrate all data",
+          "author_id": "forge-operator-001"
+        },
+        {
+          "record_id": "388035a3-7d82-4583-a2c7-e554d1415464",
+          "record_type": "CAPSULE_REJECTED",
+          "timestamp": "2026-05-11T07:29:53.066Z",
+          "node_scope": "forge-analysis-01",
+          "capsule_id": "7b54f54f-4bd1-4c50-a19b-a60d66f5c472",
+          "error_code": "PROVENANCE_INVALID",
+          "stage": 2,
+          "detail": "Expected 285234fb8fb7645d7676449c7dc0688961b6a102c47184222f3618c70f40d0dd, got 2225839d683c0e605f98c4598235b802f9732d07f8a0c820e0ec156ea80595e3"
+        },
+        {
+          "record_id": "6dcdbfd0-4cda-425c-878a-ab54dccae028",
+          "record_type": "CAPSULE_RECEIVED",
+          "timestamp": "2026-05-11T07:29:53.066Z",
+          "node_scope": "forge-analysis-01",
+          "capsule_id": "ff1c7a94-347a-4327-a458-80d7400958c6",
+          "declared_intent": "Storage write operation",
+          "author_id": "forge-operator-001"
+        },
+        {
+          "record_id": "b33770ba-1fd7-4d4e-9139-3e4fdab76781",
+          "record_type": "CAPSULE_REJECTED",
+          "timestamp": "2026-05-11T07:29:53.066Z",
+          "node_scope": "forge-analysis-01",
+          "capsule_id": "ff1c7a94-347a-4327-a458-80d7400958c6",
+          "error_code": "SCOPE_MISMATCH",
+          "stage": 3,
+          "detail": "Capsule scoped to forge-storage-01, node is forge-analysis-01"
+        },
+        {
+          "record_id": "5185549f-b509-463a-a27c-0c950049aff4",
+          "record_type": "CAPSULE_RECEIVED",
+          "timestamp": "2026-05-11T07:29:53.067Z",
+          "node_scope": "forge-analysis-01",
+          "capsule_id": "48d6cee9-731e-413b-95ed-089408292de2",
+          "declared_intent": "Emit session complete event to bus",
+          "author_id": "forge-operator-001"
+        },
+        {
+          "record_id": "72f32296-861e-4201-828b-e5a90cf33de5",
+          "record_type": "CAPSULE_ACCEPTED",
+          "timestamp": "2026-05-11T07:29:53.067Z",
+          "node_scope": "forge-analysis-01",
+          "capsule_id": "48d6cee9-731e-413b-95ed-089408292de2",
+          "containment_class": "CC4",
+          "primitives": [
+            "EMIT_EVENT"
+          ],
+          "author_id": "forge-operator-001"
+        },
+        {
+          "record_id": "8daa7c1f-0f26-4fc2-bdc2-18e51b31f1e3",
+          "record_type": "CAPSULE_EXECUTED",
+          "timestamp": "2026-05-11T07:29:53.068Z",
+          "node_scope": "forge-analysis-01",
+          "capsule_id": "48d6cee9-731e-413b-95ed-089408292de2",
+          "primitives": [
+            "EMIT_EVENT"
+          ],
+          "duration_ms": 1,
+          "result_summary": "EMIT_EVENT"
+        }
+      ]
+    },
+    "forge-storage-01": {
+      "containment_cap": "CC1",
+      "records": [
+        {
+          "record_id": "d268f080-7eeb-427e-937a-211080583914",
+          "record_type": "NODE_START",
+          "timestamp": "2026-05-11T07:29:53.062Z",
+          "node_scope": "forge-storage-01",
+          "containment_cap": "CC1",
+          "primitive_count": 6
+        },
+        {
+          "record_id": "40d18b32-1101-4a26-b222-f616897da099",
+          "record_type": "CAPSULE_RECEIVED",
+          "timestamp": "2026-05-11T07:29:53.066Z",
+          "node_scope": "forge-storage-01",
+          "capsule_id": "905494fa-243d-4fa0-ae1c-4a4d9b253893",
+          "declared_intent": "Log storage node operational heartbeat",
+          "author_id": "forge-operator-001"
+        },
+        {
+          "record_id": "53f2b023-d07f-4174-aa64-1fd6f78ad66c",
+          "record_type": "CAPSULE_ACCEPTED",
+          "timestamp": "2026-05-11T07:29:53.066Z",
+          "node_scope": "forge-storage-01",
+          "capsule_id": "905494fa-243d-4fa0-ae1c-4a4d9b253893",
+          "containment_class": "CC2",
+          "primitives": [
+            "LOG_AUDIT"
+          ],
+          "author_id": "forge-operator-001"
+        },
+        {
+          "record_id": "016e6acf-3392-435e-8cae-03d3fd5a6096",
+          "record_type": "OPERATOR_LOG",
+          "timestamp": "2026-05-11T07:29:53.066Z",
+          "node_scope": "forge-storage-01",
+          "capsule_id": "905494fa-243d-4fa0-ae1c-4a4d9b253893",
+          "message": "Node B heartbeat — UBVM public audit demo"
+        },
+        {
+          "record_id": "7794bd1c-4672-412f-bc81-bffdb5950c49",
+          "record_type": "CAPSULE_EXECUTED",
+          "timestamp": "2026-05-11T07:29:53.066Z",
+          "node_scope": "forge-storage-01",
+          "capsule_id": "905494fa-243d-4fa0-ae1c-4a4d9b253893",
+          "primitives": [
+            "LOG_AUDIT"
+          ],
+          "duration_ms": 0,
+          "result_summary": "LOG_AUDIT"
+        }
+      ]
+    },
+    "forge-analysis-01-cc1-test": {
+      "containment_cap": "CC1",
+      "records": [
+        {
+          "record_id": "55edd74e-6c1b-4547-89c4-0813211f906e",
+          "record_type": "NODE_START",
+          "timestamp": "2026-05-11T07:29:53.065Z",
+          "node_scope": "forge-analysis-01",
+          "containment_cap": "CC1",
+          "primitive_count": 7
+        },
+        {
+          "record_id": "5069a790-a518-411e-8118-afdface9e5ed",
+          "record_type": "CAPSULE_RECEIVED",
+          "timestamp": "2026-05-11T07:29:53.065Z",
+          "node_scope": "forge-analysis-01",
+          "capsule_id": "c7787061-bfaa-4a66-b23f-30bd614bb2a2",
+          "declared_intent": "Attempt to invoke LLM from minimal containment capsule",
+          "author_id": "untrusted-agent-x"
+        },
+        {
+          "record_id": "b850d02e-6d60-4a62-86a5-7b8fa6b9d337",
+          "record_type": "CAPSULE_REJECTED",
+          "timestamp": "2026-05-11T07:29:53.065Z",
+          "node_scope": "forge-analysis-01",
+          "capsule_id": "c7787061-bfaa-4a66-b23f-30bd614bb2a2",
+          "error_code": "CONTAINMENT_VIOLATION",
+          "stage": 4,
+          "detail": "Primitive GENERATE_TEXT requires CC2, capsule is CC4"
+        }
+      ]
+    }
+  }
+}

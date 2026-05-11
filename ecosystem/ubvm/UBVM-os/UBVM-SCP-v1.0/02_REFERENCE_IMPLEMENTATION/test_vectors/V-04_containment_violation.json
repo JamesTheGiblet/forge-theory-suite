@@ -1,0 +1,25 @@
+{
+  "scp_version": "1.0",
+  "capsule_id": "77b5239a-941b-4083-9a20-4b2921a96497",
+  "created_at": "2026-05-11T07:44:31.304Z",
+  "node_scope": "test-node",
+  "intent": {
+    "declared": "Minimal capsule attempting to invoke LLM generation",
+    "category": "GENERATION",
+    "sensitivity": "HIGH"
+  },
+  "containment_class": "CC4",
+  "author": {
+    "id": "external-agent",
+    "name": "External Agent"
+  },
+  "primitives": [
+    "GENERATE_TEXT"
+  ],
+  "payload": {},
+  "provenance": {
+    "created_at": "2026-05-11T07:44:31.304Z",
+    "sha256": "f131e0d2564b7659f276686a84661e084130185757afae2da3f2ad83a8969f69",
+    "parent_capsule_id": null
+  }
+}

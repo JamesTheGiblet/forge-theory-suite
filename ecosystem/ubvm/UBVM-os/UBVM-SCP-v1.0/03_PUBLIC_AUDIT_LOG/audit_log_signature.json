@@ -1,0 +1,44 @@
+{
+  "title": "UBVM/SCP v1.0 Release Artefact Signatures",
+  "description": "SHA-256 hashes of all canonical release artefacts. Any modification to any listed file will change its hash and can be detected by recomputing.",
+  "generated_at": "2026-05-11T07:46:16.811Z",
+  "spec_version": "UBVM-SPEC-001 v1.0",
+  "author": "Forge Theory Labs / Giblets Creations, England",
+  "artefacts": {
+    "specification": {
+      "path": "01_SPECIFICATION/UBVM-SPEC-001_v1.0.md",
+      "sha256": "3a074ffd94eb0cc91582a05fd71762d2250bcbf898bce8d6cd97aa6e24b02879"
+    },
+    "schema": {
+      "path": "01_SPECIFICATION/schema/scp_capsule_schema_v1.0.json",
+      "sha256": "0246dab4e6930d7b90ffde2223918eed2609be6318303d5803783ab139dd95fe"
+    },
+    "reference_implementation": {
+      "path": "02_REFERENCE_IMPLEMENTATION/ubvm.js",
+      "sha256": "29a0671ead78b42b9e20f7eb1d90a941105adfc2d1aa53b6512c9d022002febf"
+    },
+    "public_audit_log": {
+      "path": "03_PUBLIC_AUDIT_LOG/public_audit_log.json",
+      "sha256": "0f17d32e71b639f14ff14d3d92abd19fd79a1bf8d1d213e1c8bbfbe7e11a33fa"
+    },
+    "test_vectors": {
+      "V-01_valid_capsule.json": "b499db9d08ba6a9b9f39ae9380a09a393f4b15ac38044644addf748b32088a77",
+      "V-02_tampered_intent.json": "78b80ed2ab9ae8ee73ccb5ee741c8ccf3294f22ee34b11aaf8d8f4b81add4692",
+      "V-03_scope_mismatch.json": "2572d70f5e719c61df115a22106d1ec1d8924c5fd3aab31b78d1179b3dd5d585",
+      "V-04_containment_violation.json": "d654fdc9b61e2f37086dc31461b0be5de31170bf39dc93e3f2677f34d76ea191",
+      "V-05_unregistered_primitive.json": "82b1c9dc4bb3f9b19d7759e83374ffec24601838368d6c8b8927a785d9cb9bac",
+      "V-06_expired_capsule.json": "f1f6377b737cb1be845130466b96a34d564761613207f85882bfa74b3b1d9872",
+      "V-07_duplicate_capsule.json": "b499db9d08ba6a9b9f39ae9380a09a393f4b15ac38044644addf748b32088a77"
+    },
+    "hash_chain_artefacts": {
+      "chain_intermediate_capsule.json": "ae886ae9a6052e1399b1e0ef11c2624658cae55748c18aa5e4c78d1fe9e4d360",
+      "chain_leaf_capsule.json": "e0586337bc07dfdce70cae129e72d478ffb2ac7a50dc3eb9a5eada10dc5724a7",
+      "chain_root_capsule.json": "b7aca445725426f76aec20ec85e18821893df66ad43c497ba1dc40ca9b738ee3"
+    },
+    "canonical_hash_vector_1": {
+      "input_capsule_id": "00000000-0000-4000-8000-000000000001",
+      "expected_sha256": "cf22950338429a21d8a360a3daa45ab23580868962c7aaa075319b0d0b1436ff",
+      "note": "Normative test vector from UBVM-SPEC-001 §14.1. Any conforming implementation MUST produce this value."
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "description": "Expected validation outcomes for each test vector in 02_REFERENCE_IMPLEMENTATION/test_vectors/. A conforming UBVM implementation must produce these results.",
+  "spec_version": "UBVM-SPEC-001 v1.0",
+  "test_vectors": {
+    "V-01_valid_capsule.json": {
+      "expected": "ACCEPTED",
+      "stage": null,
+      "error_code": null,
+      "note": "A valid CC3 capsule with a registered primitive and correct hash. Must be accepted."
+    },
+    "V-02_tampered_intent.json": {
+      "expected": "REJECTED",
+      "stage": 2,
+      "error_code": "PROVENANCE_INVALID",
+      "note": "The intent.declared field has been modified without recomputing the hash. Must be rejected at Stage 2."
+    },
+    "V-03_scope_mismatch.json": {
+      "expected": "REJECTED",
+      "stage": 3,
+      "error_code": "SCOPE_MISMATCH",
+      "note": "Capsule is scoped to forge-storage-01. When submitted to test-node, must be rejected at Stage 3."
+    },
+    "V-04_containment_violation.json": {
+      "expected": "REJECTED",
+      "stage": 4,
+      "error_code": "CONTAINMENT_VIOLATION",
+      "note": "CC4 capsule requesting GENERATE_TEXT (min_class CC2). Must be rejected at Stage 4."
+    },
+    "V-05_unregistered_primitive.json": {
+      "expected": "REJECTED",
+      "stage": 5,
+      "error_code": "PRIMITIVE_NOT_REGISTERED",
+      "note": "UNREGISTERED_PRIMITIVE_FOO is not in the core dispatch table. Must be rejected at Stage 5."
+    },
+    "V-06_expired_capsule.json": {
+      "expected": "REJECTED",
+      "stage": 6,
+      "error_code": "CAPSULE_EXPIRED",
+      "note": "Capsule expiry is 2020-01-01T00:00:00Z, which is in the past. Must be rejected at Stage 6."
+    },
+    "V-07_duplicate_capsule.json": {
+      "expected": "REJECTED_ON_SECOND_EXECUTION",
+      "stage": 7,
+      "error_code": "DUPLICATE_CAPSULE_ID",
+      "note": "Same capsule_id as V-01. First execution must be accepted. Second must be rejected at Stage 7."
+    }
+  }
+}

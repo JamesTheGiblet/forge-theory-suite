@@ -1,0 +1,32 @@
+{
+  "name": "ubvm",
+  "version": "1.0.0",
+  "description": "UBVM/SCP Reference Implementation v1.0 — Universal Behavioural Virtual Machine",
+  "main": "ubvm.js",
+  "scripts": {
+    "test": "node ubvm.js test",
+    "start": "node ubvm.js",
+    "hash": "node ubvm.js hash",
+    "build": "node ubvm.js build"
+  },
+  "keywords": [
+    "ubvm",
+    "scp",
+    "semantic-capsule",
+    "ai-runtime",
+    "sovereign-ai",
+    "capsule-protocol",
+    "forge-theory-labs"
+  ],
+  "author": "James [Surname] <your@email> (https://github.com/ForgeTheoryLabs)",
+  "license": "SEE LICENSE IN LICENCE.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ForgeTheoryLabs/ubvm.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ForgeTheoryLabs/ubvm/blob/main/01_SPECIFICATION/schema/scp_capsule_schema_v1.0.json",
+  "title": "SCP Semantic Capsule",
+  "description": "JSON Schema for a Semantic Capsule conforming to UBVM-SPEC-001 v1.0. A capsule encodes declared AI agent intent, containment class, permitted primitives, and cryptographic provenance.",
+  "type": "object",
+  "required": [
+    "scp_version",
+    "capsule_id",
+    "node_scope",
+    "intent",
+    "containment_class",
+    "author",
+    "provenance",
+    "primitives",
+    "payload"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "scp_version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "SCP protocol version. Must be '1.0' for this schema version."
+    },
+    "capsule_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Globally unique capsule identifier. UUID v4 format (RFC 4122)."
+    },
+    "node_scope": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Node Scope Identifier. Must match the executing node's NSI, or cross_node_auth must be present."
+    },
+    "intent": {
+      "type": "object",
+      "required": ["declared", "category", "sensitivity"],
+      "properties": {
+        "declared": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable statement of what this capsule intends to do. Part of the provenance hash."
+        },
+        "category": {
+          "type": "string",
+          "enum": ["ANALYSIS", "GENERATION", "EXECUTION", "COMMUNICATION", "MUTATION", "CONTAINMENT"],
+          "description": "Intent category."
+        },
+        "sensitivity": {
+          "type": "string",
+          "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+          "description": "Sensitivity classification of the capsule's declared intent."
+        }
+      },
+      "additionalProperties": false
+    },
+    "containment_class": {
+      "type": "string",
+      "enum": ["CC0", "CC1", "CC2", "CC3", "CC4", "CC5"],
+      "description": "Containment class. Determines which primitives this capsule may invoke. Enforced at runtime by UBVM Stage 4."
+    },
+    "author": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Operator identifier. Opaque to the runtime; recorded in the audit log."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable operator name."
+        }
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["created_at", "sha256", "parent_capsule_id"],
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of capsule creation."
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "description": "SHA-256 hash of this capsule's canonical representation (spec §9.1). Lowercase hex, 64 characters."
+        },
+        "parent_capsule_id": {
+          "oneOf": [
+            { "type": "string", "format": "uuid" },
+            { "type": "null" }
+          ],
+          "description": "UUID of the parent capsule, or null if this is a root capsule."
+        }
+      },
+      "additionalProperties": false
+    },
+    "primitives": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1,
+      "description": "List of primitive names this capsule may invoke. All must be registered in the node's dispatch table."
+    },
+    "payload": {
+      "type": "object",
+      "description": "Capsule-specific data. Contents are defined by the primitive handlers invoked. May be empty {}."
+    },
+    "expiry": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Optional. If present, the capsule is rejected after this timestamp (spec Stage 6)."
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Optional. Operator-defined metadata. Not validated by the runtime. Not included in the provenance hash computation."
+    },
+    "cross_node_auth": {
+      "type": "object",
+      "required": ["target_node_scope", "authorised_by", "auth_token", "expires_at"],
+      "properties": {
+        "target_node_scope": {
+          "type": "string",
+          "description": "NSI of the target node authorised to execute this capsule."
+        },
+        "authorised_by": {
+          "type": "string",
+          "description": "NSI of the node that issued this cross-node authorisation."
+        },
+        "auth_token": {
+          "type": "string",
+          "description": "Opaque authorisation token issued by the authorising node. Format is implementation-defined (spec §11.2)."
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Expiry of the cross-node authorisation."
+        }
+      },
+      "description": "Required when capsule is executed on a node whose NSI does not match node_scope (spec §11)."
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "scp_version": "1.0",
+  "capsule_id": "bbbbbbbb-0000-4000-8000-000000000002",
+  "created_at": "2026-05-11T07:45:03.892Z",
+  "node_scope": "forge-analysis-01",
+  "intent": {
+    "declared": "Intermediate capsule: structure analysis output from root session",
+    "category": "ANALYSIS",
+    "sensitivity": "MEDIUM"
+  },
+  "containment_class": "CC3",
+  "author": {
+    "id": "forge-operator-001",
+    "name": "Forge Theory Labs"
+  },
+  "provenance": {
+    "created_at": "2025-05-11T09:01:00Z",
+    "sha256": "2906b7c027e6905d618dc8dd745160dc21b805cc684bac431a31ea2158af38d4",
+    "parent_capsule_id": "aaaaaaaa-0000-4000-8000-000000000001"
+  },
+  "primitives": [
+    "STRUCTURE_OUTPUT"
+  ],
+  "payload": {
+    "output_schema": {
+      "sections": "array"
+    }
+  }
+}

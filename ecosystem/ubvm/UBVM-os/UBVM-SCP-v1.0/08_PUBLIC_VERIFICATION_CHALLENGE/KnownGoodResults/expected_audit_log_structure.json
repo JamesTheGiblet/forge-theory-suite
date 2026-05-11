@@ -1,0 +1,44 @@
+{
+  "description": "Expected structural properties of the UBVM/SCP public audit log. Independent reviewers should verify their implementation produces audit logs with these properties.",
+  "spec_version": "UBVM-SPEC-001 v1.0",
+  "required_record_types": [
+    "NODE_START",
+    "CAPSULE_RECEIVED",
+    "CAPSULE_ACCEPTED",
+    "CAPSULE_EXECUTED",
+    "CAPSULE_REJECTED",
+    "OPERATOR_LOG"
+  ],
+  "expected_rejection_error_codes": [
+    "PROVENANCE_INVALID",
+    "SCOPE_MISMATCH",
+    "CONTAINMENT_VIOLATION"
+  ],
+  "minimum_record_count": 20,
+  "required_nodes": [
+    "forge-analysis-01",
+    "forge-storage-01"
+  ],
+  "record_field_requirements": {
+    "record_id": "UUID v4 format",
+    "timestamp": "ISO 8601 with milliseconds",
+    "node_scope": "Non-empty string matching node NSI",
+    "record_type": "One of the defined record types in UBVM-SPEC-001 §12.3"
+  },
+  "actual_summary": {
+    "total_records": 23,
+    "nodes": [
+      "forge-analysis-01",
+      "forge-storage-01",
+      "forge-analysis-01-cc1-test"
+    ],
+    "record_type_counts": {
+      "NODE_START": 3,
+      "CAPSULE_RECEIVED": 7,
+      "CAPSULE_ACCEPTED": 4,
+      "CAPSULE_EXECUTED": 4,
+      "OPERATOR_LOG": 2,
+      "CAPSULE_REJECTED": 3
+    }
+  }
+}

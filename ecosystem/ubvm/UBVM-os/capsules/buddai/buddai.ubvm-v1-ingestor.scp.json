@@ -1,0 +1,85 @@
+{
+  "scp_version": "0.1",
+  "scp_id": "buddai/ubvm-v1-ingestor",
+  "object_class": "Safe",
+  "intent": "One-shot: read the UBVM-SCP-v1.0 release bundle and store its key documents as BuddAI memories so BuddAI has full awareness of the v1.0 specification, architecture, and verification artefacts.",
+  "containment": {
+    "read_only": true,
+    "audit_log": true,
+    "kill_switch": true
+  },
+  "provenance": {
+    "author": "James / Giblets Creations",
+    "agent": "Claude Sonnet 4.6",
+    "created_at": "2026-05-11T00:00:00Z",
+    "version": "1.0.0",
+    "context": "Ingests UBVM-SCP-v1.0 formal release bundle into BuddAI memory.",
+    "lineage": ["buddai/core-identity", "buddai/brain"]
+  },
+  "behaviours": [
+    {
+      "trigger": "on_load",
+      "actions": [
+        {
+          "primitive": "log",
+          "params": { "message": "BuddAI: ingesting UBVM-SCP-v1.0 release bundle..." }
+        },
+        {
+          "primitive": "read_file",
+          "params": { "path": "UBVM-SCP-v1.0/00_RELEASE_NOTES/UBVM-SCP_v1.0_Release_Notes.md" }
+        },
+        {
+          "primitive": "form_memory",
+          "params": {
+            "thought": "$results.1.content",
+            "tags": ["ubvm", "scp", "v1.0", "release", "specification"]
+          }
+        },
+        {
+          "primitive": "read_file",
+          "params": { "path": "UBVM-SCP-v1.0/05_DOCUMENTATION/UBVM_Architecture_Overview.md" }
+        },
+        {
+          "primitive": "form_memory",
+          "params": {
+            "thought": "$results.3.content",
+            "tags": ["ubvm", "architecture", "v1.0", "capsule", "validation-pipeline"]
+          }
+        },
+        {
+          "primitive": "read_file",
+          "params": { "path": "UBVM-SCP-v1.0/05_DOCUMENTATION/Security_Model_Overview.md" }
+        },
+        {
+          "primitive": "form_memory",
+          "params": {
+            "thought": "$results.5.content",
+            "tags": ["ubvm", "security", "v1.0", "containment", "provenance"]
+          }
+        },
+        {
+          "primitive": "read_file",
+          "params": { "path": "UBVM-SCP-v1.0/08_PUBLIC_VERIFICATION_CHALLENGE/Challenge_Statement.md" }
+        },
+        {
+          "primitive": "form_memory",
+          "params": {
+            "thought": "$results.7.content",
+            "tags": ["ubvm", "verification", "v1.0", "challenge", "prior-art"]
+          }
+        },
+        {
+          "primitive": "emit_event",
+          "params": {
+            "event": "buddai.ubvm-v1.ingested",
+            "payload": { "source": "buddai/ubvm-v1-ingestor", "status": "complete" }
+          }
+        },
+        {
+          "primitive": "log",
+          "params": { "message": "BuddAI: UBVM-SCP-v1.0 ingestion complete. 4 documents stored as memories." }
+        }
+      ]
+    }
+  ]
+}

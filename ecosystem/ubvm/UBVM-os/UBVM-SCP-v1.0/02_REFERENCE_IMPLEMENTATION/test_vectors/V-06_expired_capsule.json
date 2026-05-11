@@ -1,0 +1,28 @@
+{
+  "scp_version": "1.0",
+  "capsule_id": "8c310738-5d15-4c39-b1ec-0454f39bf9b7",
+  "created_at": "2026-05-11T07:44:31.307Z",
+  "node_scope": "test-node",
+  "intent": {
+    "declared": "This capsule expired in 2020 and must be rejected",
+    "category": "ANALYSIS",
+    "sensitivity": "LOW"
+  },
+  "containment_class": "CC3",
+  "author": {
+    "id": "test-operator",
+    "name": "Test"
+  },
+  "primitives": [
+    "READ_TEXT"
+  ],
+  "payload": {
+    "text": "expired"
+  },
+  "expiry": "2020-01-01T00:00:00Z",
+  "provenance": {
+    "created_at": "2026-05-11T07:44:31.307Z",
+    "sha256": "1486dd0ab7cd1671733bcf3f737b8d667f81f54527a70615fa51a0ccb6e9efb0",
+    "parent_capsule_id": null
+  }
+}

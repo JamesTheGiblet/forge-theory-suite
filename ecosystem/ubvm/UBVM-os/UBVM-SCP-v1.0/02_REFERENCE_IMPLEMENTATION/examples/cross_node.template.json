@@ -1,0 +1,36 @@
+{
+  "scp_version": "1.0",
+  "capsule_id": "a052a5a8-eb03-42d7-93f9-eb8119a9e52c",
+  "created_at": "2026-05-11T07:44:42.971Z",
+  "node_scope": "TARGET-NODE-SCOPE",
+  "intent": {
+    "declared": "Write analysis output to storage node from analysis node",
+    "category": "EXECUTION",
+    "sensitivity": "MEDIUM"
+  },
+  "containment_class": "CC1",
+  "author": {
+    "id": "YOUR-OPERATOR-ID",
+    "name": "Your Organisation"
+  },
+  "primitives": [
+    "LOG_AUDIT",
+    "EMIT_EVENT"
+  ],
+  "payload": {
+    "log_message": "Cross-node write from analysis to storage",
+    "event_name": "cross_node.write",
+    "event_data": {}
+  },
+  "provenance": {
+    "created_at": "2026-05-11T07:44:42.971Z",
+    "sha256": "123127778d4fb40b5e7c0c29b3056f15e4accfec45b50238263bf20ad8f2cb19",
+    "parent_capsule_id": "00000000-0000-0000-0000-000000000000"
+  },
+  "cross_node_auth": {
+    "target_node_scope": "TARGET-NODE-SCOPE",
+    "authorised_by": "SOURCE-NODE-SCOPE",
+    "auth_token": "REPLACE_WITH_SIGNED_JWT_OR_TOKEN",
+    "expires_at": "2026-05-11T08:44:42.971Z"
+  }
+}

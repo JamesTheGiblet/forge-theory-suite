@@ -1,0 +1,27 @@
+{
+  "scp_version": "1.0",
+  "capsule_id": "aaaaaaaa-0000-4000-8000-000000000001",
+  "created_at": "2026-05-11T07:45:03.891Z",
+  "node_scope": "forge-analysis-01",
+  "intent": {
+    "declared": "Root capsule: initialise analysis session for document corpus processing",
+    "category": "ANALYSIS",
+    "sensitivity": "MEDIUM"
+  },
+  "containment_class": "CC2",
+  "author": {
+    "id": "forge-operator-001",
+    "name": "Forge Theory Labs"
+  },
+  "provenance": {
+    "created_at": "2025-05-11T09:00:00Z",
+    "sha256": "35fbfe42a8188d0f0197d4ee33822a9ebcde78abbf82fcb028b575dc43c30df8",
+    "parent_capsule_id": null
+  },
+  "primitives": [
+    "READ_DOCUMENT"
+  ],
+  "payload": {
+    "document": "session-init-marker"
+  }
+}
