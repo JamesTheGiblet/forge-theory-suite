@@ -1,0 +1,49 @@
+{
+  "scp_version": "0.1.0",
+  "capsule_id": "ubvm.portal.2026-05-11.JM",
+  "module_name": "portal",
+  "description": "UBVM Module Submission Portal. Provides a web interface for collaborators to submit new modules for review. Validates scp.json capsules, queues submissions, and deploys approved modules to the node directory on THAUMIEL approval.",
+  "port": 3020,
+  "pm2_name": "ubvm-portal",
+
+  "access_rights": {
+    "node_id": "ubvm-portal-01",
+    "node_class": "KETER",
+    "owner": "james",
+    "granted_by": "james",
+    "granted_at": "2026-05-11T00:00:00Z",
+
+    "scope": {
+      "domains": ["ubvm", "incybe"],
+      "inter_module_read": [],
+      "inter_module_write": [],
+      "external_network": false,
+      "filesystem_read": [
+        "./nodes/incybe",
+        "./portal/queue"
+      ],
+      "filesystem_write": [
+        "./nodes/incybe",
+        "./portal/queue"
+      ]
+    },
+
+    "permitted_primitives": [
+      "READ_CAPSULE",
+      "WRITE_CAPSULE",
+      "LOG",
+      "EMIT_EVENT"
+    ],
+
+    "containment_class": "CC1",
+    "audit_log": true,
+    "revocable": false
+  },
+
+  "provenance": {
+    "author": "James / Giblets Creations",
+    "created_at": "2026-05-11T00:00:00Z",
+    "version": "1.0.0",
+    "context": "Core UBVM infrastructure module. Manages collaborator module intake and approval workflow."
+  }
+}

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UBVM Portal — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050a0e;
+    --surface: #0a1520;
+    --border: #0d2535;
+    --accent: #00c8ff;
+    --accent2: #00ff9d;
+    --text: #c8d8e8;
+    --muted: #3a5a6a;
+    --danger: #ff3c5a;
+    --mono: 'Share Tech Mono', monospace;
+    --sans: 'Rajdhani', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--sans);
+    overflow: hidden;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,200,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,200,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: gridScroll 20s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes gridScroll {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(40px); }
+  }
+
+  /* Scanline overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.15) 2px,
+      rgba(0,0,0,0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .login-wrap {
+    position: relative;
+    z-index: 10;
+    width: 380px;
+  }
+
+  .logo {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .logo-mark {
+    display: inline-block;
+    width: 64px;
+    height: 64px;
+    border: 2px solid var(--accent);
+    border-radius: 4px;
+    position: relative;
+    margin-bottom: 16px;
+    box-shadow: 0 0 20px rgba(0,200,255,0.3), inset 0 0 20px rgba(0,200,255,0.05);
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(0,200,255,0.3), inset 0 0 20px rgba(0,200,255,0.05); }
+    50% { box-shadow: 0 0 40px rgba(0,200,255,0.6), inset 0 0 30px rgba(0,200,255,0.1); }
+  }
+
+  .logo-mark::before {
+    content: 'U';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 28px;
+    color: var(--accent);
+  }
+
+  .logo-text {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .logo-sub {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    opacity: 0.5;
+    margin-top: 4px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 1px solid rgba(0,200,255,0.2);
+    padding: 36px 32px;
+    position: relative;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+
+  .field {
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 12px 14px;
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(0,200,255,0.2);
+  }
+
+  button {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 14px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+    opacity: 0.1;
+  }
+
+  button:hover::before { transform: translateX(0); }
+  button:hover { box-shadow: 0 0 20px rgba(0,200,255,0.3); }
+
+  .error {
+    background: rgba(255,60,90,0.1);
+    border: 1px solid rgba(255,60,90,0.3);
+    color: var(--danger);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+
+  .footer-line {
+    text-align: center;
+    margin-top: 24px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    opacity: 0.4;
+  }
+</style>
+</head>
+<body>
+<div class="login-wrap">
+  <div class="logo">
+    <div class="logo-mark"></div>
+    <div class="logo-text">UBVM Portal</div>
+    <div class="logo-sub">Module Submission Interface</div>
+  </div>
+
+  <div class="card">
+    <div id="errorBox" class="error" style="display:none">
+      ACCESS DENIED — invalid credentials
+    </div>
+
+    <form method="POST" action="/login">
+      <div class="field">
+        <label>Identifier</label>
+        <input type="text" name="username" autocomplete="username" autofocus placeholder="username" required>
+      </div>
+      <div class="field">
+        <label>Auth Key</label>
+        <input type="password" name="password" autocomplete="current-password" placeholder="••••••••" required>
+      </div>
+      <button type="submit">Authenticate</button>
+    </form>
+  </div>
+
+  <div class="footer-line">Giblets Creations · Meaning Sovereignty Licence</div>
+</div>
+
+<script>
+  if (window.location.search.includes('error=1')) {
+    document.getElementById('errorBox').style.display = 'block';
+  }
+</script>
+</body>
+</html>
