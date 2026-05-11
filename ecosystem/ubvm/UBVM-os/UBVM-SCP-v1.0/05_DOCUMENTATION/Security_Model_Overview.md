@@ -55,9 +55,9 @@ No external service is required. An attacker cannot disable UBVM by taking down 
 
 ## Security Contact
 
-To report security issues with the UBVM/SCP specification or reference implementation, contact: [your security contact email]
+To report security issues with the UBVM/SCP specification or reference implementation, contact: gibletscreations@gmail.com
 
 ---
 
 *UBVM-DOC-SEC-001 · v1.0 · May 2025*
-*© 2025 James [Surname] · Forge Theory Labs · Giblets Creations · England*
+*© 2025 James Gilbert · Forge Theory Labs · Giblets Creations · England*

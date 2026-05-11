@@ -7,7 +7,7 @@ Title:        Universal Behavioural Virtual Machine and
               Semantic Capsule Protocol — Technical Specification
 Version:      1.0
 Status:       PUBLISHED
-Author:       James [Surname]
+Author:       James Gilbert
 Organisation: Forge Theory Labs / Giblets Creations, England
 Licence:      Meaning Sovereignty Licence v1.0
 Date:         May 2025
@@ -775,16 +775,16 @@ This specification does not define key management for operators or authors. Depl
 
 ## 17. Intellectual Property Notice
 
-UBVM and SCP are original works created by James [Surname], trading as Giblets Creations and Forge Theory Labs, England. Both works are protected under the Copyright, Designs and Patents Act 1988.
+UBVM and SCP are original works created by James Gilbert, trading as Giblets Creations and Forge Theory Labs, England. Both works are protected under the Copyright, Designs and Patents Act 1988.
 
 The Meaning Sovereignty Licence v1.0 governs use, deployment, and modification of UBVM and SCP. See `LICENCE.md` in the reference implementation repository.
 
-"UBVM", "Universal Behavioural Virtual Machine", "Semantic Capsule Protocol", "SCP", "Meaning Sovereignty Licence", and "Forge Theory Labs" are used as trade identifiers by James [Surname] / Giblets Creations. Unauthorised use of these identifiers in the context of AI execution runtimes or capsule-based AI protocols is not permitted.
+"UBVM", "Universal Behavioural Virtual Machine", "Semantic Capsule Protocol", "SCP", "Meaning Sovereignty Licence", and "Forge Theory Labs" are used as trade identifiers by James Gilbert / Giblets Creations. Unauthorised use of these identifiers in the context of AI execution runtimes or capsule-based AI protocols is not permitted.
 
 Patent assessment is in progress. Pending patent claims may apply to methods described in this specification.
 
 ---
 
 *UBVM/SCP Technical Specification v1.0*
-*© 2025 James [Surname] · Forge Theory Labs · Giblets Creations · England*
+*© 2025 James Gilbert · Forge Theory Labs · Giblets Creations · England*
 *Document Ref: UBVM-SPEC-001 · Published May 2025*

@@ -1,7 +1,7 @@
 # Meaning Sovereignty Licence v1.0
 ## UBVM / SCP / Semantic Capsule Protocol
 
-**Issued by:** James [Surname], Forge Theory Labs / Giblets Creations, England
+**Issued by:** James Gilbert, Forge Theory Labs / Giblets Creations, England
 **Date:** May 2025
 **Applies to:** All works in this release bundle
 
@@ -30,7 +30,7 @@ Subject to the terms below, you are granted the following rights:
 ## Conditions
 
 **Condition 1 — Attribution**
-Any deployment, distribution, or publication of UBVM/SCP or derivative works must include attribution: "Built on UBVM/SCP by Forge Theory Labs / James [Surname], England."
+Any deployment, distribution, or publication of UBVM/SCP or derivative works must include attribution: "Built on UBVM/SCP by Forge Theory Labs / James Gilbert, England."
 
 **Condition 2 — Meaning Preservation**
 You must not modify the `intent.declared` field of any capsule you did not author and re-execute it under the original author's identity. If you wish to re-purpose a capsule, you must re-author it under your own `author.id` with a new `capsule_id` and recomputed hash.
@@ -68,4 +68,4 @@ This licence is governed by the laws of England and Wales.
 ---
 
 *Meaning Sovereignty Licence v1.0*
-*© 2025 James [Surname] · Forge Theory Labs · Giblets Creations · England*
+*© 2025 James Gilbert · Forge Theory Labs · Giblets Creations · England*

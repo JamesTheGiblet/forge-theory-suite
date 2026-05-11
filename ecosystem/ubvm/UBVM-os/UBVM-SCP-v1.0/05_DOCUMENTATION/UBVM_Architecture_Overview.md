@@ -175,4 +175,4 @@ A UBVM node can run indefinitely in an air-gapped environment. The audit log and
 ---
 
 *UBVM-DOC-ARCH-001 · v1.0 · May 2025*
-*© 2025 James [Surname] · Forge Theory Labs · Giblets Creations · England*
+*© 2025 James Gilbert · Forge Theory Labs · Giblets Creations · England*

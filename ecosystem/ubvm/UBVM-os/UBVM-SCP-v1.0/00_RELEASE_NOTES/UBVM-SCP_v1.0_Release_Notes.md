@@ -5,7 +5,7 @@
 Release:      v1.0
 Date:         May 2025
 Status:       FIRST PUBLISHED RELEASE
-Author:       James [Surname], Forge Theory Labs / Giblets Creations, England
+Author:       James Gilbert, Forge Theory Labs / Giblets Creations, England
 Document ref: UBVM-REL-001
 ```
 
@@ -104,7 +104,7 @@ Full verification instructions: `00_RELEASE_NOTES/Verification_Instructions.md`
 
 ## Provenance of This Release
 
-This release bundle was produced by James [Surname], sole author and inventor of UBVM/SCP, trading as Giblets Creations and Forge Theory Labs, England. It was built in Termux on a Samsung Galaxy S24 Ultra.
+This release bundle was produced by James Gilbert, sole author and inventor of UBVM/SCP, trading as Giblets Creations and Forge Theory Labs, England. It was built in Termux on a Samsung Galaxy S24 Ultra.
 
 The release bundle is protected under the Copyright, Designs and Patents Act 1988. All IP belongs to the author. The Meaning Sovereignty Licence v1.0 governs use.
 
@@ -113,7 +113,7 @@ Publication of this release constitutes public disclosure of the UBVM/SCP protoc
 ---
 
 *UBVM-REL-001 · v1.0 · May 2025*
-*© 2025 James [Surname] · Forge Theory Labs · Giblets Creations · England*
+*© 2025 James Gilbert · Forge Theory Labs · Giblets Creations · England*
 
 ---
 

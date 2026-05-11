@@ -7,7 +7,7 @@
  * readable. Production deployments may extend but MUST NOT contradict this
  * implementation's validation behaviour.
  *
- * Author:  James [Surname] / Forge Theory Labs / Giblets Creations, England
+ * Author:  James Gilbert / Forge Theory Labs / Giblets Creations, England
  * Licence: Meaning Sovereignty Licence v1.0
  * Spec:    UBVM-SPEC-001 v1.0
  */

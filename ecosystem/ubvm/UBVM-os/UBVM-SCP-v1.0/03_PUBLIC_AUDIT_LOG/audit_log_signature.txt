@@ -45,4 +45,4 @@ CANONICAL HASH VECTOR 1 (Spec §14.1)
   Input capsule_id: 00000000-0000-4000-8000-000000000001
   Expected SHA-256: cf22950338429a21d8a360a3daa45ab23580868962c7aaa075319b0d0b1436ff
 
-© 2025 James [Surname] · Forge Theory Labs · Giblets Creations · England
+© 2025 James Gilbert · Forge Theory Labs · Giblets Creations · England

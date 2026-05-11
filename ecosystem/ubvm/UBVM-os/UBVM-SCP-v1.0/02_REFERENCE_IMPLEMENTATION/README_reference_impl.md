@@ -226,7 +226,7 @@ In summary: you may use, deploy, and extend UBVM/SCP. You may not modify the dec
 
 ## Author
 
-James [Surname]
+James Gilbert
 Forge Theory Labs / Giblets Creations, England
 Built in Termux on a Samsung Galaxy S24 Ultra.
 
@@ -234,5 +234,5 @@ Built in Termux on a Samsung Galaxy S24 Ultra.
 
 ---
 
-© 2025 James [Surname] · Forge Theory Labs · Giblets Creations · England
+© 2025 James Gilbert · Forge Theory Labs · Giblets Creations · England
 Protected under the Copyright, Designs and Patents Act 1988.

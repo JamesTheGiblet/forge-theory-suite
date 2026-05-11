@@ -52,7 +52,7 @@ For each repository and document, ensure you have:
 Apply the following notice to all repositories, documents, and code files:
 
 ```
-© 2024–2025 James [Surname]. All rights reserved.
+© 2024–2025 James Gilbert. All rights reserved.
 Trading as Giblets Creations and Forge Theory Labs, England.
 UBVM and SCP are protected under the Copyright, Designs and Patents Act 1988.
 Meaning Sovereignty Licence v1.0 applies. See LICENCE.md.
@@ -76,7 +76,7 @@ Note that the **UK government does not automatically acquire IP** from contracto
 
 ---
 
-I, **James [Surname]**, trading as **Giblets Creations** and **Forge Theory Labs**, residing in England, hereby declare as follows:
+I, **James Gilbert**, trading as **Giblets Creations** and **Forge Theory Labs**, residing in England, hereby declare as follows:
 
 **1. Original Authorship**
 I am the sole original author of the following works, collectively referred to as the **UBVM/SCP System**:
@@ -118,7 +118,7 @@ Evidence supporting the above claims includes but is not limited to:
 
 **Signed:** ________________________________
 
-**Name:** James [Surname]
+**Name:** James Gilbert
 
 **Trading as:** Giblets Creations / Forge Theory Labs
 

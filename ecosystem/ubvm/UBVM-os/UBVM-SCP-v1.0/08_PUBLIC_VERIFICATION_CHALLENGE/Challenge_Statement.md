@@ -94,4 +94,4 @@ We are claiming it is **real**, **specified**, **implemented**, and **verifiable
 ---
 
 *UBVM-CHALLENGE-001 · v1.0 · May 2025*
-*© 2025 James [Surname] · Forge Theory Labs · Giblets Creations · England*
+*© 2025 James Gilbert · Forge Theory Labs · Giblets Creations · England*
