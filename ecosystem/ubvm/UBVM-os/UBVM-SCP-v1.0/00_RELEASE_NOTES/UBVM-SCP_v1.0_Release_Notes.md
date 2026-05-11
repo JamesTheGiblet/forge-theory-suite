@@ -114,3 +114,22 @@ Publication of this release constitutes public disclosure of the UBVM/SCP protoc
 
 *UBVM-REL-001 · v1.0 · May 2025*
 *© 2025 James [Surname] · Forge Theory Labs · Giblets Creations · England*
+
+---
+
+## Public Disclosure Record
+
+This release was publicly disclosed via Git commit on **11 May 2026**.
+
+| Field | Value |
+|-------|-------|
+| Commit hash | `548e0e28` |
+| Branch | `main` |
+| Commit message | `UBVM/SCP v1.0 — First published release` |
+| Repository | https://github.com/JamesTheGiblet/forge-theory-suite |
+| Disclosure date | 11 May 2026 |
+| Author | James / Giblets Creations / Forge Theory Labs, England |
+
+This timestamp constitutes public disclosure of the UBVM/SCP protocol and all technical claims described in this release bundle. It establishes the prior art date for patent assessment purposes.
+
+*Record appended: 11 May 2026*
